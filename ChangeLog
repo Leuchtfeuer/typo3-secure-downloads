@@ -1,5 +1,10 @@
 (add new changes on top of this file)
 
+08-07-07 Helmut Hummel  <typo3-ext(at)naw.info>
+	* version 1.0.0
+	* added logging of filesize
+	* added backend module for admins to display traffic usage by time and user
+
 08-11-28 Dietrich Heise  <typo3-ext(at)naw.info>
 	* added parsing for JavaScript window.open (vHWin=window.open)
 
@@ -8,7 +13,7 @@
 
 07-10-17 Dietrich Heise  <typo3-ext(at)naw.info>
 	* fixed the problem with downloads, previews in the Backend,
-	  thanks to Bedrijvenweb Ontwikkeling
+	thanks to Bedrijvenweb Ontwikkeling
 
 07-06-20 Dietrich Heise  <heise@naw.de>
 	* version 0.2.2
