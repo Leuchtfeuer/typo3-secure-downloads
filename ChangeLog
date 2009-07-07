@@ -1,0 +1,27 @@
+(add new changes on top of this file)
+
+08-11-28 Dietrich Heise  <typo3-ext(at)naw.info>
+	* added parsing for JavaScript window.open (vHWin=window.open)
+
+08-06-17 Dietrich Heise  <typo3-ext(at)naw.info>
+	* added some Hooks, feel free to use ;)
+
+07-10-17 Dietrich Heise  <typo3-ext(at)naw.info>
+	* fixed the problem with downloads, previews in the Backend,
+	  thanks to Bedrijvenweb Ontwikkeling
+
+07-06-20 Dietrich Heise  <heise@naw.de>
+	* version 0.2.2
+	* various changes with the eID file
+	* fixed &amp; quoted char for the generated URL for each file
+	* enabled logging feature for file access (no output of the logging at the moment)
+
+07-01-23 Dietrich Heise  <heise@naw.de>
+	* Fixed problem with getimagesize()
+
+06-02-23 Dietrich Heise  <heise@naw.de>
+	* Fixed "\" bug on Windows Platforms
+
+05-11-07 Dietrich Heise  <heise@naw.de>
+
+	* Initial release
