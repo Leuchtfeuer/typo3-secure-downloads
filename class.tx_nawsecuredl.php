@@ -38,54 +38,55 @@ class tx_nawsecuredl {
 	 * @return	[type]		...
 	 */
 	function parseContent($i){
-		$sitepath=t3lib_div::getIndpEnv(REQUEST_URI);
+		$sitepath = t3lib_div::getIndpEnv('REQUEST_URI');
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['naw_securedl']);
 		$rest = $i;
 
 		//while (preg_match('/(<[aA]|<[iI][mM][gG])+?\s[^>]*([hH][rR][eE][fF]|[sS][rR][cC])=(\"??)([^\" >]*?)\\3[^>]*>/siU', $i,$match)) {  // suchendes secured Verzeichnis
-	  	//while (preg_match('/(<[aA]|<[iI][mM][gG])+?.[^>]*([hH][rR][eE][fF]|[sS][rR][cC])=(\"??)([^\" >]*?)\\3[^>]*>/siU', $i,$match)) {  // suchendes secured Verzeichnis
+		//while (preg_match('/(<[aA]|<[iI][mM][gG])+?.[^>]*([hH][rR][eE][fF]|[sS][rR][cC])=(\"??)([^\" >]*?)\\3[^>]*>/siU', $i,$match)) {  // suchendes secured Verzeichnis
+		$result = '';
 		while (preg_match('/(?i)(<a|<img)+?.[^>]*(href|src)=(\"??)([^\" >]*?)\\3[^>]*>/siU', $i,$match)) {  // suchendes secured Verzeichnis
 
- 				$cont = explode($match[0],$i,2);
-	  			$vor = $cont[0];
-	  	   		$tag = $match[0];
-	  	   		if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug('tag:'.$tag);
-	  	   		
-	  	   		$rest = $cont[1];
+				$cont = explode($match[0],$i,2);
+				$vor = $cont[0];
+					$tag = $match[0];
+					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug('tag:'.$tag);
+
+					$rest = $cont[1];
 
 				if ($this->extConf['debug'] == '1' || $this->extConf['debug'] == '3') debug(array('html-tag:'=>$tag));
 
-		  		// investigate the HTML-Tag...
-		  		//while (preg_match('/"((typo3temp|fileadmin|uploads).*?([pP][dD][fF]|[jJ][pP][eE]?[gG]|[gG][iI][fF]|[pP][nN][gG]))"/i', $tag,$match1)){
-		  		if (preg_match('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i', $tag,$match1)){
-		  			
-		  			if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i');
-		  			if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug($match1);
-		  			$replace = $this->makeSecure($match1[1]);
-		  			$tagexp = explode ($match1[1], $tag , 2 );
-		  			
-		  			if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug($tagexp[0]);
-		  			if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug($replace);
-		  			if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug($tagexp[1]);
-		  			
-		  			$tag = $tagexp[0].$replace;
-		  			//$tag = $tagexp[0].$replace.$tagexp[1];
-		  			$tmp = $tagexp[1];
-		  			
-		  			// search in the rest on the tag (e.g. for vHWin=window.open...)
-					//print_R('/\'(?:'.$this->modifiyregex($this->extConf['domain']).')?'.$this->modifiyregex($sitepath).'(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))\'/i');					
-					if (preg_match('/\'(?:'.$this->modifiyregex($this->extConf['domain']).')?.*?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))\'/i', $tmp,$match1)){
-		  				$replace = $this->makeSecure($match1[1]);
-		  				$tagexp = explode ($match1[1], $tmp , 2 );
-		  				$add = $tagexp[0].'/'.$replace.$tagexp[1];
-		  			}else{
-		  				$add = $tagexp[1];
-		  			}
+				// investigate the HTML-Tag...
+				//while (preg_match('/"((typo3temp|fileadmin|uploads).*?([pP][dD][fF]|[jJ][pP][eE]?[gG]|[gG][iI][fF]|[pP][nN][gG]))"/i', $tag,$match1)){
+				if (preg_match('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i', $tag,$match1)){
 
-		  			$tag .= $add;
+					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i');
+					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug($match1);
+					$replace = $this->makeSecure($match1[1]);
+					$tagexp = explode ($match1[1], $tag , 2 );
+
+					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug($tagexp[0]);
+					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug($replace);
+					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug($tagexp[1]);
+
+					$tag = $tagexp[0].$replace;
+					//$tag = $tagexp[0].$replace.$tagexp[1];
+					$tmp = $tagexp[1];
+
+					// search in the rest on the tag (e.g. for vHWin=window.open...)
+					//print_R('/\'(?:'.$this->modifiyregex($this->extConf['domain']).')?'.$this->modifiyregex($sitepath).'(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))\'/i');
+					if (preg_match('/\'(?:'.$this->modifiyregex($this->extConf['domain']).')?.*?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))\'/i', $tmp,$match1)){
+						$replace = $this->makeSecure($match1[1]);
+						$tagexp = explode ($match1[1], $tmp , 2 );
+						$add = $tagexp[0].'/'.$replace.$tagexp[1];
+					}else{
+						$add = $tagexp[1];
+					}
+
+					$tag .= $add;
 				}
 				$result .= $vor.$tag;
-		 		$i = $rest;
+				$i = $rest;
 		}
 		return $result.$rest;
 	}
@@ -133,6 +134,7 @@ class tx_nawsecuredl {
 
 	function modifyfiletypes($string){
 		$chars = preg_split('//',$string);
+		$out = '';
 		foreach ($chars as $i){
 			if (preg_match('/\w/',$i)){
 				$out .= '['.strtoupper($i).strtolower($i).']';

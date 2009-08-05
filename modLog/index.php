@@ -258,7 +258,7 @@ class  tx_nawsecuredl_module1 extends t3lib_SCbase {
 		if ($userId != -1) {
 			$where .= ' AND user_id='.(int)$userId;
 		}
-		$lines = self::getRecords('tx_nawsecuredl_counter', 'count(uid) as number,user_id,SUM(file_size) as traffic',$where,'user_id');
+		$lines = self::getRecords('tx_nawsecuredl_counter', 'count(uid) as number,user_id,SUM(file_size) as traffic',$where);
 
 		if ($lines) {
 			return $LANG->getLL('trafficUsed').': '.t3lib_div::formatSize($lines[0]['traffic'], ' Bytes|K|M|G');
@@ -286,7 +286,7 @@ class  tx_nawsecuredl_module1 extends t3lib_SCbase {
 	 */
 	protected static function getRecords($theTable, $fields, $whereClause = '', $groupBy = '', $orderBy = '', $limit = '', $useDeleteClause = true)
 	{
-		// $GLOBALS['TYPO3_DB']->store_lastBuiltQuery = true;
+		#$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = true;
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 					$fields ? $fields : '*',
 					$theTable,
@@ -301,7 +301,7 @@ class  tx_nawsecuredl_module1 extends t3lib_SCbase {
 		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$rows[] = $row;
 		}
-		// debug($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery,"Debug of \$GLOBALS['TYPO3_DB']->debug_lastBuiltQuery"); 	//FIXME debug of $GLOBALS['TYPO3_DB']->debug_lastBuiltQuery
+		#debug($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery,"Debug of \$GLOBALS['TYPO3_DB']->debug_lastBuiltQuery"); 	//FIXME debug of $GLOBALS['TYPO3_DB']->debug_lastBuiltQuery
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
 
 		if (count($rows))	return $rows;
