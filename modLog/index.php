@@ -56,6 +56,8 @@ class  tx_nawsecuredl_module1 extends t3lib_SCbase {
 
 		parent::init();
 
+		$this->include_once[] = realpath(dirname(__FILE__).'/class.tx_nawsecuredl_table.php');
+
 		/*
 		if (t3lib_div::_GP('clear_all_cache'))    {
 			$this->include_once[] = PATH_t3lib.'class.t3lib_tcemain.php';
@@ -248,24 +250,57 @@ class  tx_nawsecuredl_module1 extends t3lib_SCbase {
 		$from = strtotime($time['from']);
 		$to = strtotime($time['to']);
 
-		$where = '1=1';
+		$where = 'fe_users.uid = tx_nawsecuredl_counter.user_id';
 
-		$where .= ($from > 0)? ' AND tstamp >= '.$from : '';
-		$where .= ($to > 0)? ' AND tstamp < '.($to + 86400): '';
+		$where .= ($from > 0)? ' AND tx_nawsecuredl_counter.tstamp >= '.$from : '';
+		$where .= ($to > 0)? ' AND tx_nawsecuredl_counter.tstamp < '.($to + 86400): '';
 
 		$lines = array();
 
 		if ($userId != -1) {
-			$where .= ' AND user_id='.(int)$userId;
+			$where .= ' AND tx_nawsecuredl_counter.user_id='.(int)$userId;
 		}
-		$lines = self::getRecords('tx_nawsecuredl_counter', 'count(uid) as number,user_id,SUM(file_size) as traffic',$where);
+		$rows = self::getRecords('fe_users,tx_nawsecuredl_counter', 'fe_users.username AS username, GROUP_CONCAT(DISTINCT tx_nawsecuredl_counter.file_name) AS files, FROM_UNIXTIME(tx_nawsecuredl_counter.tstamp,\'%d.%m.%Y\') AS date, sum(tx_nawsecuredl_counter.file_size) AS traffic', $where, 'username,date');
 
-		if ($lines) {
-			return $LANG->getLL('trafficUsed').': '.t3lib_div::formatSize($lines[0]['traffic'], ' Bytes|K|M|G');
+		if ($rows) {
+
+			/* @var $table tx_nawsecuredl_table */
+			$table = t3lib_div::makeInstance('tx_nawsecuredl_table');
+			$table->setHeader(array($LANG->getLL('user'),$LANG->getLL('files'),$LANG->getLL('date'),$LANG->getLL('traffic')));
+
+			$sum = 0;
+			foreach ($rows as $row) {
+				$table->addRow(array($this->HtmlEscape($row['username']), $this->FormatFiles($row['files']), $this->HtmlEscape($row['date']), $this->FormatTraffic($row['traffic'])), false);
+				$sum += $row['traffic'];
+			}
+			$table->addRow(array('','','<strong>'.$LANG->getLL('trafficsum').':</strong>','<strong>'.$this->FormatTraffic($sum).'</strong>'), false);
+
 		} else {
 			return $LANG->getLL('noTrafficUsed');
-
 		}
+		return $table->render();
+	}
+
+
+	protected function FormatFiles($files)
+	{
+		$arrFiles = t3lib_div::trimExplode(',', $files);
+		foreach ($arrFiles as &$file) {
+			$file = $this->HtmlEscape(basename($file));
+		}
+
+		return implode('<br />', $arrFiles);
+	}
+
+	protected function FormatTraffic($value)
+	{
+		return $this->HtmlEscape(sprintf('%01.2F',(double)$value / (1024*1024*1024)));
+
+	}
+
+	private function HtmlEscape($string)
+	{
+		return htmlspecialchars($string, ENT_QUOTES, $GLOBALS['LANG']->charSet);
 	}
 
 	/**
@@ -304,7 +339,7 @@ class  tx_nawsecuredl_module1 extends t3lib_SCbase {
 		#debug($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery,"Debug of \$GLOBALS['TYPO3_DB']->debug_lastBuiltQuery"); 	//FIXME debug of $GLOBALS['TYPO3_DB']->debug_lastBuiltQuery
 		$GLOBALS['TYPO3_DB']->sql_free_result($res);
 
-		if (count($rows))	return $rows;
+		return $rows;
 	}
 
 }

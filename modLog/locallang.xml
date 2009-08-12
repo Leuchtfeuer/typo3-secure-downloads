@@ -18,6 +18,11 @@
 			<label index="from">From (Format: dd.mm.YY)</label>
 			<label index="to">To (Format: dd.mm.YY)</label>
 			<label index="submit">Submit</label>
+			<label index="user">User</label>
+			<label index="files">Files</label>
+			<label index="date">Date</label>
+			<label index="traffic">Traffic GB</label>
+			<label index="trafficsum">Sum</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="title">Download-Liste</label>
@@ -31,6 +36,11 @@
 			<label index="from">Von (Format: dd.mm.YY)</label>
 			<label index="to">Bis (Format: dd.mm.YY)</label>
 			<label index="submit">Abschicken</label>
+			<label index="user">User</label>
+			<label index="files">Dateien</label>
+			<label index="date">Datum</label>
+			<label index="traffic">Traffic GB</label>
+			<label index="trafficsum">Summe</label>
 		</languageKey>
 	</data>
 </T3locallang>
