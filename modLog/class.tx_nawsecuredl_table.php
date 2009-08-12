@@ -23,7 +23,7 @@ class tx_nawsecuredl_table {
 	var $cellpadding = 3;
 	var $cellspacing = 0;
 	var $tableWidth;
-	var $tablestyle;
+	var $tablestyle = 'border-collapse: collapse';
 
 	// cell borders
 	var $cellStyle;        // another style tag for each cell
@@ -79,7 +79,7 @@ class tx_nawsecuredl_table {
 		$out .=  ".table-cell-3,.table-cell-2 { text-align: right; } \r\n";
 		$out .=  "</style>\r\n";
 
-		$out .=  "<table cellspacing=" . $this->cellspacing . " cellpadding=" . $this->cellpadding . " width=" . $this->tableWidth . " style=\"" . $this->tablestyle . "\">\r\n";
+		$out .=  '<table cellspacing="' . $this->cellspacing . '" cellpadding="' . $this->cellpadding . '" width="' . $this->tableWidth . '" style="' . $this->tablestyle . '">'."\r\n";
 		// The heading row
 		$out .=  "<tr style=\"" . $this->headingStyle . "\">\r\n<thead>\r\n";
 

@@ -9,6 +9,7 @@
 		<languageKey index="default" type="array">
 			<label index="title">Download Log</label>
 			<label index="allUsers">All users</label>
+			<label index="loggedInUsers">All (logged in) users</label>
 			<label index="notLoggedIn">Not logged in users</label>
 			<label index="trafficUsed">Used traffic</label>
 			<label index="noTrafficUsed">No traffic!</label>
@@ -27,6 +28,7 @@
 		<languageKey index="de" type="array">
 			<label index="title">Download-Liste</label>
 			<label index="allUsers">Alle Benutzer</label>
+			<label index="loggedInUsers">Alle (eingeloggten) Benutzer</label>
 			<label index="notLoggedIn">nicht eingeloggte Benutzer</label>
 			<label index="trafficUsed">Verbrauchter Traffic</label>
 			<label index="noTrafficUsed">Kein Traffic verbraucht!</label>

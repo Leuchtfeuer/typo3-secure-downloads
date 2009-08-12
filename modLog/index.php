@@ -74,7 +74,7 @@ class  tx_nawsecuredl_module1 extends t3lib_SCbase {
 		global $LANG;
 		$this->MOD_MENU = array (
 			'users' => array (
-				'-1' => $LANG->getLL('allUsers'),
+				'-1' => $LANG->getLL('loggedInUsers'),
 				'0' => $LANG->getLL('notLoggedIn'),
 				'' => '------------------------------',
 			),
@@ -93,11 +93,11 @@ class  tx_nawsecuredl_module1 extends t3lib_SCbase {
 		$set = t3lib_div::_GP('SET');
 
 		if ($set['time']) {
-			$from = strtotime($set['time']['from']);
-			$to = strtotime($set['time']['to']);
+			$dateFrom = strtotime($set['time']['from']);
+			$dateTo = strtotime($set['time']['to']);
 
-			$set['time']['from'] = ($from > 0) ? date('d.m.Y', $from) : '';
-			$set['time']['to'] = ($to > 0) ? date('d.m.Y', $to) : '';
+			$set['time']['from'] = ($dateFrom > 0) ? date('d.m.Y', $dateFrom) : '';
+			$set['time']['to'] = ($dateTo > 0) ? date('d.m.Y', $dateTo) : '';
 
 			$mergedSettings = t3lib_div::array_merge($this->MOD_SETTINGS, $set);
 
@@ -247,20 +247,42 @@ class  tx_nawsecuredl_module1 extends t3lib_SCbase {
 	{
 		global $LANG;
 
-		$from = strtotime($time['from']);
-		$to = strtotime($time['to']);
+		$dateFrom = strtotime($time['from']);
+		$dateTo = strtotime($time['to']);
 
-		$where = 'fe_users.uid = tx_nawsecuredl_counter.user_id';
 
-		$where .= ($from > 0)? ' AND tx_nawsecuredl_counter.tstamp >= '.$from : '';
-		$where .= ($to > 0)? ' AND tx_nawsecuredl_counter.tstamp < '.($to + 86400): '';
+		$arrFromTables[] = 'tx_nawsecuredl_counter';
+		$arrSelectFields[] = 'GROUP_CONCAT(DISTINCT tx_nawsecuredl_counter.file_name) AS files';
+		$arrSelectFields[] = 'sum(tx_nawsecuredl_counter.file_size) AS traffic';
+		$arrSelectFields[] = 'FROM_UNIXTIME(tx_nawsecuredl_counter.tstamp,\'%d.%m.%Y\') AS date';
+		$arrGroupBy = array();
+		$arrOrderBy = array();
+
+		if ($userId > 0 OR $userId == -1) {
+			$arrOrderBy[] = 'username';
+			$arrSelectFields[] = 'fe_users.username AS username';
+			$arrAndConditions[] = 'fe_users.uid = tx_nawsecuredl_counter.user_id';
+			$arrFromTables[] = 'fe_users';
+			$arrGroupBy[] = 'username';
+		}
+		$arrOrderBy[] = 'tx_nawsecuredl_counter.tstamp';
+
+		if ($userId != -1) {
+			$arrAndConditions[] = 'tx_nawsecuredl_counter.user_id='.(int)$userId;
+		}
+
+		$arrGroupBy[] = 'date';
+
+		if ($dateFrom > 0) {
+			$arrAndConditions[] = 'tx_nawsecuredl_counter.tstamp >= '.$dateFrom;
+		}
+		if ($dateTo > 0) {
+			$arrAndConditions[] = 'tx_nawsecuredl_counter.tstamp < '.($dateTo + 86400);
+		}
 
 		$lines = array();
 
-		if ($userId != -1) {
-			$where .= ' AND tx_nawsecuredl_counter.user_id='.(int)$userId;
-		}
-		$rows = self::getRecords('fe_users,tx_nawsecuredl_counter', 'fe_users.username AS username, GROUP_CONCAT(DISTINCT tx_nawsecuredl_counter.file_name) AS files, FROM_UNIXTIME(tx_nawsecuredl_counter.tstamp,\'%d.%m.%Y\') AS date, sum(tx_nawsecuredl_counter.file_size) AS traffic', $where, 'username,date');
+		$rows = self::getRecords(implode(',', $arrFromTables), implode(',',$arrSelectFields), implode(' AND ', $arrAndConditions), implode(',', $arrGroupBy), implode(',', $arrOrderBy));
 
 		if ($rows) {
 
