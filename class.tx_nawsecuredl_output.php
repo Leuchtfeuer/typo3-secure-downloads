@@ -77,7 +77,7 @@ class tx_nawsecuredl_output {
 		$this->feUserObj = tslib_eidtools::initFeUser();
 		tslib_eidtools::connectDB();
 
-		if ($this->u != '0') {
+		if ($this->u != 0) {
 			$feuser = $this->feUserObj->user['uid'];
 			if ($this->u != $feuser){
 				header('HTTP/1.1 403 Forbidden');
@@ -151,6 +151,9 @@ class tx_nawsecuredl_output {
 						$contenttypedatei='application/vnd.ms-excel';
 						break;
 						##### Microsoft Excel Dateien
+
+					//TODO: add MS-Office 2007 XML-filetypes
+
 					case '.jpeg':
 						$contenttypedatei='image/jpeg';
 						break;
@@ -222,8 +225,15 @@ class tx_nawsecuredl_output {
 			}else{
 				header('Content-Disposition: inline; filename="'.basename($file).'"');
 			}
+
+			if ($this->suhosin_function_exists('readfile')) {
 				readfile($file);
 			} else {
+				//TODO: check if this works in all cases
+				fpassthru (fopen ( $file, 'rb' ));
+			}
+
+		} else {
 			print "File does not exists!";
 		}
 	}
@@ -272,6 +282,25 @@ class tx_nawsecuredl_output {
 			'user_id' => intval($this->feUserObj->user['uid']),
 		);
 		$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_nawsecuredl_counter',$insert_array);
+	}
+
+	/**
+	 * Chekcs if a function is deactivated in php.ini
+	 *
+	 * @param $func string
+	 * @return bool
+	 */
+	private function suhosin_function_exists($funcName) {
+		if (extension_loaded('suhosin')) {
+			$suhosinBlacklist = @ini_get("suhosin.executor.func.blacklist");
+			if (empty($suhosinBlacklist) == false) {
+				$suhosinBlacklist = explode(',', $suhosinBlacklist);
+				$suhosinBlacklist = array_map('trim', $suhosinBlacklist);
+				$suhosinBlacklist = array_map('strtolower', $suhosinBlacklist);
+				return (function_exists($funcName) == true && array_search($funcName, $suhosinBlacklist) === false);
+			}
+		}
+		return function_exists($funcName);
 	}
 
 }
