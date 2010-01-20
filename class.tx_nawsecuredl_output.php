@@ -34,6 +34,7 @@
 
 class tx_nawsecuredl_output {
 
+	protected $arrExtConf = array();
 
 	/**
 	 * The init Function, to check the access rights
@@ -41,7 +42,8 @@ class tx_nawsecuredl_output {
 	 * @return void
 	 */
 	function init(){
-		//require_once(PATH_t3lib.'class.t3lib_div.php');
+
+		$this->arrExtConf = $this->GetExtConf();
 
 		$this->u = intval(t3lib_div::_GP('u'));
 		if (!$this->u){
@@ -105,7 +107,9 @@ class tx_nawsecuredl_output {
 
 		if (file_exists($file)){
 
-			$this->logDownload();
+			if (!$this->arrExtConf['logifcomplete']) {
+				$this->logDownload();
+			}
 
 			// files bigger than 32MB are now 'application/octet-stream' by default (getimagesize memory_limit problem)
 			if (filesize($file)<1024*1024*32){
@@ -126,9 +130,8 @@ class tx_nawsecuredl_output {
 				$endigung=strtolower(strrchr($file,'.'));
 				//alles ab dem letzten Punkt
 
-				$extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['naw_securedl']);
-				if ($extConf['forcedownload'] == 1){
-					$forcetypes = explode("|",$extConf['forcedownloadtype']);
+				if ($this->arrExtConf['forcedownload'] == 1){
+					$forcetypes = explode("|",$this->arrExtConf['forcedownloadtype']);
 					if (is_array($forcetypes)){
 						if (in_array(substr($endigung, 1),$forcetypes)) {
 							$forcedownload = true;
@@ -233,6 +236,12 @@ class tx_nawsecuredl_output {
 				fpassthru (fopen ( $file, 'rb' ));
 			}
 
+			flush();
+			if ($this->arrExtConf['logifcomplete'] && !connection_aborted()) {
+				$this->logDownload();
+			}
+
+
 		} else {
 			print "File does not exists!";
 		}
@@ -244,8 +253,7 @@ class tx_nawsecuredl_output {
 	 * @return void
 	 */
 	function logDownload(){
-		$extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['naw_securedl']);
-		if (!$extConf['log']){ // no logging
+		if (!$this->arrExtConf['log']){ // no logging
 			return;
 		}
 /*
@@ -281,7 +289,20 @@ class tx_nawsecuredl_output {
 			'file_size' => @filesize($this->file),
 			'user_id' => intval($this->feUserObj->user['uid']),
 		);
+
 		$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_nawsecuredl_counter',$insert_array);
+	}
+
+
+	protected function GetExtConf()
+	{
+		static $arrExtConf=array();
+
+		if (!$arrExtConf) {
+			$arrExtConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['naw_securedl']);
+		}
+
+		return $arrExtConf;
 	}
 
 	/**

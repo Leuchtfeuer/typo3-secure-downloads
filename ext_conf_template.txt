@@ -1,23 +1,26 @@
-  # cat=basic; type=string; label=securedDirs:a list of dirs that should be secured separated by a pipe
+# cat=basic; type=string; label=securedDirs:a list of dirs that should be secured separated by a pipe
 securedDirs = typo3temp|fileadmin|uploads
 
-  # cat=basic; type=string; label=filetype:a list of filetypes that should be secured separated by a pipe
+# cat=basic; type=string; label=filetype:a list of filetypes that should be secured separated by a pipe
 filetype = pdf|jpe?g|gif|png|doc|xls|rar|tgz|tar|gz
 
-  # cat=basic; type=boolean; label = forcedownload: Force Download of specified filetypes
+# cat=basic; type=boolean; label = forcedownload: Force Download of specified filetypes
 forcedownload = 0
 
-  # cat=basic; type=string; label=forcedownloadtype:a list of filetypes that should not be opened inline in a browser, seperated by a pipe. Only used if forcedownload is true
+# cat=basic; type=string; label=forcedownloadtype:a list of filetypes that should not be opened inline in a browser, seperated by a pipe. Only used if forcedownload is true
 forcedownloadtype = pdf|doc|xls|rar|tgz|tar|gz
 
-  # cat=basic; type=string; label=domain:a domain prefix before the securedDirs part (e.g. http://www.host.com/). Not needed for internal (relative) links.
+# cat=basic; type=string; label=domain:a domain prefix before the securedDirs part (e.g. http://www.host.com/). Not needed for internal (relative) links.
 domain = http://mydomain.com|http://my.other.domain.org
 
- # cat=basic; type=int; label=cachetimeadd:additional time added to the cache time of the page or to the default cache time (default 3600sec = 1h)
+# cat=basic; type=int; label=cachetimeadd:additional time added to the cache time of the page or to the default cache time (default 3600sec = 1h)
 cachetimeadd = 3600
 
-  # cat=basic; type=int[0-3]; label = debug level (output each tag that maches the regex and will be replaced)
+# cat=basic; type=int[0-3]; label = debug level (output each tag that maches the regex and will be replaced)
 debug = 0
 
-  # cat=basic; type=boolean; label = Log each file access
+# cat=basic; type=boolean; label = Log each file access
 log = 0
+
+# cat=basic; type=boolean; label = Log only if file transfer completed
+logifcomplete = 0
