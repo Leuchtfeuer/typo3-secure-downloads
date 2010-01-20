@@ -125,8 +125,8 @@ class tx_nawsecuredl {
 			$timeout =  $GLOBALS['TSFE']->page['cache_timeout'] + time() + $cachetimeadd;
 		}
 
-		$data = $this->feuser.rawurldecode($element).$timeout.$key;
-		$hash = md5($data);
+		$data = $this->feuser.rawurldecode($element).$timeout;
+		$hash = hash_hmac('md5', $data, $key);
 
 		//return $path_and_file_to_secure.'?u='.$this->feuser.'&amp;file='.$element.'&amp;t='.$timeout.'&amp;hash='.$hash;
 		return $path_and_file_to_secure.'&amp;u='.$this->feuser.'&amp;file='.$element.'&amp;t='.$timeout.'&amp;hash='.$hash;

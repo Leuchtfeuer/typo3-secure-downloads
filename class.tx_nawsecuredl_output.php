@@ -53,8 +53,8 @@ class tx_nawsecuredl_output {
 		$this->file = t3lib_div::_GP('file');
 		$key = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
 
-		$this->data = $this->u.$this->file.$this->t.$key;
-		$this->checkhash = md5($this->data);
+		$this->data = $this->u.$this->file.$this->t;
+		$this->checkhash = hash_hmac('md5', $this->data, $key);
 
 		// Hook for init:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['init'])) {
@@ -222,8 +222,8 @@ class tx_nawsecuredl_output {
 			}else{
 				header('Content-Disposition: inline; filename="'.basename($file).'"');
 			}
-			readfile($file);
-		}else{
+				readfile($file);
+			} else {
 			print "File does not exists!";
 		}
 	}
