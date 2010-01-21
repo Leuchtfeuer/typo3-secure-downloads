@@ -203,7 +203,10 @@ class tx_nawsecuredl_output {
 					case '.swf':
 						$contenttypedatei='application/x-shockwave-flash';
 						break;
-
+					case '.htm':
+					case '.html':
+ 						$contenttypedatei = 'text/html';
+ 						break;
 					default:
 						$contenttypedatei='application/octet-stream';
 						break;
