@@ -28,6 +28,9 @@
 	* added logging of filesize
 	* added backend module for admins to display traffic usage by time and user
 
+2009-05-29 Dietrich Heise  <typo3-ext(at)naw.info>
+	* fixed hooks
+
 2008-11-28 Dietrich Heise  <typo3-ext(at)naw.info>
 	* added parsing for JavaScript window.open (vHWin=window.open)
 
