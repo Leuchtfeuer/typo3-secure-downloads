@@ -288,11 +288,11 @@ class tx_nawsecuredl_output {
 
 			if (is_null($this->intLogId)) {
 				$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_nawsecuredl_counter', $data_array);
+				$this->intLogId = intval($GLOBALS['TYPO3_DB']->sql_insert_id());
 			} else {
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_nawsecuredl_counter', '`uid`='.$this->intLogId, $data_array);
 			}
 
-			$this->intLogId = intval($GLOBALS['TYPO3_DB']->sql_insert_id());
 		}
 	}
 
