@@ -128,8 +128,16 @@ class tx_nawsecuredl {
 		$data = $this->feuser.rawurldecode($element).$timeout;
 		$hash = hash_hmac('md5', $data, $key);
 
-		//return $path_and_file_to_secure.'?u='.$this->feuser.'&amp;file='.$element.'&amp;t='.$timeout.'&amp;hash='.$hash;
-		return $path_and_file_to_secure.'&amp;u='.$this->feuser.'&amp;file='.$element.'&amp;t='.$timeout.'&amp;hash='.$hash;
+		$returnPath = $path_and_file_to_secure.'&amp;u='.$this->feuser.'&amp;file='.$element.'&amp;t='.$timeout.'&amp;hash='.$hash;
+
+		// Hook for makeSecure:
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl.php']['makeSecure'])) {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl.php']['makeSecure'] as $_funcRef)   {
+				$returnPath = t3lib_div::callUserFunction($_funcRef,$returnPath,$this);
+			}
+		}
+
+		return $returnPath;
 	}
 
 	function modifyfiletypes($string){
