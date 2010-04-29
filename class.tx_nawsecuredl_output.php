@@ -36,6 +36,8 @@ class tx_nawsecuredl_output {
 
 	protected $arrExtConf = array();
 
+	protected $intLogId = null;
+
 	/**
 	 * The init Function, to check the access rights
 	 *
@@ -94,7 +96,7 @@ class tx_nawsecuredl_output {
 	 *
 	 * @param data $file
 	 */
-	function fileOutput($file){
+	protected function fileOutput($file){
 
 		$file = PATH_site.'/'.$this->file;
 
@@ -108,24 +110,23 @@ class tx_nawsecuredl_output {
 
 		if (file_exists($file)){
 
-			if (!$this->arrExtConf['logOnlyIfComplete']) {
-				$this->logDownload();
-			}
+			$this->logDownload(0);
 
+			$intFilesize = filesize($file);
 			// files bigger than 32MB are now 'application/octet-stream' by default (getimagesize memory_limit problem)
-			if (filesize($file)<1024*1024*32){
-				$bildinfos=@getimagesize($file);
-				$bildtypnr=$bildinfos[2];
+			if ($intFilesize < 1024*1024*32){
+				$bildinfos = @getimagesize($file);
+				$bildtypnr = $bildinfos[2];
 			}
 
-			$contenttype[1]='image/gif';
-			$contenttype[2]='image/jpeg';
-			$contenttype[3]='image/png';
+			$contenttype[1] = 'image/gif';
+			$contenttype[2] = 'image/jpeg';
+			$contenttype[3] = 'image/png';
 
-			$contenttypedatei='';
-			$contenttypedatei=$contenttype[$bildtypnr];
+			$contenttypedatei = '';
+			$contenttypedatei = $contenttype[$bildtypnr];
 
-			if ($contenttypedatei=='') // d.h. wenn noch nicht gesetzt:
+			if ($contenttypedatei == '') // d.h. wenn noch nicht gesetzt:
 			/* try to get the filetype from the fileending */
 			{
 				$endigung=strtolower(strrchr($file,'.'));
@@ -141,7 +142,6 @@ class tx_nawsecuredl_output {
 				}
 
 				switch(strtolower($endigung)){
-
 
 					case '.pps':
 						$contenttypedatei='application/vnd.ms-powerpoint';
@@ -227,6 +227,8 @@ class tx_nawsecuredl_output {
 			header("Expires: 0"); // set expiration time
 			header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 			header('Content-Type: '.$contenttypedatei);
+			header('Content-Length: '.$intFilesize);
+
 			if ($forcedownload == true){
 				header('Content-Disposition: attachment; filename="'.basename($file).'"');
 			}else{
@@ -252,8 +254,9 @@ class tx_nawsecuredl_output {
 			}
 
 			// make sure we can detect an aborted connection, call flush
+			ob_flush();
 			flush();
-			if ($this->arrExtConf['logOnlyIfComplete'] && !connection_aborted()) {
+			if (!connection_aborted()) {
 				$this->logDownload();
 			}
 
@@ -268,22 +271,37 @@ class tx_nawsecuredl_output {
 	 *
 	 * @return void
 	 */
-	function logDownload(){
-		if (!$this->arrExtConf['log']){ // no logging
-			return;
+	protected function logDownload($intFileSize = null)
+	{
+		if ($this->isLoggingEnabled()) {
+
+			if (is_null($intFileSize)) {
+				$intFileSize = @filesize($this->file);
+			}
+
+			$data_array = array (
+				'tstamp' => time(),
+				'file_name' => $this->file,
+				'file_size' => $intFileSize,
+				'user_id' => intval($this->feUserObj->user['uid']),
+			);
+
+			if (is_null($this->intLogId)) {
+				$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_nawsecuredl_counter', $data_array);
+			} else {
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_nawsecuredl_counter', '`uid`='.$this->intLogId, $data_array);
+			}
+
+			$this->intLogId = intval($GLOBALS['TYPO3_DB']->sql_insert_id());
 		}
-
-		$insert_array = array (
-			'tstamp' => time(),
-			'file_name' => $this->file,
-			'file_size' => @filesize($this->file),
-			'user_id' => intval($this->feUserObj->user['uid']),
-		);
-
-		$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_nawsecuredl_counter',$insert_array);
 	}
 
 
+	/**
+	 * Returns the configuration array
+	 *
+	 * @return array
+	 */
 	protected function GetExtConf()
 	{
 		static $arrExtConf=array();
@@ -300,23 +318,38 @@ class tx_nawsecuredl_output {
 	 * be transferred. This function mitigates this problem.
 	 *
 	 * @param string $filename
+	 * @return bool
 	 */
-	protected function readfile_chunked($filename) {
-		$chunksize = 1*(1024*1024); // how many bytes per chunk
+	protected function readfile_chunked($filename)
+	{
+		$chunksize = intval($this->arrExtConf['outputChunkSize']); // how many bytes per chunk
 		$timeout = ini_get('max_execution_time');
 		$buffer = '';
+		$bytes_sent = 0;
 		$handle = fopen($filename, 'rb');
 		if ($handle === false) {
 			return false;
 		}
-		while (!feof($handle)) {
+		while (!feof($handle) && (!connection_aborted()) ) {
 			set_time_limit($timeout);
 			$buffer = fread($handle, $chunksize);
 			print $buffer;
+			$bytes_sent += $chunksize;
 			ob_flush();
 			flush();
+			$this->logDownload($bytes_sent);
 		}
 		return fclose($handle);
+	}
+
+	/**
+	 * Checks if logging has been enabled in configuration
+	 *
+	 * @return bool
+	 */
+	protected function isLoggingEnabled()
+	{
+		return (bool)$this->arrExtConf['log'];
 	}
 
 }
