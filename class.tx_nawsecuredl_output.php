@@ -96,7 +96,7 @@ class tx_nawsecuredl_output {
 	 *
 	 * @param data $file
 	 */
-	protected function fileOutput($file){
+	public function fileOutput($file){
 
 		$file = PATH_site.'/'.$this->file;
 
