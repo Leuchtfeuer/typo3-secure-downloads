@@ -23,4 +23,8 @@ debug = 0
 log = 0
 
 # cat=basic; type=boolean; label = Log only if file transfer completed
-logifcomplete = 0
+logOnlyIfComplete = 0
+
+# cat=basic; type=string; label=outputFunction:PHP function which is used to deliver the secured files (one of readfile, readfile_chunked, fpassthru)
+outputFunction = readfile_chunked
+

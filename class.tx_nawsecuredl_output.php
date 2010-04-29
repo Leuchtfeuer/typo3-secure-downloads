@@ -88,6 +88,7 @@ class tx_nawsecuredl_output {
 		}
 	}
 
+
 	/**
 	 * Output the requested file
 	 *
@@ -107,7 +108,7 @@ class tx_nawsecuredl_output {
 
 		if (file_exists($file)){
 
-			if (!$this->arrExtConf['logifcomplete']) {
+			if (!$this->arrExtConf['logOnlyIfComplete']) {
 				$this->logDownload();
 			}
 
@@ -155,7 +156,7 @@ class tx_nawsecuredl_output {
 						break;
 						##### Microsoft Excel Dateien
 
-					//TODO: add MS-Office 2007 XML-filetypes
+						//TODO: add MS-Office 2007 XML-filetypes
 
 					case '.jpeg':
 						$contenttypedatei='image/jpeg';
@@ -205,8 +206,8 @@ class tx_nawsecuredl_output {
 						break;
 					case '.htm':
 					case '.html':
- 						$contenttypedatei = 'text/html';
- 						break;
+						$contenttypedatei = 'text/html';
+						break;
 					default:
 						$contenttypedatei='application/octet-stream';
 						break;
@@ -232,15 +233,27 @@ class tx_nawsecuredl_output {
 				header('Content-Disposition: inline; filename="'.basename($file).'"');
 			}
 
-			if ($this->suhosin_function_exists('readfile')) {
-				readfile($file);
-			} else {
-				//TODO: check if this works in all cases
-				fpassthru (fopen ( $file, 'rb' ));
+			switch ($this->arrExtConf['outputFunction']) {
+				case 'readfile_chunked':
+					$this->readfile_chunked($file);
+				break;
+
+				case 'fpassthru':
+					$handle = fopen($file, 'rb');
+					fpassthru($handle);
+					fclose($handle);
+				break;
+
+				case 'readfile':
+					//fallthrough, this is the default case
+				default:
+					readfile($file);
+				break;
 			}
 
+			// make sure we can detect an aborted connection, call flush
 			flush();
-			if ($this->arrExtConf['logifcomplete'] && !connection_aborted()) {
+			if ($this->arrExtConf['logOnlyIfComplete'] && !connection_aborted()) {
 				$this->logDownload();
 			}
 
@@ -259,32 +272,6 @@ class tx_nawsecuredl_output {
 		if (!$this->arrExtConf['log']){ // no logging
 			return;
 		}
-/*
-			'pid' => tx_dam_db::getPidList(),
-			'tstamp' => intval($addInfo['tstamp'])? intval($addInfo['tstamp']) : $time,
-			'crdate' => intval($addInfo['crdate'])? intval($addInfo['crdate']) : $time,
-			'cruser_id' => intval($addInfo['cruser_id']),
-
-			'file_id' => intval($info['uid']),
-			'file_name' => $info['file_name'],
-			'file_path' => $info['file_path'],
-			'file_type' => $info['file_type'],
-			'media_type' => $info['media_type'],
-			'file_size' => $info['file_size'],
-
-			'bytes_downloaded' => ($bytes_downloaded===true ? $info['file_size'] : intval($bytes_downloaded)),
-			'protected' => $protected ? 1 : 0,
-
-			'host' => $info['host'],
-			'user_id' => $info['user_id'],
-			'user_name' => $info['user_name'],
-			'user_group' => $info['user_group'],
-			'page_id' => $info['page_id'],
-
-			'app_id' => $this->app_id,
-			'sitetitle' => $this->sitetitle,
-			'typo3_mode' => TYPO3_MODE,
-*/
 
 		$insert_array = array (
 			'tstamp' => time(),
@@ -309,22 +296,27 @@ class tx_nawsecuredl_output {
 	}
 
 	/**
-	 * Chekcs if a function is deactivated in php.ini
+	 * In some cases php needs the filesize as php_memory, so big files cannot
+	 * be transferred. This function mitigates this problem.
 	 *
-	 * @param $func string
-	 * @return bool
+	 * @param string $filename
 	 */
-	private function suhosin_function_exists($funcName) {
-		if (extension_loaded('suhosin')) {
-			$suhosinBlacklist = @ini_get("suhosin.executor.func.blacklist");
-			if (empty($suhosinBlacklist) == false) {
-				$suhosinBlacklist = explode(',', $suhosinBlacklist);
-				$suhosinBlacklist = array_map('trim', $suhosinBlacklist);
-				$suhosinBlacklist = array_map('strtolower', $suhosinBlacklist);
-				return (function_exists($funcName) == true && array_search($funcName, $suhosinBlacklist) === false);
-			}
+	protected function readfile_chunked($filename) {
+		$chunksize = 1*(1024*1024); // how many bytes per chunk
+		$timeout = ini_get('max_execution_time');
+		$buffer = '';
+		$handle = fopen($filename, 'rb');
+		if ($handle === false) {
+			return false;
 		}
-		return function_exists($funcName);
+		while (!feof($handle)) {
+			set_time_limit($timeout);
+			$buffer = fread($handle, $chunksize);
+			print $buffer;
+			ob_flush();
+			flush();
+		}
+		return fclose($handle);
 	}
 
 }
