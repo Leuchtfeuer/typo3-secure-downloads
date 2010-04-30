@@ -99,7 +99,7 @@ class tx_nawsecuredl_output {
 	 */
 	public function fileOutput(){
 
-		$file = t3lib_div::getFileAbsFileName($this->file);
+		$file = t3lib_div::getFileAbsFileName($this->removeLeadingSlash($this->file));
 
 		// Hook for pre-output:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['preOutput'])) {
@@ -353,6 +353,17 @@ class tx_nawsecuredl_output {
 	protected function isLoggingEnabled()
 	{
 		return (bool)$this->arrExtConf['log'];
+	}
+
+	/**
+	 * Removes a possible leading slash from a string
+	 *
+	 * @param string
+	 * @return string
+	 */
+	protected function removeLeadingSlash($strValue)
+	{
+		return preg_replace('/^\//', '', $strValue);
 	}
 
 }
