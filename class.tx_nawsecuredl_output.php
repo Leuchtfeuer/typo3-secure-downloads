@@ -36,7 +36,9 @@ class tx_nawsecuredl_output {
 
 	protected $arrExtConf = array();
 
-	protected $intLogId = null;
+	protected $intFileSize;
+
+	protected $intLogId;
 
 	/**
 	 * The init Function, to check the access rights
@@ -44,7 +46,6 @@ class tx_nawsecuredl_output {
 	 * @return void
 	 */
 	function init(){
-
 		$this->arrExtConf = $this->GetExtConf();
 
 		$this->u = intval(t3lib_div::_GP('u'));
@@ -96,9 +97,9 @@ class tx_nawsecuredl_output {
 	 *
 	 * @param data $file
 	 */
-	public function fileOutput($file){
+	public function fileOutput(){
 
-		$file = PATH_site.'/'.$this->file;
+		$file = t3lib_div::getFileAbsFileName($this->file);
 
 		// Hook for pre-output:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['preOutput'])) {
@@ -110,11 +111,12 @@ class tx_nawsecuredl_output {
 
 		if (file_exists($file)){
 
+			$this->intFileSize = filesize($file);
+
 			$this->logDownload(0);
 
-			$intFilesize = filesize($file);
 			// files bigger than 32MB are now 'application/octet-stream' by default (getimagesize memory_limit problem)
-			if ($intFilesize < 1024*1024*32){
+			if ($this->intFileSize < 1024*1024*32){
 				$bildinfos = @getimagesize($file);
 				$bildtypnr = $bildinfos[2];
 			}
@@ -227,7 +229,7 @@ class tx_nawsecuredl_output {
 			header("Expires: 0"); // set expiration time
 			header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 			header('Content-Type: '.$contenttypedatei);
-			header('Content-Length: '.$intFilesize);
+			header('Content-Length: '.$this->intFileSize);
 
 			if ($forcedownload == true){
 				header('Content-Disposition: attachment; filename="'.basename($file).'"');
@@ -235,7 +237,8 @@ class tx_nawsecuredl_output {
 				header('Content-Disposition: inline; filename="'.basename($file).'"');
 			}
 
-			switch ($this->arrExtConf['outputFunction']) {
+			$strOutputFunction = trim($this->arrExtConf['outputFunction']);
+			switch ($strOutputFunction) {
 				case 'readfile_chunked':
 					$this->readfile_chunked($file);
 				break;
@@ -256,7 +259,7 @@ class tx_nawsecuredl_output {
 			// make sure we can detect an aborted connection, call flush
 			ob_flush();
 			flush();
-			if (!connection_aborted()) {
+			if (!connection_aborted() AND $strOutputFunction !== 'readfile_chunked') {
 				$this->logDownload();
 			}
 
@@ -276,7 +279,7 @@ class tx_nawsecuredl_output {
 		if ($this->isLoggingEnabled()) {
 
 			if (is_null($intFileSize)) {
-				$intFileSize = @filesize($this->file);
+				$intFileSize = $this->intFileSize;
 			}
 
 			$data_array = array (
@@ -337,7 +340,7 @@ class tx_nawsecuredl_output {
 			$bytes_sent += $chunksize;
 			ob_flush();
 			flush();
-			$this->logDownload($bytes_sent);
+			$this->logDownload(t3lib_div::intInRange($bytes_sent, 0, $this->intFileSize));
 		}
 		return fclose($handle);
 	}
@@ -356,7 +359,7 @@ class tx_nawsecuredl_output {
 
 $securedl = new tx_nawsecuredl_output();
 $securedl->init();
-$securedl->fileOutput(rawurldecode($securedl->file));
+$securedl->fileOutput();
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php'])	{
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']);

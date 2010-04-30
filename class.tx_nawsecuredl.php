@@ -125,10 +125,11 @@ class tx_nawsecuredl {
 			$timeout =  $GLOBALS['TSFE']->page['cache_timeout'] + time() + $cachetimeadd;
 		}
 
-		$data = $this->feuser.rawurldecode($element).$timeout;
+		$data = $this->feuser.$element.$timeout;
 		$hash = hash_hmac('md5', $data, $key);
 
-		$returnPath = $path_and_file_to_secure.'&amp;u='.$this->feuser.'&amp;file='.$element.'&amp;t='.$timeout.'&amp;hash='.$hash;
+		$file = rawurlencode($element);
+		$returnPath = $path_and_file_to_secure.'&amp;u='.$this->feuser.'&amp;file='.$file.'&amp;t='.$timeout.'&amp;hash='.$hash;
 
 		// Hook for makeSecure:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl.php']['makeSecure'])) {

@@ -23,7 +23,7 @@ debug = 0
 log = 0
 
 # cat=basic; type=string; label = outputFunction:PHP function which is used to deliver the secured files (one of readfile, readfile_chunked, fpassthru)
-outputFunction = readfile_chunked
+outputFunction = readfile
 
 # cat=basic; type=int; label = outputChunkSize:Size of chunks to be deliverd in one go (only relevant if readfile_chunked is used) (default: 1048576 Bytes)
 outputChunkSize = 1048576
