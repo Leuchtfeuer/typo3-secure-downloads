@@ -3,7 +3,7 @@
 ########################################################################
 # Extension Manager/Repository config file for ext: "naw_securedl"
 #
-# Auto generated 30-04-2010 13:31
+# Auto generated 30-04-2010 14:09
 #
 # Manual updates:
 # Only the data in the array - anything else is removed by next write.
@@ -15,8 +15,8 @@ $EM_CONF[$_EXTKEY] = array(
 	'description' => '"Secure Download": Apply TYPO3 access rights to ALL file assets (PDFs, TGZs or JPGs etc. - configurable) - protect them from direct access.',
 	'category' => 'fe',
 	'shy' => 0,
-	'version' => '1.4.0',
-	'dependencies' => '',
+	'version' => '1.4.1',
+	'dependencies' => 'cms',
 	'conflicts' => '',
 	'priority' => '',
 	'loadOrder' => '',
@@ -37,7 +37,7 @@ $EM_CONF[$_EXTKEY] = array(
 			'cms' => '',
 			'php' => '5.2.0-5.2.99',
 			'typo3' => '4.2.0-4.4.99',
-),
+		),
 		'conflicts' => array(
 		),
 		'suggests' => array(
