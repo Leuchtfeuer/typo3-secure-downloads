@@ -109,7 +109,7 @@ class tx_nawsecuredl_output {
 			}
 		}
 
-		if (file_exists($file)){
+		if (file_exists($file)) {
 
 			$this->intFileSize = filesize($file);
 
@@ -225,9 +225,9 @@ class tx_nawsecuredl_output {
 			}
 
 
-			header("Pragma: private");
-			header("Expires: 0"); // set expiration time
-			header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+			header('Pragma: private');
+			header('Expires: 0'); // set expiration time
+			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 			header('Content-Type: '.$contenttypedatei);
 			header('Content-Length: '.$this->intFileSize);
 
@@ -265,7 +265,7 @@ class tx_nawsecuredl_output {
 
 
 		} else {
-			print "File does not exists!";
+			print 'File does not exists!';
 		}
 	}
 
