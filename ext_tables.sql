@@ -12,7 +12,7 @@ CREATE TABLE tx_nawsecuredl_counter (
     file_type varchar(4) DEFAULT '' NOT NULL,
     media_type tinyint(4) unsigned DEFAULT '0' NOT NULL,
     file_name text NOT NULL,
-    file_size bigint unsigned DEFAULT '0' NOT NULL,
+    file_size bigint(32) unsigned DEFAULT '0' NOT NULL,
     bytes_downloaded int(11) unsigned DEFAULT '0' NOT NULL,
     protected varchar(30) DEFAULT '' NOT NULL,
     host varchar(30) DEFAULT '' NOT NULL,
