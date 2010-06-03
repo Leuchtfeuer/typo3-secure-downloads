@@ -1,4 +1,26 @@
 <?php
+/***************************************************************
+*  Copyright notice
+*
+*  (c) 2009 Helmut Hummel <typo3-ext(at)naw.info>
+*  All rights reserved
+*
+*  This script is part of the TYPO3 project. The TYPO3 project is
+*  free software; you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation; either version 2 of the License, or
+*  (at your option) any later version.
+*
+*  The GNU General Public License can be found at
+*  http://www.gnu.org/copyleft/gpl.html.
+*
+*  This script is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  This copyright notice MUST APPEAR in all copies of the script!
+***************************************************************/
 /**
  *
  *
@@ -6,6 +28,41 @@
  * @author hummel
  *
  */
+
+/* Usage Example
+
+$tb = new myTable;
+
+// set up the style of the table... only needed if you don't like the defaults
+// You could setup include files for each style of table you need and just include
+// the particular style you want here.
+$tb->numCols = 3;     // Required
+$tb->tableWidth = "90%";
+$tb->tablestyle = "background: #000000;";
+$tb->rowLightStyle = "background: #FFFFFF; color: #000000; font-size: 12px;";
+$tb->rowDarkStyle = "background: #EBEBEB; color: #000000; font-size: 12px;";
+$tb->rowHighlightStyle = "background: #FFFF99; color: #000000; font-size: 12px;";
+$tb->cellStyle = "";
+$tb->cellspacing = 1;
+$tb->cellpadding = 1;
+$tb->headings = array("Item","Category", "Quantity");    // Required
+
+$newRow = array("20x20 Tent","Tents","5");
+$tb->addRow($newRow);
+
+$newRow = array("8ft Table", "Tables", "15");
+$tb->addRow($newRow);
+
+$newrow = array("Silver Chair", "Chairs", "300");
+$tb->addRow($newRow);
+
+// I think the above method reads easier than the following esspecially if
+// you are using a lot of variables
+// $tb->addRow( array("20x20 Tent","Tents","5") );
+
+$tb->displayTable();
+*/
+
 class tx_nawsecuredl_table {
 
 	var $numCols;
@@ -113,37 +170,9 @@ class tx_nawsecuredl_table {
 	}
 }
 
-/* Usage Example
 
-$tb = new myTable;
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/naw_securedl/modLog/class.tx_nawsecuredl_table.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/naw_securedl/modLog/class.tx_nawsecuredl_table.php']);
+}
 
-// set up the style of the table... only needed if you don't like the defaults
-// You could setup include files for each style of table you need and just include
-// the particular style you want here.
-$tb->numCols = 3;     // Required
-$tb->tableWidth = "90%";
-$tb->tablestyle = "background: #000000;";
-$tb->rowLightStyle = "background: #FFFFFF; color: #000000; font-size: 12px;";
-$tb->rowDarkStyle = "background: #EBEBEB; color: #000000; font-size: 12px;";
-$tb->rowHighlightStyle = "background: #FFFF99; color: #000000; font-size: 12px;";
-$tb->cellStyle = "";
-$tb->cellspacing = 1;
-$tb->cellpadding = 1;
-$tb->headings = array("Item","Category", "Quantity");    // Required
-
-$newRow = array("20x20 Tent","Tents","5");
-$tb->addRow($newRow);
-
-$newRow = array("8ft Table", "Tables", "15");
-$tb->addRow($newRow);
-
-$newrow = array("Silver Chair", "Chairs", "300");
-$tb->addRow($newRow);
-
-// I think the above method reads easier than the following esspecially if
-// you are using a lot of variables
-// $tb->addRow( array("20x20 Tent","Tents","5") );
-
-$tb->displayTable();
-*/
 ?>
