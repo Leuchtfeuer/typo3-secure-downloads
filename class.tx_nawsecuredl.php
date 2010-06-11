@@ -125,8 +125,8 @@ class tx_nawsecuredl {
 			$timeout =  $GLOBALS['TSFE']->page['cache_timeout'] + time() + $cachetimeadd;
 		}
 
-		// $element is the URL which is already urlencoded by TYPO3
-		// Since we check the hash in before output on the decoded filename we must decode it here!
+		// $element contains the URL which is already urlencoded by TYPO3.
+		// Since we check the hash in the output script using the decoded filename we must decode it here also!
 		$data = $this->feuser.rawurldecode($element).$timeout;
 		$hash = hash_hmac('md5', $data, $key);
 
