@@ -125,10 +125,12 @@ class tx_nawsecuredl {
 			$timeout =  $GLOBALS['TSFE']->page['cache_timeout'] + time() + $cachetimeadd;
 		}
 
-		$data = $this->feuser.$element.$timeout;
+		// $element is the URL which is already urlencoded by TYPO3
+		// Since we check the hash in before output on the decoded filename we must decode it here!
+		$data = $this->feuser.rawurldecode($element).$timeout;
 		$hash = hash_hmac('md5', $data, $key);
 
-		$file = rawurlencode($element);
+		$file = $element;
 		$returnPath = $path_and_file_to_secure.'&amp;u='.$this->feuser.'&amp;file='.$file.'&amp;t='.$timeout.'&amp;hash='.$hash;
 
 		// Hook for makeSecure:
