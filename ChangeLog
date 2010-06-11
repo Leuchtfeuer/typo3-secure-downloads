@@ -1,7 +1,9 @@
-(add new changes on top of this file)
+2010-06-11 Helmut Hummel  <typo3-ext(at)naw.info>
+	* version 1.4.2
+	* fix urlencode regression bug introduced in 1.4.1 (Thanks to Felix Nagel for reporting)
 
 2010-04-29 Helmut Hummel  <typo3-ext(at)naw.info>
-	* version 1.4.0
+	* version 1.4.1
 	* add hook requested by Marco Huber
 	* add new possibilty to output the files in chunks
 	* make file output method configurable
