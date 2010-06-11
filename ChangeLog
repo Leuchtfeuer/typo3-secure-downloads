@@ -1,6 +1,6 @@
 2010-06-11 Helmut Hummel  <typo3-ext(at)naw.info>
 	* version 1.4.2
-	* fix urlencode regression bug introduced in 1.4.1 (Thanks to Felix Nagel for reporting)
+	* fix urlencode regression bug introduced in 1.4.1 (Thanks to Felix Nagel)
 
 2010-04-29 Helmut Hummel  <typo3-ext(at)naw.info>
 	* version 1.4.1
