@@ -1,3 +1,9 @@
+2010-11-10 Helmut Hummel  <typo3-ext(at)naw.info>
+	* version 1.4.3
+	* use t3lib_div::hmac instead of php native function to make use of a fallback
+	  if hash_hmac is not present (thanks to Jan Wulff)
+	* Fix XCLASS inclusion in class.tx_nawsecuredl_output.php (thanks to Jan Wulff)
+
 2010-06-11 Helmut Hummel  <typo3-ext(at)naw.info>
 	* version 1.4.2
 	* fix urlencode regression bug introduced in 1.4.1 (Thanks to Felix Nagel)
