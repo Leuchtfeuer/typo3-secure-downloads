@@ -100,7 +100,6 @@ class tx_nawsecuredl {
 	function makeSecure($element){
 		//header("Content-type: text/css; charset=UTF-8");
 
-		$key = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
 		if ($GLOBALS['TSFE']->fe_user->user['uid']){
 			$this->feuser = $GLOBALS['TSFE']->fe_user->user['uid'];
 		}else{
@@ -128,7 +127,7 @@ class tx_nawsecuredl {
 		// $element contains the URL which is already urlencoded by TYPO3.
 		// Since we check the hash in the output script using the decoded filename we must decode it here also!
 		$data = $this->feuser.rawurldecode($element).$timeout;
-		$hash = hash_hmac('md5', $data, $key);
+		$hash = t3lib_div::hmac($data);
 
 		$file = $element;
 		$returnPath = $path_and_file_to_secure.'&amp;u='.$this->feuser.'&amp;file='.$file.'&amp;t='.$timeout.'&amp;hash='.$hash;
@@ -168,7 +167,7 @@ class tx_nawsecuredl {
 }
 
 // Include extension?
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl.php']);
 }
 ?>

@@ -56,10 +56,9 @@ class tx_nawsecuredl_output {
 		$this->hash = t3lib_div::_GP('hash');
 		$this->t = t3lib_div::_GP('t');
 		$this->file = t3lib_div::_GP('file');
-		$key = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
 
 		$this->data = $this->u.$this->file.$this->t;
-		$this->checkhash = hash_hmac('md5', $this->data, $key);
+		$this->checkhash = t3lib_div::hmac($this->data);
 
 		// Hook for init:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['init'])) {
