@@ -142,84 +142,19 @@ class tx_nawsecuredl_output {
 					}
 				}
 
-				switch(strtolower($endigung)){
-
-					case '.pps':
-						$contenttypedatei='application/vnd.ms-powerpoint';
-						break;
-						##### Microsoft Powerpoint Dateien
-					case '.doc':
-						$contenttypedatei='application/msword';
-						break;
-						##### Microsoft Word Dateien
-					case '.xls':
-						$contenttypedatei='application/vnd.ms-excel';
-						break;
-						##### Microsoft Excel Dateien
-
-						//TODO: add MS-Office 2007 XML-filetypes
-
-					case '.jpeg':
-						$contenttypedatei='image/jpeg';
-						break;
-						##### JPEG-Dateien
-					case '.jpg':
-						$contenttypedatei='image/jpeg';
-						break;
-						##### JPEG-Dateien
-					case '.jpe':
-						$contenttypedatei='image/jpeg';
-						break;
-						##### JPEG-Dateien
-					case '.mpeg':
-						$contenttypedatei='video/mpeg';
-						break;
-						##### MPEG-Dateien
-					case '.mpg':
-						$contenttypedatei='video/mpeg';
-						break;
-						##### MPEG-Dateien
-					case '.mpe':
-						$contenttypedatei='video/mpeg';
-						break;
-						##### MPEG-Dateien
-					case '.mov':
-						$contenttypedatei='video/quicktime';
-						break;
-						##### Quicktime-Dateien
-					case '.avi':
-						$contenttypedatei='video/x-msvideo';
-						break;
-						##### Microsoft AVI-Dateien
-					case '.pdf':
-						$contenttypedatei='application/pdf';
-						break;
-					case '.svg':
-						$contenttypedatei='image/svg+xml';
-						break;
-						### Flash Video Files
-					case '.flv':
-						$contenttypedatei='video/x-flv';
-						break;
-						### Shockwave / Flash
-					case '.swf':
-						$contenttypedatei='application/x-shockwave-flash';
-						break;
-					case '.htm':
-					case '.html':
-						$contenttypedatei = 'text/html';
-						break;
-					default:
-						$contenttypedatei='application/octet-stream';
-						break;
-				}//end of switch Case structure
 			}
+
+			$contenttypedatei = $this->getMimeTypeByFileExtension($endigung);
 
 			// Hook for output:
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['output'])) {
-				$_params = array('pObj' => &$this);
+				$_params = array(
+					'pObj' => &$this,
+					'fileExtension' => $endigung,
+					'mimeType' => &$contenttypedatei,
+				);
 				foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['output'] as $_funcRef)   {
-					t3lib_div::callUserFunction($_funcRef,$_params,$this);
+					t3lib_div::callUserFunction($_funcRef, $_params, $this);
 				}
 			}
 
@@ -345,6 +280,169 @@ class tx_nawsecuredl_output {
 	}
 
 	/**
+	 * Looks up the mime type for a give file extension
+	 *
+	 * @param string $strFileExtension
+	 * @return string mime type
+	 */
+	protected function getMimeTypeByFileExtension($strFileExtension)
+	{
+		switch(strtolower($strFileExtension)){
+			// MS-Office filetypes
+			case '.pps':
+				$strMimeType = 'application/vnd.ms-powerpoint';
+				break;
+			case '.doc':
+				$strMimeType = 'application/msword';
+				break;
+			case '.xls':
+				$strMimeType = 'application/vnd.ms-excel';
+				break;
+			case '.docm':
+				$strMimeType = 'application/vnd.ms-word.document.macroEnabled.12';
+				break;
+			case '.docx':
+				$strMimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+				break;
+			case '.dotm':
+				$strMimeType = 'application/vnd.ms-word.template.macroEnabled.12';
+				break;
+			case '.dotx':
+				$strMimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.template';
+				break;
+			case '.ppsm':
+				$strMimeType = 'application/vnd.ms-powerpoint.slideshow.macroEnabled.12';
+				break;
+			case '.ppsx':
+				$strMimeType = 'application/vnd.openxmlformats-officedocument.presentationml.slideshow';
+				break;
+			case '.pptm':
+				$strMimeType = 'application/vnd.ms-powerpoint.presentation.macroEnabled.12';
+				break;
+			case '.pptx':
+				$strMimeType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+				break;
+			case '.xlsb':
+				$strMimeType = 'application/vnd.ms-excel.sheet.binary.macroEnabled.12';
+				break;
+			case '.xlsm':
+				$strMimeType = 'application/vnd.ms-excel.sheet.macroEnabled.12';
+				break;
+			case '.xlsx':
+				$strMimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+				break;
+			case '.xps':
+				$strMimeType = 'application/vnd.ms-xpsdocument';
+				break;
+
+			// Open-Office filetypes
+			case '.odt':
+				$strMimeType = 'application/vnd.oasis.opendocument.text';
+				break;
+			case '.ott':
+				$strMimeType = 'application/vnd.oasis.opendocument.text-template';
+				break;
+			case '.odg':
+				$strMimeType = 'application/vnd.oasis.opendocument.graphics';
+				break;
+			case '.otg':
+				$strMimeType = 'application/vnd.oasis.opendocument.graphics-template';
+				break;
+			case '.odp': $strMimeType = 'application/vnd.oasis.opendocument.presentation';
+				break;
+			case '.otp':
+				$strMimeType = 'application/vnd.oasis.opendocument.presentation-template';
+				break;
+			case '.ods':
+				$strMimeType = 'application/vnd.oasis.opendocument.spreadsheet';
+				break;
+			case '.ots':
+				$strMimeType = 'application/vnd.oasis.opendocument.spreadsheet-template';
+				break;
+			case '.odc':
+				$strMimeType = 'application/vnd.oasis.opendocument.chart';
+				break;
+			case '.otc':
+				$strMimeType = 'application/vnd.oasis.opendocument.chart-template';
+				break;
+			case '.odi':
+				$strMimeType = 'application/vnd.oasis.opendocument.image';
+				break;
+			case '.oti':
+				$strMimeType = 'application/vnd.oasis.opendocument.image-template';
+				break;
+			case '.odf':
+				$strMimeType = 'application/vnd.oasis.opendocument.formula';
+				break;
+			case '.otf':
+				$strMimeType = 'application/vnd.oasis.opendocument.formula-template';
+				break;
+			case '.odm':
+				$strMimeType = 'application/vnd.oasis.opendocument.text-master';
+				break;
+			case '.oth':
+				$strMimeType = 'application/vnd.oasis.opendocument.text-web';
+				break;
+
+			case '.jpeg':
+				$strMimeType = 'image/jpeg';
+				break;
+				##### JPEG-Dateien
+			case '.jpg':
+				$strMimeType = 'image/jpeg';
+				break;
+				##### JPEG-Dateien
+			case '.jpe':
+				$strMimeType = 'image/jpeg';
+				break;
+				##### JPEG-Dateien
+			case '.mpeg':
+				$strMimeType = 'video/mpeg';
+				break;
+				##### MPEG-Dateien
+			case '.mpg':
+				$strMimeType = 'video/mpeg';
+				break;
+				##### MPEG-Dateien
+			case '.mpe':
+				$strMimeType = 'video/mpeg';
+				break;
+				##### MPEG-Dateien
+			case '.mov':
+				$strMimeType = 'video/quicktime';
+				break;
+				##### Quicktime-Dateien
+			case '.avi':
+				$strMimeType = 'video/x-msvideo';
+				break;
+				##### Microsoft AVI-Dateien
+			case '.pdf':
+				$strMimeType = 'application/pdf';
+				break;
+			case '.svg':
+				$strMimeType = 'image/svg+xml';
+				break;
+				### Flash Video Files
+			case '.flv':
+				$strMimeType = 'video/x-flv';
+				break;
+				### Shockwave / Flash
+			case '.swf':
+				$strMimeType = 'application/x-shockwave-flash';
+				break;
+			case '.htm':
+			case '.html':
+				$contenttypedatei = 'text/html';
+				break;
+			default:
+				$strMimeType = 'application/octet-stream';
+				break;
+		}//end of switch Case structure
+
+		return $strMimeType;
+	}
+
+	/**
 	 * Checks if logging has been enabled in configuration
 	 *
 	 * @return bool
@@ -367,11 +465,11 @@ class tx_nawsecuredl_output {
 
 }
 
-$securedl = new tx_nawsecuredl_output();
+$securedl = t3lib_div::makeInstance('tx_nawsecuredl_output');
 $securedl->init();
 $securedl->fileOutput();
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php'])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']);
 }
 ?>
