@@ -26,8 +26,13 @@
  */
 class tx_nawsecuredl {
 
-
-	function parseFE(&$content,$pObj) {
+	/**
+	 * This method is called by the frontend rendering hook contentPostProc-output
+	 *
+	 * @param string $content
+	 * @param tslib_fe $pObj
+	 */
+	public function parseFE(&$content,$pObj) {
 		$content['pObj']->content = $this->parseContent($content['pObj']->content);
 	}
 
@@ -42,8 +47,6 @@ class tx_nawsecuredl {
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['naw_securedl']);
 		$rest = $i;
 
-		//while (preg_match('/(<[aA]|<[iI][mM][gG])+?\s[^>]*([hH][rR][eE][fF]|[sS][rR][cC])=(\"??)([^\" >]*?)\\3[^>]*>/siU', $i,$match)) {  // suchendes secured Verzeichnis
-		//while (preg_match('/(<[aA]|<[iI][mM][gG])+?.[^>]*([hH][rR][eE][fF]|[sS][rR][cC])=(\"??)([^\" >]*?)\\3[^>]*>/siU', $i,$match)) {  // suchendes secured Verzeichnis
 		$result = '';
 		while (preg_match('/(?i)(<a|<img)+?.[^>]*(href|src)=(\"??)([^\" >]*?)\\3[^>]*>/siU', $i,$match)) {  // suchendes secured Verzeichnis
 
@@ -57,7 +60,6 @@ class tx_nawsecuredl {
 				if ($this->extConf['debug'] == '1' || $this->extConf['debug'] == '3') debug(array('html-tag:'=>$tag));
 
 				// investigate the HTML-Tag...
-				//while (preg_match('/"((typo3temp|fileadmin|uploads).*?([pP][dD][fF]|[jJ][pP][eE]?[gG]|[gG][iI][fF]|[pP][nN][gG]))"/i', $tag,$match1)){
 				if (preg_match('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i', $tag,$match1)){
 
 					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i');
@@ -70,11 +72,9 @@ class tx_nawsecuredl {
 					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug($tagexp[1]);
 
 					$tag = $tagexp[0].$replace;
-					//$tag = $tagexp[0].$replace.$tagexp[1];
 					$tmp = $tagexp[1];
 
 					// search in the rest on the tag (e.g. for vHWin=window.open...)
-					//print_R('/\'(?:'.$this->modifiyregex($this->extConf['domain']).')?'.$this->modifiyregex($sitepath).'(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))\'/i');
 					if (preg_match('/\'(?:'.$this->modifiyregex($this->extConf['domain']).')?.*?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))\'/i', $tmp,$match1)){
 						$replace = $this->makeSecure($match1[1]);
 						$tagexp = explode ($match1[1], $tmp , 2 );
@@ -97,23 +97,15 @@ class tx_nawsecuredl {
 	 * @param	[type]		$element: ...
 	 * @return	[type]		...
 	 */
-	function makeSecure($element){
-		//header("Content-type: text/css; charset=UTF-8");
-
+	function makeSecure($element) {
 		if ($GLOBALS['TSFE']->fe_user->user['uid']){
 			$this->feuser = $GLOBALS['TSFE']->fe_user->user['uid'];
-		}else{
+		} else {
 			$this->feuser = 0;
 		}
 
-		//$securefilename = 'secure.php';
 		$securefilename = 'index.php?eID=tx_nawsecuredl';
 
-		//$tmp = explode(PATH_site,t3lib_extMgm::extPath('naw_securedl'),2);
-		//$pre_dir = dirname(t3lib_div::getIndpEnv('SCRIPT_NAME'));
-		//$pre_dir = str_replace('\\','/',$pre_dir);
-		//if ($pre_dir != '/') $pre_dir .= '/';
-		//$path_and_file_to_secure = $pre_dir.$tmp[1].$securefilename;
 		$path_and_file_to_secure = $securefilename;
 
 		$cachetimeadd = $this->extConf['cachetimeadd'];
