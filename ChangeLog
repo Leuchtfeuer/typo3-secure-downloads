@@ -1,3 +1,8 @@
+2010-11-18 Helmut Hummel  <typo3-ext(at)naw.info>
+	* Add MS-Office and OpenOffice mime types (thanks to Christian Bülter)
+	* add selected mime type to hook params to enable the hook to modify them
+	* use 3tlib_div::makeInstance instead of new in tx_nawsecuredl_output
+
 2010-11-10 Helmut Hummel  <typo3-ext(at)naw.info>
 	* version 1.4.3
 	* use t3lib_div::hmac instead of php native function to make use of a fallback
