@@ -21,17 +21,11 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
 /**
  * @author	Dietrich Heise <typo3-ext(at)naw.info>
+ * @author	Helmut Hummel <typo3-ext(at)naw.info>
  */
-
-
-// *******************************
-// Set error reporting
-// *******************************
-//error_reporting (E_ALL ^ E_NOTICE);
-
-
 class tx_nawsecuredl_output {
 
 	protected $arrExtConf = array();
@@ -57,7 +51,7 @@ class tx_nawsecuredl_output {
 		$this->t = t3lib_div::_GP('t');
 		$this->file = t3lib_div::_GP('file');
 
-		$this->data = $this->u.$this->file.$this->t;
+		$this->data = $this->u . $this->file . $this->t;
 		$this->checkhash = t3lib_div::hmac($this->data);
 
 		// Hook for init:
@@ -98,7 +92,7 @@ class tx_nawsecuredl_output {
 	 */
 	public function fileOutput(){
 
-		$file = t3lib_div::getFileAbsFileName($this->removeLeadingSlash($this->file));
+		$file = t3lib_div::getFileAbsFileName(ltrim($this->file, '/'));
 
 		// Hook for pre-output:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['preOutput'])) {
@@ -127,37 +121,33 @@ class tx_nawsecuredl_output {
 			$contenttypedatei = '';
 			$contenttypedatei = $contenttype[$bildtypnr];
 
-			if ($contenttypedatei == '') // d.h. wenn noch nicht gesetzt:
-			/* try to get the filetype from the fileending */
-			{
-				$endigung=strtolower(strrchr($file,'.'));
-				//alles ab dem letzten Punkt
+			if ($contenttypedatei === '') {
+				$endigung = $this->getFileExtensionByFilename($file);
 
-				if ($this->arrExtConf['forcedownload'] == 1){
-					$forcetypes = explode("|",$this->arrExtConf['forcedownloadtype']);
+				if ((bool)$this->arrExtConf['forcedownload'] === TRUE){
+					$forcetypes = t3lib_div::trimExplode("|", $this->arrExtConf['forcedownloadtype']);
 					if (is_array($forcetypes)){
-						if (in_array(substr($endigung, 1),$forcetypes)) {
+						if (in_array($endigung, $forcetypes)) {
 							$forcedownload = true;
 						}
 					}
 				}
 
+				$contenttypedatei = $this->getMimeTypeByFileExtension($endigung);
 			}
 
-			$contenttypedatei = $this->getMimeTypeByFileExtension($endigung);
-
 			// Hook for output:
+			// TODO: deprecate this hook?
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['output'])) {
 				$_params = array(
 					'pObj' => &$this,
-					'fileExtension' => $endigung,
+					'fileExtension' => '.' . $endigung, // Add leading dot for compatibility in this hook
 					'mimeType' => &$contenttypedatei,
 				);
 				foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['output'] as $_funcRef)   {
 					t3lib_div::callUserFunction($_funcRef, $_params, $this);
 				}
 			}
-
 
 			header('Pragma: private');
 			header('Expires: 0'); // set expiration time
@@ -166,9 +156,9 @@ class tx_nawsecuredl_output {
 			header('Content-Length: '.$this->intFileSize);
 
 			if ($forcedownload == true){
-				header('Content-Disposition: attachment; filename="'.basename($file).'"');
+				header('Content-Disposition: attachment; filename="' . basename($file).'"');
 			}else{
-				header('Content-Disposition: inline; filename="'.basename($file).'"');
+				header('Content-Disposition: inline; filename="' . basename($file).'"');
 			}
 
 			$strOutputFunction = trim($this->arrExtConf['outputFunction']);
@@ -190,13 +180,12 @@ class tx_nawsecuredl_output {
 				break;
 			}
 
-			// make sure we can detect an aborted connection, call flush
+				// make sure we can detect an aborted connection, call flush
 			ob_flush();
 			flush();
 			if (!connection_aborted() AND $strOutputFunction !== 'readfile_chunked') {
 				$this->logDownload();
 			}
-
 
 		} else {
 			print 'File does not exists!';
@@ -254,16 +243,16 @@ class tx_nawsecuredl_output {
 	 * In some cases php needs the filesize as php_memory, so big files cannot
 	 * be transferred. This function mitigates this problem.
 	 *
-	 * @param string $filename
+	 * @param string $strFileName
 	 * @return bool
 	 */
-	protected function readfile_chunked($filename)
+	protected function readfile_chunked($strFileName)
 	{
 		$chunksize = intval($this->arrExtConf['outputChunkSize']); // how many bytes per chunk
 		$timeout = ini_get('max_execution_time');
 		$buffer = '';
 		$bytes_sent = 0;
-		$handle = fopen($filename, 'rb');
+		$handle = fopen($strFileName, 'rb');
 		if ($handle === false) {
 			return false;
 		}
@@ -280,165 +269,208 @@ class tx_nawsecuredl_output {
 	}
 
 	/**
+	 * Extracts the file extension out of a complete file name.
+	 *
+	 * @param string $strFileName
+	 */
+	protected function getFileExtensionByFilename($strFileName)
+	{
+		return t3lib_div::strtolower(ltrim(strrchr($strFileName, '.'), '.'));
+	}
+
+	/**
 	 * Looks up the mime type for a give file extension
 	 *
-	 * @param string $strFileExtension
+	 * @param string $strFileExtension lowercase file extension
 	 * @return string mime type
 	 */
 	protected function getMimeTypeByFileExtension($strFileExtension)
 	{
-		switch(strtolower($strFileExtension)){
-			// MS-Office filetypes
-			case '.pps':
-				$strMimeType = 'application/vnd.ms-powerpoint';
-				break;
-			case '.doc':
-				$strMimeType = 'application/msword';
-				break;
-			case '.xls':
-				$strMimeType = 'application/vnd.ms-excel';
-				break;
-			case '.docm':
-				$strMimeType = 'application/vnd.ms-word.document.macroEnabled.12';
-				break;
-			case '.docx':
-				$strMimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-				break;
-			case '.dotm':
-				$strMimeType = 'application/vnd.ms-word.template.macroEnabled.12';
-				break;
-			case '.dotx':
-				$strMimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.template';
-				break;
-			case '.ppsm':
-				$strMimeType = 'application/vnd.ms-powerpoint.slideshow.macroEnabled.12';
-				break;
-			case '.ppsx':
-				$strMimeType = 'application/vnd.openxmlformats-officedocument.presentationml.slideshow';
-				break;
-			case '.pptm':
-				$strMimeType = 'application/vnd.ms-powerpoint.presentation.macroEnabled.12';
-				break;
-			case '.pptx':
-				$strMimeType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-				break;
-			case '.xlsb':
-				$strMimeType = 'application/vnd.ms-excel.sheet.binary.macroEnabled.12';
-				break;
-			case '.xlsm':
-				$strMimeType = 'application/vnd.ms-excel.sheet.macroEnabled.12';
-				break;
-			case '.xlsx':
-				$strMimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-				break;
-			case '.xps':
-				$strMimeType = 'application/vnd.ms-xpsdocument';
-				break;
+		$strMimeTypesArray = array(
 
-			// Open-Office filetypes
-			case '.odt':
-				$strMimeType = 'application/vnd.oasis.opendocument.text';
-				break;
-			case '.ott':
-				$strMimeType = 'application/vnd.oasis.opendocument.text-template';
-				break;
-			case '.odg':
-				$strMimeType = 'application/vnd.oasis.opendocument.graphics';
-				break;
-			case '.otg':
-				$strMimeType = 'application/vnd.oasis.opendocument.graphics-template';
-				break;
-			case '.odp': $strMimeType = 'application/vnd.oasis.opendocument.presentation';
-				break;
-			case '.otp':
-				$strMimeType = 'application/vnd.oasis.opendocument.presentation-template';
-				break;
-			case '.ods':
-				$strMimeType = 'application/vnd.oasis.opendocument.spreadsheet';
-				break;
-			case '.ots':
-				$strMimeType = 'application/vnd.oasis.opendocument.spreadsheet-template';
-				break;
-			case '.odc':
-				$strMimeType = 'application/vnd.oasis.opendocument.chart';
-				break;
-			case '.otc':
-				$strMimeType = 'application/vnd.oasis.opendocument.chart-template';
-				break;
-			case '.odi':
-				$strMimeType = 'application/vnd.oasis.opendocument.image';
-				break;
-			case '.oti':
-				$strMimeType = 'application/vnd.oasis.opendocument.image-template';
-				break;
-			case '.odf':
-				$strMimeType = 'application/vnd.oasis.opendocument.formula';
-				break;
-			case '.otf':
-				$strMimeType = 'application/vnd.oasis.opendocument.formula-template';
-				break;
-			case '.odm':
-				$strMimeType = 'application/vnd.oasis.opendocument.text-master';
-				break;
-			case '.oth':
-				$strMimeType = 'application/vnd.oasis.opendocument.text-web';
-				break;
 
-			case '.jpeg':
-				$strMimeType = 'image/jpeg';
-				break;
-				##### JPEG-Dateien
-			case '.jpg':
-				$strMimeType = 'image/jpeg';
-				break;
-				##### JPEG-Dateien
-			case '.jpe':
-				$strMimeType = 'image/jpeg';
-				break;
-				##### JPEG-Dateien
-			case '.mpeg':
-				$strMimeType = 'video/mpeg';
-				break;
-				##### MPEG-Dateien
-			case '.mpg':
-				$strMimeType = 'video/mpeg';
-				break;
-				##### MPEG-Dateien
-			case '.mpe':
-				$strMimeType = 'video/mpeg';
-				break;
-				##### MPEG-Dateien
-			case '.mov':
-				$strMimeType = 'video/quicktime';
-				break;
-				##### Quicktime-Dateien
-			case '.avi':
-				$strMimeType = 'video/x-msvideo';
-				break;
-				##### Microsoft AVI-Dateien
-			case '.pdf':
-				$strMimeType = 'application/pdf';
-				break;
-			case '.svg':
-				$strMimeType = 'image/svg+xml';
-				break;
-				### Flash Video Files
-			case '.flv':
-				$strMimeType = 'video/x-flv';
-				break;
-				### Shockwave / Flash
-			case '.swf':
-				$strMimeType = 'application/x-shockwave-flash';
-				break;
-			case '.htm':
-			case '.html':
-				$contenttypedatei = 'text/html';
-				break;
-			default:
-				$strMimeType = 'application/octet-stream';
-				break;
-		}//end of switch Case structure
+		);
 
+			// Read all additional MIME types from the EM configuration into the array $strAdditionalMimeTypesArray
+		if ($this->arrExtConf['additionalMimeTypes']) {
+				// Array with key/value pairs consisting of file extension (with dot in front) and mime type
+			$strAdditionalMimeTypesArray = array();
+			$strAdditionalFileExtension = '';
+			$strAdditionalMimeType = '';
+
+			$strAdditionalMimeTypePartsArray = t3lib_div::trimExplode(',', $this->arrExtConf['additionalMimeTypes'], TRUE);
+
+			foreach($strAdditionalMimeTypePartsArray as $strAdditionalMimeTypeItem) {
+				list($strAdditionalFileExtension, $strAdditionalMimeType) = t3lib_div::trimExplode('|', $strAdditionalMimeTypeItem);
+				if(!empty($strAdditionalFileExtension) && !empty($strAdditionalMimeType)) {
+					$strAdditionalFileExtension = t3lib_div::strtolower($strAdditionalFileExtension);
+					$strAdditionalMimeTypesArray[$strAdditionalFileExtension] = $strAdditionalMimeType;
+				}
+			}
+
+			unset($strAdditionalFileExtension);
+			unset($strAdditionalMimeType);
+		}
+
+		//TODO: Add hook to be able to manipulate and/or add mime types
+
+			// Check if an specific MIME type is configured for this file extension
+		if ($strAdditionalMimeTypesArray[$strFileExtension]) {
+			$strMimeType = $strAdditionalMimeTypesArray[$strFileExtension];
+		} else {
+			switch($strFileExtension){
+					// MS-Office filetypes
+				case '.pps':
+					$strMimeType = 'application/vnd.ms-powerpoint';
+					break;
+				case '.doc':
+					$strMimeType = 'application/msword';
+					break;
+				case '.xls':
+					$strMimeType = 'application/vnd.ms-excel';
+					break;
+				case '.docm':
+					$strMimeType = 'application/vnd.ms-word.document.macroEnabled.12';
+					break;
+				case '.docx':
+					$strMimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+					break;
+				case '.dotm':
+					$strMimeType = 'application/vnd.ms-word.template.macroEnabled.12';
+					break;
+				case '.dotx':
+					$strMimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.template';
+					break;
+				case '.ppsm':
+					$strMimeType = 'application/vnd.ms-powerpoint.slideshow.macroEnabled.12';
+					break;
+				case '.ppsx':
+					$strMimeType = 'application/vnd.openxmlformats-officedocument.presentationml.slideshow';
+					break;
+				case '.pptm':
+					$strMimeType = 'application/vnd.ms-powerpoint.presentation.macroEnabled.12';
+					break;
+				case '.pptx':
+					$strMimeType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+					break;
+				case '.xlsb':
+					$strMimeType = 'application/vnd.ms-excel.sheet.binary.macroEnabled.12';
+					break;
+				case '.xlsm':
+					$strMimeType = 'application/vnd.ms-excel.sheet.macroEnabled.12';
+					break;
+				case '.xlsx':
+					$strMimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+					break;
+				case '.xps':
+					$strMimeType = 'application/vnd.ms-xpsdocument';
+					break;
+
+					// Open-Office filetypes
+				case '.odt':
+					$strMimeType = 'application/vnd.oasis.opendocument.text';
+					break;
+				case '.ott':
+					$strMimeType = 'application/vnd.oasis.opendocument.text-template';
+					break;
+				case '.odg':
+					$strMimeType = 'application/vnd.oasis.opendocument.graphics';
+					break;
+				case '.otg':
+					$strMimeType = 'application/vnd.oasis.opendocument.graphics-template';
+					break;
+				case '.odp': $strMimeType = 'application/vnd.oasis.opendocument.presentation';
+					break;
+				case '.otp':
+					$strMimeType = 'application/vnd.oasis.opendocument.presentation-template';
+					break;
+				case '.ods':
+					$strMimeType = 'application/vnd.oasis.opendocument.spreadsheet';
+					break;
+				case '.ots':
+					$strMimeType = 'application/vnd.oasis.opendocument.spreadsheet-template';
+					break;
+				case '.odc':
+					$strMimeType = 'application/vnd.oasis.opendocument.chart';
+					break;
+				case '.otc':
+					$strMimeType = 'application/vnd.oasis.opendocument.chart-template';
+					break;
+				case '.odi':
+					$strMimeType = 'application/vnd.oasis.opendocument.image';
+					break;
+				case '.oti':
+					$strMimeType = 'application/vnd.oasis.opendocument.image-template';
+					break;
+				case '.odf':
+					$strMimeType = 'application/vnd.oasis.opendocument.formula';
+					break;
+				case '.otf':
+					$strMimeType = 'application/vnd.oasis.opendocument.formula-template';
+					break;
+				case '.odm':
+					$strMimeType = 'application/vnd.oasis.opendocument.text-master';
+					break;
+				case '.oth':
+					$strMimeType = 'application/vnd.oasis.opendocument.text-web';
+					break;
+
+					// Media file types
+				case '.jpeg':
+					$strMimeType = 'image/jpeg';
+					break;
+					##### JPEG-Dateien
+				case '.jpg':
+					$strMimeType = 'image/jpeg';
+					break;
+					##### JPEG-Dateien
+				case '.jpe':
+					$strMimeType = 'image/jpeg';
+					break;
+					##### JPEG-Dateien
+				case '.mpeg':
+					$strMimeType = 'video/mpeg';
+					break;
+					##### MPEG-Dateien
+				case '.mpg':
+					$strMimeType = 'video/mpeg';
+					break;
+					##### MPEG-Dateien
+				case '.mpe':
+					$strMimeType = 'video/mpeg';
+					break;
+					##### MPEG-Dateien
+				case '.mov':
+					$strMimeType = 'video/quicktime';
+					break;
+					##### Quicktime-Dateien
+				case '.avi':
+					$strMimeType = 'video/x-msvideo';
+					break;
+					##### Microsoft AVI-Dateien
+				case '.pdf':
+					$strMimeType = 'application/pdf';
+					break;
+				case '.svg':
+					$strMimeType = 'image/svg+xml';
+					break;
+					### Flash Video Files
+				case '.flv':
+					$strMimeType = 'video/x-flv';
+					break;
+					### Shockwave / Flash
+				case '.swf':
+					$strMimeType = 'application/x-shockwave-flash';
+					break;
+				case '.htm':
+				case '.html':
+					$contenttypedatei = 'text/html';
+					break;
+				default:
+					$strMimeType = 'application/octet-stream';
+					break;
+			}//end of switch Case structure
+		}
 		return $strMimeType;
 	}
 
@@ -451,18 +483,6 @@ class tx_nawsecuredl_output {
 	{
 		return (bool)$this->arrExtConf['log'];
 	}
-
-	/**
-	 * Removes a possible leading slash from a string
-	 *
-	 * @param string
-	 * @return string
-	 */
-	protected function removeLeadingSlash($strValue)
-	{
-		return preg_replace('/^\//', '', $strValue);
-	}
-
 }
 
 $securedl = t3lib_div::makeInstance('tx_nawsecuredl_output');

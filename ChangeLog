@@ -1,3 +1,6 @@
+2010-11-25 Helmut Hummel  <typo3-ext(at)naw.info>
+	* Possibility to add mime types in extension manager configuration (thanks to Ingmar Schlecht)
+
 2010-11-18 Helmut Hummel  <typo3-ext(at)naw.info>
 	* Add MS-Office and OpenOffice mime types (thanks to Christian Bülter)
 	* add selected mime type to hook params to enable the hook to modify them
