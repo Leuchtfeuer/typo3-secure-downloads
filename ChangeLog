@@ -1,3 +1,8 @@
+2010-02-25 Helmut Hummel  <typo3-ext(at)naw.info>
+	* Added workaround for UTF-8 filenames on Windows systems. This is a PHP bug and
+	  will only work for special characters in filenames, which are present in latin1 charset.
+	  See http://bugs.php.net/bug.php?id=46990 for details. (thanks to Freddy Kühne for reporting)
+
 2010-11-25 Helmut Hummel  <typo3-ext(at)naw.info>
 	* Possibility to add mime types in extension manager configuration (thanks to Ingmar Schlecht)
 

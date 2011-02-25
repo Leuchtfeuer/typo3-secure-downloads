@@ -93,6 +93,15 @@ class tx_nawsecuredl_output {
 	public function fileOutput(){
 
 		$file = t3lib_div::getFileAbsFileName(ltrim($this->file, '/'));
+		$fileName = basename($file);
+			// This is a workaround for a PHP bug on Windows systems:
+			// @see http://bugs.php.net/bug.php?id=46990
+			// It helps for filenames with special characters that are present in latin1 encoding.
+			// If you have real UTF-8 filenames, use a nix based OS.
+		if (TYPO3_OS == 'WIN') {
+			$file = utf8_decode($file);
+		}
+
 
 		// Hook for pre-output:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['preOutput'])) {
@@ -156,9 +165,9 @@ class tx_nawsecuredl_output {
 			header('Content-Length: '.$this->intFileSize);
 
 			if ($forcedownload == true){
-				header('Content-Disposition: attachment; filename="' . basename($file).'"');
+				header('Content-Disposition: attachment; filename="' . $fileName .'"');
 			}else{
-				header('Content-Disposition: inline; filename="' . basename($file).'"');
+				header('Content-Disposition: inline; filename="' . $fileName .'"');
 			}
 
 			$strOutputFunction = trim($this->arrExtConf['outputFunction']);
