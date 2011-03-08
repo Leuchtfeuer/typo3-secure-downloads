@@ -2,7 +2,8 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005-2007 Dietrich Heise (typo3-ext(at)naw.info)
+*  (c) 2005-2011 Dietrich Heise (typo3-ext(at)naw.info)
+*  (c) 2009-2011 Helmut Hummel (typo3-ext(at)naw.info)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is

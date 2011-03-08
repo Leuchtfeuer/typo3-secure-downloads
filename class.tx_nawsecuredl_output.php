@@ -98,6 +98,7 @@ class tx_nawsecuredl_output {
 			// @see http://bugs.php.net/bug.php?id=46990
 			// It helps for filenames with special characters that are present in latin1 encoding.
 			// If you have real UTF-8 filenames, use a nix based OS.
+			// FIXME: needs to be checked, if the website encoding really is UTF-8 and if UTF-8 filesystem is enabled
 		if (TYPO3_OS == 'WIN') {
 			$file = utf8_decode($file);
 		}
