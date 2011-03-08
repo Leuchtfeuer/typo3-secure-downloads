@@ -42,7 +42,7 @@ class ux_fileList extends fileList {
 		if (t3lib_div::isFirstPartOfStr($path,PATH_site))	{
 			$href = t3lib_div::getIndpEnv('TYPO3_SITE_URL') . $tmpobj->makeSecure(substr($path, strlen(PATH_site)));
 			$aOnClick = "return top.openUrlInWindow('".$href."','WebFile');";
-			$code = '<a href="#" title="'.htmlspecialchars($code).'" onclick="'.$aOnClick.'">'.t3lib_div::fixed_lgd($code,$this->fixedL).'</a>';
+			$code = '<a href="#" title="'.htmlspecialchars($code).'" onclick="'.$aOnClick.'">'.t3lib_div::fixed_lgd_cs($code,$this->fixedL).'</a>';
 		}
 		return $code;
 	}
