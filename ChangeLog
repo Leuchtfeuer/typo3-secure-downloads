@@ -1,3 +1,6 @@
+2010-03-08 Helmut Hummel  <typo3-ext(at)naw.info>
+	* Removed deprecated functions (thanks to Daniel Minder)
+
 2010-02-25 Helmut Hummel  <typo3-ext(at)naw.info>
 	* Added workaround for UTF-8 filenames on Windows systems. This is a PHP bug and
 	  will only work for special characters in filenames, which are present in latin1 charset.
