@@ -1,3 +1,8 @@
+2010-03-14 Helmut Hummel  <typo3-ext(at)naw.info>
+	* Added possibility to configure the link format, to be able to have nicer links, when also adding
+	  an appropriate RewriteRule in the .htaccess (Thanks to Karl-Ulrich Bamberg for the initial idea and patch).
+	* Raised extension version to 1.5.0
+
 2010-03-08 Helmut Hummel  <typo3-ext(at)naw.info>
 	* Removed deprecated functions (thanks to Daniel Minder)
 

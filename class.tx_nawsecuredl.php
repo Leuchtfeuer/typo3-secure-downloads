@@ -105,10 +105,6 @@ class tx_nawsecuredl {
 			$this->feuser = 0;
 		}
 
-		$securefilename = 'index.php?eID=tx_nawsecuredl';
-
-		$path_and_file_to_secure = $securefilename;
-
 		$cachetimeadd = $this->extConf['cachetimeadd'];
 
 		if ($GLOBALS['TSFE']->page['cache_timeout'] == 0){
@@ -117,50 +113,67 @@ class tx_nawsecuredl {
 			$timeout =  $GLOBALS['TSFE']->page['cache_timeout'] + time() + $cachetimeadd;
 		}
 
-		// $element contains the URL which is already urlencoded by TYPO3.
-		// Since we check the hash in the output script using the decoded filename we must decode it here also!
-		$data = $this->feuser.rawurldecode($element).$timeout;
+			// $element contains the URL which is already urlencoded by TYPO3.
+			// Since we check the hash in the output script using the decoded filename we must decode it here also!
+		$data = $this->feuser . rawurldecode($element) . $timeout;
 		$hash = t3lib_div::hmac($data);
 
-		$file = $element;
-		$returnPath = $path_and_file_to_secure.'&amp;u='.$this->feuser.'&amp;file='.$file.'&amp;t='.$timeout.'&amp;hash='.$hash;
+			// Parsing the linkformat, and return this instead (an flexible linkformat is usefull for mod_rewrite tricks ;)
+		if (!isset($this->extConf['linkFormat'])) {
+			$this->extConf['linkFormat'] = 'index.php?eID=tx_nawsecuredl&u=###FEUSER###&file=###FILE###&t=###TIMEOUT###&hash=###HASH###';
+		}
 
-		// Hook for makeSecure:
+		$tokens = array('###FEUSER###', '###FILE###', '###TIMEOUT###', '###HASH###');
+		$replacements = array($this->feuser, $element, $timeout, $hash);
+		$returnPath = htmlspecialchars(str_replace($tokens, $replacements, $this->extConf['linkFormat']));
+
+			// Hook for makeSecure:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl.php']['makeSecure'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl.php']['makeSecure'] as $_funcRef)   {
-				$returnPath = t3lib_div::callUserFunction($_funcRef,$returnPath,$this);
+				$returnPath = t3lib_div::callUserFunction($_funcRef, $returnPath, $this);
 			}
 		}
 
 		return $returnPath;
 	}
 
-	function modifyfiletypes($string){
-		$chars = preg_split('//',$string);
+	/**
+	 * What the heck is this for??
+	 *
+	 * @param string $string
+	 */
+	protected function modifyfiletypes($string) {
+		$chars = preg_split('//', $string);
 		$out = '';
-		foreach ($chars as $i){
-			if (preg_match('/\w/',$i)){
-				$out .= '['.strtoupper($i).strtolower($i).']';
-			}else{
+		foreach ($chars as $i) {
+			if (preg_match('/\w/', $i)) {
+				$out .= '[' . strtoupper($i) . strtolower($i) . ']';
+			} else {
 				$out .= $i;
 			}
 		}
 		return $out;
 	}
 
-	function modifiyregex($string){
-		$string = str_replace('\\','\\\\',$string);
-		$string = str_replace(' ','\ ',$string);
-		$string = str_replace('/','\/',$string);
-		$string = str_replace('.','\.',$string);
-		$string = str_replace(':','\:',$string);
+	/**
+	 * Quotes special characters for the regular expression
+	 *
+	 * @todo: Check if this can be replaced by preg_quote()
+	 * @param string $string
+	 */
+	protected function modifiyregex($string) {
+		$string = str_replace('\\', '\\\\', $string);
+		$string = str_replace(' ', '\ ', $string);
+		$string = str_replace('/', '\/', $string);
+		$string = str_replace('.', '\.', $string);
+		$string = str_replace(':', '\:', $string);
 		return $string;
 	}
 
 }
 
 // Include extension?
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl.php'])	{
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl.php']) {
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl.php']);
 }
 ?>
