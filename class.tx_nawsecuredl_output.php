@@ -118,57 +118,43 @@ class tx_nawsecuredl_output {
 
 			$this->logDownload(0);
 
-			// files bigger than 32MB are now 'application/octet-stream' by default (getimagesize memory_limit problem)
-			if ($this->intFileSize < 1024*1024*32){
-				$bildinfos = @getimagesize($file);
-				$bildtypnr = $bildinfos[2];
-			}
+			$strFileExtension = $this->getFileExtensionByFilename($file);
 
-			$contenttype[1] = 'image/gif';
-			$contenttype[2] = 'image/jpeg';
-			$contenttype[3] = 'image/png';
-
-			$contenttypedatei = '';
-			$contenttypedatei = $contenttype[$bildtypnr];
-
-			if ($contenttypedatei === '') {
-				$endigung = $this->getFileExtensionByFilename($file);
-
-				if ((bool)$this->arrExtConf['forcedownload'] === TRUE){
-					$forcetypes = t3lib_div::trimExplode("|", $this->arrExtConf['forcedownloadtype']);
-					if (is_array($forcetypes)){
-						if (in_array($endigung, $forcetypes)) {
-							$forcedownload = true;
-						}
+			if ((bool)$this->arrExtConf['forcedownload'] === TRUE){
+				$forcetypes = t3lib_div::trimExplode("|", $this->arrExtConf['forcedownloadtype']);
+				if (is_array($forcetypes)){
+					if (in_array($strFileExtension, $forcetypes)) {
+						$forcedownload = true;
 					}
 				}
-
-				$contenttypedatei = $this->getMimeTypeByFileExtension($endigung);
 			}
+
+			$strMimeType = $this->getMimeTypeByFileExtension($strFileExtension);
 
 			// Hook for output:
 			// TODO: deprecate this hook?
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['output'])) {
 				$_params = array(
 					'pObj' => &$this,
-					'fileExtension' => '.' . $endigung, // Add leading dot for compatibility in this hook
-					'mimeType' => &$contenttypedatei,
+					'fileExtension' => '.' . $strFileExtension, // Add leading dot for compatibility in this hook
+					'mimeType' => &$strMimeType,
 				);
 				foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['output'] as $_funcRef)   {
 					t3lib_div::callUserFunction($_funcRef, $_params, $this);
 				}
 			}
 
+				//TODO: Check IE compatibility with these headers
 			header('Pragma: private');
 			header('Expires: 0'); // set expiration time
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header('Content-Type: '.$contenttypedatei);
-			header('Content-Length: '.$this->intFileSize);
+			header('Content-Type: ' . $strMimeType);
+			header('Content-Length: ' . $this->intFileSize);
 
 			if ($forcedownload == true){
-				header('Content-Disposition: attachment; filename="' . $fileName .'"');
+				header('Content-Disposition: attachment; filename="' . $fileName . '"');
 			}else{
-				header('Content-Disposition: inline; filename="' . $fileName .'"');
+				header('Content-Disposition: inline; filename="' . $fileName . '"');
 			}
 
 			$strOutputFunction = trim($this->arrExtConf['outputFunction']);
@@ -296,25 +282,77 @@ class tx_nawsecuredl_output {
 	 */
 	protected function getMimeTypeByFileExtension($strFileExtension)
 	{
-		$strMimeTypesArray = array(
+			// Check files with unknown file extensions, if they are image files (currently disabled)
+		$checkForImageFiles = FALSE;
 
+			// Array with key/value pairs consisting of file extension (without dot in front) and mime type
+		$arrMimeTypes = array(
+				// MS-Office filetypes
+			'pps' => 'application/vnd.ms-powerpoint',
+			'doc' => 'application/msword',
+			'xls' => 'application/vnd.ms-excel',
+			'docm' => 'application/vnd.ms-word.document.macroEnabled.12',
+			'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+			'dotm' => 'application/vnd.ms-word.template.macroEnabled.12',
+			'dotx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
+			'ppsm' => 'application/vnd.ms-powerpoint.slideshow.macroEnabled.12',
+			'ppsx' => 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+			'pptm' => 'application/vnd.ms-powerpoint.presentation.macroEnabled.12',
+			'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+			'xlsb' => 'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
+			'xlsm' => 'application/vnd.ms-excel.sheet.macroEnabled.12',
+			'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			'xps' => 'application/vnd.ms-xpsdocument',
 
+				// Open-Office filetypes
+			'odt' => 'application/vnd.oasis.opendocument.text',
+			'ott' => 'application/vnd.oasis.opendocument.text-template',
+			'odg' => 'application/vnd.oasis.opendocument.graphics',
+			'otg' => 'application/vnd.oasis.opendocument.graphics-template',
+			'odp' => 'application/vnd.oasis.opendocument.presentation',
+			'otp' => 'application/vnd.oasis.opendocument.presentation-template',
+			'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+			'ots' => 'application/vnd.oasis.opendocument.spreadsheet-template',
+			'odc' => 'application/vnd.oasis.opendocument.chart',
+			'otc' => 'application/vnd.oasis.opendocument.chart-template',
+			'odi' => 'application/vnd.oasis.opendocument.image',
+			'oti' => 'application/vnd.oasis.opendocument.image-template',
+			'odf' => 'application/vnd.oasis.opendocument.formula',
+			'otf' => 'application/vnd.oasis.opendocument.formula-template',
+			'odm' => 'application/vnd.oasis.opendocument.text-master',
+			'oth' => 'application/vnd.oasis.opendocument.text-web',
+
+				// Media file types
+			'jpeg' => 'image/jpeg',
+			'jpg' => 'image/jpeg',
+			'jpe' => 'image/jpeg',
+			'gif' => 'image/gif',
+			'png' => 'image/png',
+			'mpeg' => 'video/mpeg',
+			'mpg' => 'video/mpeg',
+			'mpe' => 'video/mpeg',
+			'mov' => 'video/quicktime',
+			'avi' => 'video/x-msvideo',
+			'pdf' => 'application/pdf',
+			'svg' => 'image/svg+xml',
+			'flv' => 'video/x-flv',
+			'swf' => 'application/x-shockwave-flash',
+			'htm' => 'text/html',
+			'html' => 'text/html',
 		);
 
 			// Read all additional MIME types from the EM configuration into the array $strAdditionalMimeTypesArray
 		if ($this->arrExtConf['additionalMimeTypes']) {
-				// Array with key/value pairs consisting of file extension (with dot in front) and mime type
-			$strAdditionalMimeTypesArray = array();
+
 			$strAdditionalFileExtension = '';
 			$strAdditionalMimeType = '';
+			$arrAdditionalMimeTypeParts = t3lib_div::trimExplode(',', $this->arrExtConf['additionalMimeTypes'], TRUE);
 
-			$strAdditionalMimeTypePartsArray = t3lib_div::trimExplode(',', $this->arrExtConf['additionalMimeTypes'], TRUE);
-
-			foreach($strAdditionalMimeTypePartsArray as $strAdditionalMimeTypeItem) {
+			foreach($arrAdditionalMimeTypeParts as $strAdditionalMimeTypeItem) {
 				list($strAdditionalFileExtension, $strAdditionalMimeType) = t3lib_div::trimExplode('|', $strAdditionalMimeTypeItem);
 				if(!empty($strAdditionalFileExtension) && !empty($strAdditionalMimeType)) {
 					$strAdditionalFileExtension = t3lib_div::strtolower($strAdditionalFileExtension);
-					$strAdditionalMimeTypesArray[$strAdditionalFileExtension] = $strAdditionalMimeType;
+					$arrMimeTypes[$strAdditionalFileExtension] = $strAdditionalMimeType;
 				}
 			}
 
@@ -325,162 +363,25 @@ class tx_nawsecuredl_output {
 		//TODO: Add hook to be able to manipulate and/or add mime types
 
 			// Check if an specific MIME type is configured for this file extension
-		if ($strAdditionalMimeTypesArray[$strFileExtension]) {
-			$strMimeType = $strAdditionalMimeTypesArray[$strFileExtension];
+		if (array_key_exists($strFileExtension, $arrMimeTypes)) {
+			$strMimeType = $arrMimeTypes[$strFileExtension];
+		} else if ($checkForImageFiles) {
+				// files bigger than 32MB are now 'application/octet-stream' by default (getimagesize memory_limit problem)
+			if ($this->intFileSize < 1024*1024*32){
+				$arrImageInfos = @getimagesize($file);
+				$intImageType = (int)$arrImageInfos[2];
+			}
+
+			$arrImageMimeType[0] = 'application/octet-stream';
+			$arrImageMimeType[1] = 'image/gif';
+			$arrImageMimeType[2] = 'image/jpeg';
+			$arrImageMimeType[3] = 'image/png';
+
+			$strMimeType = $arrImageMimeType[$intImageType];
 		} else {
-			switch($strFileExtension){
-					// MS-Office filetypes
-				case '.pps':
-					$strMimeType = 'application/vnd.ms-powerpoint';
-					break;
-				case '.doc':
-					$strMimeType = 'application/msword';
-					break;
-				case '.xls':
-					$strMimeType = 'application/vnd.ms-excel';
-					break;
-				case '.docm':
-					$strMimeType = 'application/vnd.ms-word.document.macroEnabled.12';
-					break;
-				case '.docx':
-					$strMimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-					break;
-				case '.dotm':
-					$strMimeType = 'application/vnd.ms-word.template.macroEnabled.12';
-					break;
-				case '.dotx':
-					$strMimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.template';
-					break;
-				case '.ppsm':
-					$strMimeType = 'application/vnd.ms-powerpoint.slideshow.macroEnabled.12';
-					break;
-				case '.ppsx':
-					$strMimeType = 'application/vnd.openxmlformats-officedocument.presentationml.slideshow';
-					break;
-				case '.pptm':
-					$strMimeType = 'application/vnd.ms-powerpoint.presentation.macroEnabled.12';
-					break;
-				case '.pptx':
-					$strMimeType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-					break;
-				case '.xlsb':
-					$strMimeType = 'application/vnd.ms-excel.sheet.binary.macroEnabled.12';
-					break;
-				case '.xlsm':
-					$strMimeType = 'application/vnd.ms-excel.sheet.macroEnabled.12';
-					break;
-				case '.xlsx':
-					$strMimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-					break;
-				case '.xps':
-					$strMimeType = 'application/vnd.ms-xpsdocument';
-					break;
-
-					// Open-Office filetypes
-				case '.odt':
-					$strMimeType = 'application/vnd.oasis.opendocument.text';
-					break;
-				case '.ott':
-					$strMimeType = 'application/vnd.oasis.opendocument.text-template';
-					break;
-				case '.odg':
-					$strMimeType = 'application/vnd.oasis.opendocument.graphics';
-					break;
-				case '.otg':
-					$strMimeType = 'application/vnd.oasis.opendocument.graphics-template';
-					break;
-				case '.odp': $strMimeType = 'application/vnd.oasis.opendocument.presentation';
-					break;
-				case '.otp':
-					$strMimeType = 'application/vnd.oasis.opendocument.presentation-template';
-					break;
-				case '.ods':
-					$strMimeType = 'application/vnd.oasis.opendocument.spreadsheet';
-					break;
-				case '.ots':
-					$strMimeType = 'application/vnd.oasis.opendocument.spreadsheet-template';
-					break;
-				case '.odc':
-					$strMimeType = 'application/vnd.oasis.opendocument.chart';
-					break;
-				case '.otc':
-					$strMimeType = 'application/vnd.oasis.opendocument.chart-template';
-					break;
-				case '.odi':
-					$strMimeType = 'application/vnd.oasis.opendocument.image';
-					break;
-				case '.oti':
-					$strMimeType = 'application/vnd.oasis.opendocument.image-template';
-					break;
-				case '.odf':
-					$strMimeType = 'application/vnd.oasis.opendocument.formula';
-					break;
-				case '.otf':
-					$strMimeType = 'application/vnd.oasis.opendocument.formula-template';
-					break;
-				case '.odm':
-					$strMimeType = 'application/vnd.oasis.opendocument.text-master';
-					break;
-				case '.oth':
-					$strMimeType = 'application/vnd.oasis.opendocument.text-web';
-					break;
-
-					// Media file types
-				case '.jpeg':
-					$strMimeType = 'image/jpeg';
-					break;
-					##### JPEG-Dateien
-				case '.jpg':
-					$strMimeType = 'image/jpeg';
-					break;
-					##### JPEG-Dateien
-				case '.jpe':
-					$strMimeType = 'image/jpeg';
-					break;
-					##### JPEG-Dateien
-				case '.mpeg':
-					$strMimeType = 'video/mpeg';
-					break;
-					##### MPEG-Dateien
-				case '.mpg':
-					$strMimeType = 'video/mpeg';
-					break;
-					##### MPEG-Dateien
-				case '.mpe':
-					$strMimeType = 'video/mpeg';
-					break;
-					##### MPEG-Dateien
-				case '.mov':
-					$strMimeType = 'video/quicktime';
-					break;
-					##### Quicktime-Dateien
-				case '.avi':
-					$strMimeType = 'video/x-msvideo';
-					break;
-					##### Microsoft AVI-Dateien
-				case '.pdf':
-					$strMimeType = 'application/pdf';
-					break;
-				case '.svg':
-					$strMimeType = 'image/svg+xml';
-					break;
-					### Flash Video Files
-				case '.flv':
-					$strMimeType = 'video/x-flv';
-					break;
-					### Shockwave / Flash
-				case '.swf':
-					$strMimeType = 'application/x-shockwave-flash';
-					break;
-				case '.htm':
-				case '.html':
-					$contenttypedatei = 'text/html';
-					break;
-				default:
-					$strMimeType = 'application/octet-stream';
-					break;
-			}//end of switch Case structure
+			$strMimeType = 'application/octet-stream';
 		}
+
 		return $strMimeType;
 	}
 
