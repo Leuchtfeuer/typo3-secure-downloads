@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE T3locallang SYSTEM "http://www.naw.info/dtds/t3locallang.dtd">
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for module &quot;tools_txnawsecuredlM1&quot; - header, description</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="mlang_tabs_tab">Download-Traffic</label>
+			<label index="mlang_labels_tabdescr">Module to browse through the log of downloaded files.</label>
+			<label index="mlang_labels_tablabel">naw_securedl download log.</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="mlang_tabs_tab">Download-Traffic</label>
+			<label index="mlang_labels_tabdescr">Module to browse through the log of downloaded files.</label>
+			<label index="mlang_labels_tablabel">naw_securedl download log.</label>
+		</languageKey>
+	</data>
+</T3locallang>

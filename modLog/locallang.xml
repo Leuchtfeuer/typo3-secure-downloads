@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE T3locallang SYSTEM "http://www.naw.info/dtds/t3locallang.dtd">
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for module &quot;tx_nawsecuredlM1&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="title">Download Log</label>
+			<label index="allUsers">All users</label>
+			<label index="loggedInUsers">All (logged in) users</label>
+			<label index="notLoggedIn">Not logged in users</label>
+			<label index="trafficUsed">Used traffic</label>
+			<label index="noTrafficUsed">No traffic!</label>
+			<label index="allTime">Show all traffic</label>
+			<label index="byTime">Show by timeframe</label>
+			<label index="timeframe">Timeframe</label>
+			<label index="from">From (Format: dd.mm.YY)</label>
+			<label index="to">To (Format: dd.mm.YY)</label>
+			<label index="submit">Submit</label>
+			<label index="user">User</label>
+			<label index="files">Files</label>
+			<label index="date">Date</label>
+			<label index="traffic">Traffic GB</label>
+			<label index="trafficsum">Sum</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="title">Download-Liste</label>
+			<label index="allUsers">Alle Benutzer</label>
+			<label index="loggedInUsers">Alle (eingeloggten) Benutzer</label>
+			<label index="notLoggedIn">nicht eingeloggte Benutzer</label>
+			<label index="trafficUsed">Verbrauchter Traffic</label>
+			<label index="noTrafficUsed">Kein Traffic verbraucht!</label>
+			<label index="allTime">Zeige Gesamttraffic</label>
+			<label index="byTime">Zeige Traffic nach Zeitraum</label>
+			<label index="timeframe">Zeitraum</label>
+			<label index="from">Von (Format: dd.mm.YY)</label>
+			<label index="to">Bis (Format: dd.mm.YY)</label>
+			<label index="submit">Abschicken</label>
+			<label index="user">User</label>
+			<label index="files">Dateien</label>
+			<label index="date">Datum</label>
+			<label index="traffic">Traffic GB</label>
+			<label index="trafficsum">Summe</label>
+		</languageKey>
+	</data>
+</T3locallang>
