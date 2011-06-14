@@ -22,57 +22,76 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
+
 /**
  * @author	Dietrich Heise <typo3-ext(at)naw.info>
+ * @author	Helmut Hummel <typo3-ext(at)naw.info>
  */
 class tx_nawsecuredl {
 
 	/**
 	 * This method is called by the frontend rendering hook contentPostProc-output
 	 *
-	 * @param string $content
-	 * @param tslib_fe $pObj
+	 * @param array $parameters
+	 * @param tslib_fe $objFrontend
 	 */
-	public function parseFE(&$content,$pObj) {
-		$content['pObj']->content = $this->parseContent($content['pObj']->content);
+	public function parseFE(&$parameters, $objFrontend) {
+		if ($objFrontend->config['config']['tx_nawsecuredl_enable'] !== '0') {
+			$objFrontend->content = $this->parseContent($objFrontend->content);
+		}
 	}
 
 	/**
-	 * [Describe function...]
+	 * Parses the HTML output and replaces the links to configured files with secured ones
 	 *
-	 * @param	[type]		$i: ...
-	 * @return	[type]		...
+	 * @param	string $strContent
+	 * @return	string
 	 */
-	function parseContent($i){
+	public function parseContent($strContent) {
 		$sitepath = t3lib_div::getIndpEnv('REQUEST_URI');
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['naw_securedl']);
-		$rest = $i;
+		$rest = $strContent;
 
 		$result = '';
-		while (preg_match('/(?i)(<a|<img)+?.[^>]*(href|src)=(\"??)([^\" >]*?)\\3[^>]*>/siU', $i,$match)) {  // suchendes secured Verzeichnis
+		while (preg_match('/(?i)(<a|<img)+?.[^>]*(href|src)=(\"??)([^\" >]*?)\\3[^>]*>/siU', $strContent, $match)) {  // suchendes secured Verzeichnis
 
-				$cont = explode($match[0],$i,2);
+				$cont = explode($match[0], $strContent, 2);
 				$vor = $cont[0];
 					$tag = $match[0];
-					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug('tag:'.$tag);
+					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
+						debug('tag:' . $tag);
+					}
 
 					$rest = $cont[1];
 
-				if ($this->extConf['debug'] == '1' || $this->extConf['debug'] == '3') debug(array('html-tag:'=>$tag));
+				if ($this->extConf['debug'] == '1' || $this->extConf['debug'] == '3') {
+					debug(array('html-tag:'=>$tag));
+				}
 
 				// investigate the HTML-Tag...
-				if (preg_match('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i', $tag,$match1)){
+				if (preg_match('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i', $tag,$match1)) {
 
-					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i');
-					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug($match1);
+					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
+						debug('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i');
+					}
+					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
+						debug($match1);
+					}
+
 					$replace = $this->makeSecure($match1[1]);
 					$tagexp = explode ($match1[1], $tag , 2 );
 
-					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug($tagexp[0]);
-					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug($replace);
-					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') debug($tagexp[1]);
+					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
+						debug($tagexp[0]);
+					}
+					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
+						debug($replace);
+					}
+					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
+						debug($tagexp[1]);
+					}
 
-					$tag = $tagexp[0].$replace;
+					$tag = $tagexp[0] . $replace;
 					$tmp = $tagexp[1];
 
 					// search in the rest on the tag (e.g. for vHWin=window.open...)
@@ -86,10 +105,10 @@ class tx_nawsecuredl {
 
 					$tag .= $add;
 				}
-				$result .= $vor.$tag;
-				$i = $rest;
+				$result .= $vor . $tag;
+				$strContent = $rest;
 		}
-		return $result.$rest;
+		return $result . $rest;
 	}
 
 	/**
