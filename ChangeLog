@@ -1,12 +1,15 @@
-2010-03-14 Helmut Hummel  <typo3-ext(at)naw.info>
+2011-06-14 Helmut Hummel  <typo3-ext(at)naw.info>
+	* Add config option to disable content parsing (Thanks to Benjamin Mack).
+
+2011-03-14 Helmut Hummel  <typo3-ext(at)naw.info>
 	* Added possibility to configure the link format, to be able to have nicer links, when also adding
 	  an appropriate RewriteRule in the .htaccess (Thanks to Karl-Ulrich Bamberg for the initial idea and patch).
 	* Raised extension version to 1.5.0
 
-2010-03-08 Helmut Hummel  <typo3-ext(at)naw.info>
+2011-03-08 Helmut Hummel  <typo3-ext(at)naw.info>
 	* Removed deprecated functions (thanks to Daniel Minder)
 
-2010-02-25 Helmut Hummel  <typo3-ext(at)naw.info>
+2011-02-25 Helmut Hummel  <typo3-ext(at)naw.info>
 	* Added workaround for UTF-8 filenames on Windows systems. This is a PHP bug and
 	  will only work for special characters in filenames, which are present in latin1 charset.
 	  See http://bugs.php.net/bug.php?id=46990 for details. (thanks to Freddy Kühne for reporting)
