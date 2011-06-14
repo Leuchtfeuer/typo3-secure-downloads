@@ -30,11 +30,13 @@ class tx_nawsecuredl {
 	/**
 	 * This method is called by the frontend rendering hook contentPostProc-output
 	 *
-	 * @param string $content
-	 * @param tslib_fe $pObj
+	 * @param array $parameters
+	 * @param tslib_fe $objFrontend
 	 */
-	public function parseFE(&$content,$pObj) {
-		$content['pObj']->content = $this->parseContent($content['pObj']->content);
+	public function parseFE(&$parameters, $objFrontend) {
+		if ($objFrontend->config['config']['tx_nawsecuredl_enable'] !== '0') {
+			$objFrontend->content = $this->parseContent($objFrontend->content);
+		}
 	}
 
 	/**
