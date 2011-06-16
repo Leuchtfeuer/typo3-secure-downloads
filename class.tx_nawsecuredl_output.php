@@ -184,7 +184,7 @@ class tx_nawsecuredl_output {
 			}
 
 		} else {
-			print 'File does not exists!';
+			print 'File does not exist!';
 		}
 	}
 
