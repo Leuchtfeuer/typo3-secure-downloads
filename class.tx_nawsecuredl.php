@@ -53,7 +53,7 @@ class tx_nawsecuredl {
 		$rest = $strContent;
 
 		$result = '';
-		while (preg_match('/(?i)(<a|<img)+?.[^>]*(href|src)=(\"??)([^\" >]*?)\\3[^>]*>/siU', $strContent, $match)) {  // suchendes secured Verzeichnis
+		while (preg_match('/(?i)(<source|<a|<img)+?.[^>]*(href|src)=(\"??)([^\" >]*?)\\3[^>]*>/siU', $strContent, $match)) {  // suchendes secured Verzeichnis
 
 				$cont = explode($match[0], $strContent, 2);
 				$vor = $cont[0];
@@ -158,6 +158,10 @@ class tx_nawsecuredl {
 
 	/**
 	 * What the heck is this for??
+	 * 
+	 * For Example:
+	 * IN     : pdf|jpe?g
+	 * Returns: [pP][dD][fF]|[jJ][pP][eE]?[gG]
 	 *
 	 * @param string $string
 	 */

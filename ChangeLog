@@ -1,3 +1,6 @@
+2011-06-14 Dietrich Heise  <typo3-ext(at)naw.info>
+    * Add support fpr HTML5 Tag <source src="">
+
 2011-06-14 Helmut Hummel  <typo3-ext(at)naw.info>
 	* Add config option to disable content parsing (Thanks to Benjamin Mack).
 
