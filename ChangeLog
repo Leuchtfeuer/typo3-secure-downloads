@@ -1,5 +1,5 @@
 2011-06-14 Dietrich Heise  <typo3-ext(at)naw.info>
-    * Add support fpr HTML5 Tag <source src="">
+    * Add support for HTML5 Tag <source src=""> (Thanks to Achim Schmeer for sponsoring this).
 
 2011-06-14 Helmut Hummel  <typo3-ext(at)naw.info>
 	* Add config option to disable content parsing (Thanks to Benjamin Mack).
