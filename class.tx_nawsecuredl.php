@@ -30,152 +30,193 @@
 class tx_nawsecuredl {
 
 	/**
-	 * This method is called by the frontend rendering hook contentPostProc-output
+	 * Extension Configuration
+	 *
+	 * @var array
+	 */
+	protected $extConf;
+
+	/**
+	 * Frontend user id
+	 *
+	 * @var integer
+	 */
+	protected $feuser;
+
+	/**
+	 * The TYPO3 frontend object
+	 *
+	 * @var tslib_fe
+	 */
+	protected $objFrontend;
+
+
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->objFrontend = $GLOBALS['TSFE'];
+		$this->extConf = $this->getExtensionConfiguration();
+	}
+
+	/**
+	 * Get extension configuration
+	 *
+	 * @return array
+	 */
+	protected function getExtensionConfiguration() {
+		return unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['naw_securedl']);
+	}
+
+	/**
+	 * This method is called by the frontend rendering hook contentPostProc->output
 	 *
 	 * @param array $parameters
 	 * @param tslib_fe $objFrontend
 	 */
 	public function parseFE(&$parameters, $objFrontend) {
-		if ($objFrontend->config['config']['tx_nawsecuredl_enable'] !== '0') {
-			$objFrontend->content = $this->parseContent($objFrontend->content);
+		$this->objFrontend = $objFrontend;
+
+			// Parsing the content if not explicitly disabled
+		if (!isset($this->objFrontend->config['config']['tx_nawsecuredl_enable'])
+				|| $this->objFrontend->config['config']['tx_nawsecuredl_enable'] !== '0') {
+			$this->objFrontend->content = $this->parseContent($this->objFrontend->content);
 		}
 	}
 
 	/**
 	 * Parses the HTML output and replaces the links to configured files with secured ones
 	 *
-	 * @param	string $strContent
-	 * @return	string
+	 * @param string $strContent
+	 * @return string
 	 */
 	public function parseContent($strContent) {
-		$sitepath = t3lib_div::getIndpEnv('REQUEST_URI');
-		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['naw_securedl']);
+		$this->extConf = $this->getExtensionConfiguration();
 		$rest = $strContent;
-
 		$result = '';
 		while (preg_match('/(?i)(<source|<a|<img)+?.[^>]*(href|src)=(\"??)([^\" >]*?)\\3[^>]*>/siU', $strContent, $match)) {  // suchendes secured Verzeichnis
+			$cont = explode($match[0], $strContent, 2);
+			$vor = $cont[0];
+			$tag = $match[0];
+			if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
+				debug('tag:' . $tag);
+			}
 
-				$cont = explode($match[0], $strContent, 2);
-				$vor = $cont[0];
-					$tag = $match[0];
-					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
-						debug('tag:' . $tag);
-					}
+			$rest = $cont[1];
 
-					$rest = $cont[1];
-
-				if ($this->extConf['debug'] == '1' || $this->extConf['debug'] == '3') {
-					debug(array('html-tag:'=>$tag));
-				}
+			if ($this->extConf['debug'] == '1' || $this->extConf['debug'] == '3') {
+				debug(array('html-tag:'=>$tag));
+			}
 
 				// investigate the HTML-Tag...
-				if (preg_match('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i', $tag,$match1)) {
+			if (preg_match('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i', $tag, $match1)) {
 
-					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
-						debug('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i');
-					}
-					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
-						debug($match1);
-					}
+				if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
+					debug('/"(?:'.$this->modifiyregex($this->extConf['domain']).')?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))"/i');
+				}
+				if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
+					debug($match1);
+				}
 
-					$replace = $this->makeSecure($match1[1]);
-					$tagexp = explode ($match1[1], $tag , 2 );
+				$replace = htmlspecialchars($this->makeSecure($match1[1]));
+				$tagexp = explode($match1[1], $tag , 2 );
 
-					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
-						debug($tagexp[0]);
-					}
-					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
-						debug($replace);
-					}
-					if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
-						debug($tagexp[1]);
-					}
+				if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
+					debug($tagexp[0]);
+				}
+				if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
+					debug($replace);
+				}
+				if ($this->extConf['debug'] == '2' || $this->extConf['debug'] == '3') {
+					debug($tagexp[1]);
+				}
 
-					$tag = $tagexp[0] . $replace;
-					$tmp = $tagexp[1];
+				$tag = $tagexp[0] . $replace;
+				$tmp = $tagexp[1];
 
 					// search in the rest on the tag (e.g. for vHWin=window.open...)
-					if (preg_match('/\'(?:'.$this->modifiyregex($this->extConf['domain']).')?.*?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))\'/i', $tmp,$match1)){
-						$replace = $this->makeSecure($match1[1]);
-						$tagexp = explode ($match1[1], $tmp , 2 );
-						$add = $tagexp[0].'/'.$replace.$tagexp[1];
-					}else{
-						$add = $tagexp[1];
-					}
-
-					$tag .= $add;
+				if (preg_match('/\'(?:'.$this->modifiyregex($this->extConf['domain']).')?.*?(\/?(?:'.$this->modifiyregex($this->extConf['securedDirs']).')+?.*?(?:'.$this->modifyfiletypes($this->extConf['filetype']).'))\'/i', $tmp, $match1)){
+					$replace = htmlspecialchars($this->makeSecure($match1[1]));
+					$tagexp = explode ($match1[1], $tmp , 2 );
+					$add = $tagexp[0].'/'.$replace.$tagexp[1];
+				} else {
+					$add = $tagexp[1];
 				}
-				$result .= $vor . $tag;
-				$strContent = $rest;
+
+				$tag .= $add;
+			}
+			$result .= $vor . $tag;
+			$strContent = $rest;
 		}
 		return $result . $rest;
 	}
 
 	/**
-	 * [Describe function...]
+	 * Transforms a relative file URL to a secure download protected URL
 	 *
-	 * @param	[type]		$element: ...
-	 * @return	[type]		...
+	 * @param string $originalUrl
+	 * @return string
 	 */
-	function makeSecure($element) {
-		if ($GLOBALS['TSFE']->fe_user->user['uid']){
-			$this->feuser = $GLOBALS['TSFE']->fe_user->user['uid'];
+	public function makeSecure($originalUrl) {
+		if ($this->objFrontend->fe_user->user['uid']){
+			$this->feuser = $this->objFrontend->fe_user->user['uid'];
 		} else {
 			$this->feuser = 0;
 		}
 
 		$cachetimeadd = $this->extConf['cachetimeadd'];
 
-		if ($GLOBALS['TSFE']->page['cache_timeout'] == 0){
+		if ($this->objFrontend->page['cache_timeout'] == 0){
 			$timeout = 86400 + time() + $cachetimeadd;
-		}else{
-			$timeout =  $GLOBALS['TSFE']->page['cache_timeout'] + time() + $cachetimeadd;
+		} else {
+			$timeout =  $this->objFrontend->page['cache_timeout'] + time() + $cachetimeadd;
 		}
 
-			// $element contains the URL which is already urlencoded by TYPO3.
+			// $element contains the URL which is already url encoded by TYPO3.
 			// Since we check the hash in the output script using the decoded filename we must decode it here also!
-		$data = $this->feuser . rawurldecode($element) . $timeout;
+		$data = $this->feuser . rawurldecode($originalUrl) . $timeout;
 		$hash = t3lib_div::hmac($data);
 
-			// Parsing the linkformat, and return this instead (an flexible linkformat is usefull for mod_rewrite tricks ;)
+			// Parsing the link format, and return this instead (an flexible link format is useful for mod_rewrite tricks ;)
 		if (!isset($this->extConf['linkFormat'])) {
 			$this->extConf['linkFormat'] = 'index.php?eID=tx_nawsecuredl&u=###FEUSER###&file=###FILE###&t=###TIMEOUT###&hash=###HASH###';
 		}
 
 		$tokens = array('###FEUSER###', '###FILE###', '###TIMEOUT###', '###HASH###');
-		$replacements = array($this->feuser, $element, $timeout, $hash);
-		$returnPath = htmlspecialchars(str_replace($tokens, $replacements, $this->extConf['linkFormat']));
+		$replacements = array($this->feuser, $originalUrl, $timeout, $hash);
+		$transformedUrl = str_replace($tokens, $replacements, $this->extConf['linkFormat']);
 
 			// Hook for makeSecure:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl.php']['makeSecure'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl.php']['makeSecure'] as $_funcRef)   {
-				$returnPath = t3lib_div::callUserFunction($_funcRef, $returnPath, $this);
+				$transformedUrl = t3lib_div::callUserFunction($_funcRef, $transformedUrl, $this);
 			}
 		}
 
-		return $returnPath;
+		return $transformedUrl;
 	}
 
 	/**
-	 * What the heck is this for??
-	 * 
-	 * For Example:
-	 * IN     : pdf|jpe?g
+	 * Returns a case insensitive regular expression based on
+	 * lowercase input
+	 *
+	 * Example:
+	 * Input: pdf|jpe?g
 	 * Returns: [pP][dD][fF]|[jJ][pP][eE]?[gG]
 	 *
 	 * @param string $string
 	 */
 	protected function modifyfiletypes($string) {
-		$chars = preg_split('//', $string);
-		$out = '';
-		foreach ($chars as $i) {
-			if (preg_match('/\w/', $i)) {
-				$out .= '[' . strtoupper($i) . strtolower($i) . ']';
+		$characters = preg_split('//', $string);
+		$expression = '';
+		foreach ($characters as $character) {
+			if (preg_match('/\w/', $character)) {
+				$expression .= '[' . t3lib_div::strtoupper($character) . t3lib_div::strtolower($character) . ']';
 			} else {
-				$out .= $i;
+				$expression .= $character;
 			}
 		}
-		return $out;
+		return $expression;
 	}
 
 	/**
