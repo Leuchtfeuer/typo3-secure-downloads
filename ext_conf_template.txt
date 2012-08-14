@@ -2,13 +2,13 @@
 securedDirs = typo3temp|fileadmin|uploads
 
 # cat=basic; type=string; label=filetype:a list of filetypes that should be secured separated by a pipe
-filetype = pdf|jpe?g|gif|png|doc|xls|rar|tgz|tar|gz
+filetype = pdf|jpe?g|gif|png|odt|ppt?x|doc?x|xls?x|zip|rar|tgz|tar|gz
 
 # cat=basic; type=boolean; label = forcedownload: Force Download of specified filetypes
 forcedownload = 0
 
 # cat=basic; type=string; label=forcedownloadtype:a list of filetypes that should not be opened inline in a browser, seperated by a pipe. Only used if forcedownload is true
-forcedownloadtype = pdf|doc|xls|rar|tgz|tar|gz
+forcedownloadtype = odt|ppt?x|doc?x|xls?x|zip|rar|tgz|tar|gz
 
 # cat=basic; type=string; label=additionalMimeTypes: Comma separated list of additional MIME types (file extension / mime type pairs, in which file extension and MIME type is separated by a pipe symbol). Can be used to override existing MIME type settings of the extension as well.
 additionalMimeTypes = txt|text/plain,html|text/html
