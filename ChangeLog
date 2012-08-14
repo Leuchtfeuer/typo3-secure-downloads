@@ -1,3 +1,6 @@
+2012-08-14 Helmut Hummel  <typo3-ext(at)naw.info>
+    * Improve performance of file extension regex (Thanks to Sebastian Kurfürst).
+
 2011-06-14 Dietrich Heise  <typo3-ext(at)naw.info>
     * Add support for HTML5 Tag <source src=""> (Thanks to Achim Schmeer for sponsoring this).
 

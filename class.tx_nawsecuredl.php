@@ -200,23 +200,11 @@ class tx_nawsecuredl {
 	 * Returns a case insensitive regular expression based on
 	 * lowercase input
 	 *
-	 * Example:
-	 * Input: pdf|jpe?g
-	 * Returns: [pP][dD][fF]|[jJ][pP][eE]?[gG]
-	 *
 	 * @param string $string
+	 * @return string
 	 */
 	protected function modifyfiletypes($string) {
-		$characters = preg_split('//', $string);
-		$expression = '';
-		foreach ($characters as $character) {
-			if (preg_match('/\w/', $character)) {
-				$expression .= '[' . t3lib_div::strtoupper($character) . t3lib_div::strtolower($character) . ']';
-			} else {
-				$expression .= $character;
-			}
-		}
-		return $expression;
+		return '(?i)' . $string;
 	}
 
 	/**
