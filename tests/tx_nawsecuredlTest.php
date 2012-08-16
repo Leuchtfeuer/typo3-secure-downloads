@@ -41,6 +41,7 @@ class tx_nawsecuredlTest extends tx_phpunit_testcase {
 
 	public function tearDown() {
 		unset($this->fixture);
+		unset($this->fakeFrontend);
 	}
 
 	/**
