@@ -116,14 +116,12 @@ class tx_nawsecuredl_output {
 			}
 		}
 
-		if ($this->calculatedHash !== $this->hash){
-			header('HTTP/1.1 403 Forbidden');
-			exit ('Access denied!');
+		if (!$this->hashValid()) {
+			$this->exitScript('Hash invalid! Access denied!');
 		}
 
-		if (intval($this->expiryTime) < time()){
-			header('HTTP/1.1 403 Forbidden');
-			exit ('Access denied!');
+		if ($this->expiryTimeExceeded()){
+			$this->exitScript('Link Expired. Access denied!');
 		}
 
 		$this->feUserObj = tslib_eidtools::initFeUser();
@@ -131,10 +129,23 @@ class tx_nawsecuredl_output {
 
 		if ($this->userId !== 0) {
 			if (!$this->checkUserAccess() && !$this->checkGroupAccess()){
-				header('HTTP/1.1 403 Forbidden');
-				exit ('Access denied!');
+				$this->exitScript('Access denied for User!');
 			}
 		}
+	}
+
+	/**
+	 * @return boolean
+	 */
+	protected function hashValid() {
+		return ($this->calculatedHash === $this->hash);
+	}
+
+	/**
+	 * @return boolean
+	 */
+	protected function expiryTimeExceeded() {
+		return (intval($this->expiryTime) < time());
 	}
 
 	/**
@@ -508,15 +519,24 @@ class tx_nawsecuredl_output {
 		return $string;
 	}
 
+	protected function exitScript($message) {
+		header('HTTP/1.1 403 Forbidden');
+		exit($message);
+	}
+
 }
 
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php'])	{
-	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']);
-}
+	// Do not execute anything if we are in testing context
+if (empty($GLOBALS['naw_securedlTestingContext'])) {
 
-/** @var $securedl tx_nawsecuredl_output */
-$securedl = t3lib_div::makeInstance('tx_nawsecuredl_output');
-$securedl->init();
-$securedl->fileOutput();
+	if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php'])	{
+		include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']);
+	}
+
+	/** @var $securedl tx_nawsecuredl_output */
+	$securedl = t3lib_div::makeInstance('tx_nawsecuredl_output');
+	$securedl->init();
+	$securedl->fileOutput();
+}
 
 ?>
