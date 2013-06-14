@@ -28,11 +28,60 @@
  */
 class tx_nawsecuredl_output {
 
-	protected $arrExtConf = array();
+	/**
+	 * @var array
+	 */
+	protected $extensionConfiguration = array();
 
-	protected $intFileSize;
+	/**
+	 * @var tslib_feUserAuth
+	 */
+	protected $feUserObj;
 
-	protected $intLogId;
+	/**
+	 * @var integer
+	 */
+	protected $fileSize;
+
+	/**
+	 * @var integer
+	 */
+	protected $logRowUid;
+
+	/**
+	 * @var integer
+	 */
+	protected $userId;
+
+	/**
+	 * @var string
+	 */
+	protected $userGroups;
+
+	/**
+	 * @var integer
+	 */
+	protected $expiryTime;
+
+	/**
+	 * @var string
+	 */
+	protected $hash;
+
+	/**
+	 * @var string
+	 */
+	protected $file;
+
+	/**
+	 * @var string
+	 */
+	protected $data;
+
+	/**
+	 * @var string
+	 */
+	protected $calculatedHash;
 
 	/**
 	 * The init Function, to check the access rights
@@ -40,19 +89,24 @@ class tx_nawsecuredl_output {
 	 * @return void
 	 */
 	function init(){
-		$this->arrExtConf = $this->GetExtConf();
+		$this->extensionConfiguration = $this->getExtensionConfiguration();
 
-		$this->u = intval(t3lib_div::_GP('u'));
-		if (!$this->u){
-			$this->u = 0;
+		$this->userId = intval(t3lib_div::_GP('u'));
+		if (!$this->userId) {
+			$this->userId = 0;
+		}
+
+		$this->userGroups = t3lib_div::_GP('g');
+		if (!$this->userGroups) {
+			$this->userGroups = 0;
 		}
 
 		$this->hash = t3lib_div::_GP('hash');
-		$this->t = t3lib_div::_GP('t');
+		$this->expiryTime = t3lib_div::_GP('t');
 		$this->file = t3lib_div::_GP('file');
 
-		$this->data = $this->u . $this->file . $this->t;
-		$this->checkhash = t3lib_div::hmac($this->data);
+		$this->data = $this->userId . $this->userGroups . $this->file . $this->expiryTime;
+		$this->calculatedHash = t3lib_div::hmac($this->data);
 
 		// Hook for init:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['init'])) {
@@ -62,33 +116,84 @@ class tx_nawsecuredl_output {
 			}
 		}
 
-		if ($this->checkhash != $this->hash){
-			header('HTTP/1.1 403 Forbidden');
-			exit ('Access denied!');
+		if (!$this->hashValid()) {
+			$this->exitScript('Hash invalid! Access denied!');
 		}
 
-		if (intval($this->t) < time()){
-			header('HTTP/1.1 403 Forbidden');
-			exit ('Access denied!');
+		if ($this->expiryTimeExceeded()){
+			$this->exitScript('Link Expired. Access denied!');
 		}
 
 		$this->feUserObj = tslib_eidtools::initFeUser();
 		tslib_eidtools::connectDB();
 
-		if ($this->u != 0) {
-			$feuser = $this->feUserObj->user['uid'];
-			if ($this->u != $feuser){
-				header('HTTP/1.1 403 Forbidden');
-				exit ('Access denied!');
+		if ($this->userId !== 0) {
+			if (!$this->checkUserAccess() && !$this->checkGroupAccess()){
+				$this->exitScript('Access denied for User!');
 			}
 		}
 	}
 
+	/**
+	 * @return boolean
+	 */
+	protected function hashValid() {
+		return ($this->calculatedHash === $this->hash);
+	}
+
+	/**
+	 * @return boolean
+	 */
+	protected function expiryTimeExceeded() {
+		return (intval($this->expiryTime) < time());
+	}
+
+	/**
+	 * @return boolean
+	 */
+	protected function checkUserAccess() {
+
+		return ($this->userId === (int)$this->feUserObj->user['uid']);
+	}
+
+	/**
+	 * Returns true if the transmitted group list is identical
+	 * to the group list of the current user or both have at least one group
+	 * in common.
+	 *
+	 * @return boolean
+	 */
+	protected function checkGroupAccess() {
+		$accessAllowed = FALSE;
+		if (empty($this->extensionConfiguration['enableGroupCheck'])) {
+			return FALSE;
+		}
+
+		if (!empty($this->extensionConfiguration['groupCheckDirs']) && !preg_match('/' . $this->softQuoteExpression($this->extensionConfiguration['groupCheckDirs']) . '/', $this->file)) {
+			return FALSE;
+		}
+
+		$transmittedGroups = t3lib_div::intExplode(',', $this->userGroups);
+		$actualGroups = t3lib_div::intExplode(',', $this->feUserObj->user['usergroup']);
+		$excludedGroups = t3lib_div::intExplode(',', $this->extensionConfiguration['excludeGroups']);
+		$checkableGroups = array_diff($actualGroups, $excludedGroups);
+
+		if ($actualGroups === $transmittedGroups) {
+			return TRUE;
+		}
+
+		foreach ($checkableGroups as $actualGroup) {
+			if (in_array($actualGroup, $transmittedGroups, TRUE)) {
+				$accessAllowed = TRUE;
+				break;
+			}
+		}
+
+		return $accessAllowed;
+	}
 
 	/**
 	 * Output the requested file
-	 *
-	 * @param data $file
 	 */
 	public function fileOutput(){
 
@@ -114,17 +219,19 @@ class tx_nawsecuredl_output {
 
 		if (file_exists($file)) {
 
-			$this->intFileSize = filesize($file);
+			$this->fileSize = filesize($file);
 
 			$this->logDownload(0);
 
 			$strFileExtension = $this->getFileExtensionByFilename($file);
 
-			if ((bool)$this->arrExtConf['forcedownload'] === TRUE){
-				$forcetypes = t3lib_div::trimExplode("|", $this->arrExtConf['forcedownloadtype']);
+			$forcedownload = FALSE;
+
+			if ((bool)$this->extensionConfiguration['forcedownload'] === TRUE){
+				$forcetypes = t3lib_div::trimExplode("|", $this->extensionConfiguration['forcedownloadtype']);
 				if (is_array($forcetypes)){
 					if (in_array($strFileExtension, $forcetypes)) {
-						$forcedownload = true;
+						$forcedownload = TRUE;
 					}
 				}
 			}
@@ -149,7 +256,7 @@ class tx_nawsecuredl_output {
 			header('Expires: 0'); // set expiration time
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 			header('Content-Type: ' . $strMimeType);
-			header('Content-Length: ' . $this->intFileSize);
+			header('Content-Length: ' . $this->fileSize);
 
 			if ($forcedownload == true){
 				header('Content-Disposition: attachment; filename="' . $fileName . '"');
@@ -157,7 +264,7 @@ class tx_nawsecuredl_output {
 				header('Content-Disposition: inline; filename="' . $fileName . '"');
 			}
 
-			$strOutputFunction = trim($this->arrExtConf['outputFunction']);
+			$strOutputFunction = trim($this->extensionConfiguration['outputFunction']);
 			switch ($strOutputFunction) {
 				case 'readfile_chunked':
 					$this->readfile_chunked($file);
@@ -191,14 +298,14 @@ class tx_nawsecuredl_output {
 	/**
 	 * Log the access of the file
 	 *
-	 * @return void
+	 * @param integer|null $intFileSize
 	 */
 	protected function logDownload($intFileSize = null)
 	{
 		if ($this->isLoggingEnabled()) {
 
 			if (is_null($intFileSize)) {
-				$intFileSize = $this->intFileSize;
+				$intFileSize = $this->fileSize;
 			}
 
 			$data_array = array (
@@ -208,11 +315,11 @@ class tx_nawsecuredl_output {
 				'user_id' => intval($this->feUserObj->user['uid']),
 			);
 
-			if (is_null($this->intLogId)) {
+			if (is_null($this->logRowUid)) {
 				$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_nawsecuredl_counter', $data_array);
-				$this->intLogId = intval($GLOBALS['TYPO3_DB']->sql_insert_id());
+				$this->logRowUid = $GLOBALS['TYPO3_DB']->sql_insert_id();
 			} else {
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_nawsecuredl_counter', '`uid`='.$this->intLogId, $data_array);
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_nawsecuredl_counter', '`uid`=' . (int)$this->logRowUid, $data_array);
 			}
 
 		}
@@ -224,15 +331,15 @@ class tx_nawsecuredl_output {
 	 *
 	 * @return array
 	 */
-	protected function GetExtConf()
+	protected function getExtensionConfiguration()
 	{
-		static $arrExtConf=array();
+		static $extensionConfiguration = array();
 
-		if (!$arrExtConf) {
-			$arrExtConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['naw_securedl']);
+		if (!$extensionConfiguration) {
+			$extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['naw_securedl']);
 		}
 
-		return $arrExtConf;
+		return $extensionConfiguration;
 	}
 
 	/**
@@ -244,7 +351,7 @@ class tx_nawsecuredl_output {
 	 */
 	protected function readfile_chunked($strFileName)
 	{
-		$chunksize = intval($this->arrExtConf['outputChunkSize']); // how many bytes per chunk
+		$chunksize = intval($this->extensionConfiguration['outputChunkSize']); // how many bytes per chunk
 		$timeout = ini_get('max_execution_time');
 		$buffer = '';
 		$bytes_sent = 0;
@@ -259,7 +366,7 @@ class tx_nawsecuredl_output {
 			$bytes_sent += $chunksize;
 			ob_flush();
 			flush();
-			$this->logDownload(t3lib_div::intInRange($bytes_sent, 0, $this->intFileSize));
+			$this->logDownload(t3lib_div::intInRange($bytes_sent, 0, $this->fileSize));
 		}
 		return fclose($handle);
 	}
@@ -342,11 +449,11 @@ class tx_nawsecuredl_output {
 		);
 
 			// Read all additional MIME types from the EM configuration into the array $strAdditionalMimeTypesArray
-		if ($this->arrExtConf['additionalMimeTypes']) {
+		if ($this->extensionConfiguration['additionalMimeTypes']) {
 
 			$strAdditionalFileExtension = '';
 			$strAdditionalMimeType = '';
-			$arrAdditionalMimeTypeParts = t3lib_div::trimExplode(',', $this->arrExtConf['additionalMimeTypes'], TRUE);
+			$arrAdditionalMimeTypeParts = t3lib_div::trimExplode(',', $this->extensionConfiguration['additionalMimeTypes'], TRUE);
 
 			foreach($arrAdditionalMimeTypeParts as $strAdditionalMimeTypeItem) {
 				list($strAdditionalFileExtension, $strAdditionalMimeType) = t3lib_div::trimExplode('|', $strAdditionalMimeTypeItem);
@@ -365,12 +472,10 @@ class tx_nawsecuredl_output {
 			// Check if an specific MIME type is configured for this file extension
 		if (array_key_exists($strFileExtension, $arrMimeTypes)) {
 			$strMimeType = $arrMimeTypes[$strFileExtension];
-		} else if ($checkForImageFiles) {
-				// files bigger than 32MB are now 'application/octet-stream' by default (getimagesize memory_limit problem)
-			if ($this->intFileSize < 1024*1024*32){
-				$arrImageInfos = @getimagesize($file);
-				$intImageType = (int)$arrImageInfos[2];
-			}
+			// files bigger than 32MB are now 'application/octet-stream' by default (getimagesize memory_limit problem)
+		} else if ($checkForImageFiles && ($this->fileSize < 1024*1024*32)) {
+			$arrImageInfos = @getimagesize($this->file);
+			$intImageType = (int)$arrImageInfos[2];
 
 			$arrImageMimeType[0] = 'application/octet-stream';
 			$arrImageMimeType[1] = 'image/gif';
@@ -392,15 +497,46 @@ class tx_nawsecuredl_output {
 	 */
 	protected function isLoggingEnabled()
 	{
-		return (bool)$this->arrExtConf['log'];
+		return (bool)$this->extensionConfiguration['log'];
 	}
+
+
+	/**
+	 * Quotes special some characters for the regular expression.
+	 * Leave braces and brackets as is to have more flexibility in configuration.
+	 *
+	 * TODO: duplicate code. Move both methods to a helper class
+	 *
+	 * @param string $string
+	 * @return string
+	 */
+	protected function softQuoteExpression($string) {
+		$string = str_replace('\\', '\\\\', $string);
+		$string = str_replace(' ', '\ ', $string);
+		$string = str_replace('/', '\/', $string);
+		$string = str_replace('.', '\.', $string);
+		$string = str_replace(':', '\:', $string);
+		return $string;
+	}
+
+	protected function exitScript($message) {
+		header('HTTP/1.1 403 Forbidden');
+		exit($message);
+	}
+
 }
 
-$securedl = t3lib_div::makeInstance('tx_nawsecuredl_output');
-$securedl->init();
-$securedl->fileOutput();
+	// Do not execute anything if we are in testing context
+if (empty($GLOBALS['naw_securedlTestingContext'])) {
 
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php'])	{
-	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']);
+	if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php'])	{
+		include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']);
+	}
+
+	/** @var $securedl tx_nawsecuredl_output */
+	$securedl = t3lib_div::makeInstance('tx_nawsecuredl_output');
+	$securedl->init();
+	$securedl->fileOutput();
 }
+
 ?>

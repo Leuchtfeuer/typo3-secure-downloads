@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007 Peter Ruijter (peter.ruijter at bedrijvenweb nl)
+*  (c) 2007 Peter Ruijter (peter.ruijter(at)bedrijvenweb.nl)
 *  All rights reserved
 *
 *  This script is part of the Typo3 project. The Typo3 project is
@@ -22,8 +22,8 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * @author	Peter Ruijter <peter.ruijter at bedrijvenweb nl>
- * @author	Dietrich Heise <>
+ * @author	Peter Ruijter <peter.ruijter(at)bedrijvenweb.nl>
+ * @author	Dietrich Heise <typo3-ext(at)naw.info>
  */
 
 class ux_fileList extends fileList {
@@ -31,18 +31,19 @@ class ux_fileList extends fileList {
 	/**
 	 * Wraps filenames in links which opens them in a window IF they are in web-path.
 	 *
-	 * @param	string		String to be wrapped in links
-	 * @param	string		ID (path)
-	 * @return	string		HTML
+	 * @param string String to be wrapped in links
+	 * @param string ID (path)
+	 * @return string HTML
 	 */
-	function linkWrapFile($code,$path)	{
+	function linkWrapFile($code, $path)	{
 		include_once('class.tx_nawsecuredl.php');
-		$tmpobj = t3lib_div::makeInstance('tx_nawsecuredl');
+		$objSecureDownloads = t3lib_div::makeInstance('tx_nawsecuredl');
+		/* @var $objSecureDownloads tx_nawsecuredl */
 
-		if (t3lib_div::isFirstPartOfStr($path,PATH_site))	{
-			$href = t3lib_div::getIndpEnv('TYPO3_SITE_URL') . $tmpobj->makeSecure(substr($path, strlen(PATH_site)));
-			$aOnClick = "return top.openUrlInWindow('".$href."','WebFile');";
-			$code = '<a href="#" title="'.htmlspecialchars($code).'" onclick="'.$aOnClick.'">'.t3lib_div::fixed_lgd_cs($code,$this->fixedL).'</a>';
+		if (t3lib_div::isFirstPartOfStr($path, PATH_site)) {
+			$href = t3lib_div::getIndpEnv('TYPO3_SITE_URL') . $objSecureDownloads->makeSecure(substr($path, strlen(PATH_site)));
+			$aOnClick = "return top.openUrlInWindow('" . $href . "', 'WebFile');";
+			$code = '<a href="#" title="' . htmlspecialchars($code) . '" onclick="' . $aOnClick . '">' . t3lib_div::fixed_lgd_cs($code,$this->fixedL) . '</a>';
 		}
 		return $code;
 	}
