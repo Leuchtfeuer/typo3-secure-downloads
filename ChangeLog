@@ -1,3 +1,6 @@
+2012-08-15 Helmut Hummel  <typo3-ext(at)bitmotion.de>
+	* Enable link generation with user groups (Thanks to punkt.de for sponsoring).
+
 2012-08-14 Helmut Hummel  <typo3-ext(at)naw.info>
 	* Improve performance of file extension regex (Thanks to Sebastian Kurfürst).
 
