@@ -110,9 +110,17 @@ class tx_nawsecuredl_output {
 
 		// Hook for init:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['init'])) {
-			$_params = array('pObj' => &$this);
+			$_params = array(
+				'pObj' => $this,
+				'userId' => &$this->userId,
+				'userGroups' => &$this->userGroups,
+				'file' => &$this->file,
+				'expiryTime' => &$this->expiryTime,
+				'hash' => &$this->hash,
+				'calculatedHash' => &$this->calculatedHash,
+			);
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['init'] as $_funcRef)   {
-				t3lib_div::callUserFunction($_funcRef,$_params,$this);
+				t3lib_div::callUserFunction($_funcRef, $_params, $this);
 			}
 		}
 
