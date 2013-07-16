@@ -28,8 +28,8 @@ $EM_CONF[$_EXTKEY] = array(
 	'clearcacheonload' => 0,
 	'lockType' => '',
 	'author' => 'Dietrich Heise, Helmut Hummel',
-	'author_email' => 'typo3-ext(at)naw.info',
-	'author_company' => '<a href="http://www.naw.info" target="_blank">naw.info</a>',
+	'author_email' => 'typo3-ext(at)bitmotion.de',
+	'author_company' => '<a href="http://www.bitmotion.de" target="_blank">bitmotion.de</a>',
 	'CGLcompliance' => '',
 	'CGLcompliance_note' => '',
 	'constraints' => array(

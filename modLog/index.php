@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2009 Helmut Hummel <typo3-ext(at)naw.info>
+*  (c) 2009 Helmut Hummel <typo3-ext(at)bitmotion.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -39,7 +39,7 @@ $BE_USER->modAccess($MCONF,1);    // This checks permissions and exits if the us
 /**
  * Module 'Download Log' for the 'naw_securedl' extension.
  *
- * @author    Helmut Hummel <typo3-ext(at)naw.info>
+ * @author    Helmut Hummel <typo3-ext(at)bitmotion.de>
  * @package    TYPO3
  * @subpackage    tx_nawsecuredl
  */

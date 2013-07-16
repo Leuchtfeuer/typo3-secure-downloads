@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2005-2007 Dietrich Heise (typo3-ext(at)naw.info)
+ *  (c) 2005-2007 Dietrich Heise (typo3-ext(at)bitmotion.de)
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,8 +23,8 @@
  ***************************************************************/
 
 /**
- * @author	Dietrich Heise <typo3-ext(at)naw.info>
- * @author	Helmut Hummel <typo3-ext(at)naw.info>
+ * @author	Dietrich Heise <typo3-ext(at)bitmotion.de>
+ * @author	Helmut Hummel <typo3-ext(at)bitmotion.de>
  */
 class tx_nawsecuredl_output {
 

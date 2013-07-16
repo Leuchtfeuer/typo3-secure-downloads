@@ -23,7 +23,7 @@
 ***************************************************************/
 /**
  * @author	Peter Ruijter <peter.ruijter(at)bedrijvenweb.nl>
- * @author	Dietrich Heise <typo3-ext(at)naw.info>
+ * @author	Dietrich Heise <typo3-ext(at)bitmotion.de>
  */
 
 class ux_fileList extends fileList {

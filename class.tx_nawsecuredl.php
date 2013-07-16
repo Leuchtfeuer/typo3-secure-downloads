@@ -2,8 +2,8 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2005-2011 Dietrich Heise (typo3-ext(at)naw.info)
- *  (c) 2009-2011 Helmut Hummel (typo3-ext(at)naw.info)
+ *  (c) 2005-2011 Dietrich Heise (typo3-ext(at)bitmotion.de)
+ *  (c) 2009-2011 Helmut Hummel (typo3-ext(at)bitmotion.de)
  *  All rights reserved
  *
  *  This script is part of the Typo3 project. The Typo3 project is
@@ -24,8 +24,8 @@
  ***************************************************************/
 
 /**
- * @author	Dietrich Heise <typo3-ext(at)naw.info>
- * @author	Helmut Hummel <typo3-ext(at)naw.info>
+ * @author	Dietrich Heise <typo3-ext(at)bitmotion.de>
+ * @author	Helmut Hummel <typo3-ext(at)bitmotion.de>
  */
 class tx_nawsecuredl {
 
@@ -168,7 +168,7 @@ class tx_nawsecuredl {
 			$frontendUserGroupIds = t3lib_div::trimExplode(',', $this->objFrontend->fe_user->user['usergroup'], TRUE);
 		} else {
 			$frontendUserId = 0;
-			$frontendUserGroupIds = array();
+			$frontendUserGroupIds = array( 0 );
 		}
 
 		$cacheTimeToAdd = $this->extensionConfiguration['cachetimeadd'];

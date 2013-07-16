@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE T3locallang SYSTEM "http://www.naw.info/dtds/t3locallang.dtd">
+<!DOCTYPE T3locallang SYSTEM "http://www.bitmotion.de/dtds/t3locallang.dtd">
 <T3locallang>
 	<meta type="array">
 		<type>module</type>
