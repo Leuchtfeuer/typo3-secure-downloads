@@ -24,6 +24,8 @@
 /**
  * @author	Peter Ruijter <peter.ruijter(at)bedrijvenweb.nl>
  * @author	Dietrich Heise <typo3-ext(at)bitmotion.de>
+ *
+ * Used in TYPO3 < 6.0
  */
 
 class ux_fileList extends fileList {
@@ -36,8 +38,8 @@ class ux_fileList extends fileList {
 	 * @return string HTML
 	 */
 	function linkWrapFile($code, $path)	{
-		include_once('class.tx_nawsecuredl.php');
-		$objSecureDownloads = t3lib_div::makeInstance('tx_nawsecuredl');
+		include_once('Classes/Service/NawSecuredlService.php');
+		$objSecureDownloads = t3lib_div::makeInstance('NawSecuredlService');
 		/* @var $objSecureDownloads tx_nawsecuredl */
 
 		if (t3lib_div::isFirstPartOfStr($path, PATH_site)) {

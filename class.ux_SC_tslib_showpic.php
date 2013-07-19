@@ -23,12 +23,15 @@
 ***************************************************************/
 /**
  * @author	Dietrich Heise <typo3-ext(at)bitmotion.de>
+ *
+ * Used in TYPO3 < 6.0
  */
 
 class ux_SC_tslib_showpic extends SC_tslib_showpic {
+
 	function printContent()	{
-		include_once('class.tx_nawsecuredl.php');
-		$tmpobj = t3lib_div::makeInstance('tx_nawsecuredl');
+		include_once('Classes/Service/NawSecuredlService.php');
+		$tmpobj = t3lib_div::makeInstance('NawSecuredlService');
 		echo $tmpobj->parseContent($this->content);
 	}
 }

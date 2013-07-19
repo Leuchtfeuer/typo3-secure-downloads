@@ -374,7 +374,7 @@ class tx_nawsecuredl_output {
 			$bytes_sent += $chunksize;
 			ob_flush();
 			flush();
-			$this->logDownload(t3lib_div::intInRange($bytes_sent, 0, $this->fileSize));
+			$this->logDownload(t3lib_utility_Math::forceIntegerInRange($bytes_sent, 0, $this->fileSize));
 		}
 		return fclose($handle);
 	}

@@ -1,3 +1,8 @@
+2013-07-19 Dietrich Heise <typo3-ext(at)bitmotion.de>
+	* First Version with TYPO3 6.x Support
+	* Change the order of GET params in the default settings, so &file=/path/example.jpg is at the end of the url,
+	  because some javascript functions check for the file extension (e.g. jQuery Colorbox)
+
 2012-08-15 Helmut Hummel  <typo3-ext(at)bitmotion.de>
 	* Enable link generation with user groups (Thanks to punkt.de for sponsoring).
 

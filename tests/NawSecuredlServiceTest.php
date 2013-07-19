@@ -1,8 +1,8 @@
 <?php
 
-require_once(__DIR__ . '/../class.tx_nawsecuredl.php');
+require_once( __DIR__ . '/../Classes/Service/NawSecuredlService.php' );
 
-class tx_nawsecuredlTest extends tx_phpunit_testcase {
+class NawSecuredlServiceTest extends Tx_Phpunit_TestCase {
 
 	/**
 	 * Enable backup of global and system variables
@@ -20,7 +20,7 @@ class tx_nawsecuredlTest extends tx_phpunit_testcase {
 	protected $backupGlobalsBlacklist = array('TYPO3_DB');
 
 	/**
-	 * @var PHPUnit_Framework_MockObject_MockObject|tx_nawsecuredl
+	 * @var PHPUnit_Framework_MockObject_MockObject|NawSecuredlService
 	 */
 	protected $fixture;
 
@@ -30,7 +30,7 @@ class tx_nawsecuredlTest extends tx_phpunit_testcase {
 	protected $fakeFrontend;
 
 	public function setUp() {
-		//$this->fixture = $this->getMock('tx_nawsecuredl', array('dummy'));
+		//$this->fixture = $this->getMock('NawSecuredlService', array('dummy'));
 		$this->fakeFrontend = $this->getMock('tslib_fe');
 		$this->fakeFrontend->page['cache_timeout'] = '0';
 		$this->fakeFrontend->fe_user->user['uid'] = '999';
@@ -51,8 +51,20 @@ class tx_nawsecuredlTest extends tx_phpunit_testcase {
 		$this->fakeFrontend->config['config']['tx_nawsecuredl_enable'] = '0';
 		$dummy = array();
 
-		$this->fixture = $this->getMock('tx_nawsecuredl', array('parseContent'));
+		$this->fixture = $this->getMock('\Bm\NawSecuredl\Service\NawSecuredlService', array('parseContent'));
 		$this->fixture->expects($this->never())->method('parseContent');
+		$this->fixture->parseFE($dummy, $this->fakeFrontend);
+	}
+
+	/**
+	 * @test
+	 */
+	public function test() {
+		$this->fakeFrontend->config['config']['tx_nawsecuredl_enable'] = '1';
+		$dummy = NULL;
+
+		$this->fixture = $this->getMock('\Bm\NawSecuredl\Service\NawSecuredlService', array('parseContent'));
+		$this->fixture->expects($this->once())->method('parseContent');
 		$this->fixture->parseFE($dummy, $this->fakeFrontend);
 	}
 
@@ -63,7 +75,7 @@ class tx_nawsecuredlTest extends tx_phpunit_testcase {
 		$this->fakeFrontend->config['config']['tx_nawsecuredl_enable'] = '1';
 		$dummy = NULL;
 
-		$this->fixture = $this->getMock('tx_nawsecuredl', array('parseContent'));
+		$this->fixture = $this->getMock('\Bm\NawSecuredl\Service\NawSecuredlService', array('parseContent'));
 		$this->fixture->expects($this->once())->method('parseContent');
 		$this->fixture->parseFE($dummy, $this->fakeFrontend);
 	}
@@ -75,7 +87,7 @@ class tx_nawsecuredlTest extends tx_phpunit_testcase {
 		$this->fakeFrontend->config['config'] = array();
 		$dummy = NULL;
 
-		$this->fixture = $this->getMock('tx_nawsecuredl', array('parseContent'));
+		$this->fixture = $this->getMock('\Bm\NawSecuredl\Service\NawSecuredlService', array('parseContent'));
 		$this->fixture->expects($this->once())->method('parseContent');
 		$this->fixture->parseFE($dummy, $this->fakeFrontend);
 	}
@@ -84,7 +96,7 @@ class tx_nawsecuredlTest extends tx_phpunit_testcase {
 	 * @test
 	 */
 	public function linkFormatIsSetToDefaultIfNotSetInConfiguration() {
-		$this->fixture = $this->getMock('tx_nawsecuredl', array('getHash', 'getExtensionConfiguration'));
+		$this->fixture = $this->getMock('\Bm\NawSecuredl\Service\NawSecuredlService', array('getHash', 'getExtensionConfiguration'));
 
 		$this->fixture->expects($this->any())->method('getHash')->will($this->returnValue('abcdefgh'));
 		$this->fixture->expects($this->any())->method('getExtensionConfiguration')->will($this->returnValue(array(
@@ -96,7 +108,7 @@ class tx_nawsecuredlTest extends tx_phpunit_testcase {
 		)));
 
 		$this->fixture->__construct();
-		$this->assertSame('index.php?eID=tx_nawsecuredl&u=999&g=4%2C7%2C8%2C3&file=foo&t=86400&hash=abcdefgh', $this->fixture->makeSecure('foo'));
+		$this->assertSame('index.php?eID=tx_nawsecuredl&u=999&g=4%2C7%2C8%2C3&t=86400&hash=abcdefgh&file=foo', $this->fixture->makeSecure('foo'));
 	}
 
 
@@ -104,7 +116,7 @@ class tx_nawsecuredlTest extends tx_phpunit_testcase {
 	 * @test
 	 */
 	public function linkFormatIsSetToDefaultIfHasOldConfiguration() {
-		$this->fixture = $this->getMock('tx_nawsecuredl', array('getHash', 'getExtensionConfiguration'));
+		$this->fixture = $this->getMock('\Bm\NawSecuredl\Service\NawSecuredlService', array('getHash', 'getExtensionConfiguration'));
 
 		$this->fixture->expects($this->any())->method('getHash')->will($this->returnValue('abcdefgh'));
 		$this->fixture->expects($this->any())->method('getExtensionConfiguration')->will($this->returnValue(array(
@@ -116,7 +128,7 @@ class tx_nawsecuredlTest extends tx_phpunit_testcase {
 		)));
 
 		$this->fixture->__construct();
-		$this->assertSame('index.php?eID=tx_nawsecuredl&u=999&g=4%2C7%2C8%2C3&file=foo&t=86400&hash=abcdefgh', $this->fixture->makeSecure('foo'));
+		$this->assertSame('index.php?eID=tx_nawsecuredl&u=999&g=4%2C7%2C8%2C3&t=86400&hash=abcdefgh&file=foo', $this->fixture->makeSecure('foo'));
 	}
 
 
@@ -124,7 +136,7 @@ class tx_nawsecuredlTest extends tx_phpunit_testcase {
 	 * @test
 	 */
 	public function linkFormatIsNotSetToDefaultIfHasNewConfiguration() {
-		$this->fixture = $this->getMock('tx_nawsecuredl', array('getHash', 'getExtensionConfiguration'));
+		$this->fixture = $this->getMock('\Bm\NawSecuredl\Service\NawSecuredlService', array('getHash', 'getExtensionConfiguration'));
 
 		$this->fixture->expects($this->any())->method('getHash')->will($this->returnValue('abcdefgh'));
 		$this->fixture->expects($this->any())->method('getExtensionConfiguration')->will($this->returnValue(array(
@@ -169,7 +181,7 @@ class tx_nawsecuredlTest extends tx_phpunit_testcase {
 	 * @dataProvider parseContentTestDataProvider
 	 */
 	public function allConfiguredAssetsAreReplacedInHtml($originalHtml, $expectedHtml) {
-		$this->fixture = $this->getMock('tx_nawsecuredl', array('getHash', 'getExtensionConfiguration'));
+		$this->fixture = $this->getMock('\Bm\NawSecuredl\Service\NawSecuredlService', array('getHash', 'getExtensionConfiguration'));
 
 		$this->fixture->expects($this->any())->method('getHash')->will($this->returnValue('abcdefgh'));
 		$this->fixture->expects($this->any())->method('getExtensionConfiguration')->will($this->returnValue(array(
