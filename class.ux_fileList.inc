@@ -38,8 +38,8 @@ class ux_fileList extends fileList {
 	 * @return string HTML
 	 */
 	function linkWrapFile($code, $path)	{
-		include_once('Classes/Service/NawSecuredlService.php');
-		$objSecureDownloads = t3lib_div::makeInstance('NawSecuredlService');
+		include_once('Classes/Service/Tx_NawSecuredlService.php');
+		$objSecureDownloads = t3lib_div::makeInstance('Tx_NawSecuredlService');
 		/* @var $objSecureDownloads tx_nawsecuredl */
 
 		if (t3lib_div::isFirstPartOfStr($path, PATH_site)) {

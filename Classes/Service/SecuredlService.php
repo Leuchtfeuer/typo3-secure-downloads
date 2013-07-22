@@ -1,5 +1,5 @@
 <?php
-namespace Bm\NawSecuredl\Service;
+namespace Bm\Securedl\Service;
 /***************************************************************
  *  Copyright notice
  *
@@ -28,7 +28,7 @@ namespace Bm\NawSecuredl\Service;
  * @author	Dietrich Heise <typo3-ext(at)bitmotion.de>
  * @author	Helmut Hummel <typo3-ext(at)bitmotion.de>
  */
-class NawSecuredlService {
+class SecuredlService {
 
 	/**
 	 * Extension Configuration
@@ -70,7 +70,6 @@ class NawSecuredlService {
 	 */
 	public function parseFE(&$parameters, $objFrontend) {
 		$this->objFrontend = $objFrontend;
-
 		// Parsing the content if not explicitly disabled
 		if (!isset($this->objFrontend->config['config']['tx_nawsecuredl_enable'])
 			|| $this->objFrontend->config['config']['tx_nawsecuredl_enable'] !== '0') {
@@ -166,7 +165,7 @@ class NawSecuredlService {
 	public function makeSecure($originalUrl) {
 		if ($this->objFrontend->fe_user->user['uid']){
 			$frontendUserId = $this->objFrontend->fe_user->user['uid'];
-			$frontendUserGroupIds = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->objFrontend->fe_user->user['usergroup'], TRUE);
+			$frontendUserGroupIds = \t3lib_div::trimExplode(',', $this->objFrontend->fe_user->user['usergroup'], TRUE);
 		} else {
 			$frontendUserId = 0;
 			$frontendUserGroupIds = array( 0 );
@@ -186,7 +185,7 @@ class NawSecuredlService {
 
 		// Parsing the link format, and return this instead (an flexible link format is useful for mod_rewrite tricks ;)
 		if (!isset($this->extensionConfiguration['linkFormat']) || strpos($this->extensionConfiguration['linkFormat'], '###FEGROUPS###') === FALSE) {
-			$this->extensionConfiguration['linkFormat'] = 'index.php?eID=tx_nawsecuredl&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
+			$this->extensionConfiguration['linkFormat'] = '/index.php?eID=tx_nawsecuredl&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
 		}
 
 		$tokens = array('###FEUSER###', '###FEGROUPS###', '###FILE###', '###TIMEOUT###', '###HASH###');
@@ -194,15 +193,15 @@ class NawSecuredlService {
 		$transformedUrl = str_replace($tokens, $replacements, $this->extensionConfiguration['linkFormat']);
 
 		// Hook for makeSecure:
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/Classes/Service/NawSecuredlService.php']['makeSecure'])) {
-			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/Classes/Service/NawSecuredlService.php']['makeSecure'] as $_funcRef)   {
-				$transformedUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $transformedUrl, $this);
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/Classes/Service/SecuredlService.php']['makeSecure'])) {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/Classes/Service/SecuredlService.php']['makeSecure'] as $_funcRef)   {
+				$transformedUrl = \t3lib_div::callUserFunction($_funcRef, $transformedUrl, $this);
 			}
 		}
 		// Hook for makeSecure: (old class name, for compatibility reasons)
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl.php']['makeSecure'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl.php']['makeSecure'] as $_funcRef)   {
-				$transformedUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $transformedUrl, $this);
+				$transformedUrl = \t3lib_div::callUserFunction($_funcRef, $transformedUrl, $this);
 			}
 		}
 
@@ -214,7 +213,7 @@ class NawSecuredlService {
 	 * @return string
 	 */
 	protected function getHash($string) {
-		return \TYPO3\CMS\Core\Utility\GeneralUtility::hmac($string);
+		return \t3lib_div::hmac($string);
 	}
 
 	/**
@@ -245,10 +244,3 @@ class NawSecuredlService {
 	}
 
 }
-
-// Include extension?
-// Deprecated, only used for TYPO3 < 6.0
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/Classes/Driver/Xclass/NawSecuredlService.php']) {
-	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/Classes/Driver/Xclass/NawSecuredlService.php']);
-}
-?>

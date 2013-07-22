@@ -1,5 +1,5 @@
 <?php
-namespace Bm\NawSecuredl\Driver\Xclass;
+namespace Bm\Securedl\Driver\Xclass;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -33,7 +33,7 @@ class LocalDriver extends \TYPO3\CMS\Core\Resource\Driver\LocalDriver {
 			if (preg_match('/(('. $this->softQuoteExpression($extensionConfiguration['securedDirs']) . ')+?\/.*?(?:(?i)' . ($extensionConfiguration['filetype']) . '))/i', $publicUrl, $matchedUrls)) {
 				if (is_array($matchedUrls)){
 					if ($matchedUrls[0] == $publicUrl){
-						$objSecureDownloads = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bm\NawSecuredl\Service\NawSecuredlService');
+						$objSecureDownloads = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bm\Securedl\Service\SecuredlService');
 						$publicUrl = $objSecureDownloads->makeSecure($publicUrl);
 						// TODO: search better solution
 						if ( substr($publicUrl,0,1) != '/' ){
