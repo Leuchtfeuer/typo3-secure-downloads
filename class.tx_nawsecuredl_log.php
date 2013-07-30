@@ -16,8 +16,8 @@
 /**
  * Download logging
  *
- * @author	Rene Fritz <typo3-ext(at)naw.info>
- * @author	Helmut Hummel <typo3-ext(at)naw.info>
+ * @author	Rene Fritz <typo3-ext(at)bitmotion.de>
+ * @author	Helmut Hummel <typo3-ext(at)bitmotion.de>
  * @package TYPO3
  * @subpackage naw_securedl
  */

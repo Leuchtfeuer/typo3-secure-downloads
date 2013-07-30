@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2005-2007 Dietrich Heise (typo3-ext(at)naw.info)
+ *  (c) 2005-2007 Dietrich Heise (typo3-ext(at)bitmotion.de)
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,8 +23,8 @@
  ***************************************************************/
 
 /**
- * @author	Dietrich Heise <typo3-ext(at)naw.info>
- * @author	Helmut Hummel <typo3-ext(at)naw.info>
+ * @author	Dietrich Heise <typo3-ext(at)bitmotion.de>
+ * @author	Helmut Hummel <typo3-ext(at)bitmotion.de>
  */
 class tx_nawsecuredl_output {
 
@@ -110,9 +110,17 @@ class tx_nawsecuredl_output {
 
 		// Hook for init:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['init'])) {
-			$_params = array('pObj' => &$this);
+			$_params = array(
+				'pObj' => $this,
+				'userId' => &$this->userId,
+				'userGroups' => &$this->userGroups,
+				'file' => &$this->file,
+				'expiryTime' => &$this->expiryTime,
+				'hash' => &$this->hash,
+				'calculatedHash' => &$this->calculatedHash,
+			);
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['init'] as $_funcRef)   {
-				t3lib_div::callUserFunction($_funcRef,$_params,$this);
+				t3lib_div::callUserFunction($_funcRef, $_params, $this);
 			}
 		}
 
@@ -366,7 +374,7 @@ class tx_nawsecuredl_output {
 			$bytes_sent += $chunksize;
 			ob_flush();
 			flush();
-			$this->logDownload(t3lib_div::intInRange($bytes_sent, 0, $this->fileSize));
+			$this->logDownload(t3lib_utility_Math::forceIntegerInRange($bytes_sent, 0, $this->fileSize));
 		}
 		return fclose($handle);
 	}
