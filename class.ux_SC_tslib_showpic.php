@@ -30,9 +30,10 @@
 class ux_SC_tslib_showpic extends SC_tslib_showpic {
 
 	function printContent()	{
-		include_once('Classes/Service/SecuredlService.php');
-		$tmpobj = t3lib_div::makeInstance('SecuredlService');
+		include_once(t3lib_extMgm::extPath('naw_securedl') . 'Classes/Service/SecuredlService.php');
+		$tmpobj = t3lib_div::makeInstance('Bm\Securedl\Service\SecuredlService');
 		echo $tmpobj->parseContent($this->content);
 	}
+
 }
 ?>
