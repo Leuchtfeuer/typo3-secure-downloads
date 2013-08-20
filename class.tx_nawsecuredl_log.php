@@ -99,7 +99,6 @@ class tx_nawsecuredl_log {
 	 *
 	 * @param 	string 	$app_id Application ID to be written to the log. Can be a plugin prefix.
 	 * @param 	string 	$sitetitle The name of the website. Default is from TSFE.
-	 * @return	void
 	 * @see __construct()
 	 */
 	function &__construct($app_id='', $sitetitle='') {
@@ -131,7 +130,7 @@ class tx_nawsecuredl_log {
 	 * @param 	array 		$addInfo Additional infos to be written: host, user_id, user_name, user_group, page_id
 	 * @return 	integer 	Log id. See update().
 	 */
-	function insert($fileInfo, $bytes_downloaded=0, $protected=0, $addInfo=array()) {
+	function insert($fileInfo, $bytes_downloaded=0, $protected=FALSE, $addInfo=array()) {
 
 		if (is_object($fileInfo)) {
 			$fileInfo = $fileInfo->getMetaArray();

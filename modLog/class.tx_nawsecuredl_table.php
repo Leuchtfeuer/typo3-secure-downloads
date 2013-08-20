@@ -128,7 +128,7 @@ class tx_nawsecuredl_table {
 	public function render()
 	{
 
-		$out .=  "<style>\r\n";
+		$out =  "<style>\r\n";
 		$out .=  ".row_dark { " . $this->rowDarkStyle . " }\r\n";
 		$out .=  ".row_lite { " . $this->rowLightStylestyle . " }\r\n";
 		$out .=  ".row_hilite { " . $this->rowHighlightStyle . " } \r\n";

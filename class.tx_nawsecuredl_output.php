@@ -383,6 +383,7 @@ class tx_nawsecuredl_output {
 	 * Extracts the file extension out of a complete file name.
 	 *
 	 * @param string $strFileName
+	 * @return string
 	 */
 	protected function getFileExtensionByFilename($strFileName)
 	{

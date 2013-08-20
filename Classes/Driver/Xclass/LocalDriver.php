@@ -17,7 +17,7 @@ class LocalDriver extends \TYPO3\CMS\Core\Resource\Driver\LocalDriver {
 	 * WARNING: Access to the file may be restricted by further means, e.g.
 	 * some web-based authentication. You have to take care of this yourself.
 	 *
-	 * @param ResourceInterface $resourceObject The file or folder object
+	 * @param \TYPO3\CMS\Core\Resource\ResourceInterface $resourceObject The file or folder object
 	 * @param bool $relativeToCurrentScript Determines whether the URL returned should be relative to the current script, in case it is relative at all (only for the LocalDriver)
 	 * @return string
 	 */
@@ -33,7 +33,8 @@ class LocalDriver extends \TYPO3\CMS\Core\Resource\Driver\LocalDriver {
 			if (preg_match('/(('. $this->softQuoteExpression($extensionConfiguration['securedDirs']) . ')+?\/.*?(?:(?i)' . ($extensionConfiguration['filetype']) . '))/i', $publicUrl, $matchedUrls)) {
 				if (is_array($matchedUrls)){
 					if ($matchedUrls[0] == $publicUrl){
-						$objSecureDownloads = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bm\Securedl\Service\SecuredlService');
+						$objSecureDownloads = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance
+							('Bm\Securedl\Service\SecuredlService');
 						$publicUrl = $objSecureDownloads->makeSecure($publicUrl);
 						// TODO: search better solution
 						if ( substr($publicUrl,0,1) != '/' ){

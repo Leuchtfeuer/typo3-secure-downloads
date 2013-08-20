@@ -109,8 +109,6 @@ class  tx_nawsecuredl_module1 extends t3lib_SCbase {
 	/**
 	 * Main function of the module. Write the content to $this->content
 	 * If you chose "web" as main module, you will need to consider the $this->id parameter which will contain the uid-number of the page clicked in the page tree
-	 *
-	 * @return    [type]        ...
 	 */
 	function main()
 	{
@@ -333,7 +331,6 @@ class  tx_nawsecuredl_module1 extends t3lib_SCbase {
 	 *
 	 * @param	string		Table name present in $TCA
 	 * @param	string		Field to select on
-	 * @param	string		Value that $theField must match
 	 * @param	string		Optional additional WHERE clauses put in the end of the query. DO NOT PUT IN GROUP BY, ORDER BY or LIMIT!
 	 * @param	string		Optional GROUP BY field(s), if none, supply blank string.
 	 * @param	string		Optional ORDER BY field(s), if none, supply blank string.
