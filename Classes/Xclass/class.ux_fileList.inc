@@ -33,18 +33,17 @@ class ux_fileList extends fileList {
 	/**
 	 * Wraps filenames in links which opens them in a window IF they are in web-path.
 	 *
-	 * @param string String to be wrapped in links
-	 * @param string ID (path)
+	 * @param string $code String to be wrapped in links
+	 * @param string $path ID (path)
 	 * @return string HTML
 	 */
-	function linkWrapFile($code, $path)	{
-		include_once('Classes/Service/Tx_NawSecureDownloadService.php');
-		$objSecureDownloads = t3lib_div::makeInstance('Tx_NawSecureDownloadService');
-		/* @var $objSecureDownloads tx_nawsecuredl */
+	function linkWrapFile($code, $path) {
+		/* @var $objSecureDownloads \Bitmotion\NawSecuredl\Service\SecureDownloadService */
+		$objSecureDownloads = t3lib_div::makeInstance('Tx_NawSecuredl_Service_SecureDownloadService');
 
 		if (t3lib_div::isFirstPartOfStr($path, PATH_site)) {
 			$href = t3lib_div::getIndpEnv('TYPO3_SITE_URL') . $objSecureDownloads->makeSecure(substr($path, strlen(PATH_site)));
-			$aOnClick = "return top.openUrlInWindow('" . $href . "', 'WebFile');";
+			$aOnClick = "return top.openUrlInWindow(" . t3lib_div::quoteJSvalue($href) . ", 'WebFile');";
 			$code = '<a href="#" title="' . htmlspecialchars($code) . '" onclick="' . $aOnClick . '">' . t3lib_div::fixed_lgd_cs($code,$this->fixedL) . '</a>';
 		}
 		return $code;

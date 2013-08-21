@@ -22,17 +22,17 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * @author	Dietrich Heise <typo3-ext(at)bitmotion.de>
+ * @author Dietrich Heise <typo3-ext(at)bitmotion.de>
  *
  * Used in TYPO3 < 6.0
  */
 
 class ux_SC_tslib_showpic extends SC_tslib_showpic {
 
-	function printContent()	{
-		include_once(t3lib_extMgm::extPath('naw_securedl') . 'Classes/Service/SecureDownloadService.php');
-		$tmpobj = t3lib_div::makeInstance('Bitmotion\NawSecuredl\Service\SecureDownloadService');
-		echo $tmpobj->parseContent($this->content);
+	function printContent() {
+		/* @var $objSecureDownloads \Bitmotion\NawSecuredl\Service\SecureDownloadService */
+		$objSecureDownloads = t3lib_div::makeInstance('Tx_NawSecuredl_Service_SecureDownloadService');
+		echo $objSecureDownloads->parseContent($this->content);
 	}
 
 }
