@@ -25,6 +25,7 @@ namespace Bitmotion\NawSecuredl\Resource;
  ***************************************************************/
 
 use TYPO3\CMS\Core\Resource\Driver\AbstractDriver;
+use TYPO3\CMS\Core\Resource\Driver\LocalDriver;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Utility\PathUtility;
@@ -34,6 +35,11 @@ use TYPO3\CMS\Core\Utility\PathUtility;
  * @package Bitmotion\NawSecuredl\Resource
  */
 class UrlGenerationInterceptor {
+	/**
+	 * @var \Bitmotion\NawSecuredl\Resource\Publishing\ResourcePublisherInterface
+	 * @inject
+	 */
+	protected $resourcePublisher;
 
 	/**
 	 * @param ResourceStorage $storage
@@ -43,62 +49,29 @@ class UrlGenerationInterceptor {
 	 * @param array $urlData
 	 */
 	public function getPublicUrl(ResourceStorage $storage, AbstractDriver $driver, ResourceInterface $resourceObject, $relativeToCurrentScript, array $urlData) {
-		$publicUrl = $driver->getPublicUrl($resourceObject, FALSE);
-
-		$extensionConfiguration = $this->getSecureDlExtensionConfiguration();
-
-		if (preg_match('/(('. $this->softQuoteExpression($extensionConfiguration['securedDirs']) . ')+?\/.*?(?:(?i)' . ($extensionConfiguration['filetype']) . '))/i', $publicUrl, $matchedUrls)) {
-			if (is_array($matchedUrls)){
-				if ($matchedUrls[0] == $publicUrl){
-					$objSecureDownloads = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance
-						('Bitmotion\NawSecuredl\Service\SecureDownloadService');
-					$publicUrl = $objSecureDownloads->makeSecure($publicUrl);
-					// If requested, make the path relative to the current script in order to make it possible
-					// to use the relative file
-					if ($relativeToCurrentScript) {
-						$publicUrl = PathUtility::getRelativePathTo(PathUtility::dirname((PATH_site . $publicUrl))) . PathUtility::basename($publicUrl);
-					}
-				}
-			}
+		if (!$driver instanceof LocalDriver) {
+			// We cannot handle other files than local files yet
+			return;
 		}
 
-		$urlData['publicUrl'] = $publicUrl;
+		$this->resourcePublisher->setBaseUri(substr($driver->getAbsoluteBasePath(), strlen(PATH_site)));
 
+		$publicUrl = $this->resourcePublisher->getResourceWebUri($resourceObject);
+
+		if ($publicUrl === FALSE) {
+			// Publishing failed, so better do not change the URI and return
+			return;
+		}
+
+		// If requested, make the path relative to the current script in order to make it possible
+		// to use the relative file
+		if ($relativeToCurrentScript) {
+			$publicUrl = PathUtility::getRelativePathTo(PathUtility::dirname((PATH_site . $publicUrl))) . PathUtility::basename($publicUrl);
+		}
+
+		// $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
+		$urlData['publicUrl'] =  $publicUrl;
 	}
 
-	/**
-	 * Quotes special some characters for the regular expression.
-	 * Leave braces and brackets as is to have more flexibility in configuration.
-	 *
-	 * @param string $string
-	 * @return string
-	 */
-	protected function softQuoteExpression($string) {
-		return str_replace(
-			array(
-				'\\',
-				' ',
-				'/',
-				'.',
-				':'
-			),
-			array(
-				'\\\\',
-				'\ ',
-				'\/',
-				'\.',
-				'\:'
-			),
-			$string
-		);
-	}
 
-	/**
-	 * Get extension configuration
-	 *
-	 * @return array
-	 */
-	protected function getSecureDlExtensionConfiguration() {
-		return unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['naw_securedl']);
-	}
 }
