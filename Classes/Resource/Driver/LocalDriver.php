@@ -1,5 +1,5 @@
 <?php
-namespace Bm\Securedl\Driver\Xclass;
+namespace Bitmotion\NawSecuredl\Resource\Driver;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -34,7 +34,7 @@ class LocalDriver extends \TYPO3\CMS\Core\Resource\Driver\LocalDriver {
 				if (is_array($matchedUrls)){
 					if ($matchedUrls[0] == $publicUrl){
 						$objSecureDownloads = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance
-							('Bm\Securedl\Service\SecuredlService');
+							('Bitmotion\NawSecuredl\Service\SecureDownloadService');
 						$publicUrl = $objSecureDownloads->makeSecure($publicUrl);
 						// TODO: search better solution
 						if ( substr($publicUrl,0,1) != '/' ){

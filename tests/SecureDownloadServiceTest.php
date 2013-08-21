@@ -1,8 +1,8 @@
 <?php
 
-require_once( __DIR__ . '/../Classes/Service/SecuredlService.php' );
+require_once( __DIR__ . '/../Classes/Service/SecureDownloadService.php' );
 
-class SecuredlServiceTest extends Tx_Phpunit_TestCase {
+class SecureDownloadServiceTest extends Tx_Phpunit_TestCase {
 
 	/**
 	 * Enable backup of global and system variables
@@ -20,18 +20,17 @@ class SecuredlServiceTest extends Tx_Phpunit_TestCase {
 	protected $backupGlobalsBlacklist = array('TYPO3_DB');
 
 	/**
-	 * @var PHPUnit_Framework_MockObject_MockObject|SecuredlService
+	 * @var \PHPUnit_Framework_MockObject_MockObject|\Bitmotion\NawSecuredl\Service\SecureDownloadService
 	 */
 	protected $fixture;
 
 	/**
-	 * @var PHPUnit_Framework_MockObject_MockObject|tslib_fe
+	 * @var \PHPUnit_Framework_MockObject_MockObject|\tslib_fe
 	 */
 	protected $fakeFrontend;
 
 	public function setUp() {
-		//$this->fixture = $this->getMock('SecuredlService', array('dummy'));
-		$this->fakeFrontend = $this->getMock('tslib_fe');
+		$this->fakeFrontend = $this->getMock('tslib_fe', array(), array(), '', FALSE);
 		$this->fakeFrontend->page['cache_timeout'] = '0';
 		$this->fakeFrontend->fe_user->user['uid'] = '999';
 		$this->fakeFrontend->fe_user->user['usergroup'] = '4,7,8,3';
@@ -51,20 +50,8 @@ class SecuredlServiceTest extends Tx_Phpunit_TestCase {
 		$this->fakeFrontend->config['config']['tx_nawsecuredl_enable'] = '0';
 		$dummy = array();
 
-		$this->fixture = $this->getMock('\Bm\Securedl\Service\SecuredlService', array('parseContent'));
+		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('parseContent'));
 		$this->fixture->expects($this->never())->method('parseContent');
-		$this->fixture->parseFE($dummy, $this->fakeFrontend);
-	}
-
-	/**
-	 * @test
-	 */
-	public function test() {
-		$this->fakeFrontend->config['config']['tx_nawsecuredl_enable'] = '1';
-		$dummy = NULL;
-
-		$this->fixture = $this->getMock('\Bm\Securedl\Service\SecuredlService', array('parseContent'));
-		$this->fixture->expects($this->once())->method('parseContent');
 		$this->fixture->parseFE($dummy, $this->fakeFrontend);
 	}
 
@@ -75,7 +62,7 @@ class SecuredlServiceTest extends Tx_Phpunit_TestCase {
 		$this->fakeFrontend->config['config']['tx_nawsecuredl_enable'] = '1';
 		$dummy = NULL;
 
-		$this->fixture = $this->getMock('\Bm\Securedl\Service\SecuredlService', array('parseContent'));
+		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('parseContent'));
 		$this->fixture->expects($this->once())->method('parseContent');
 		$this->fixture->parseFE($dummy, $this->fakeFrontend);
 	}
@@ -87,7 +74,7 @@ class SecuredlServiceTest extends Tx_Phpunit_TestCase {
 		$this->fakeFrontend->config['config'] = array();
 		$dummy = NULL;
 
-		$this->fixture = $this->getMock('\Bm\Securedl\Service\SecuredlService', array('parseContent'));
+		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('parseContent'));
 		$this->fixture->expects($this->once())->method('parseContent');
 		$this->fixture->parseFE($dummy, $this->fakeFrontend);
 	}
@@ -96,7 +83,7 @@ class SecuredlServiceTest extends Tx_Phpunit_TestCase {
 	 * @test
 	 */
 	public function linkFormatIsSetToDefaultIfNotSetInConfiguration() {
-		$this->fixture = $this->getMock('\Bm\Securedl\Service\SecuredlService', array('getHash', 'getExtensionConfiguration'));
+		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('getHash', 'getExtensionConfiguration'));
 
 		$this->fixture->expects($this->any())->method('getHash')->will($this->returnValue('abcdefgh'));
 		$this->fixture->expects($this->any())->method('getExtensionConfiguration')->will($this->returnValue(array(
@@ -116,7 +103,7 @@ class SecuredlServiceTest extends Tx_Phpunit_TestCase {
 	 * @test
 	 */
 	public function linkFormatIsSetToDefaultIfHasOldConfiguration() {
-		$this->fixture = $this->getMock('\Bm\Securedl\Service\SecuredlService', array('getHash', 'getExtensionConfiguration'));
+		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('getHash', 'getExtensionConfiguration'));
 
 		$this->fixture->expects($this->any())->method('getHash')->will($this->returnValue('abcdefgh'));
 		$this->fixture->expects($this->any())->method('getExtensionConfiguration')->will($this->returnValue(array(
@@ -136,7 +123,7 @@ class SecuredlServiceTest extends Tx_Phpunit_TestCase {
 	 * @test
 	 */
 	public function linkFormatIsNotSetToDefaultIfHasNewConfiguration() {
-		$this->fixture = $this->getMock('\Bm\Securedl\Service\SecuredlService', array('getHash', 'getExtensionConfiguration'));
+		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('getHash', 'getExtensionConfiguration'));
 
 		$this->fixture->expects($this->any())->method('getHash')->will($this->returnValue('abcdefgh'));
 		$this->fixture->expects($this->any())->method('getExtensionConfiguration')->will($this->returnValue(array(
@@ -181,7 +168,7 @@ class SecuredlServiceTest extends Tx_Phpunit_TestCase {
 	 * @dataProvider parseContentTestDataProvider
 	 */
 	public function allConfiguredAssetsAreReplacedInHtml($originalHtml, $expectedHtml) {
-		$this->fixture = $this->getMock('\Bm\Securedl\Service\SecuredlService', array('getHash', 'getExtensionConfiguration'));
+		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('getHash', 'getExtensionConfiguration'));
 
 		$this->fixture->expects($this->any())->method('getHash')->will($this->returnValue('abcdefgh'));
 		$this->fixture->expects($this->any())->method('getExtensionConfiguration')->will($this->returnValue(array(

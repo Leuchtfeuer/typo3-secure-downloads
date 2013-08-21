@@ -22,22 +22,19 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-/**
- * @author	Dietrich Heise <typo3-ext(at)bitmotion.de>
- */
-
-include_once('SecuredlService.php');
+include_once('SecureDownloadService.php');
 
 /**
  * @deprecated
+ * @author Dietrich Heise <typo3-ext(at)bitmotion.de>
  */
-class Tx_NawSecuredlService extends \Bm\Securedl\Service\SecuredlService {
+class Tx_NawSecureDownloadService extends \Bitmotion\NawSecuredl\Service\SecureDownloadService {
 
 }
 
 // Include extension?
 // Deprecated, only used for TYPO3 < 6.0
-if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/Classes/Driver/Xclass/Tx_NawSecuredlService.php']) {
-	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/Classes/Driver/Xclass/Tx_NawSecuredlService.php']);
+if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/Classes/Driver/Xclass/Tx_NawSecureDownloadService.php']) {
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/Classes/Driver/Xclass/Tx_NawSecureDownloadService.php']);
 }
 ?>
