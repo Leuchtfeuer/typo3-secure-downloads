@@ -27,6 +27,7 @@ namespace Bitmotion\NawSecuredl\Resource;
 use TYPO3\CMS\Core\Resource\Driver\AbstractDriver;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
+use TYPO3\CMS\Core\Utility\PathUtility;
 
 /**
  * Class UrlGenerationInterceptor
@@ -52,9 +53,10 @@ class UrlGenerationInterceptor {
 					$objSecureDownloads = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance
 						('Bitmotion\NawSecuredl\Service\SecureDownloadService');
 					$publicUrl = $objSecureDownloads->makeSecure($publicUrl);
-					// TODO: search better solution
-					if ( substr($publicUrl,0,1) != '/' ){
-						$publicUrl = '/' . $publicUrl;
+					// If requested, make the path relative to the current script in order to make it possible
+					// to use the relative file
+					if ($relativeToCurrentScript) {
+						$publicUrl = PathUtility::getRelativePathTo(PathUtility::dirname((PATH_site . $publicUrl))) . PathUtility::basename($publicUrl);
 					}
 				}
 			}
