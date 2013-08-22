@@ -27,46 +27,27 @@ namespace Bitmotion\NawSecuredl\Resource\Publishing;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 
 /**
- * Class ResourcePublisher
+ * Class PhpDeliveryProtectedResourcePublishingTarget
  * @package Bitmotion\NawSecuredl\Resource\Publishing
  */
-class ResourcePublisher {
-	/**
-	 * @var ResourcePublishingTargetInterface
-	 */
-	protected $publishingTarget;
-
-	/**
-	 * @param ResourcePublishingTargetInterface $publishingTarget
-	 */
-	public function injectPublishingTarget(ResourcePublishingTargetInterface $publishingTarget) {
-		$this->publishingTarget = $publishingTarget;
-	}
-
-	/**
-	 * Returns the web URI pointing to the published resource
-	 *
-	 * @param ResourceInterface $resource The resource to publish
-	 * @return mixed Either the web URI of the published resource or FALSE if the resource source file doesn't exist or the resource could not be published for other reasons
-	 */
-	public function getResourceWebUri(ResourceInterface $resource) {
-		return $this->publishingTarget->getResourceWebUri($resource);
-	}
-
+class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePublishingTarget {
 	/**
 	 * Publishes a persistent resource to the web accessible resources directory
 	 *
 	 * @param ResourceInterface $resource The resource to publish
-	 * @return string Either the web URI of the published resource or FALSE if the resource source file doesn't exist or the resource could not be published for other reasons
+	 * @return mixed Either the web URI of the published resource or FALSE if the resource source file doesn't exist or the resource could not be published for other reasons
 	 */
 	public function publishResource(ResourceInterface $resource) {
-		return $this->publishingTarget->publishResource($resource);
-	}
-
-	/**
-	 * @param string $resourcesSourcePath
-	 */
-	public function setResourcesSourcePath($resourcesSourcePath) {
-		$this->publishingTarget->setResourcesSourcePath($resourcesSourcePath);
+		if ($this->isSourcePathInDocumentRoot()) {
+			if (!$this->isPubliclyAvailable($resource)) {
+				$objSecureDownloads = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\NawSecuredl\Service\SecureDownloadService');
+				$publicUrl = $objSecureDownloads->makeSecure($this->getResourceUri($resource));
+			} else {
+				// Nothing to do
+			}
+		} else {
+			// TODO: Maybe implement this case?
+		}
+		return isset($publicUrl) ? $publicUrl : FALSE;
 	}
 }

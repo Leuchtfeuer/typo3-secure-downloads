@@ -7,20 +7,17 @@ $TYPO3_CONF_VARS['FE']['eID_include']['tx_nawsecuredl'] = 'EXT:naw_securedl/clas
 $TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'][] = ':&Tx_NawSecuredl_Service_SecureDownloadService->parseFE';
 
 # TYPO3 > 6.0 (will be ignored in lower versions)
-
-/*
- * Only used in the BE Mode, the FE does a htmlspecialchars() somewhere //TODO: FIXME this must work in FE
- */
-if (TYPO3_MODE == 'BE'){
-	if (class_exists('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')) {
-		\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
-			'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
-			\TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
-			'Bitmotion\\NawSecuredl\\Resource\\UrlGenerationInterceptor',
-			'getPublicUrl'
-		);
-	}
+if (class_exists('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')) {
+	\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
+		'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
+		\TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
+		'Bitmotion\\NawSecuredl\\Resource\\UrlGenerationInterceptor',
+		'getPublicUrl'
+	);
 }
+
+// TODO: make configurable
+class_alias('Bitmotion\\NawSecuredl\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget', 'Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget');
 
 
 # TYPO3 < 6.0 (will be ignored in higher versions)

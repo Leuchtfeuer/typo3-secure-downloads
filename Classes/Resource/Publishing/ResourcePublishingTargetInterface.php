@@ -23,13 +23,14 @@ namespace Bitmotion\NawSecuredl\Resource\Publishing;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 
 /**
- * Resource Publisher Interface
+ * Interface ResourcePublishingTargetInterface
  * @package Bitmotion\NawSecuredl\Resource\Publishing
  */
-interface ResourcePublisherInterface {
+interface ResourcePublishingTargetInterface {
 	/**
 	 * Returns the web URI pointing to the published resource
 	 *
@@ -47,13 +48,9 @@ interface ResourcePublisherInterface {
 	public function publishResource(ResourceInterface $resource);
 
 	/**
-	 * @param string $baseUri
+	 * @param string $resourceSourcePath
 	 * @return void
 	 */
-	public function setBaseUri($baseUri);
+	public function setResourcesSourcePath($resourceSourcePath);
 
-	/**
-	 * @return string
-	 */
-	public function getBaseUri();
 }

@@ -36,42 +36,41 @@ use TYPO3\CMS\Core\Utility\PathUtility;
  */
 class UrlGenerationInterceptor {
 	/**
-	 * @var \Bitmotion\NawSecuredl\Resource\Publishing\ResourcePublisherInterface
-	 * @inject
+	 * @var Publishing\ResourcePublisher
 	 */
 	protected $resourcePublisher;
 
 	/**
+	 * @param Publishing\ResourcePublisher $resourcePublisher
+	 */
+	public function injectResourcePublisher(Publishing\ResourcePublisher $resourcePublisher) {
+		$this->resourcePublisher = $resourcePublisher;
+	}
+
+	/**
 	 * @param ResourceStorage $storage
 	 * @param AbstractDriver $driver
-	 * @param ResourceInterface $resourceObject
+	 * @param ResourceInterface $resource
 	 * @param boolean $relativeToCurrentScript
 	 * @param array $urlData
 	 */
-	public function getPublicUrl(ResourceStorage $storage, AbstractDriver $driver, ResourceInterface $resourceObject, $relativeToCurrentScript, array $urlData) {
+	public function getPublicUrl(ResourceStorage $storage, AbstractDriver $driver, ResourceInterface $resource, $relativeToCurrentScript, array $urlData) {
 		if (!$driver instanceof LocalDriver) {
 			// We cannot handle other files than local files yet
 			return;
 		}
 
-		$this->resourcePublisher->setBaseUri(substr($driver->getAbsoluteBasePath(), strlen(PATH_site)));
+		$this->resourcePublisher->setResourcesSourcePath($driver->getAbsoluteBasePath());
+		$publicUrl = $this->resourcePublisher->getResourceWebUri($resource);
 
-		$publicUrl = $this->resourcePublisher->getResourceWebUri($resourceObject);
-
-		if ($publicUrl === FALSE) {
-			// Publishing failed, so better do not change the URI and return
-			return;
+		if ($publicUrl !== FALSE) {
+			// If requested, make the path relative to the current script in order to make it possible
+			// to use the relative file
+			if ($relativeToCurrentScript) {
+				$publicUrl = PathUtility::getRelativePathTo(PathUtility::dirname((PATH_site . $publicUrl))) . PathUtility::basename($publicUrl);
+			}
+			// $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
+			$urlData['publicUrl'] =  $publicUrl;
 		}
-
-		// If requested, make the path relative to the current script in order to make it possible
-		// to use the relative file
-		if ($relativeToCurrentScript) {
-			$publicUrl = PathUtility::getRelativePathTo(PathUtility::dirname((PATH_site . $publicUrl))) . PathUtility::basename($publicUrl);
-		}
-
-		// $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
-		$urlData['publicUrl'] =  $publicUrl;
 	}
-
-
 }
