@@ -23,6 +23,9 @@ namespace Bitmotion\NawSecuredl\Service;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use Bitmotion\NawSecuredl\Request\RequestContext;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 /**
  * @author Dietrich Heise <typo3-ext(at)bitmotion.de>
@@ -44,13 +47,18 @@ class SecureDownloadService {
 	 */
 	protected $objFrontend;
 
+	/**
+	 * @var RequestContext
+	 */
+	protected $requestContext;
 
 	/**
 	 * Constructor
 	 */
-	public function __construct() {
+	public function __construct($requestContext = NULL) {
 		$this->objFrontend = $GLOBALS['TSFE'];
 		$this->extensionConfiguration = $this->getExtensionConfiguration();
+		$this->requestContext = $requestContext ?: new RequestContext();
 	}
 
 	/**
@@ -66,14 +74,12 @@ class SecureDownloadService {
 	 * This method is called by the frontend rendering hook contentPostProc->output
 	 *
 	 * @param array $parameters
-	 * @param \tslib_fe $objFrontend
+	 * @param TypoScriptFrontendController $objFrontend
 	 */
 	public function parseFE(&$parameters, $objFrontend) {
-		$this->objFrontend = $objFrontend;
 		// Parsing the content if not explicitly disabled
-		if (!isset($this->objFrontend->config['config']['tx_nawsecuredl_enable'])
-			|| $this->objFrontend->config['config']['tx_nawsecuredl_enable'] !== '0') {
-			$this->objFrontend->content = $this->parseContent($this->objFrontend->content);
+		if ($this->requestContext->isUrlRewritingEnabled()) {
+			$objFrontend->content = $this->parseContent($objFrontend->content);
 		}
 	}
 
@@ -163,34 +169,11 @@ class SecureDownloadService {
 	 * @return string
 	 */
 	public function makeSecure($originalUrl) {
-		if ($this->objFrontend->fe_user->user['uid']){
-			$frontendUserId = $this->objFrontend->fe_user->user['uid'];
-			$frontendUserGroupIds = \t3lib_div::trimExplode(',', $this->objFrontend->fe_user->user['usergroup'], TRUE);
-		} else {
-			$frontendUserId = 0;
-			$frontendUserGroupIds = array( 0 );
-		}
-
-		$cacheTimeToAdd = $this->extensionConfiguration['cachetimeadd'];
-
-		if ($this->objFrontend->page['cache_timeout'] == 0){
-			$timeout = 86400 + $GLOBALS['EXEC_TIME'] + $cacheTimeToAdd;
-		} else {
-			$timeout =  $this->objFrontend->page['cache_timeout'] + $GLOBALS['EXEC_TIME'] + $cacheTimeToAdd;
-		}
-
-		// $originalUrl contains the URL which is already url encoded by TYPO3.
-		// Since we check the hash in the output script using the decoded filename we must decode it here also!
-		$hash = $this->getHash($frontendUserId . implode(',', $frontendUserGroupIds) . rawurldecode($originalUrl) . $timeout);
-
-		// Parsing the link format, and return this instead (an flexible link format is useful for mod_rewrite tricks ;)
-		if (!isset($this->extensionConfiguration['linkFormat']) || strpos($this->extensionConfiguration['linkFormat'], '###FEGROUPS###') === FALSE) {
-			$this->extensionConfiguration['linkFormat'] = '/index.php?eID=tx_nawsecuredl&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
-		}
-
-		$tokens = array('###FEUSER###', '###FEGROUPS###', '###FILE###', '###TIMEOUT###', '###HASH###');
-		$replacements = array($frontendUserId, rawurlencode(implode(',', $frontendUserGroupIds)), $originalUrl, $timeout, $hash);
-		$transformedUrl = str_replace($tokens, $replacements, $this->extensionConfiguration['linkFormat']);
+		// TODO: Compatibility!
+		/** @var \Bitmotion\NawSecuredl\Resource\Publishing\PhpDeliveryProtectedResourcePublishingTarget $publishingTarget */
+		$publishingTarget = GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget');
+		$publishingTarget->injectConfigurationManager(GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Configuration\\ConfigurationManager'));
+		$transformedUrl = $publishingTarget->buildPhpDownloadDeliveryUrl(rawurldecode($originalUrl));
 
 		// Hook for makeSecure:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/Classes/Service/SecureDownloadService.php']['makeSecure'])) {

@@ -3,7 +3,6 @@
 require_once( __DIR__ . '/../Classes/Service/SecureDownloadService.php' );
 
 class SecureDownloadServiceTest extends Tx_Phpunit_TestCase {
-
 	/**
 	 * Enable backup of global and system variables
 	 *
@@ -44,13 +43,26 @@ class SecureDownloadServiceTest extends Tx_Phpunit_TestCase {
 	}
 
 	/**
+	 * @return PHPUnit_Framework_MockObject_MockObject|\Bitmotion\NawSecuredl\Request\RequestContext
+	 */
+	protected function getRequestContextMock() {
+		$requestContextMock = $this->getMock('Bitmotion\\NawSecuredl\\Request\\RequestContext');
+		$requestContextMock->expects($this->any())->method('isFrontendRequest')->will($this->returnValue(TRUE));
+		$requestContextMock->expects($this->any())->method('getCacheLifetime')->will($this->returnValue(0));
+		$requestContextMock->expects($this->any())->method('getUserId')->will($this->returnValue(999));
+		$requestContextMock->expects($this->any())->method('getUserGroupIds')->will($this->returnValue(array(4,7,8,3)));
+
+		return $requestContextMock;
+	}
+
+	/**
 	 * @test
 	 */
-	public function parserIsNotInvokedWhenExtensionIsDisabledByTypoScript() {
-		$this->fakeFrontend->config['config']['tx_nawsecuredl_enable'] = '0';
-		$dummy = array();
-
-		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('parseContent'));
+	public function parserIsNotInvokedWhenDisabledInContext() {
+		$dummy = NULL;
+		$requestContextMock = $this->getRequestContextMock();
+		$requestContextMock->expects($this->any())->method('isUrlRewritingEnabled')->will($this->returnValue(FALSE));
+		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('parseContent'), array($requestContextMock));
 		$this->fixture->expects($this->never())->method('parseContent');
 		$this->fixture->parseFE($dummy, $this->fakeFrontend);
 	}
@@ -58,23 +70,12 @@ class SecureDownloadServiceTest extends Tx_Phpunit_TestCase {
 	/**
 	 * @test
 	 */
-	public function parserIsInvokedOnceWhenExtensionIsEnabledByTypoScript() {
-		$this->fakeFrontend->config['config']['tx_nawsecuredl_enable'] = '1';
+	public function parserIsNotInvokedWhenEnabledInContext() {
 		$dummy = NULL;
+		$requestContextMock = $this->getRequestContextMock();
+		$requestContextMock->expects($this->any())->method('isUrlRewritingEnabled')->will($this->returnValue(TRUE));
 
-		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('parseContent'));
-		$this->fixture->expects($this->once())->method('parseContent');
-		$this->fixture->parseFE($dummy, $this->fakeFrontend);
-	}
-
-	/**
-	 * @test
-	 */
-	public function parserIsInvokedOnceWhenTypoScriptConfigurationIsNotSet() {
-		$this->fakeFrontend->config['config'] = array();
-		$dummy = NULL;
-
-		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('parseContent'));
+		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('parseContent'), array($requestContextMock));
 		$this->fixture->expects($this->once())->method('parseContent');
 		$this->fixture->parseFE($dummy, $this->fakeFrontend);
 	}
@@ -94,7 +95,7 @@ class SecureDownloadServiceTest extends Tx_Phpunit_TestCase {
 			'linkFormat' => NULL,
 		)));
 
-		$this->fixture->__construct();
+		$this->fixture->__construct($this->getRequestContextMock());
 		$this->assertSame('/index.php?eID=tx_nawsecuredl&u=999&g=4%2C7%2C8%2C3&t=86400&hash=abcdefgh&file=foo', $this->fixture->makeSecure('foo'));
 	}
 
@@ -103,7 +104,7 @@ class SecureDownloadServiceTest extends Tx_Phpunit_TestCase {
 	 * @test
 	 */
 	public function linkFormatIsSetToDefaultIfHasOldConfiguration() {
-		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('getHash', 'getExtensionConfiguration'));
+		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('getHash', 'getExtensionConfiguration'), array($this->getRequestContextMock()));
 
 		$this->fixture->expects($this->any())->method('getHash')->will($this->returnValue('abcdefgh'));
 		$this->fixture->expects($this->any())->method('getExtensionConfiguration')->will($this->returnValue(array(
@@ -114,7 +115,7 @@ class SecureDownloadServiceTest extends Tx_Phpunit_TestCase {
 			'linkFormat' => 'securedl/###FEUSER###/###TIMEOUT###/###HASH###/###FILE###',
 		)));
 
-		$this->fixture->__construct();
+		$this->fixture->__construct($this->getRequestContextMock());
 		$this->assertSame('/index.php?eID=tx_nawsecuredl&u=999&g=4%2C7%2C8%2C3&t=86400&hash=abcdefgh&file=foo', $this->fixture->makeSecure('foo'));
 	}
 
@@ -123,7 +124,7 @@ class SecureDownloadServiceTest extends Tx_Phpunit_TestCase {
 	 * @test
 	 */
 	public function linkFormatIsNotSetToDefaultIfHasNewConfiguration() {
-		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('getHash', 'getExtensionConfiguration'));
+		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('getHash', 'getExtensionConfiguration'), array($this->getRequestContextMock()));
 
 		$this->fixture->expects($this->any())->method('getHash')->will($this->returnValue('abcdefgh'));
 		$this->fixture->expects($this->any())->method('getExtensionConfiguration')->will($this->returnValue(array(
@@ -134,7 +135,7 @@ class SecureDownloadServiceTest extends Tx_Phpunit_TestCase {
 			'linkFormat' => 'securedl/###FEUSER###/###FEGROUPS###/###TIMEOUT###/###HASH###/###FILE###',
 		)));
 
-		$this->fixture->__construct();
+		$this->fixture->__construct($this->getRequestContextMock());
 		$this->fixture->makeSecure('foo');
 
 		$this->assertSame('securedl/999/4%2C7%2C8%2C3/86400/abcdefgh/foo', $this->fixture->makeSecure('foo'));
@@ -168,7 +169,7 @@ class SecureDownloadServiceTest extends Tx_Phpunit_TestCase {
 	 * @dataProvider parseContentTestDataProvider
 	 */
 	public function allConfiguredAssetsAreReplacedInHtml($originalHtml, $expectedHtml) {
-		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('getHash', 'getExtensionConfiguration'));
+		$this->fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('getHash', 'getExtensionConfiguration'), array($this->getRequestContextMock()));
 
 		$this->fixture->expects($this->any())->method('getHash')->will($this->returnValue('abcdefgh'));
 		$this->fixture->expects($this->any())->method('getExtensionConfiguration')->will($this->returnValue(array(

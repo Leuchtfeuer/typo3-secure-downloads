@@ -56,6 +56,13 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 	protected $configurationManager;
 
 	/**
+	 * @param \Bitmotion\NawSecuredl\Configuration\ConfigurationManager $configurationManager
+	 */
+	public function injectConfigurationManager(\Bitmotion\NawSecuredl\Configuration\ConfigurationManager $configurationManager) {
+		$this->configurationManager = $configurationManager;
+	}
+
+	/**
 	 * Returns the web URI pointing to the published resource
 	 *
 	 * @param ResourceInterface $resource The resource to publish
@@ -66,28 +73,11 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 	}
 
 	/**
-	 * Checks if a resource which lies in document root is really publicly available
-	 * This is currently only done by checking configured secure paths, not by requesting the resources
-	 *
-	 * @param ResourceInterface $resource
-	 * @return bool
-	 */
-	protected function isPubliclyAvailable(ResourceInterface $resource) {
-		$resourceUri = $this->getResourcesBaseUri($resource);
-		$securedFoldersExpression = $this->configurationManager->getValue('securedDirs');
-		$fileExtensionExpression = $this->configurationManager->getValue('filetype');
-		// TODO: maybe check if the resource is available without authentication by doing a head request
-		return preg_match('/(('. $this->softQuoteExpression($securedFoldersExpression) . ')+?\/.*?(?:(?i)' . ($fileExtensionExpression) . '))/i', $resourceUri, $matchedUrls)
-			&& is_array($matchedUrls)
-			&& $matchedUrls[0] === $resourceUri;
-	}
-
-	/**
 	 * @param ResourceInterface $resource
 	 * @return string
 	 */
 	protected function getResourceUri(ResourceInterface $resource) {
-		return PathUtility::getCanonicalPath($this->resourcesBaseUri . '/' . $resource->getIdentifier());
+		return PathUtility::getCanonicalPath($this->getResourcesBaseUri() . '/' . $resource->getIdentifier());
 	}
 
 	/**
@@ -110,6 +100,9 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 		$this->detectResourcesPublishingPath();
 	}
 
+	/**
+	 * Sets the URI of resources by removing the absolute path to the document root from the absolute publishing path
+	 */
 	protected function detectResourcesBaseUri() {
 		$this->resourcesBaseUri = substr($this->resourcesPublishingPath, strlen(PATH_site));
 	}
@@ -137,45 +130,4 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 	}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	/**
-	 * Quotes special some characters for the regular expression.
-	 * Leave braces and brackets as is to have more flexibility in configuration.
-	 *
-	 * @param string $string
-	 * @return string
-	 */
-	protected function softQuoteExpression($string) {
-		return str_replace(
-			array(
-				'\\',
-				' ',
-				'/',
-				'.',
-				':'
-			),
-			array(
-				'\\\\',
-				'\ ',
-				'\/',
-				'\.',
-				'\:'
-			),
-			$string
-		);
-	}
 }
