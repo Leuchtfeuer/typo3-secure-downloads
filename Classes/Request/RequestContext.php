@@ -105,7 +105,7 @@ class RequestContext {
 		$this->currentUser = $typoScriptFrontendController->fe_user;
 		if (isset($this->currentUser->user['uid'])) {
 			$this->userId = (int)$this->currentUser->user['uid'];
-			$this->userGroupIds = \t3lib_div::trimExplode(',', $this->currentUser->user['usergroup'], TRUE);
+			$this->userGroupIds = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->currentUser->user['usergroup'], TRUE);
 		}
 		if (
 			isset($typoScriptFrontendController->config['config']['tx_nawsecuredl_enable'])
@@ -124,7 +124,7 @@ class RequestContext {
 			$this->userId = (int)$this->currentUser->user['uid'];
 		}
 		if (!empty($this->currentUser->user['usergroup'])) {
-			$this->userGroupIds = \t3lib_div::trimExplode(',', $this->currentUser->user['usergroup'], TRUE);
+			$this->userGroupIds = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->currentUser->user['usergroup'], TRUE);
 		}
 	}
 

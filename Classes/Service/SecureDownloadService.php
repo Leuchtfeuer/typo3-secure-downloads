@@ -1,10 +1,11 @@
 <?php
 namespace Bitmotion\NawSecuredl\Service;
+
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2005-2011 Dietrich Heise (typo3-ext(at)bitmotion.de)
- *  (c) 2009-2011 Helmut Hummel (typo3-ext(at)bitmotion.de)
+ *  (c) 2005-2013 Dietrich Heise (typo3-ext(at)bitmotion.de)
+ *  (c) 2009-2013 Helmut Hummel <helmut.hummel@typo3.org>
  *  All rights reserved
  *
  *  This script is part of the Typo3 project. The Typo3 project is
@@ -23,210 +24,135 @@ namespace Bitmotion\NawSecuredl\Service;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+use Bitmotion\NawSecuredl\Parser\HtmlParser;
+use Bitmotion\NawSecuredl\Configuration\ConfigurationManager;
+use Bitmotion\NawSecuredl\Parser\HtmlParserDelegateInterface;
 use Bitmotion\NawSecuredl\Request\RequestContext;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+use Bitmotion\NawSecuredl\Resource\Publishing\ResourcePublisher;
 
 /**
  * @author Dietrich Heise <typo3-ext(at)bitmotion.de>
- * @author Helmut Hummel <typo3-ext(at)bitmotion.de>
+ * @author Helmut Hummel <helmut.hummel@typo3.org>
  */
-class SecureDownloadService {
-
-	/**
-	 * Extension Configuration
-	 *
-	 * @var array
-	 */
-	protected $extensionConfiguration;
-
-	/**
-	 * The TYPO3 frontend object
-	 *
-	 * @var \tslib_fe
-	 */
-	protected $objFrontend;
-
+class SecureDownloadService implements HtmlParserDelegateInterface {
 	/**
 	 * @var RequestContext
 	 */
 	protected $requestContext;
 
 	/**
-	 * Constructor
+	 * @var ConfigurationManager
 	 */
-	public function __construct($requestContext = NULL) {
-		$this->objFrontend = $GLOBALS['TSFE'];
-		$this->extensionConfiguration = $this->getExtensionConfiguration();
-		$this->requestContext = $requestContext ?: new RequestContext();
-	}
+	protected $configurationManager;
 
 	/**
-	 * Get extension configuration
-	 *
-	 * @return array
+	 * @var HtmlParser
 	 */
-	protected function getExtensionConfiguration() {
-		return unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['naw_securedl']);
+	protected $htmlParser;
+
+	/**
+	 * @var ResourcePublisher
+	 */
+	protected $resourcePublisher;
+
+	/**
+	 * @param RequestContext $requestContext
+	 * @param ConfigurationManager $configurationManager
+	 */
+	public function __construct($requestContext = NULL, $configurationManager = NULL) {
+		$this->requestContext = $requestContext ?: new RequestContext();
+		$this->configurationManager = $configurationManager ?: \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Configuration\\ConfigurationManager');
 	}
 
 	/**
 	 * This method is called by the frontend rendering hook contentPostProc->output
 	 *
 	 * @param array $parameters
-	 * @param TypoScriptFrontendController $objFrontend
+	 * @param \tslib_fe $typoScriptFrontendController
 	 */
-	public function parseFE(&$parameters, $objFrontend) {
+	public function parseFE(array &$parameters, $typoScriptFrontendController) {
 		// Parsing the content if not explicitly disabled
 		if ($this->requestContext->isUrlRewritingEnabled()) {
-			$objFrontend->content = $this->parseContent($objFrontend->content);
+			$typoScriptFrontendController->content = $this->getHtmlParser()->parse($typoScriptFrontendController->content);
 		}
-	}
-
-	/**
-	 * Parses the HTML output and replaces the links to configured files with secured ones
-	 *
-	 * @param string $strContent
-	 * @return string
-	 */
-	public function parseContent($strContent) {
-		$this->extensionConfiguration = $this->getExtensionConfiguration();
-		$rest = $strContent;
-		$result = '';
-		while (preg_match('/(?i)(<link|<source|<a|<img)+?.[^>]*(href|src)=(\"??)([^\" >]*?)\\3[^>]*>/siU', $strContent, $match)) {  // suchendes secured Verzeichnis
-			$cont = explode($match[0], $strContent, 2);
-			$vor = $cont[0];
-			$tag = $match[0];
-			if ($this->extensionConfiguration['debug'] == '2' || $this->extensionConfiguration['debug'] == '3') {
-				debug('tag:' . $tag);
-			}
-
-			$rest = $cont[1];
-
-			if ($this->extensionConfiguration['debug'] == '1' || $this->extensionConfiguration['debug'] == '3') {
-				debug(array('html-tag:'=>$tag));
-			}
-
-			$tag = $this->parseHtmlTag($tag, $this->extensionConfiguration['securedDirs']);
-
-			$result .= $vor . $tag;
-			$strContent = $rest;
-		}
-		return $result . $rest;
-	}
-
-	/**
-	 * Investigate the HTML-Tag...
-	 *
-	 * @param $tag
-	 * @param $toSecureDirectoryExpression
-	 * @return string
-	 */
-	protected function parseHtmlTag($tag, $toSecureDirectoryExpression) {
-		if (preg_match('/"(?:' . $this->softQuoteExpression($this->extensionConfiguration['domain']) . ')?(\/?(?:' . $this->softQuoteExpression($toSecureDirectoryExpression) . ')+?.*?(?:' . $this->getFileTypeExpression($this->extensionConfiguration['filetype']) . '))"/i', $tag, $matchedUrls)) {
-
-			if ($this->extensionConfiguration['debug'] == '2' || $this->extensionConfiguration['debug'] == '3') {
-				debug('/"(?:' . $this->softQuoteExpression($this->extensionConfiguration['domain']) . ')?(\/?(?:' . $this->softQuoteExpression($toSecureDirectoryExpression) . ')+?.*?(?:' . $this->getFileTypeExpression($this->extensionConfiguration['filetype']) . '))"/i');
-			}
-			if ($this->extensionConfiguration['debug'] == '2' || $this->extensionConfiguration['debug'] == '3') {
-				debug($matchedUrls);
-			}
-
-			$replace = htmlspecialchars($this->makeSecure($matchedUrls[1]));
-			$tagexp = explode($matchedUrls[1], $tag, 2);
-
-			if ($this->extensionConfiguration['debug'] == '2' || $this->extensionConfiguration['debug'] == '3') {
-				debug($tagexp[0]);
-			}
-			if ($this->extensionConfiguration['debug'] == '2' || $this->extensionConfiguration['debug'] == '3') {
-				debug($replace);
-			}
-			if ($this->extensionConfiguration['debug'] == '2' || $this->extensionConfiguration['debug'] == '3') {
-				debug($tagexp[1]);
-			}
-
-			$tag = $tagexp[0] . $replace;
-			$tmp = $tagexp[1];
-
-			// search in the rest on the tag (e.g. for vHWin=window.open...)
-			if (preg_match('/\'(?:' . $this->softQuoteExpression($this->extensionConfiguration['domain']) . ')?.*?(\/?(?:' . $this->softQuoteExpression($toSecureDirectoryExpression) . ')+?.*?(?:' . $this->getFileTypeExpression($this->extensionConfiguration['filetype']) . '))\'/i', $tmp, $matchedUrls)) {
-				$replace = htmlspecialchars($this->makeSecure($matchedUrls[1]));
-				$tagexp = explode($matchedUrls[1], $tmp, 2);
-				$add = $tagexp[0] . '/' . $replace . $tagexp[1];
-			} else {
-				$add = $tagexp[1];
-			}
-
-			$tag .= $add;
-		}
-		return $tag;
 	}
 
 	/**
 	 * Transforms a relative file URL to a secure download protected URL
 	 *
-	 * @param string $originalUrl
+	 * @param string $originalUri
 	 * @return string
 	 */
-	public function makeSecure($originalUrl) {
-		// TODO: Compatibility!
-		/** @var \Bitmotion\NawSecuredl\Resource\Publishing\PhpDeliveryProtectedResourcePublishingTarget $publishingTarget */
-		$publishingTarget = GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget');
-		$publishingTarget->injectConfigurationManager(GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Configuration\\ConfigurationManager'));
-		$transformedUrl = $publishingTarget->buildPhpDownloadDeliveryUrl(rawurldecode($originalUrl));
+	public function buildAccessibleUri($originalUri) {
+		$transformedUri = $this->getResourcePublisher()->buildAccessibleUri(rawurldecode($originalUri));
 
 		// Hook for makeSecure:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/Classes/Service/SecureDownloadService.php']['makeSecure'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/Classes/Service/SecureDownloadService.php']['makeSecure'] as $_funcRef)   {
-				$transformedUrl = \t3lib_div::callUserFunction($_funcRef, $transformedUrl, $this);
+				$transformedUri = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $transformedUri, $this);
 			}
 		}
 		// Hook for makeSecure: (old class name, for compatibility reasons)
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl.php']['makeSecure'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl.php']['makeSecure'] as $_funcRef)   {
-				$transformedUrl = \t3lib_div::callUserFunction($_funcRef, $transformedUrl, $this);
+				$transformedUri = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $transformedUri, $this);
 			}
 		}
 
-		return $transformedUrl;
+		return $transformedUri;
 	}
 
 	/**
-	 * @param $string
-	 * @return string
-	 */
-	protected function getHash($string) {
-		return \t3lib_div::hmac($string);
-	}
-
-	/**
-	 * Returns a case insensitive regular expression based on
-	 * lowercase input
+	 * Method kept for compatibility
 	 *
-	 * @param string $string
+	 * @param string $html
 	 * @return string
 	 */
-	protected function getFileTypeExpression($string) {
-		return '(?i)' . $string;
+	public function parseContent($html) {
+		return $this->getHtmlParser()->parse($html);
 	}
 
 	/**
-	 * Quotes special some characters for the regular expression.
-	 * Leave braces and brackets as is to have more flexibility in configuration.
+	 * Method kept for compatibility
 	 *
-	 * @param string $string
+	 * @param string $originalUri
 	 * @return string
 	 */
-	protected function softQuoteExpression($string) {
-		$string = str_replace('\\', '\\\\', $string);
-		$string = str_replace(' ', '\ ', $string);
-		$string = str_replace('/', '\/', $string);
-		$string = str_replace('.', '\.', $string);
-		$string = str_replace(':', '\:', $string);
-		return $string;
+	public function makeSecure($originalUri) {
+		return $this->buildAccessibleUri($originalUri);
 	}
 
+	/**
+	 * Lazily instantiates the HTML parser
+	 * Must be called AFTER the configuration manager has been initialized
+	 *
+	 * @return \Bitmotion\NawSecuredl\Parser\HtmlParser
+	 */
+	protected function getHtmlParser() {
+		if (is_null($this->htmlParser)) {
+			$this->htmlParser = new HtmlParser(
+				$this,
+				array(
+					'domainPattern' => $this->configurationManager->getValue('domain'),
+					'folderPattern' => $this->configurationManager->getValue('securedDirs'),
+					'fileExtensionPattern' => $this->configurationManager->getValue('filetype'),
+					'logLevel' => $this->configurationManager->getValue('debug'),
+				)
+			);
+		}
+		return $this->htmlParser;
+	}
+
+	/**
+	 * Lazily intatiates the publishing target
+	 *
+	 * @return ResourcePublisher
+	 */
+	protected function getResourcePublisher() {
+		if (is_null($this->resourcePublisher)) {
+			$this->resourcePublisher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublisher');
+		}
+		return $this->resourcePublisher;
+	}
 }
-
-// Compatibility layer. Can be removed once TYPO3 < 6 support is dropped
-class_alias('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', 'Tx_NawSecuredl_Service_SecureDownloadService');

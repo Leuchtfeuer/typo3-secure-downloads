@@ -24,7 +24,7 @@ namespace Bitmotion\NawSecuredl\Resource\Publishing;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use Bitmotion\NawSecuredl\Request\RequestContext;
+use Bitmotion\NawSecuredl\Parser\HtmlParser;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 
 /**
@@ -32,11 +32,6 @@ use TYPO3\CMS\Core\Resource\ResourceInterface;
  * @package Bitmotion\NawSecuredl\Resource\Publishing
  */
 class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePublishingTarget {
-	/**
-	 * @var RequestContext
-	 */
-	protected $requestContext;
-
 	/**
 	 * Publishes a persistent resource to the web accessible resources directory
 	 *
@@ -46,12 +41,11 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 	public function publishResource(ResourceInterface $resource) {
 		if ($this->isSourcePathInDocumentRoot()) {
 			if (!$this->isPubliclyAvailable($resource)) {
-				$publicUrl = $this->buildPhpDownloadDeliveryUrl($this->getResourceUri($resource));
-			} else {
-				// Nothing to do
+				$publicUrl = $this->buildAccessibleUri($this->getResourceUri($resource));
 			}
 		} else {
 			// TODO: Maybe implement this case?
+			// We need to use absolute paths then or copy the files around, or...
 		}
 		return isset($publicUrl) ? $publicUrl : FALSE;
 	}
@@ -62,34 +56,47 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 	 * @param string $resourceUri
 	 * @return string
 	 */
-	public function buildPhpDownloadDeliveryUrl($resourceUri) {
-//return 'http://localhost/phpMyAdmin/themes/original/img/logo_left.png'; // TEST URL TODO: remove
+	public function buildAccessibleUri($resourceUri) {
 		$userId = $this->getRequestContext()->getUserId();
 		$userGroupIds = $this->getRequestContext()->getUserGroupIds();
+		$validityPeriod = $this->calculateLinkLifetime();
+		$hash = $this->getHash($resourceUri, $userId, $userGroupIds, $validityPeriod);
+		$downloadUri = $this->buildUri($resourceUri, $userId, $userGroupIds, $validityPeriod, $hash);
 
-		$cacheTimeToAdd = $this->configurationManager->getValue('cachetimeadd');
+		return $downloadUri;
+	}
 
-		if ($this->getRequestContext()->getCacheLifetime() === 0){
-			$timeout = 86400 + $GLOBALS['EXEC_TIME'] + $cacheTimeToAdd;
+	/**
+	 * @return integer
+	 */
+	protected function calculateLinkLifetime() {
+		$lifeTimeToAdd = $this->configurationManager->getValue('cachetimeadd');
+
+		if ($this->getRequestContext()->getCacheLifetime() === 0) {
+			$validityPeriod = 86400 + $GLOBALS['EXEC_TIME'] + $lifeTimeToAdd;
 		} else {
-			$timeout = $this->getRequestContext()->getCacheLifetime() + $GLOBALS['EXEC_TIME'] + $cacheTimeToAdd;
+			$validityPeriod = $this->getRequestContext()->getCacheLifetime() + $GLOBALS['EXEC_TIME'] + $lifeTimeToAdd;
 		}
+		return $validityPeriod;
+	}
 
-		$hash = $this->getHash($userId . implode(',', $userGroupIds) . $resourceUri . $timeout);
-
+	/**
+	 * @param string $resourceUri
+	 * @param integer $userId
+	 * @param array<integer> $userGroupIds
+	 * @param integer $validityPeriod
+	 * @param string $hash
+	 * @return string
+	 */
+	protected function buildUri($resourceUri, $userId, $userGroupIds, $validityPeriod, $hash) {
 		$linkFormat = $this->configurationManager->getValue('linkFormat');
-
 		// Parsing the link format, and return this instead (an flexible link format is useful for mod_rewrite tricks ;)
 		if (!is_null($linkFormat) || strpos($linkFormat, '###FEGROUPS###') === FALSE) {
 			$linkFormat = '/index.php?eID=tx_nawsecuredl&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
 		}
-
 		$tokens = array('###FEUSER###', '###FEGROUPS###', '###FILE###', '###TIMEOUT###', '###HASH###');
-		$replacements = array($userId, rawurlencode(implode(',', $userGroupIds)), urlencode($resourceUri), $timeout, $hash);
+		$replacements = array($userId, rawurlencode(implode(',', $userGroupIds)), rawurlencode($resourceUri), $validityPeriod, $hash);
 		$downloadUri = str_replace($tokens, $replacements, $linkFormat);
-
-		// TODO: Add signal
-
 		return $downloadUri;
 	}
 
@@ -105,71 +112,32 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 		$securedFoldersExpression = $this->configurationManager->getValue('securedDirs');
 		$fileExtensionExpression = $this->configurationManager->getValue('filetype');
 		// TODO: maybe check if the resource is available without authentication by doing a head request
-		return !(preg_match('/(('. $this->softQuoteExpression($securedFoldersExpression) . ')+?\/.*?(?:(?i)' . ($fileExtensionExpression) . '))/i', $resourceUri, $matchedUrls)
+		return !(preg_match('/(('. HtmlParser::softQuoteExpression($securedFoldersExpression) . ')+?\/.*?(?:(?i)' . ($fileExtensionExpression) . '))/i', $resourceUri, $matchedUrls)
 			&& is_array($matchedUrls)
 			&& $matchedUrls[0] === $resourceUri);
-	}
-
-	/**
-	 * @return RequestContext
-	 */
-	protected function getRequestContext() {
-		if ($this->requestContext === NULL) {
-			$this->buildRequestContext();
-		}
-		return $this->requestContext;
-	}
-
-	/**
-	 * Creates the request context
-	 */
-	protected function buildRequestContext() {
-		$this->requestContext = new RequestContext();
 	}
 
 
 
 
 /*
- * HELPER MEHTODS
- * TODO: Refactor them out
+ * HELPER MEHTOD
+ * TODO: Refactor it to a hash service
  */
 
-
-
-
 	/**
-	 * @param $string
+	 * @param string $resourceUri
+	 * @param integer $userId
+	 * @param array<integer> $userGroupIds
+	 * @param integer $validityPeriod
 	 * @return string
 	 */
-	protected function getHash($string) {
-		return \t3lib_div::hmac($string);
-	}
-
-	/**
-	 * Quotes special some characters for the regular expression.
-	 * Leave braces and brackets as is to have more flexibility in configuration.
-	 *
-	 * @param string $string
-	 * @return string
-	 */
-	protected function softQuoteExpression($string) {
-		return str_replace(
-			array(
-				'\\',
-				' ',
-				'/',
-				'.',
-				':'
-			),
-			array(
-				'\\\\',
-				'\ ',
-				'\/',
-				'\.',
-				'\:'
-			),
-			$string
-		);
+	protected function getHash($resourceUri, $userId, array $userGroupIds, $validityPeriod) {
+		if ($this->configurationManager->getValue('enableGroupCheck')) {
+			$hashString = $userId . implode(',', $userGroupIds) . $resourceUri . $validityPeriod;
+		} else {
+			$hashString = $userId . $resourceUri . $validityPeriod;
+		}
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::hmac($hashString);
 	}
 }

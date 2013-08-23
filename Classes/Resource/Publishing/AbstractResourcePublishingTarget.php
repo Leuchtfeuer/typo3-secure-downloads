@@ -24,16 +24,16 @@ namespace Bitmotion\NawSecuredl\Resource\Publishing;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
+use Bitmotion\NawSecuredl\Configuration\ConfigurationManager;
+use Bitmotion\NawSecuredl\Request\RequestContext;
 
 /**
  * Class AbstractResourcePublishingTarget
  * @package Bitmotion\NawSecuredl\Resource\Publishing
  */
-abstract class AbstractResourcePublishingTarget implements ResourcePublishingTargetInterface, SingletonInterface {
+abstract class AbstractResourcePublishingTarget implements ResourcePublishingTargetInterface, \TYPO3\CMS\Core\SingletonInterface {
 	/**
 	 * @var string
 	 */
@@ -50,15 +50,19 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 	protected $resourcesPublishingPath;
 
 	/**
+	 * @var RequestContext
+	 */
+	protected $requestContext;
+
+	/**
 	 * @var \Bitmotion\NawSecuredl\Configuration\ConfigurationManager
-	 * @inject
 	 */
 	protected $configurationManager;
 
 	/**
 	 * @param \Bitmotion\NawSecuredl\Configuration\ConfigurationManager $configurationManager
 	 */
-	public function injectConfigurationManager(\Bitmotion\NawSecuredl\Configuration\ConfigurationManager $configurationManager) {
+	public function injectConfigurationManager(ConfigurationManager $configurationManager) {
 		$this->configurationManager = $configurationManager;
 	}
 
@@ -126,8 +130,23 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 	 * @return bool
 	 */
 	protected function isSourcePathInDocumentRoot() {
-		return GeneralUtility::isFirstPartOfStr($this->resourcesSourcePath, PATH_site);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($this->resourcesSourcePath, PATH_site);
 	}
 
+	/**
+	 * @return RequestContext
+	 */
+	protected function getRequestContext() {
+		if ($this->requestContext === NULL) {
+			$this->buildRequestContext();
+		}
+		return $this->requestContext;
+	}
 
+	/**
+	 * Creates the request context
+	 */
+	protected function buildRequestContext() {
+		$this->requestContext = new RequestContext();
+	}
 }

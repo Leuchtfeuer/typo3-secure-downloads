@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Configuration;
+namespace Bitmotion\NawSecuredl\Parser;
 
 /***************************************************************
  *  Copyright notice
@@ -25,36 +25,11 @@ namespace Bitmotion\NawSecuredl\Configuration;
  ***************************************************************/
 
 
-class ConfigurationManager implements \TYPO3\CMS\Core\SingletonInterface {
-	/**
-	 * @var string
-	 */
-	protected $extensionKey = 'naw_securedl';
+interface HtmlParserDelegateInterface {
 
 	/**
-	 * @var array
+	 * @param string $resourceUri
+	 * @return string
 	 */
-	protected $configuration = array();
-
-	/**
-	 * @param string|NULL $extensionKey
-	 */
-	public function __construct($extensionKey = NULL) {
-		$this->extensionKey = $extensionKey ?: $this->extensionKey;
-		if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extensionKey])) {
-			$this->configuration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extensionKey]);
-		}
-	}
-
-	/**
-	 * @param string $key
-	 * @return mixed
-	 */
-	public function getValue($key) {
-		if (is_array($this->configuration) && array_key_exists($key, $this->configuration)) {
-			return $this->configuration[$key];
-		} else {
-			return NULL;
-		}
-	}
+	public function buildAccessibleUri($resourceUri);
 }

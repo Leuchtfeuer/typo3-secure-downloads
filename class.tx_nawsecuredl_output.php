@@ -106,7 +106,7 @@ class tx_nawsecuredl_output {
 		$this->file = t3lib_div::_GP('file');
 
 		$this->data = $this->userId . $this->userGroups . $this->file . $this->expiryTime;
-		$this->calculatedHash = t3lib_div::hmac($this->data);
+		$this->calculatedHash = $this->getHash($this->file, $this->userId, $this->userGroups, $this->expiryTime);
 
 		// Hook for init:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['init'])) {
@@ -177,7 +177,7 @@ class tx_nawsecuredl_output {
 			return FALSE;
 		}
 
-		if (!empty($this->extensionConfiguration['groupCheckDirs']) && !preg_match('/' . $this->softQuoteExpression($this->extensionConfiguration['groupCheckDirs']) . '/', $this->file)) {
+		if (!empty($this->extensionConfiguration['groupCheckDirs']) && !preg_match('/' . \Bitmotion\NawSecuredl\Parser\HtmlParser::softQuoteExpression($this->extensionConfiguration['groupCheckDirs']) . '/', $this->file)) {
 			return FALSE;
 		}
 
@@ -510,22 +510,27 @@ class tx_nawsecuredl_output {
 	}
 
 
+/*
+ * HELPER MEHTOD
+ *
+ */
+
 	/**
-	 * Quotes special some characters for the regular expression.
-	 * Leave braces and brackets as is to have more flexibility in configuration.
+	 * TODO: Refactor it to a hash service
 	 *
-	 * TODO: duplicate code. Move both methods to a helper class
-	 *
-	 * @param string $string
+	 * @param string $resourceUri
+	 * @param integer $userId
+	 * @param array<integer> $userGroupIds
+	 * @param integer $validityPeriod
 	 * @return string
 	 */
-	protected function softQuoteExpression($string) {
-		$string = str_replace('\\', '\\\\', $string);
-		$string = str_replace(' ', '\ ', $string);
-		$string = str_replace('/', '\/', $string);
-		$string = str_replace('.', '\.', $string);
-		$string = str_replace(':', '\:', $string);
-		return $string;
+	protected function getHash($resourceUri, $userId, $userGroupIds, $validityPeriod) {
+		if ($this->extensionConfiguration['enableGroupCheck']) {
+			$hashString = $userId . $userGroupIds . $resourceUri . $validityPeriod;
+		} else {
+			$hashString = $userId . $resourceUri . $validityPeriod;
+		}
+		return \t3lib_div::hmac($hashString);
 	}
 
 	protected function exitScript($message) {

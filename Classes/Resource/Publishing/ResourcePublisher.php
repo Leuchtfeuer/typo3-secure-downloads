@@ -30,7 +30,7 @@ use TYPO3\CMS\Core\Resource\ResourceInterface;
  * Class ResourcePublisher
  * @package Bitmotion\NawSecuredl\Resource\Publishing
  */
-class ResourcePublisher {
+class ResourcePublisher implements \TYPO3\CMS\Core\SingletonInterface {
 	/**
 	 * @var ResourcePublishingTargetInterface
 	 */
@@ -50,7 +50,7 @@ class ResourcePublisher {
 	 * @return mixed Either the web URI of the published resource or FALSE if the resource source file doesn't exist or the resource could not be published for other reasons
 	 */
 	public function getResourceWebUri(ResourceInterface $resource) {
-		return $this->publishingTarget->getResourceWebUri($resource);
+		return $this->getPublishingTarget()->getResourceWebUri($resource);
 	}
 
 	/**
@@ -60,13 +60,40 @@ class ResourcePublisher {
 	 * @return string Either the web URI of the published resource or FALSE if the resource source file doesn't exist or the resource could not be published for other reasons
 	 */
 	public function publishResource(ResourceInterface $resource) {
-		return $this->publishingTarget->publishResource($resource);
+		return $this->getPublishingTarget()->publishResource($resource);
 	}
 
 	/**
+	 * Other than in Flow resources can reside in several places.
+	 * The source path needs to be set for the publishing.
+	 *
 	 * @param string $resourcesSourcePath
 	 */
 	public function setResourcesSourcePath($resourcesSourcePath) {
-		$this->publishingTarget->setResourcesSourcePath($resourcesSourcePath);
+		$this->getPublishingTarget()->setResourcesSourcePath($resourcesSourcePath);
+	}
+
+	/**
+	 * Builds a delivery URI from a URI which is in document root but protected through the webserver
+	 *
+	 * @param $resourceUri
+	 * @return string
+	 */
+	public function buildAccessibleUri($resourceUri) {
+		return $this->getPublishingTarget()->buildAccessibleUri($resourceUri);
+	}
+
+	/**
+	 * @return \Bitmotion\NawSecuredl\Resource\Publishing\ResourcePublishingTargetInterface
+	 */
+	protected function getPublishingTarget() {
+		// Check if we have DI, if not, lazily instatiate the publishing target
+		if (is_null($this->publishingTarget)) {
+			$this->publishingTarget = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget');
+			if (method_exists($this->publishingTarget, 'injectConfigurationManager')) {
+				$this->publishingTarget->injectConfigurationManager(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Configuration\\ConfigurationManager'));
+			}
+		}
+		return $this->publishingTarget;
 	}
 }

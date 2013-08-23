@@ -31,7 +31,7 @@ class ux_SC_tslib_showpic extends SC_tslib_showpic {
 
 	function printContent() {
 		/* @var $objSecureDownloads \Bitmotion\NawSecuredl\Service\SecureDownloadService */
-		$objSecureDownloads = t3lib_div::makeInstance('Tx_NawSecuredl_Service_SecureDownloadService');
+		$objSecureDownloads = t3lib_div::makeInstance('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService');
 		echo $objSecureDownloads->parseContent($this->content);
 	}
 

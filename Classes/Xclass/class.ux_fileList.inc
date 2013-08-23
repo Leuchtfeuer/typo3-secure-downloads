@@ -39,10 +39,10 @@ class ux_fileList extends fileList {
 	 */
 	function linkWrapFile($code, $path) {
 		/* @var $objSecureDownloads \Bitmotion\NawSecuredl\Service\SecureDownloadService */
-		$objSecureDownloads = t3lib_div::makeInstance('Tx_NawSecuredl_Service_SecureDownloadService');
+		$objSecureDownloads = t3lib_div::makeInstance('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService');
 
 		if (t3lib_div::isFirstPartOfStr($path, PATH_site)) {
-			$href = t3lib_div::getIndpEnv('TYPO3_SITE_URL') . $objSecureDownloads->makeSecure(substr($path, strlen(PATH_site)));
+			$href = t3lib_div::getIndpEnv('TYPO3_SITE_URL') . $objSecureDownloads->buildAccessibleUri(substr($path, strlen(PATH_site)));
 			$aOnClick = "return top.openUrlInWindow(" . t3lib_div::quoteJSvalue($href) . ", 'WebFile');";
 			$code = '<a href="#" title="' . htmlspecialchars($code) . '" onclick="' . $aOnClick . '">' . t3lib_div::fixed_lgd_cs($code,$this->fixedL) . '</a>';
 		}
