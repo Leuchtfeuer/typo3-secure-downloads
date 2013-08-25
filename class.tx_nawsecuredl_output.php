@@ -132,14 +132,21 @@ class tx_nawsecuredl_output {
 			$this->exitScript('Link Expired. Access denied!');
 		}
 
-		$this->feUserObj = tslib_eidtools::initFeUser();
-		tslib_eidtools::connectDB();
+		$this->initializeUserAuthentication();
 
 		if ($this->userId !== 0) {
 			if (!$this->checkUserAccess() && !$this->checkGroupAccess()){
 				$this->exitScript('Access denied for User!');
 			}
 		}
+	}
+
+	/**
+	 *
+	 */
+	protected function initializeUserAuthentication() {
+		$this->feUserObj = tslib_eidtools::initFeUser();
+		tslib_eidtools::connectDB();
 	}
 
 	/**
@@ -177,7 +184,7 @@ class tx_nawsecuredl_output {
 			return FALSE;
 		}
 
-		if (!empty($this->extensionConfiguration['groupCheckDirs']) && !preg_match('/' . \Bitmotion\NawSecuredl\Parser\HtmlParser::softQuoteExpression($this->extensionConfiguration['groupCheckDirs']) . '/', $this->file)) {
+		if (!empty($this->extensionConfiguration['groupCheckDirs']) && !preg_match('/' . $this->softQuoteExpression($this->extensionConfiguration['groupCheckDirs']) . '/', $this->file)) {
 			return FALSE;
 		}
 
@@ -509,6 +516,13 @@ class tx_nawsecuredl_output {
 		return (bool)$this->extensionConfiguration['log'];
 	}
 
+	/**
+	 * @param string $string
+	 * @return mixed
+	 */
+	protected function softQuoteExpression($string) {
+		return \Bitmotion\NawSecuredl\Parser\HtmlParser::softQuoteExpression($string);
+	}
 
 /*
  * HELPER MEHTOD

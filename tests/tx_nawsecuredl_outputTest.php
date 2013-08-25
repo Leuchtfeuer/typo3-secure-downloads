@@ -25,7 +25,7 @@ class tx_nawsecuredl_outputTest extends Tx_Extbase_Tests_Unit_BaseTestCase {
 	public function setUp() {
 		$GLOBALS['naw_securedlTestingContext'] = TRUE;
 		require_once(__DIR__ . '/../class.tx_nawsecuredl_output.php');
-		$this->fixture = $this->getAccessibleMock('tx_nawsecuredl_output', array('exitScript', 'getExtensionConfiguration', 'hashValid', 'expiryTimeExceeded'));
+		$this->fixture = $this->getAccessibleMock('tx_nawsecuredl_output', array('exitScript', 'getExtensionConfiguration', 'hashValid', 'expiryTimeExceeded', 'initializeUserAuthentication'));
 		$this->fixture->expects($this->any())->method('hashValid')->will($this->returnValue(TRUE));
 		$this->fixture->expects($this->any())->method('expiryTimeExceeded')->will($this->returnValue(FALSE));
 	}
