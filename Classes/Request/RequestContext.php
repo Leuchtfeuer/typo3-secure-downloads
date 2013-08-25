@@ -63,7 +63,9 @@ class RequestContext {
 		} elseif (!$this->isBackendRequest()) {
 			throw new \LogicException('', 1377180593);
 		} else {
-			$this->initializeBackendContext();
+// Disabled for now, because we do only have php delivery script which is called in a frontend context (eID)
+// TODO: decouple and refactor PHP delivery
+//			$this->initializeBackendContext();
 		}
 	}
 
