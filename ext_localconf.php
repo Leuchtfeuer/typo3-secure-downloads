@@ -30,6 +30,7 @@ if (substr(TYPO3_branch, 0, 1) === '4') {
 ///////////////////////////////////
 // TODO: make configurable which "publishing strategy to use" (currently only the PhpDelivery target is implemented)
 class_alias('Bitmotion\\NawSecuredl\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget', 'Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget');
+//class_alias('Bitmotion\\NawSecuredl\\Resource\\Publishing\\Apache2DeliveryProtectedResourcePublishingTarget', 'Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget');
 // We need to use a Tx_ prefixed class name here because callUserFunction used by hooks in older TYPO3 versions check for that.
 // This class name is automatically aliased by core > 6.x and by our compatibility layer (see above)
 // TODO: make configurable if HTML parsing should be done or not
