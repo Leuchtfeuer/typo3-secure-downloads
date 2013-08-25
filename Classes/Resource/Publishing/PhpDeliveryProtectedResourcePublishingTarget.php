@@ -91,8 +91,8 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 	protected function buildUri($resourceUri, $userId, $userGroupIds, $validityPeriod, $hash) {
 		$linkFormat = $this->configurationManager->getValue('linkFormat');
 		// Parsing the link format, and return this instead (an flexible link format is useful for mod_rewrite tricks ;)
-		if (!is_null($linkFormat) || strpos($linkFormat, '###FEGROUPS###') === FALSE) {
-			$linkFormat = '/index.php?eID=tx_nawsecuredl&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
+		if (is_null($linkFormat) || strpos($linkFormat, '###FEGROUPS###') === FALSE) {
+			$linkFormat = 'index.php?eID=tx_nawsecuredl&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
 		}
 		$tokens = array('###FEUSER###', '###FEGROUPS###', '###FILE###', '###TIMEOUT###', '###HASH###');
 		$replacements = array($userId, rawurlencode(implode(',', $userGroupIds)), rawurlencode($resourceUri), $validityPeriod, $hash);
