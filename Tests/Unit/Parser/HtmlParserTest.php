@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Tests\Parser;
+namespace Bitmotion\NawSecuredl\Tests\Unit\Parser;
 
 /***************************************************************
  *  Copyright notice

@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Tests\Resurce\Publishing;
+namespace Bitmotion\NawSecuredl\Tests\Unit\Resurce\Publishing;
 
 /***************************************************************
  *  Copyright notice

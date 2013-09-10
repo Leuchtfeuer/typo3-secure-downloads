@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Tests\Service;
+namespace Bitmotion\NawSecuredl\Tests\Unit\Service;
 
 /***************************************************************
  *  Copyright notice
