@@ -43,3 +43,5 @@ groupCheckDirs =
 # cat=basic; type=string; label=excludeGroups:A comma separated list of groups that are excluded from the group check if enabled
 excludeGroups =
 
+# cat=basic; type=boolean; label=apacheDelivery:ALPHA Feature to deliver files through Apache not PHP (do not aktivate this it will not work)
+apacheDelivery = 0

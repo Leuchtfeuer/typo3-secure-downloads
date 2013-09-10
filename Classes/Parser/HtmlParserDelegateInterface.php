@@ -31,5 +31,5 @@ interface HtmlParserDelegateInterface {
 	 * @param string $resourceUri
 	 * @return string
 	 */
-	public function buildAccessibleUri($resourceUri);
+	public function publishResourceUri($resourceUri);
 }

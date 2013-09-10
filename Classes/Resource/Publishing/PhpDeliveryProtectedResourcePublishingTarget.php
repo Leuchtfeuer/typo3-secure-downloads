@@ -41,7 +41,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 	public function publishResource(ResourceInterface $resource) {
 		if ($this->isSourcePathInDocumentRoot()) {
 			if (!$this->isPubliclyAvailable($resource)) {
-				$publicUrl = $this->buildAccessibleUri($this->getResourceUri($resource));
+				$publicUrl = $this->publishResourceUri($this->getResourceUri($resource));
 			}
 		} else {
 			// TODO: Maybe implement this case?
@@ -56,7 +56,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 	 * @param string $resourceUri
 	 * @return string
 	 */
-	public function buildAccessibleUri($resourceUri) {
+	public function publishResourceUri($resourceUri) {
 		$userId = $this->getRequestContext()->getUserId();
 		$userGroupIds = $this->getRequestContext()->getUserGroupIds();
 		$validityPeriod = $this->calculateLinkLifetime();

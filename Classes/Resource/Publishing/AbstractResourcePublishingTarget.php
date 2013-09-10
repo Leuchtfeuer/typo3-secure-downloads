@@ -100,7 +100,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 	 * @param string $resourceSourcePath Absolute path to resources
 	 */
 	public function setResourcesSourcePath($resourceSourcePath) {
-		$this->resourcesSourcePath = $resourceSourcePath;
+		$this->resourcesSourcePath = rtrim($resourceSourcePath, '/') . '/';
 		$this->detectResourcesPublishingPath();
 	}
 

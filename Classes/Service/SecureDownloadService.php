@@ -84,8 +84,8 @@ class SecureDownloadService implements HtmlParserDelegateInterface {
 	 * @param string $originalUri
 	 * @return string
 	 */
-	public function buildAccessibleUri($originalUri) {
-		$transformedUri = $this->getResourcePublisher()->buildAccessibleUri(rawurldecode($originalUri));
+	public function publishResourceUri($originalUri) {
+		$transformedUri = $this->getResourcePublisher()->publishResourceUri(rawurldecode($originalUri));
 
 		// Hook for makeSecure:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/Classes/Service/SecureDownloadService.php']['makeSecure'])) {
@@ -120,7 +120,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface {
 	 * @return string
 	 */
 	public function makeSecure($originalUri) {
-		return $this->buildAccessibleUri($originalUri);
+		return $this->publishResourceUri($originalUri);
 	}
 
 	/**
@@ -152,6 +152,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface {
 	protected function getResourcePublisher() {
 		if (is_null($this->resourcePublisher)) {
 			$this->resourcePublisher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublisher');
+			$this->resourcePublisher->setResourcesSourcePath(PATH_site);
 		}
 		return $this->resourcePublisher;
 	}

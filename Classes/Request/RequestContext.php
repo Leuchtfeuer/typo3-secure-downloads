@@ -24,6 +24,8 @@ namespace Bitmotion\NawSecuredl\Request;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 /**
@@ -52,20 +54,32 @@ class RequestContext {
 	protected $urlRewritingEnabled = TRUE;
 
 	/**
+	 * @var string
+	 */
+	protected $cookieName;
+
+	/**
+	 * @var string
+	 */
+	protected $sessionId;
+
+	/**
+	 * @var string
+	 */
+	protected $ipAddress;
+
+	/**
 	 * @var AbstractUserAuthentication
 	 */
 	protected $currentUser;
 
-
 	public function __construct() {
 		if ($this->isFrontendRequest()) {
 			$this->initializeFrontendContext();
-		} elseif (!$this->isBackendRequest()) {
-			throw new \LogicException('', 1377180593);
+		} elseif ($this->isBackendRequest()) {
+			$this->initializeBackendContext();
 		} else {
-// Disabled for now, because we do only have php delivery script which is called in a frontend context (eID)
-// TODO: decouple and refactor PHP delivery
-//			$this->initializeBackendContext();
+			throw new \LogicException('Unkown Context.', 1377180593);
 		}
 	}
 
@@ -98,6 +112,27 @@ class RequestContext {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getCookieName() {
+		return $this->cookieName;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSessionId() {
+		return $this->sessionId;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getIpAddress() {
+		return $this->ipAddress;
+	}
+
+	/**
 	 * Initializes the request context, when called from a frontend request
 	 */
 	protected function initializeFrontendContext() {
@@ -115,19 +150,32 @@ class RequestContext {
 		) {
 			$this->urlRewritingEnabled = FALSE;
 		}
+		$this->cookieName = FrontendUserAuthentication::getCookieName();
+		$this->sessionId = $_COOKIE[$this->cookieName];
+
+		// This is done to fixate the session id, even if the user is not logged in
+		$typoScriptFrontendController->fe_user->setKey('ses', 'naw_securedl', 'foo');
+		$typoScriptFrontendController->fe_user->storeSessionData();
+
+		$this->ipAddress = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : NULL;
 	}
 
 	/**
 	 * Initializes the request context, when called from a backend request
 	 */
 	protected function initializeBackendContext() {
-		$this->currentUser = $GLOBALS['BE_USER'];
-		if (!empty($this->currentUser->user['uid'])) {
-			$this->userId = (int)$this->currentUser->user['uid'];
-		}
-		if (!empty($this->currentUser->user['usergroup'])) {
-			$this->userGroupIds = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->currentUser->user['usergroup'], TRUE);
-		}
+// Disabled for now, because we do only have php delivery script which is called in a frontend context (eID)
+// TODO: decouple and refactor PHP delivery
+//		$this->currentUser = $GLOBALS['BE_USER'];
+//		if (!empty($this->currentUser->user['uid'])) {
+//			$this->userId = (int)$this->currentUser->user['uid'];
+//		}
+//		if (!empty($this->currentUser->user['usergroup'])) {
+//			$this->userGroupIds = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->currentUser->user['usergroup'], TRUE);
+//		}
+		$this->cookieName = BackendUserAuthentication::getCookieName();
+		$this->sessionId = $_COOKIE[$this->cookieName];
+		$this->ipAddress = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : NULL;
 	}
 
 	/**

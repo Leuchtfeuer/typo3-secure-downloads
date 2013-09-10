@@ -148,7 +148,7 @@ class HtmlParser {
 				debug($matchedUrls);
 			}
 
-			$replace = htmlspecialchars($this->delegate->buildAccessibleUri($matchedUrls[1]));
+			$replace = htmlspecialchars($this->delegate->publishResourceUri($matchedUrls[1]));
 			$tagexp = explode($matchedUrls[1], $tag, 2);
 
 			if ($this->logLevel === 2 || $this->logLevel === 3) {
@@ -166,7 +166,7 @@ class HtmlParser {
 
 			// search in the rest on the tag (e.g. for vHWin=window.open...)
 			if (preg_match('/\'(?:' . $this->softQuoteExpression($this->domainPattern) . ')?.*?(\/?(?:' . $this->softQuoteExpression($toSecureDirectoryExpression) . ')+?.*?(?:' . $this->getFileTypeExpression($this->fileExtensionPattern) . '))\'/i', $tmp, $matchedUrls)) {
-				$replace = htmlspecialchars($this->delegate->buildAccessibleUri($matchedUrls[1]));
+				$replace = htmlspecialchars($this->delegate->publishResourceUri($matchedUrls[1]));
 				$tagexp = explode($matchedUrls[1], $tmp, 2);
 				$add = $tagexp[0] . '/' . $replace . $tagexp[1];
 			} else {

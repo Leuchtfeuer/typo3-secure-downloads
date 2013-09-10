@@ -69,7 +69,7 @@ class HtmlParserTest extends \Tx_Phpunit_TestCase {
 	public function allConfiguredAssetsAreReplacedInHtml($originalHtml, $expectedHtml) {
 		$delegateMock = $this->getMock('Bitmotion\\NawSecuredl\\Parser\\HtmlParserDelegateInterface');
 		$delegateMock->expects($this->any())
-			->method('buildAccessibleUri')
+			->method('publishResourceUri')
 			->will($this->returnCallback(function($resourceUri) {return 'securedl/' . $resourceUri;}));
 		$settings = array(
 			'folderPattern' => 'fileadmin/secure/',

@@ -53,7 +53,7 @@ interface ResourcePublishingTargetInterface {
 	 * @param $resourceUri
 	 * @return string
 	 */
-	public function buildAccessibleUri($resourceUri);
+	public function publishResourceUri($resourceUri);
 
 	/**
 	 * @param string $resourceSourcePath

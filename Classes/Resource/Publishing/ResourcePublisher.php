@@ -79,8 +79,8 @@ class ResourcePublisher implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param $resourceUri
 	 * @return string
 	 */
-	public function buildAccessibleUri($resourceUri) {
-		return $this->getPublishingTarget()->buildAccessibleUri($resourceUri);
+	public function publishResourceUri($resourceUri) {
+		return $this->getPublishingTarget()->publishResourceUri($resourceUri);
 	}
 
 	/**
@@ -92,6 +92,9 @@ class ResourcePublisher implements \TYPO3\CMS\Core\SingletonInterface {
 			$this->publishingTarget = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget');
 			if (method_exists($this->publishingTarget, 'injectConfigurationManager')) {
 				$this->publishingTarget->injectConfigurationManager(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Configuration\\ConfigurationManager'));
+			}
+			if (method_exists($this->publishingTarget, 'injectAccessRestrictionPublisher')) {
+				$this->publishingTarget->injectAccessRestrictionPublisher(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Security\\Authorization\\Resource\\AccessRestrictionPublisher'));
 			}
 		}
 		return $this->publishingTarget;
