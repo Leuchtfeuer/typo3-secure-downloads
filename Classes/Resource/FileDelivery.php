@@ -1,4 +1,6 @@
 <?php
+namespace Bitmotion\NawSecuredl\Resource;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -21,12 +23,15 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\MathUtility;
+use TYPO3\CMS\Frontend\Utility\EidUtility;
 
 /**
  * @author	Dietrich Heise <typo3-ext(at)bitmotion.de>
  * @author	Helmut Hummel <typo3-ext(at)bitmotion.de>
  */
-class tx_nawsecuredl_output {
+class FileDelivery {
 
 	/**
 	 * @var array
@@ -34,7 +39,7 @@ class tx_nawsecuredl_output {
 	protected $extensionConfiguration = array();
 
 	/**
-	 * @var tslib_feUserAuth
+	 * @var \tslib_feUserAuth
 	 */
 	protected $feUserObj;
 
@@ -84,26 +89,29 @@ class tx_nawsecuredl_output {
 	protected $calculatedHash;
 
 	/**
-	 * The init Function, to check the access rights
-	 *
-	 * @return void
+	 * @var \TYPO3\CMS\Core\Database\DatabaseConnection
 	 */
-	function init(){
+	protected $databaseConnection;
+
+	/**
+	 * Check the access rights
+	 */
+	function __construct() {
 		$this->extensionConfiguration = $this->getExtensionConfiguration();
 
-		$this->userId = intval(t3lib_div::_GP('u'));
+		$this->userId = intval(GeneralUtility::_GP('u'));
 		if (!$this->userId) {
 			$this->userId = 0;
 		}
 
-		$this->userGroups = t3lib_div::_GP('g');
+		$this->userGroups = GeneralUtility::_GP('g');
 		if (!$this->userGroups) {
 			$this->userGroups = 0;
 		}
 
-		$this->hash = t3lib_div::_GP('hash');
-		$this->expiryTime = t3lib_div::_GP('t');
-		$this->file = t3lib_div::_GP('file');
+		$this->hash = GeneralUtility::_GP('hash');
+		$this->expiryTime = GeneralUtility::_GP('t');
+		$this->file = GeneralUtility::_GP('file');
 
 		$this->data = $this->userId . $this->userGroups . $this->file . $this->expiryTime;
 		$this->calculatedHash = $this->getHash($this->file, $this->userId, $this->userGroups, $this->expiryTime);
@@ -120,7 +128,7 @@ class tx_nawsecuredl_output {
 				'calculatedHash' => &$this->calculatedHash,
 			);
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['init'] as $_funcRef)   {
-				t3lib_div::callUserFunction($_funcRef, $_params, $this);
+				GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 			}
 		}
 
@@ -145,8 +153,9 @@ class tx_nawsecuredl_output {
 	 *
 	 */
 	protected function initializeUserAuthentication() {
-		$this->feUserObj = tslib_eidtools::initFeUser();
-		tslib_eidtools::connectDB();
+		$this->feUserObj = EidUtility::initFeUser();
+		EidUtility::connectDB();
+		$this->databaseConnection = $GLOBALS['TYPO3_DB'];
 	}
 
 	/**
@@ -188,9 +197,9 @@ class tx_nawsecuredl_output {
 			return FALSE;
 		}
 
-		$transmittedGroups = t3lib_div::intExplode(',', $this->userGroups);
-		$actualGroups = t3lib_div::intExplode(',', $this->feUserObj->user['usergroup']);
-		$excludedGroups = t3lib_div::intExplode(',', $this->extensionConfiguration['excludeGroups']);
+		$transmittedGroups = GeneralUtility::intExplode(',', $this->userGroups);
+		$actualGroups = GeneralUtility::intExplode(',', $this->feUserObj->user['usergroup']);
+		$excludedGroups = GeneralUtility::intExplode(',', $this->extensionConfiguration['excludeGroups']);
 		$checkableGroups = array_diff($actualGroups, $excludedGroups);
 
 		if ($actualGroups === $transmittedGroups) {
@@ -210,9 +219,9 @@ class tx_nawsecuredl_output {
 	/**
 	 * Output the requested file
 	 */
-	public function fileOutput(){
+	public function deliver() {
 
-		$file = t3lib_div::getFileAbsFileName(ltrim($this->file, '/'));
+		$file = GeneralUtility::getFileAbsFileName(ltrim($this->file, '/'));
 		$fileName = basename($file);
 			// This is a workaround for a PHP bug on Windows systems:
 			// @see http://bugs.php.net/bug.php?id=46990
@@ -228,7 +237,7 @@ class tx_nawsecuredl_output {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['preOutput'])) {
 			$_params = array('pObj' => &$this);
 			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['preOutput'] as $_funcRef)   {
-				t3lib_div::callUserFunction($_funcRef,$_params,$this);
+				GeneralUtility::callUserFunction($_funcRef,$_params,$this);
 			}
 		}
 
@@ -243,7 +252,7 @@ class tx_nawsecuredl_output {
 			$forcedownload = FALSE;
 
 			if ((bool)$this->extensionConfiguration['forcedownload'] === TRUE){
-				$forcetypes = t3lib_div::trimExplode("|", $this->extensionConfiguration['forcedownloadtype']);
+				$forcetypes = GeneralUtility::trimExplode("|", $this->extensionConfiguration['forcedownloadtype']);
 				if (is_array($forcetypes)){
 					if (in_array($strFileExtension, $forcetypes)) {
 						$forcedownload = TRUE;
@@ -262,7 +271,7 @@ class tx_nawsecuredl_output {
 					'mimeType' => &$strMimeType,
 				);
 				foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['output'] as $_funcRef)   {
-					t3lib_div::callUserFunction($_funcRef, $_params, $this);
+					GeneralUtility::callUserFunction($_funcRef, $_params, $this);
 				}
 			}
 
@@ -331,10 +340,10 @@ class tx_nawsecuredl_output {
 			);
 
 			if (is_null($this->logRowUid)) {
-				$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_nawsecuredl_counter', $data_array);
-				$this->logRowUid = $GLOBALS['TYPO3_DB']->sql_insert_id();
+				$this->databaseConnection->exec_INSERTquery('tx_nawsecuredl_counter', $data_array);
+				$this->logRowUid = $this->databaseConnection->sql_insert_id();
 			} else {
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_nawsecuredl_counter', '`uid`=' . (int)$this->logRowUid, $data_array);
+				$this->databaseConnection->exec_UPDATEquery('tx_nawsecuredl_counter', '`uid`=' . (int)$this->logRowUid, $data_array);
 			}
 
 		}
@@ -368,7 +377,6 @@ class tx_nawsecuredl_output {
 	{
 		$chunksize = intval($this->extensionConfiguration['outputChunkSize']); // how many bytes per chunk
 		$timeout = ini_get('max_execution_time');
-		$buffer = '';
 		$bytes_sent = 0;
 		$handle = fopen($strFileName, 'rb');
 		if ($handle === false) {
@@ -381,7 +389,7 @@ class tx_nawsecuredl_output {
 			$bytes_sent += $chunksize;
 			ob_flush();
 			flush();
-			$this->logDownload(t3lib_utility_Math::forceIntegerInRange($bytes_sent, 0, $this->fileSize));
+			$this->logDownload(MathUtility::forceIntegerInRange($bytes_sent, 0, $this->fileSize));
 		}
 		return fclose($handle);
 	}
@@ -394,7 +402,7 @@ class tx_nawsecuredl_output {
 	 */
 	protected function getFileExtensionByFilename($strFileName)
 	{
-		return t3lib_div::strtolower(ltrim(strrchr($strFileName, '.'), '.'));
+		return GeneralUtility::strtolower(ltrim(strrchr($strFileName, '.'), '.'));
 	}
 
 	/**
@@ -469,12 +477,12 @@ class tx_nawsecuredl_output {
 
 			$strAdditionalFileExtension = '';
 			$strAdditionalMimeType = '';
-			$arrAdditionalMimeTypeParts = t3lib_div::trimExplode(',', $this->extensionConfiguration['additionalMimeTypes'], TRUE);
+			$arrAdditionalMimeTypeParts = GeneralUtility::trimExplode(',', $this->extensionConfiguration['additionalMimeTypes'], TRUE);
 
 			foreach($arrAdditionalMimeTypeParts as $strAdditionalMimeTypeItem) {
-				list($strAdditionalFileExtension, $strAdditionalMimeType) = t3lib_div::trimExplode('|', $strAdditionalMimeTypeItem);
+				list($strAdditionalFileExtension, $strAdditionalMimeType) = GeneralUtility::trimExplode('|', $strAdditionalMimeTypeItem);
 				if(!empty($strAdditionalFileExtension) && !empty($strAdditionalMimeType)) {
-					$strAdditionalFileExtension = t3lib_div::strtolower($strAdditionalFileExtension);
+					$strAdditionalFileExtension = GeneralUtility::strtolower($strAdditionalFileExtension);
 					$arrMimeTypes[$strAdditionalFileExtension] = $strAdditionalMimeType;
 				}
 			}
@@ -525,7 +533,7 @@ class tx_nawsecuredl_output {
 	}
 
 /*
- * HELPER MEHTOD
+ * HELPER METHODS
  *
  */
 
@@ -544,27 +552,13 @@ class tx_nawsecuredl_output {
 		} else {
 			$hashString = $userId . $resourceUri . $validityPeriod;
 		}
-		return \t3lib_div::hmac($hashString);
+		return GeneralUtility::hmac($hashString);
 	}
 
 	protected function exitScript($message) {
 		header('HTTP/1.1 403 Forbidden');
 		exit($message);
 	}
-
-}
-
-	// Do not execute anything if we are in testing context
-if (empty($GLOBALS['naw_securedlTestingContext'])) {
-
-	if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php'])	{
-		include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']);
-	}
-
-	/** @var $securedl tx_nawsecuredl_output */
-	$securedl = t3lib_div::makeInstance('tx_nawsecuredl_output');
-	$securedl->init();
-	$securedl->fileOutput();
 }
 
 ?>

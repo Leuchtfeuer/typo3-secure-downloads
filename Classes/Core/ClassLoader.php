@@ -48,7 +48,7 @@ class ClassLoader {
 	 */
 	public function __construct() {
 		$this->classPath = str_replace('\\', '/', dirname(__DIR__)) . '/';
-		self::loadAliasMap();
+		$this->loadAliasMap();
 	}
 
 	/**
@@ -66,7 +66,7 @@ class ClassLoader {
 		}
 		list($vendorName, $extensionName, $classPathPart) = explode('\\', $className, 3);
 		$classPath = $this->classPath . str_replace('\\', '/', $classPathPart) . '.php';
-		if (@file_exists($classPath)) {
+		if ($vendorName === 'Bitmotion' && $extensionName === 'NawSecuredl' && @file_exists($classPath)) {
 			require_once $classPath;
 			return TRUE;
 		} else {

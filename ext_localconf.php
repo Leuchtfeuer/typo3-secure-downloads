@@ -8,7 +8,7 @@ if (!defined ("TYPO3_MODE")) {
 /////////////////////////////////////
 if (substr(TYPO3_branch, 0, 1) === '4') {
 	// Compatibility mode for TYPO3 versions below 6.0
-	require_once(t3lib_extMgm::extPath($_EXTKEY) . 'Compatibility/Compatibility.php');
+	require_once(t3lib_extMgm::extPath($_EXTKEY) . 'Resources/Private/Scripts/Compatibility.php');
 	// TYPO3 < 6.0
 	// (would be ignored in higher versions, but since we need to differentiate anyway, we can only register for a specific branch to avoid clutter)
 	$TYPO3_CONF_VARS['BE']['XCLASS']['typo3/class.file_list.inc'] = t3lib_extMgm::extPath($_EXTKEY) . 'Classes/Xclass/class.ux_fileList.inc';
@@ -36,5 +36,5 @@ class_alias('Bitmotion\\NawSecuredl\\Resource\\Publishing\\PhpDeliveryProtectedR
 // TODO: make configurable if HTML parsing should be done or not
 $TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'][] = ':&Tx_NawSecuredl_Service_SecureDownloadService->parseFE';
 // PHP delivery. If any other delivery strategy is implemented, the eID script registration can be omitted
-$TYPO3_CONF_VARS['FE']['eID_include']['tx_nawsecuredl'] = 'EXT:naw_securedl/class.tx_nawsecuredl_output.php';
+$TYPO3_CONF_VARS['FE']['eID_include']['tx_nawsecuredl'] = 'EXT:naw_securedl/Resources/Private/Scripts/FileDeliveryEidDispatcher.php';
 ?>
