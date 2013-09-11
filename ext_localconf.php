@@ -33,14 +33,15 @@ if (substr(TYPO3_branch, 0, 1) === '4') {
 ///////////////////////////////////
 
 $configurationManager = new \Bitmotion\NawSecuredl\Configuration\ConfigurationManager();
+$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Core\\ObjectManager');
 
 if ($configurationManager->getValue('apacheDelivery')) {
-	class_alias('Bitmotion\\NawSecuredl\\Resource\\Publishing\\Apache2DeliveryProtectedResourcePublishingTarget', 'Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget');
-	class_alias('Bitmotion\\NawSecuredl\\Security\\Authorization\\Resource\\Apache2AccessRestrictionPublisher', 'Bitmotion\\NawSecuredl\\Security\\Authorization\\Resource\\AccessRestrictionPublisher');
+	$objectManager->registerImplementation('Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget', 'Bitmotion\\NawSecuredl\\Resource\\Publishing\\Apache2DeliveryProtectedResourcePublishingTarget');
+	$objectManager->registerImplementation('Bitmotion\\NawSecuredl\\Security\\Authorization\\Resource\\AccessRestrictionPublisher', 'Bitmotion\\NawSecuredl\\Security\\Authorization\\Resource\\Apache2AccessRestrictionPublisher');
 } else {
 	// PHP delivery. If any other delivery strategy is implemented, the eID script registration can be omitted
 	$TYPO3_CONF_VARS['FE']['eID_include']['tx_nawsecuredl'] = 'EXT:naw_securedl/Resources/Private/Scripts/FileDeliveryEidDispatcher.php';
-	class_alias('Bitmotion\\NawSecuredl\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget', 'Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget');
+	$objectManager->registerImplementation('Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget', 'Bitmotion\\NawSecuredl\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget');
 }
 
 if (!$configurationManager->getValue('apacheDelivery')) {
@@ -50,6 +51,7 @@ if (!$configurationManager->getValue('apacheDelivery')) {
 	$TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'][] = ':&Tx_NawSecuredl_Service_SecureDownloadService->parseFE';
 }
 
+unset($configurationManager);
+unset($objectManager);
 
-unset ($configurationManager);
 ?>
