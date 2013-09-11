@@ -79,5 +79,6 @@ class ClassLoader {
 	 */
 	private function loadAliasMap() {
 		$this->classAliasMap = require $this->classPath . '../Migrations/Code/ClassAliasMap.php';
+		$this->classAliasMap = array_merge($this->classAliasMap, require $this->classPath . '../Migrations/Code/CompatibilityClassAliasMap.php');
 	}
 }

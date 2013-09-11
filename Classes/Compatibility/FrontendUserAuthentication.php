@@ -25,19 +25,15 @@ namespace Bitmotion\NawSecuredl\Compatibility;
  ***************************************************************/
 
 /**
- * Compatibility Class MathUtility
+ * Compatibility Class FrontendUserAuthentication
  */
-class MathUtility {
+class FrontendUserAuthentication extends \tslib_feUserAuth {
 	/**
-	 * Forces the integer $theInt into the boundaries of $min and $max. If the $theInt is FALSE then the $defaultValue is applied.
+	 * Fake getter for the cookie name
 	 *
-	 * @param integer $theInt Input value
-	 * @param integer $min Lower limit
-	 * @param integer $max Higher limit
-	 * @param integer $defaultValue Default value if input is FALSE.
-	 * @return integer The input value forced into the boundaries of $min and $max
+	 * @return string returns the configured cookie name
 	 */
-	static public function forceIntegerInRange($theInt, $min, $max = 2000000000, $defaultValue = 0) {
-		return \t3lib_div::intInRange($theInt, $min, $max, $defaultValue);
+	static public function getCookieName() {
+		return 'fe_typo_user';
 	}
 }
