@@ -26,6 +26,7 @@ namespace Bitmotion\NawSecuredl\Resource\Publishing;
 
 use Bitmotion\NawSecuredl\Parser\HtmlParser;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class PhpDeliveryProtectedResourcePublishingTarget
@@ -95,7 +96,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 			$linkFormat = 'index.php?eID=tx_nawsecuredl&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
 		}
 		$tokens = array('###FEUSER###', '###FEGROUPS###', '###FILE###', '###TIMEOUT###', '###HASH###');
-		$replacements = array($userId, rawurlencode(implode(',', $userGroupIds)), rawurlencode($resourceUri), $validityPeriod, $hash);
+		$replacements = array($userId, rawurlencode(implode(',', $userGroupIds)), GeneralUtility::rawUrlEncodeFP($resourceUri), $validityPeriod, $hash);
 		$downloadUri = str_replace($tokens, $replacements, $linkFormat);
 		return $downloadUri;
 	}
