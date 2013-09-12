@@ -154,8 +154,9 @@ class RequestContext {
 		$this->sessionId = $_COOKIE[$this->cookieName];
 
 		// This is done to fixate the session id, even if the user is not logged in
-		$typoScriptFrontendController->fe_user->setKey('ses', 'naw_securedl', 'foo');
-		$typoScriptFrontendController->fe_user->storeSessionData();
+		// TODO: this needs a better solution. At least this should be moved somewhere else...
+//		$typoScriptFrontendController->fe_user->setKey('ses', 'naw_securedl', 'foo');
+//		$typoScriptFrontendController->fe_user->storeSessionData();
 
 		$this->ipAddress = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : NULL;
 	}
