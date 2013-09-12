@@ -8,7 +8,7 @@ if (!defined ("TYPO3_MODE")) {
 /////////////////////////////////////
 if (substr(TYPO3_branch, 0, 1) === '4') {
 	// Compatibility class loader which does class_alias magic and loads classes by naming convention
-	require_once __DIR__ . '/Classes/Core/ClassLoader.php';
+	require_once t3lib_extMgm::extPath($_EXTKEY) . 'Classes/Core/ClassLoader.php';
 	spl_autoload_register(array(new \Bitmotion\NawSecuredl\Core\ClassLoader(), 'loadClass'));
 	// Compatibility mode for TYPO3 versions below 6.0 (nothing needed atm)
 //	require_once(t3lib_extMgm::extPath($_EXTKEY) . 'Resources/Private/Scripts/Compatibility.php');
