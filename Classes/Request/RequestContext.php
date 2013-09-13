@@ -182,7 +182,7 @@ class RequestContext {
 	/**
 	 * @return boolean
 	 */
-	protected function isFrontendRequest() {
+	public function isFrontendRequest() {
 		return defined('TYPO3_MODE') && TYPO3_MODE === 'FE';
 	}
 

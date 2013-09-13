@@ -40,6 +40,16 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 	 * @return mixed Either the web URI of the published resource or FALSE if the resource source file doesn't exist or the resource could not be published for other reasons
 	 */
 	public function publishResource(ResourceInterface $resource) {
+		if ($this->getRequestContext()->isFrontendRequest() && $_GET['eID'] !== 'tx_cms_showpic') {
+			// We disable direct URL generation for now, because we will run into caching issues otherwise.
+			// The parser will manipulate the URI right before the HTML is output, like it was before.
+			// In order to change this, we need to remove the user / group id from the URL and check the
+			// permissions in the delivery script instead, but we need a good concept where to then get
+			// the information whether the file should be accessible for the user or not.
+			// We need however rewrite the URL in popup windows because we do not have the parser there activated
+			// Because of a missing XClass. There will be no caching there anyway so this is fine.
+			return FALSE;
+		}
 		if ($this->isSourcePathInDocumentRoot()) {
 			if (!$this->isPubliclyAvailable($resource)) {
 				$publicUrl = $this->publishResourceUri($this->getResourceUri($resource));
