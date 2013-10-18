@@ -59,10 +59,7 @@ class UrlGenerationInterceptor {
 			// We cannot handle other files than local files yet
 			return;
 		}
-
-		$this->resourcePublisher->setResourcesSourcePath($driver->getAbsoluteBasePath());
 		$publicUrl = $this->resourcePublisher->getResourceWebUri($resource);
-
 		if ($publicUrl !== FALSE) {
 			// If requested, make the path relative to the current script in order to make it possible
 			// to use the relative file

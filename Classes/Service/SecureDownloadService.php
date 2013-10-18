@@ -152,7 +152,6 @@ class SecureDownloadService implements HtmlParserDelegateInterface {
 	protected function getResourcePublisher() {
 		if (is_null($this->resourcePublisher)) {
 			$this->resourcePublisher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublisher');
-			$this->resourcePublisher->setResourcesSourcePath(PATH_site);
 		}
 		return $this->resourcePublisher;
 	}

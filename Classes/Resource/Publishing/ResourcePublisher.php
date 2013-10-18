@@ -64,16 +64,6 @@ class ResourcePublisher implements \TYPO3\CMS\Core\SingletonInterface {
 	}
 
 	/**
-	 * Other than in Flow resources can reside in several places.
-	 * The source path needs to be set for the publishing.
-	 *
-	 * @param string $resourcesSourcePath
-	 */
-	public function setResourcesSourcePath($resourcesSourcePath) {
-		$this->getPublishingTarget()->setResourcesSourcePath($resourcesSourcePath);
-	}
-
-	/**
 	 * Builds a delivery URI from a URI which is in document root but protected through the webserver
 	 *
 	 * @param $resourceUri

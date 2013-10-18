@@ -25,6 +25,7 @@ namespace Bitmotion\NawSecuredl\Resource\Publishing;
  ***************************************************************/
 
 use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use Bitmotion\NawSecuredl\Configuration\ConfigurationManager;
 use Bitmotion\NawSecuredl\Request\RequestContext;
@@ -97,10 +98,24 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 	}
 
 	/**
+	 * @param ResourceStorage $storage
+	 * @return string
+	 */
+	protected function getResourcesSourcePathByResourceStorage(ResourceStorage $storage) {
+		$storageConfiguration = $storage->getConfiguration();
+		if ($storageConfiguration['pathType'] === 'absolute') {
+			$sourcePath = PathUtility::getCanonicalPath($storageConfiguration['basePath']) . '/';
+		} else {
+			$sourcePath = PathUtility::getCanonicalPath(PATH_site . $storageConfiguration['basePath']) . '/';
+		}
+		return $sourcePath;
+	}
+
+	/**
 	 * @param string $resourceSourcePath Absolute path to resources
 	 */
-	public function setResourcesSourcePath($resourceSourcePath) {
-		$this->resourcesSourcePath = rtrim($resourceSourcePath, '/') . '/';
+	protected function setResourcesSourcePath($resourceSourcePath) {
+		$this->resourcesSourcePath = $resourceSourcePath;
 		$this->detectResourcesPublishingPath();
 	}
 

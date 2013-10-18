@@ -53,6 +53,7 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
 	 * @return mixed Either the web URI of the published resource or FALSE if the resource source file doesn't exist or the resource could not be published for other reasons
 	 */
 	public function publishResource(ResourceInterface $resource) {
+		$this->setResourcesSourcePath($this->getResourcesSourcePathByResourceStorage($resource->getStorage()));
 		$publishedResourcePathAndFilename = $this->buildResourcePublishPathAndFilename($resource);
 		$publishedResourceWebUri = $this->buildResourceWebUri($resource);
 

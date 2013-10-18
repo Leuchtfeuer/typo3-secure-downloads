@@ -54,10 +54,4 @@ interface ResourcePublishingTargetInterface {
 	 * @return string
 	 */
 	public function publishResourceUri($resourceUri);
-
-	/**
-	 * @param string $resourceSourcePath
-	 * @return void
-	 */
-	public function setResourcesSourcePath($resourceSourcePath);
 }

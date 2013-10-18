@@ -27,6 +27,7 @@ namespace Bitmotion\NawSecuredl\Resource\Publishing;
 use Bitmotion\NawSecuredl\Parser\HtmlParser;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 
 /**
  * Class PhpDeliveryProtectedResourcePublishingTarget
@@ -50,6 +51,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 			// Because of a missing XClass. There will be no caching there anyway so this is fine.
 			return FALSE;
 		}
+		$this->setResourcesSourcePath($this->getResourcesSourcePathByResourceStorage($resource->getStorage()));
 		if ($this->isSourcePathInDocumentRoot()) {
 			if (!$this->isPubliclyAvailable($resource)) {
 				$publicUrl = $this->publishResourceUri($this->getResourceUri($resource));
@@ -68,6 +70,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 	 * @return string
 	 */
 	public function publishResourceUri($resourceUri) {
+		$this->setResourcesSourcePath(PATH_site);
 		$userId = $this->getRequestContext()->getUserId();
 		$userGroupIds = $this->getRequestContext()->getUserGroupIds();
 		$validityPeriod = $this->calculateLinkLifetime();
