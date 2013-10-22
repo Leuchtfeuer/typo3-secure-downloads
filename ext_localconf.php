@@ -26,6 +26,9 @@ if (substr(TYPO3_branch, 0, 1) === '4') {
 			'getPublicUrl'
 		);
 	}
+	$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Frontend\\Controller\\ShowImageController'] = array(
+		'className' => 'Bitmotion\\NawSecuredl\\Controller\\ShowImageController',
+	);
 }
 
 ///////////////////////////////////
