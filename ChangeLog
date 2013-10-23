@@ -1,3 +1,9 @@
+2013-07-19 Dietrich Heise <typo3-ext(at)bitmotion.de>, Helmut Hummel  <typo3-ext(at)bitmotion.de>
+	* Rewritten for 6.x
+	* Works with TYPO3 4.5 and greater
+	* Bug #50629 and #52441 fixed BE thumbnails broken
+	* Bug #52003 fixed Downloads broken in 4.5.30
+
 2013-07-19 Dietrich Heise <typo3-ext(at)bitmotion.de>
 	* First Version with TYPO3 6.x Support
 	* Change the order of GET params in the default settings, so &file=/path/example.jpg is at the end of the url,

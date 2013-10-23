@@ -37,11 +37,7 @@ class ShowImageController extends \TYPO3\CMS\Frontend\Controller\ShowImageContro
 	 * @todo Define visibility
 	 */
 	function printContent()	{
-		if ($_GET['eID'] == 'tx_cms_showpic'){
-			$SecureDownloadService =\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\NawSecuredl\Service\SecureDownloadService');
+			$SecureDownloadService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\NawSecuredl\Service\SecureDownloadService');
 			echo $SecureDownloadService->parseContent($this->content);
-		}else{
-			parent::printContent();
-		}
 	}
 }

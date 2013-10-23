@@ -79,7 +79,7 @@ class RequestContext {
 		} elseif ($this->isBackendRequest()) {
 			$this->initializeBackendContext();
 		} else {
-			throw new \LogicException('Unkown Context.', 1377180593);
+			throw new \LogicException('Unknown Context.', 1377180593);
 		}
 	}
 

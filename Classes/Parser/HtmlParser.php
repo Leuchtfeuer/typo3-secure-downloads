@@ -5,6 +5,7 @@ namespace Bitmotion\NawSecuredl\Parser;
  *  Copyright notice
  *
  *  (c) 2013 Helmut Hummel (helmut.hummel@typo3.org)
+ *  (c) 2013 Dietrich Heise ( typo3-ext(at)bitmotion.de )
  *  All rights reserved
  *
  *  This script is part of the Typo3 project. The Typo3 project is
@@ -139,10 +140,10 @@ class HtmlParser {
 	 * @return string
 	 */
 	protected function parseTag($tag, $toSecureDirectoryExpression) {
-		if (preg_match('/"(?:' . $this->softQuoteExpression($this->domainPattern) . ')?(\/?(?:' . $this->softQuoteExpression($toSecureDirectoryExpression) . ')+?.*?(?:' . $this->getFileTypeExpression($this->fileExtensionPattern) . '))"/i', $tag, $matchedUrls)) {
+		if (preg_match('/"(?:' . $this->softQuoteExpression($this->domainPattern) . ')?(\/?(?:' . $this->softQuoteExpression($toSecureDirectoryExpression) . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))"/i', $tag, $matchedUrls)) {
 
 			if ($this->logLevel === 2 || $this->logLevel === 3) {
-				debug('/"(?:' . $this->softQuoteExpression($this->domainPattern) . ')?(\/?(?:' . $this->softQuoteExpression($toSecureDirectoryExpression) . ')+?.*?(?:' . $this->getFileTypeExpression($this->fileExtensionPattern) . '))"/i');
+				debug('/"(?:' . $this->softQuoteExpression($this->domainPattern) . ')?(\/?(?:' . $this->softQuoteExpression($toSecureDirectoryExpression) . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))"/i');
 			}
 			if ($this->logLevel === 2 || $this->logLevel === 3) {
 				debug($matchedUrls);
@@ -165,7 +166,7 @@ class HtmlParser {
 			$tmp = $tagexp[1];
 
 			// search in the rest on the tag (e.g. for vHWin=window.open...)
-			if (preg_match('/\'(?:' . $this->softQuoteExpression($this->domainPattern) . ')?.*?(\/?(?:' . $this->softQuoteExpression($toSecureDirectoryExpression) . ')+?.*?(?:' . $this->getFileTypeExpression($this->fileExtensionPattern) . '))\'/i', $tmp, $matchedUrls)) {
+			if (preg_match('/\'(?:' . $this->softQuoteExpression($this->domainPattern) . ')?.*?(\/?(?:' . $this->softQuoteExpression($toSecureDirectoryExpression) . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))\'/i', $tmp, $matchedUrls)) {
 				$replace = htmlspecialchars($this->delegate->publishResourceUri($matchedUrls[1]));
 				$tagexp = explode($matchedUrls[1], $tmp, 2);
 				$add = $tagexp[0] . '/' . $replace . $tagexp[1];
@@ -176,17 +177,6 @@ class HtmlParser {
 			$tag .= $add;
 		}
 		return $tag;
-	}
-
-	/**
-	 * Returns a case insensitive regular expression based on
-	 * lowercase input
-	 *
-	 * @param string $string
-	 * @return string
-	 */
-	protected function getFileTypeExpression($string) {
-		return '(?i)' . $string;
 	}
 
 	/**

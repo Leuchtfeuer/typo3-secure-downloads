@@ -3,15 +3,15 @@ if (!defined ("TYPO3_MODE")) {
 	die ("Access denied.");
 }
 
-/////////////////////////////////////
-// Version specific initialisation //
-/////////////////////////////////////
+/* #######################################
+   ### Version specific initialisation ###
+   ####################################### */
 if (substr(TYPO3_branch, 0, 1) === '4') {
 	// Compatibility class loader which does class_alias magic and loads classes by naming convention
 	require_once t3lib_extMgm::extPath($_EXTKEY) . 'Classes/Core/ClassLoader.php';
 	spl_autoload_register(array(new \Bitmotion\NawSecuredl\Core\ClassLoader(), 'loadClass'));
 	// Compatibility mode for TYPO3 versions below 6.0 (nothing needed atm)
-//	require_once(t3lib_extMgm::extPath($_EXTKEY) . 'Resources/Private/Scripts/Compatibility.php');
+	// require_once(t3lib_extMgm::extPath($_EXTKEY) . 'Resources/Private/Scripts/Compatibility.php');
 	// TYPO3 < 6.0
 	// (would be ignored in higher versions, but since we need to differentiate anyway, we can only register for a specific branch to avoid clutter)
 	$TYPO3_CONF_VARS['BE']['XCLASS']['typo3/class.file_list.inc'] = t3lib_extMgm::extPath($_EXTKEY) . 'Classes/Xclass/class.ux_fileList.inc';
@@ -26,14 +26,16 @@ if (substr(TYPO3_branch, 0, 1) === '4') {
 			'getPublicUrl'
 		);
 	}
-	$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Frontend\\Controller\\ShowImageController'] = array(
-		'className' => 'Bitmotion\\NawSecuredl\\Controller\\ShowImageController',
-	);
+	if ($_GET['eID'] == 'tx_cms_showpic') {
+		$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Frontend\\Controller\\ShowImageController'] = array(
+			'className' => 'Bitmotion\\NawSecuredl\\Controller\\ShowImageController',
+		);
+	}
 }
 
-///////////////////////////////////
-///// General initialisation //////
-///////////////////////////////////
+/* ##############################
+   ### General initialisation ###
+   ############################## */
 
 $configurationManager = new \Bitmotion\NawSecuredl\Configuration\ConfigurationManager();
 $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Core\\ObjectManager');
@@ -56,5 +58,3 @@ if (!$configurationManager->getValue('apacheDelivery')) {
 
 unset($configurationManager);
 unset($objectManager);
-
-?>
