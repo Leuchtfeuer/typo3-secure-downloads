@@ -154,8 +154,12 @@ class FileDelivery {
 	 */
 	protected function initializeUserAuthentication() {
 		$this->feUserObj = EidUtility::initFeUser();
-		EidUtility::connectDB();
 		$this->databaseConnection = $GLOBALS['TYPO3_DB'];
+		// This is obsolete since 6.1 but required for versions before.
+		// It can be removed once support for TYPO3 below 6.1 is dropped.
+		if (!$this->databaseConnection->isConnected()) {
+			$this->databaseConnection->connectDB();
+		}
 	}
 
 	/**
