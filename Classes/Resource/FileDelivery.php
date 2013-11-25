@@ -39,7 +39,7 @@ class FileDelivery {
 	protected $extensionConfiguration = array();
 
 	/**
-	 * @var \tslib_feUserAuth
+	 * @var \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication
 	 */
 	protected $feUserObj;
 
@@ -105,7 +105,7 @@ class FileDelivery {
 		}
 
 		$this->userGroups = GeneralUtility::_GP('g');
-		if (!$this->userGroups) {
+		if (strlen($this->userGroups) === 0) {
 			$this->userGroups = 0;
 		}
 
@@ -194,11 +194,12 @@ class FileDelivery {
 	 */
 	protected function checkGroupAccess() {
 		$accessAllowed = FALSE;
-		if (empty($this->extensionConfiguration['enableGroupCheck'])) {
+		$falSupportEnabled = !empty($this->extensionConfiguration['enableFileAbstractionLayerHandling']);
+		if (empty($this->extensionConfiguration['enableGroupCheck']) && !$falSupportEnabled) {
 			return FALSE;
 		}
 
-		if (!empty($this->extensionConfiguration['groupCheckDirs']) && !preg_match('/' . $this->softQuoteExpression($this->extensionConfiguration['groupCheckDirs']) . '/', $this->file)) {
+		if (!$falSupportEnabled && !empty($this->extensionConfiguration['groupCheckDirs']) && !preg_match('/' . $this->softQuoteExpression($this->extensionConfiguration['groupCheckDirs']) . '/', $this->file)) {
 			return FALSE;
 		}
 
@@ -210,6 +211,10 @@ class FileDelivery {
 
 		if ($actualGroups === $transmittedGroups) {
 			return TRUE;
+		}
+
+		if ($falSupportEnabled) {
+			return FALSE;
 		}
 
 		// TODO: This loosens the permission check to an extend which might lead to unexpected file access.
@@ -552,7 +557,9 @@ class FileDelivery {
 	 * @return string
 	 */
 	protected function getHash($resourceUri, $userId, $userGroupIds, $validityPeriod) {
-		if ($this->extensionConfiguration['enableGroupCheck']) {
+		if ($this->extensionConfiguration['enableFileAbstractionLayerHandling']) {
+			$hashString = $userGroupIds . $resourceUri . $validityPeriod;
+		} elseif ($this->extensionConfiguration['enableGroupCheck']) {
 			$hashString = $userId . $userGroupIds . $resourceUri . $validityPeriod;
 		} else {
 			$hashString = $userId . $resourceUri . $validityPeriod;

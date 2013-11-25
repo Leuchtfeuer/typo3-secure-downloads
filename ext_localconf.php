@@ -49,10 +49,7 @@ if ($configurationManager->getValue('apacheDelivery')) {
 	$objectManager->registerImplementation('Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget', 'Bitmotion\\NawSecuredl\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget');
 }
 
-if (!$configurationManager->getValue('apacheDelivery')) {
-	// TODO: use a dedicated option to switch HTML parsing on or off?
-	// We need to use a Tx_ prefixed class name here because callUserFunction used by hooks in older TYPO3 versions check for that.
-	// This class name is automatically aliased by core > 6.x and by our compatibility layer (see above)
+if (!$configurationManager->getValue('enableFileAbstractionLayerHandling')) {
 	$TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'][] = ':&Tx_NawSecuredl_Service_SecureDownloadService->parseFE';
 }
 
