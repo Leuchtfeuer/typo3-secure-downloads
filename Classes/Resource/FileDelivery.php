@@ -154,6 +154,7 @@ class FileDelivery {
 	 */
 	protected function initializeUserAuthentication() {
 		$this->feUserObj = EidUtility::initFeUser();
+		$this->feUserObj->fetchGroupData();
 		$this->databaseConnection = $GLOBALS['TYPO3_DB'];
 		// This is obsolete since 6.1 but required for versions before.
 		// It can be removed once support for TYPO3 below 6.1 is dropped.
@@ -202,7 +203,8 @@ class FileDelivery {
 		}
 
 		$transmittedGroups = GeneralUtility::intExplode(',', $this->userGroups);
-		$actualGroups = GeneralUtility::intExplode(',', $this->feUserObj->user['usergroup']);
+		$actualGroups = array_unique(array_map('intval', $this->feUserObj->groupData['uid']));
+		sort($actualGroups);
 		$excludedGroups = GeneralUtility::intExplode(',', $this->extensionConfiguration['excludeGroups']);
 		$checkableGroups = array_diff($actualGroups, $excludedGroups);
 
@@ -210,6 +212,8 @@ class FileDelivery {
 			return TRUE;
 		}
 
+		// TODO: This loosens the permission check to an extend which might lead to unexpected file access.
+		// We may need to remove it or at least make it configurable
 		foreach ($checkableGroups as $actualGroup) {
 			if (in_array($actualGroup, $transmittedGroups, TRUE)) {
 				$accessAllowed = TRUE;

@@ -75,6 +75,10 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 			'enableGroupCheck' => '1',
 			'groupCheckDirs' => 'foo',
 		));
+		$fakeUser = new \stdClass();
+		$fakeUser->groupData['uid'] = array();
+		$this->fixture->_set('feUserObj', $fakeUser);
+
 		$this->fixture->expects($this->once())->method('softQuoteExpression');
 		$this->fixture->_call('checkGroupAccess');
 	}
@@ -82,7 +86,7 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 	public function groupAccessCheckDataProvider() {
 		return array(
 			'User with exact same groups as transmitted' => array(array(
-				'actualGroups' => '1',
+				'actualGroups' => array('1'),
 				'transmittedGroups' => '1',
 				'excludedGroups' => NULL,
 				'groupCheckDirs' => NULL,
@@ -90,7 +94,7 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 				'expected' => TRUE
 			)),
 			'User with one same group as transmitted' => array(array(
-				'actualGroups' => '1,2',
+				'actualGroups' => array('1','2'),
 				'transmittedGroups' => '3,1',
 				'excludedGroups' => NULL,
 				'groupCheckDirs' => NULL,
@@ -98,7 +102,7 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 				'expected' => TRUE
 			)),
 			'User with no same group as transmitted' => array(array(
-				'actualGroups' => '1,2',
+				'actualGroups' => array('1','2'),
 				'transmittedGroups' => '3,4',
 				'excludedGroups' => NULL,
 				'groupCheckDirs' => NULL,
@@ -106,7 +110,7 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 				'expected' => FALSE
 			)),
 			'User with same group which is excluded' => array(array(
-				'actualGroups' => '1,2',
+				'actualGroups' => array('1','2'),
 				'transmittedGroups' => '3,2',
 				'excludedGroups' => '2',
 				'groupCheckDirs' => NULL,
@@ -114,7 +118,7 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 				'expected' => FALSE
 			)),
 			'User with multiple groups excluded' => array(array(
-				'actualGroups' => '1,2,4,5',
+				'actualGroups' => array('1','2','4','5'),
 				'transmittedGroups' => '3,2,4,5',
 				'excludedGroups' => '5,2,4',
 				'groupCheckDirs' => NULL,
@@ -137,14 +141,13 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 		));
 
 		$fakeUser = new \stdClass();
-		$fakeUser->user['usergroup'] = $checkArray['actualGroups'];
+		$fakeUser->groupData['uid'] = $checkArray['actualGroups'];
 
 		$this->fixture->_set('feUserObj', $fakeUser);
 		$this->fixture->_set('file', $checkArray['file']);
 		$this->fixture->_set('userGroups', $checkArray['transmittedGroups']);
 
 		$this->assertSame($checkArray['expected'], $this->fixture->_call('checkGroupAccess'));
-
 	}
 
 	public function accessCheckDataProvider() {
@@ -152,7 +155,7 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 			'User with no same group as transmitted' => array(array(
 				'actualUser' => '1',
 				'transmittedUser' => '4',
-				'actualGroups' => '1,2',
+				'actualGroups' => array('1','2'),
 				'transmittedGroups' => '3,4',
 				'excludedGroups' => NULL,
 				'groupCheckDirs' => NULL,
@@ -162,7 +165,7 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 			'User with same group which is excluded' => array(array(
 				'actualUser' => '1',
 				'transmittedUser' => '4',
-				'actualGroups' => '1,2',
+				'actualGroups' => array('1','2'),
 				'transmittedGroups' => '3,2',
 				'excludedGroups' => '2',
 				'groupCheckDirs' => NULL,
@@ -172,7 +175,7 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 			'User with multiple groups excluded' => array(array(
 				'actualUser' => '1',
 				'transmittedUser' => '4',
-				'actualGroups' => '1,2,4,5',
+				'actualGroups' => array('1','2','4','5'),
 				'transmittedGroups' => '3,2,4,5',
 				'excludedGroups' => '5,2,4',
 				'groupCheckDirs' => NULL,
@@ -188,14 +191,14 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 	 * @test
 	 */
 	public function accessChecksWorksAsExpected($checkArray) {
-		$this->fixture->_set('extensionConfiguration', array(
+		$this->fixture->expects($this->any())->method('getExtensionConfiguration')->will($this->returnValue(array(
 			'enableGroupCheck' => '1',
 			'groupCheckDirs' => $checkArray['groupCheckDirs'],
 			'excludeGroups' => $checkArray['excludedGroups'],
-		));
+		)));
 
 		$fakeUser = new \stdClass();
-		$fakeUser->user['usergroup'] = $checkArray['actualGroups'];
+		$fakeUser->groupData['uid'] = $checkArray['actualGroups'];
 		$fakeUser->user['uid'] = $checkArray['actualUser'];
 
 		$this->fixture->_set('feUserObj', $fakeUser);

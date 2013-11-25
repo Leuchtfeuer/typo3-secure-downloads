@@ -142,7 +142,8 @@ class RequestContext {
 		$this->currentUser = $typoScriptFrontendController->fe_user;
 		if (isset($this->currentUser->user['uid'])) {
 			$this->userId = (int)$this->currentUser->user['uid'];
-			$this->userGroupIds = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->currentUser->user['usergroup'], TRUE);
+			$this->userGroupIds = array_unique(array_map('intval', $this->currentUser->groupData['uid']));
+			sort($this->userGroupIds);
 		}
 		if (
 			isset($typoScriptFrontendController->config['config']['tx_nawsecuredl_enable'])
