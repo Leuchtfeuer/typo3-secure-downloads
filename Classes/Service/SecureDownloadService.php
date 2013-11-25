@@ -145,7 +145,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface {
 	}
 
 	/**
-	 * Lazily intatiates the publishing target
+	 * Lazily intatiates the resource publisher
 	 *
 	 * @return ResourcePublisher
 	 */

@@ -28,8 +28,8 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Frontend\Utility\EidUtility;
 
 /**
- * @author	Dietrich Heise <typo3-ext(at)bitmotion.de>
- * @author	Helmut Hummel <typo3-ext(at)bitmotion.de>
+ * @author Dietrich Heise <typo3-ext(at)bitmotion.de>
+ * @author Helmut Hummel <typo3-ext(at)bitmotion.de>
  */
 class FileDelivery {
 
@@ -220,18 +220,16 @@ class FileDelivery {
 	 * Output the requested file
 	 */
 	public function deliver() {
-
 		$file = GeneralUtility::getFileAbsFileName(ltrim($this->file, '/'));
 		$fileName = basename($file);
-			// This is a workaround for a PHP bug on Windows systems:
-			// @see http://bugs.php.net/bug.php?id=46990
-			// It helps for filenames with special characters that are present in latin1 encoding.
-			// If you have real UTF-8 filenames, use a nix based OS.
-			// FIXME: needs to be checked, if the website encoding really is UTF-8 and if UTF-8 filesystem is enabled
+		// This is a workaround for a PHP bug on Windows systems:
+		// @see http://bugs.php.net/bug.php?id=46990
+		// It helps for filenames with special characters that are present in latin1 encoding.
+		// If you have real UTF-8 filenames, use a nix based OS.
+		// FIXME: needs to be checked, if the website encoding really is UTF-8 and if UTF-8 filesystem is enabled
 		if (TYPO3_OS == 'WIN') {
 			$file = utf8_decode($file);
 		}
-
 
 		// Hook for pre-output:
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl_output.php']['preOutput'])) {
@@ -275,7 +273,7 @@ class FileDelivery {
 				}
 			}
 
-				//TODO: Check IE compatibility with these headers
+			//TODO: Check IE compatibility with these headers
 			header('Pragma: private');
 			header('Expires: 0'); // set expiration time
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -301,13 +299,13 @@ class FileDelivery {
 				break;
 
 				case 'readfile':
-					//fallthrough, this is the default case
+				//fallthrough, this is the default case
 				default:
 					readfile($file);
 				break;
 			}
 
-				// make sure we can detect an aborted connection, call flush
+			// make sure we can detect an aborted connection, call flush
 			ob_flush();
 			flush();
 			if (!connection_aborted() AND $strOutputFunction !== 'readfile_chunked') {
@@ -413,12 +411,12 @@ class FileDelivery {
 	 */
 	protected function getMimeTypeByFileExtension($strFileExtension)
 	{
-			// Check files with unknown file extensions, if they are image files (currently disabled)
+		// Check files with unknown file extensions, if they are image files (currently disabled)
 		$checkForImageFiles = FALSE;
 
-			// Array with key/value pairs consisting of file extension (without dot in front) and mime type
+		// Array with key/value pairs consisting of file extension (without dot in front) and mime type
 		$arrMimeTypes = array(
-				// MS-Office filetypes
+			// MS-Office filetypes
 			'pps' => 'application/vnd.ms-powerpoint',
 			'doc' => 'application/msword',
 			'xls' => 'application/vnd.ms-excel',
@@ -453,7 +451,7 @@ class FileDelivery {
 			'odm' => 'application/vnd.oasis.opendocument.text-master',
 			'oth' => 'application/vnd.oasis.opendocument.text-web',
 
-				// Media file types
+			// Media file types
 			'jpeg' => 'image/jpeg',
 			'jpg' => 'image/jpeg',
 			'jpe' => 'image/jpeg',
@@ -472,7 +470,7 @@ class FileDelivery {
 			'html' => 'text/html',
 		);
 
-			// Read all additional MIME types from the EM configuration into the array $strAdditionalMimeTypesArray
+		// Read all additional MIME types from the EM configuration into the array $strAdditionalMimeTypesArray
 		if ($this->extensionConfiguration['additionalMimeTypes']) {
 
 			$strAdditionalFileExtension = '';
@@ -492,8 +490,7 @@ class FileDelivery {
 		}
 
 		//TODO: Add hook to be able to manipulate and/or add mime types
-
-			// Check if an specific MIME type is configured for this file extension
+		// Check if an specific MIME type is configured for this file extension
 		if (array_key_exists($strFileExtension, $arrMimeTypes)) {
 			$strMimeType = $arrMimeTypes[$strFileExtension];
 			// files bigger than 32MB are now 'application/octet-stream' by default (getimagesize memory_limit problem)
@@ -555,6 +552,9 @@ class FileDelivery {
 		return GeneralUtility::hmac($hashString);
 	}
 
+	/**
+	 * @param string $message
+	 */
 	protected function exitScript($message) {
 		header('HTTP/1.1 403 Forbidden');
 		exit($message);

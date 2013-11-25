@@ -26,9 +26,9 @@ if (substr(TYPO3_branch, 0, 1) === '4') {
 			'getPublicUrl'
 		);
 	}
-	if ($_GET['eID'] == 'tx_cms_showpic') {
+	if ($_GET['eID'] === 'tx_cms_showpic') {
 		$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Frontend\\Controller\\ShowImageController'] = array(
-			'className' => 'Bitmotion\\NawSecuredl\\Controller\\ShowImageController',
+			'className' => 'Bitmotion\\NawSecuredl\\TYPO3\\CMS\\Controller\\ShowImageController',
 		);
 	}
 }

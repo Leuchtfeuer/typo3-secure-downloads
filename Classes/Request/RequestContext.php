@@ -138,7 +138,7 @@ class RequestContext {
 	protected function initializeFrontendContext() {
 		/** @var TypoScriptFrontendController $typoScriptFrontendController */
 		$typoScriptFrontendController = $GLOBALS['TSFE'];
-		$this->cacheLifetime = (int)$typoScriptFrontendController->page['cache_timeout'];
+		$this->cacheLifetime = isset($typoScriptFrontendController->page['cache_timeout']) ? (int)$typoScriptFrontendController->page['cache_timeout'] : 0;
 		$this->currentUser = $typoScriptFrontendController->fe_user;
 		if (isset($this->currentUser->user['uid'])) {
 			$this->userId = (int)$this->currentUser->user['uid'];

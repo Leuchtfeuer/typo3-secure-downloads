@@ -1,4 +1,6 @@
 <?php
+namespace Bitmotion\NawSecuredl\TYPO3\CMS\Controller;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -23,21 +25,16 @@
  ***************************************************************/
 
 /**
- * @author	Dietrich Heise <typo3-ext(at)bitmotion.de>
+ * Fixes the image controller until the bug itself is fixed in TYPO3
  */
-
-namespace Bitmotion\NawSecuredl\Controller;
-
 class ShowImageController extends \TYPO3\CMS\Frontend\Controller\ShowImageController {
-
 	/**
 	 * Outputs the content from $this->content
 	 *
 	 * @return void
-	 * @todo Define visibility
 	 */
-	function printContent()	{
-			$SecureDownloadService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\NawSecuredl\Service\SecureDownloadService');
-			echo $SecureDownloadService->parseContent($this->content);
+	public function printContent() {
+		$SecureDownloadService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\NawSecuredl\Service\SecureDownloadService');
+		echo $SecureDownloadService->parseContent($this->content);
 	}
 }
