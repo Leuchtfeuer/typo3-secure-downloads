@@ -152,6 +152,6 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 		} else {
 			$hashString = $userId . $resourceUri . $validityPeriod;
 		}
-		return \TYPO3\CMS\Core\Utility\GeneralUtility::hmac($hashString);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::hmac($hashString, 'bitmotion_securedownload');
 	}
 }

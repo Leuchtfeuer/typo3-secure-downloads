@@ -549,7 +549,7 @@ class FileDelivery {
 		} else {
 			$hashString = $userId . $resourceUri . $validityPeriod;
 		}
-		return GeneralUtility::hmac($hashString);
+		return GeneralUtility::hmac($hashString, 'bitmotion_securedownload');
 	}
 
 	/**
