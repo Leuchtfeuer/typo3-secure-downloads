@@ -130,7 +130,7 @@ class tx_nawsecuredl_table {
 
 		$out =  "<style>\r\n";
 		$out .=  ".row_dark { " . $this->rowDarkStyle . " }\r\n";
-		$out .=  ".row_lite { " . $this->rowLightStylestyle . " }\r\n";
+		$out .=  ".row_lite { " . $this->rowLightStyle . " }\r\n";
 		$out .=  ".row_hilite { " . $this->rowHighlightStyle . " } \r\n";
 		$out .=  "th { " . $this->headingStyle . " } \r\n";
 		$out .=  ".table-cell-3,.table-cell-2 { text-align: right; } \r\n";
