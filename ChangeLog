@@ -1,3 +1,7 @@
+2013-12-03 Dietrich Heise <typo3-ext(at)bitmotion.de>, Helmut Hummel  <typo3-ext(at)bitmotion.de>
+	* Namespaces, Stucture, PSR-0
+	* Raised extension version to 1.8.0
+
 2013-07-19 Dietrich Heise <typo3-ext(at)bitmotion.de>, Helmut Hummel  <typo3-ext(at)bitmotion.de>
 	* Rewritten for 6.x
 	* Works with TYPO3 4.5 and greater
