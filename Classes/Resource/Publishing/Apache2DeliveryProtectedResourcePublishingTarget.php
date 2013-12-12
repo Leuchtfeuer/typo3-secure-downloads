@@ -88,7 +88,7 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
 	 * @return string
 	 */
 	protected function getResourceSourcePathAndFileName(ResourceInterface $resource) {
-		$pathAndFilename = $this->resourcesSourcePath . $resource->getIdentifier();
+		$pathAndFilename = $this->resourcesSourcePath . ltrim($resource->getIdentifier(), '/');
 		return (file_exists($pathAndFilename)) ? $pathAndFilename : FALSE;
 	}
 
@@ -110,6 +110,7 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
 	 * @return string
 	 */
 	public function publishResourceUri($resourceUri) {
+		$this->setResourcesSourcePath(PATH_site);
 		$publishedResourcePathAndFilename = $this->buildResourceUriPublishPathAndFilename($resourceUri);
 		$publishedResourceWebUri = $this->buildResourceUriWebUri($resourceUri);
 
@@ -162,11 +163,18 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
 	 * @return string
 	 */
 	protected function buildPublishingPathPartBySourcePath($sourcePath) {
-		$sessionId = $this->getRequestContext()->getSessionId();
-		$iPAddress = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : NULL;
-		$locationHash = sha1($sessionId . $iPAddress . $sourcePath);
-
-		return $locationHash{0} . '/' . $locationHash{1} . '/' . $locationHash . '/' . basename($sourcePath);
+//		$iPAddress = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : NULL;
+//		$contextHashBase = dirname($sourcePath);
+		if ($this->getRequestContext()->isUserLoggedIn()) {
+			$contextHash = sha1($this->getRequestContext()->getAccessToken());
+		}
+		$pathParts = array_merge(
+			array($this->getRequestContext()->getLocationId()),
+			isset($contextHash) ? str_split($contextHash, 4) : array(),
+			array(sha1(dirname($sourcePath))),
+			array(basename($sourcePath))
+		);
+		return implode('/',  $pathParts);
 	}
 
 	/**
@@ -182,7 +190,9 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
 	protected function mirrorFile($fileSourcePath, $fileTargetPath) {
 		$publishingDirectory = dirname($fileTargetPath) . '/';
 		$this->assureDirectoryPathExists($publishingDirectory);
-		$this->accessRestrictionPublisher->publishAccessRestrictionsForPath($publishingDirectory);
+		if ($this->getRequestContext()->isUserLoggedIn()) {
+			$this->accessRestrictionPublisher->publishAccessRestrictionsForPath($publishingDirectory);
+		}
 		symlink($fileSourcePath, $fileTargetPath);
 	}
 

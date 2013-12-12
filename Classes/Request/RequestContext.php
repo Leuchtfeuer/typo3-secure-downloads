@@ -24,8 +24,7 @@ namespace Bitmotion\NawSecuredl\Request;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
-use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 /**
@@ -56,12 +55,7 @@ class RequestContext {
 	/**
 	 * @var string
 	 */
-	protected $cookieName;
-
-	/**
-	 * @var string
-	 */
-	protected $sessionId;
+	protected $cookieName = 'secure_download_token';
 
 	/**
 	 * @var string
@@ -72,6 +66,11 @@ class RequestContext {
 	 * @var AbstractUserAuthentication
 	 */
 	protected $currentUser;
+
+	/**
+	 * @var string
+	 */
+	protected $locationId;
 
 	public function __construct() {
 		if ($this->isFrontendRequest()) {
@@ -98,6 +97,13 @@ class RequestContext {
 	}
 
 	/**
+	 * @return boolean
+	 */
+	public function isUserLoggedIn() {
+		return !empty($this->currentUser->user['uid']);
+	}
+
+	/**
 	 * @return integer
 	 */
 	public function getCacheLifetime() {
@@ -121,15 +127,20 @@ class RequestContext {
 	/**
 	 * @return string
 	 */
-	public function getSessionId() {
-		return $this->sessionId;
+	public function getIpAddress() {
+		return $this->ipAddress;
+	}
+
+	public function getAccessToken() {
+		//TODO: The additional secret needs to be genreated somewhere and fetched from configuration here (instead of fixed string)
+		return GeneralUtility::hmac(implode(',', $this->getUserGroupIds()), 'secure_download_access_token');
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getIpAddress() {
-		return $this->ipAddress;
+	public function getLocationId() {
+		return $this->locationId;
 	}
 
 	/**
@@ -140,7 +151,7 @@ class RequestContext {
 		$typoScriptFrontendController = $GLOBALS['TSFE'];
 		$this->cacheLifetime = isset($typoScriptFrontendController->page['cache_timeout']) ? (int)$typoScriptFrontendController->page['cache_timeout'] : 0;
 		$this->currentUser = $typoScriptFrontendController->fe_user;
-		if (isset($this->currentUser->user['uid'])) {
+		if ($this->isUserLoggedIn()) {
 			$this->userId = (int)$this->currentUser->user['uid'];
 			$this->userGroupIds = array_unique(array_map('intval', $this->currentUser->groupData['uid']));
 			sort($this->userGroupIds);
@@ -151,14 +162,8 @@ class RequestContext {
 		) {
 			$this->urlRewritingEnabled = FALSE;
 		}
-		$this->cookieName = FrontendUserAuthentication::getCookieName();
-		$this->sessionId = $_COOKIE[$this->cookieName];
-
-		// This is done to fixate the session id, even if the user is not logged in
-		// TODO: this needs a better solution. At least this should be moved somewhere else...
-//		$typoScriptFrontendController->fe_user->setKey('ses', 'naw_securedl', 'foo');
-//		$typoScriptFrontendController->fe_user->storeSessionData();
-
+//		$this->cookieName = FrontendUserAuthentication::getCookieName();
+		$this->locationId = (string)$typoScriptFrontendController->id;
 		$this->ipAddress = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : NULL;
 	}
 
@@ -167,6 +172,7 @@ class RequestContext {
 	 */
 	protected function initializeBackendContext() {
 // Disabled for now, because we do only have php delivery script which is called in a frontend context (eID)
+// If we switch to checkDataSubmission Hook for file delivery, we might activate this again
 // TODO: decouple and refactor PHP delivery
 //		$this->currentUser = $GLOBALS['BE_USER'];
 //		if (!empty($this->currentUser->user['uid'])) {
@@ -175,8 +181,6 @@ class RequestContext {
 //		if (!empty($this->currentUser->user['usergroup'])) {
 //			$this->userGroupIds = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->currentUser->user['usergroup'], TRUE);
 //		}
-		$this->cookieName = BackendUserAuthentication::getCookieName();
-		$this->sessionId = $_COOKIE[$this->cookieName];
 		$this->ipAddress = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : NULL;
 	}
 

@@ -9,7 +9,7 @@ filetype = pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
 domain = http://mydomain.com|http://my.other.domain.org
 
 # customsubcategory=link=Link Generation;
-# cat=basic/link; type=boolean; label = FAL Usage: This option enables full FAL compatibility and enhancements (no HTML parsing). Read the manual for deatails.
+# cat=basic/link; type=boolean; label = FAL Usage: This option enables full FAL compatibility and enhancements (no HTML parsing). Read the manual for details.
 enableFileAbstractionLayerHandling = 0
 
 # cat=basic/link; type=int; label=Additional Link Timeout: Additional time added to the cache time of the page or to the default cache time (default 3600sec = 1h)
@@ -28,8 +28,8 @@ groupCheckDirs =
 # cat=basic/security; type=string; label=Exclude Groups from Group Check:A comma separated list of groups that are excluded from the group check if enabled
 excludeGroups =
 
-# cat=filedelivery; type=boolean; label=apacheDelivery:ALPHA Feature to deliver files through Apache not PHP (do not aktivate this it will not work)
-# apacheDelivery = 0
+# cat=filedelivery; type=boolean; label=apacheDelivery: Feature to deliver files through Apache not PHP (Beta)
+apacheDelivery = 0
 
 # cat=filedelivery; type=boolean; label = forcedownload: Force Download of specified filetypes
 forcedownload = 0

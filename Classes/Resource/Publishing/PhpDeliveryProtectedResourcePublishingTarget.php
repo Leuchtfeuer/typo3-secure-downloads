@@ -42,7 +42,8 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 	 */
 	public function publishResource(ResourceInterface $resource) {
 		$publicUrl = FALSE;
-		if ($this->configurationManager->getValue('enableFileAbstractionLayerHandling')) {
+		// We only manipulate the URL if we are in the backend or in FAL mode in FE (otherwise we parse the HTML)
+		if (!$this->getRequestContext()->isFrontendRequest() || $this->configurationManager->getValue('enableFileAbstractionLayerHandling')) {
 			$this->setResourcesSourcePath($this->getResourcesSourcePathByResourceStorage($resource->getStorage()));
 			if ($this->isSourcePathInDocumentRoot()) {
 				if (!$this->isPubliclyAvailable($resource)) {

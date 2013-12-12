@@ -27,7 +27,7 @@ class Apache2AccessRestrictionPublisher implements AccessRestrictionPublisherInt
 	private $htaccessTemplate = '
 Order deny,allow
 Deny from all
-SetEnvIfNoCase Cookie "^%s=%s$" session_match
+SetEnvIfNoCase Cookie "(^| )%s=%s($|;)" session_match
 Allow from env=session_match
 ';
 
@@ -56,26 +56,24 @@ Allow from env=session_match
 	 * @return void
 	 */
 	public function publishAccessRestrictionsForPath($path) {
-		$remoteAddress = $this->requestContext->getIpAddress();
+//		$remoteAddress = $this->requestContext->getIpAddress();
 		$cookieName = $this->requestContext->getCookieName();
-		$cookieValue = $_COOKIE[$cookieName];
+		$cookieValue = $this->requestContext->getAccessToken();
 
-		if ($remoteAddress !== NULL) {
-			$content = sprintf(
-				$this->htaccessTemplateIpCheck,
-				$remoteAddress,
-				$cookieName,
-				$cookieValue
-			);
-		} else {
+//		if ($remoteAddress !== NULL) {
+//			$content = sprintf(
+//				$this->htaccessTemplateIpCheck,
+//				$remoteAddress,
+//				$cookieName,
+//				$cookieValue
+//			);
+//		} else {
 			$content = sprintf(
 				$this->htaccessTemplate,
 				$cookieName,
 				$cookieValue
 			);
-		}
+//		}
 		file_put_contents($path . '.htaccess', $content);
 	}
 }
-
-?>
