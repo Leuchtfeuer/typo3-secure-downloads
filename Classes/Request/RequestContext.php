@@ -60,6 +60,11 @@ class RequestContext {
 	/**
 	 * @var string
 	 */
+	protected $additionalSecret = 'secure_download_token';
+
+	/**
+	 * @var string
+	 */
 	protected $ipAddress;
 
 	/**
@@ -80,6 +85,13 @@ class RequestContext {
 		} else {
 			throw new \LogicException('Unknown Context.', 1377180593);
 		}
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAdditionalSecret() {
+		return $this->additionalSecret;
 	}
 
 	/**
@@ -133,7 +145,7 @@ class RequestContext {
 
 	public function getAccessToken() {
 		//TODO: The additional secret needs to be genreated somewhere and fetched from configuration here (instead of fixed string)
-		return GeneralUtility::hmac(implode(',', $this->getUserGroupIds()), 'secure_download_access_token');
+		return GeneralUtility::hmac(implode(',', $this->getUserGroupIds()), $this->additionalSecret);
 	}
 
 	/**
@@ -155,6 +167,13 @@ class RequestContext {
 			$this->userId = (int)$this->currentUser->user['uid'];
 			$this->userGroupIds = array_unique(array_map('intval', $this->currentUser->groupData['uid']));
 			sort($this->userGroupIds);
+
+			if (isset($typoScriptFrontendController->config['tx_securedownload.']['additionalSecret'])) {
+				$this->additionalSecret = $typoScriptFrontendController->config['tx_securedownload.']['additionalSecret'];
+			} else {
+				$this->additionalSecret = GeneralUtility::getRandomHexString(64);
+				$typoScriptFrontendController->config['tx_securedownload.']['additionalSecret'] = $this->additionalSecret;
+			}
 		}
 		if (
 			isset($typoScriptFrontendController->config['config']['tx_nawsecuredl_enable'])
@@ -162,7 +181,6 @@ class RequestContext {
 		) {
 			$this->urlRewritingEnabled = FALSE;
 		}
-//		$this->cookieName = FrontendUserAuthentication::getCookieName();
 		$this->locationId = (string)$typoScriptFrontendController->id;
 		$this->ipAddress = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : NULL;
 	}
