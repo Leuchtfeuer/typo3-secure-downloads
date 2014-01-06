@@ -5,9 +5,6 @@ if (!defined ("TYPO3_MODE")) {
 /* ##############################
    ### General initialisation ###
    ############################## */
-$configurationManager = new \Bitmotion\NawSecuredl\Configuration\ConfigurationManager();
-$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Core\\ObjectManager');
-
 $TYPO3_CONF_VARS['FE']['eID_include']['tx_nawsecuredl'] = 'EXT:naw_securedl/Resources/Private/Scripts/FileDeliveryEidDispatcher.php';
 
 /* #######################################
@@ -24,6 +21,7 @@ if (substr(TYPO3_branch, 0, 1) === '4') {
 	$TYPO3_CONF_VARS['BE']['XCLASS']['typo3/class.file_list.inc'] = t3lib_extMgm::extPath($_EXTKEY) . 'Classes/Xclass/class.ux_fileList.inc';
 	$TYPO3_CONF_VARS['FE']['XCLASS']['tslib/showpic.php'] = t3lib_extMgm::extPath($_EXTKEY) . 'Classes/Xclass/class.ux_SC_tslib_showpic.php';
 
+	$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Core\\ObjectManager');
 	// No other options for 4.5
 	// Keep the old behaviour! For new features use a new TYPO3 Version!
 	$objectManager->registerImplementation('Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget', 'Bitmotion\\NawSecuredl\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget');
@@ -46,6 +44,9 @@ if (substr(TYPO3_branch, 0, 1) === '4') {
 			'className' => 'Bitmotion\\NawSecuredl\\TYPO3\\CMS\\Controller\\ShowImageController',
 		);
 	}
+
+	$configurationManager = new \Bitmotion\NawSecuredl\Configuration\ConfigurationManager();
+	$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Core\\ObjectManager');
 
 	// Default publishing target is PHP delivery (we might possibly make that configurable somehow)
 	$publishingTarget = 'Bitmotion\\NawSecuredl\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget';
