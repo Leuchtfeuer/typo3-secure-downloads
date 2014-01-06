@@ -163,14 +163,13 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
 	 * @return string
 	 */
 	protected function buildPublishingPathPartBySourcePath($sourcePath) {
-//		$iPAddress = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : NULL;
-//		$contextHashBase = dirname($sourcePath);
+		$contextHash = '0';
 		if ($this->getRequestContext()->isUserLoggedIn()) {
 			$contextHash = sha1($this->getRequestContext()->getAccessToken());
 		}
 		$pathParts = array_merge(
 			array($this->getRequestContext()->getLocationId()),
-			isset($contextHash) ? str_split($contextHash, 4) : array(),
+			array($contextHash),
 			array(sha1(dirname($sourcePath))),
 			array(basename($sourcePath))
 		);

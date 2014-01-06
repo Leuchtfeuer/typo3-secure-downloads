@@ -55,15 +55,15 @@ class AccessTokenCookiePublisher implements SingletonInterface {
 			$token = $this->requestContext->getAccessToken();
 			// Check does not work because the cookie path is set to be only valid in publishing directory
 //			if ($_COOKIE[$this->requestContext->getCookieName()] !== $token) {
-				$pathPartsContext = array_merge(
+				$contextPath = implode('/', array_merge(
 					array($this->requestContext->getLocationId()),
-					str_split(sha1($token), 4)
-				);
+					array(sha1($token))
+				));
 				setcookie(
 					$this->requestContext->getCookieName(),
 					$token,
 					NULL,
-					'/typo3temp/secure_downloads/' . implode('/', $pathPartsContext) . '/',
+					'/typo3temp/secure_downloads/' . $contextPath . '/',
 					NULL,
 					NULL,
 					TRUE
