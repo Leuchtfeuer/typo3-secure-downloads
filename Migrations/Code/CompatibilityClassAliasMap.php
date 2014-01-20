@@ -2,8 +2,7 @@
 return array(
 	'TYPO3\\CMS\\Core\\Utility\\GeneralUtility' => 't3lib_div',
 	'TYPO3\\CMS\\Core\\SingletonInterface' => 't3lib_Singleton',
-	'TYPO3\\CMS\\Frontend\\Utility\\EidUtility' => 'tslib_eidtools',
-	'TYPO3\\CMS\\Core\\Utility\\MathUtility' => 'Bitmotion\\NawSecuredl\\Compatibility\\MathUtility',
+	'TYPO3\\CMS\\Frontend\\Utility\\EidUtility' => 'tslib_eidtools'
 );
 
 ?>

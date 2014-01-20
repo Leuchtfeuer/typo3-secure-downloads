@@ -400,7 +400,7 @@ class FileDelivery {
 			$bytes_sent += $chunksize;
 			ob_flush();
 			flush();
-			$this->logDownload(MathUtility::forceIntegerInRange($bytes_sent, 0, $this->fileSize));
+			$this->logDownload(\t3lib_div::intInRange($bytes_sent, 0, $this->fileSize,0));
 		}
 		return fclose($handle);
 	}
