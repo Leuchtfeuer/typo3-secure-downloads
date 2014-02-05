@@ -44,5 +44,154 @@
 			<label index="traffic">Traffic GB</label>
 			<label index="trafficsum">Summe</label>
 		</languageKey>
+		<languageKey index="cz" type="array"><label index="title">Protokol o stažení</label>
+			<label index="allUsers">Všichni uživatelé</label>
+			<label index="loggedInUsers">Všichni (přihlášení) uživatelé</label>
+			<label index="notLoggedIn">Nepřihlášení uživatelé</label>
+			<label index="trafficUsed">Verbrauchter Traffic</label>
+			<label index="noTrafficUsed">Kein Traffic verbraucht!</label>
+			<label index="allTime">Zobrazit celkový provoz</label>
+			<label index="byTime">Zobrazit provoz z intervalu</label>
+			<label index="timeframe">Časový rámec</label>
+			<label index="from">Od (Formát: dd.mm.YY)</label>
+			<label index="to">Do (Formát: dd.mm.YY)</label>
+			<label index="submit">Odeslat</label>
+			<label index="user">Uživatel</label>
+			<label index="files">Soubory</label>
+			<label index="date">Datum</label>
+			<label index="traffic">Provoz v GB</label>
+			<label index="trafficsum">Suma</label>
+
+		</languageKey>
+		<languageKey index="es" type="array">
+			<label index="title">Registro de descargas</label>
+			<label index="allUsers">Todos los usuarios</label>
+			<label index="loggedInUsers">Todos los usuario (conectados)</label>
+			<label index="notLoggedIn">Usuario no conectados</label>
+			<label index="trafficUsed">Tráfico</label>
+			<label index="noTrafficUsed">Sin tráfico</label>
+			<label index="allTime">Mostrar todo el tráfico</label>
+			<label index="byTime">Mostrar por período</label>
+			<label index="timeframe">Período</label>
+			<label index="from">Desde (Formato: dd.mm.YY)</label>
+			<label index="to">Hasta (Formato: dd.mm.YY)</label>
+			<label index="submit">Enviar</label>
+			<label index="user">Usuario</label>
+			<label index="files">Archivos</label>
+			<label index="date">Fecha</label>
+			<label index="traffic">Tráfico GB</label>
+			<label index="trafficsum">Resumen</label>
+		</languageKey>
+		<languageKey index="it" type="array">
+			<label index="title">Elenco download</label>
+			<label index="allUsers">Tutti gli utenti</label>
+			<label index="loggedInUsers">Tutti gli utenti (loggati)</label>
+			<label index="notLoggedIn">Gli utenti non loggati</label>
+			<label index="trafficUsed">Traffico consumato</label>
+			<label index="noTrafficUsed">Nessun traffico consumato!</label>
+			<label index="allTime">Mostra traffico totale</label>
+			<label index="byTime">Mostra traffico per arco di tempo</label>
+			<label index="timeframe">Arco di tempo</label>
+			<label index="from">Dal (formato: dd.mm.YY)</label>
+			<label index="to">Al (formato: dd.mm.YY)</label>
+			<label index="submit">Invia</label>
+			<label index="user">User</label>
+			<label index="files">File</label>
+			<label index="date">Data</label>
+			<label index="traffic">Traffico in GB</label>
+			<label index="trafficsum">Somma</label>
+
+		</languageKey>
+		<languageKey index="fr" type="array"><label index="title">Protocole de téléchargement</label>
+			<label index="allUsers">Tous les utilisateurs</label>
+			<label index="loggedInUsers">Tous les utilisateurs (connectés)</label>
+			<label index="notLoggedIn">Les utilisateurs non connectés</label>
+			<label index="trafficUsed">Trafic utilisé</label>
+			<label index="noTrafficUsed">Aucun trafic n'a été utilisé.</label>
+			<label index="allTime">Afficher le trafic global</label>
+			<label index="byTime">Afficher le trafic par période</label>
+			<label index="timeframe">Période</label>
+			<label index="from">Du (format : jj.mm.AA)</label>
+			<label index="to">Au (format : jj.mm.AA)</label>
+			<label index="submit">Envoyer</label>
+			<label index="user">Utilisateur</label>
+			<label index="files">Fichiers de contenu</label>
+			<label index="date">Date</label>
+			<label index="traffic">Trafic en Go</label>
+			<label index="trafficsum">Somme</label>
+
+		</languageKey>
+		<languageKey index="tr" type="array"><label index="title">İndirme Logu</label>
+			<label index="allUsers">Tüm kullanıcılar</label>
+			<label index="loggedInUsers">Tüm (sisteme giriş yapmış) kullanıcılar</label>
+			<label index="notLoggedIn">Sisteme giriş yapmamış kullanıcılar</label>
+			<label index="trafficUsed">Kullanılan trafik</label>
+			<label index="noTrafficUsed">Trafik yok!</label>
+			<label index="allTime">Tüm trafiği göster</label>
+			<label index="byTime">Zaman çerçevesiyle göster</label>
+			<label index="timeframe">Zaman çerçevesi</label>
+			<label index="from">Den (Format: gg.aa.YY)</label>
+			<label index="to">e kadar (Format: gg.aa.YY)</label>
+			<label index="submit">Gönder</label>
+			<label index="user">Kullanıcı</label>
+			<label index="files">Dosyalar</label>
+			<label index="date">Tarih</label>
+			<label index="traffic">Trafik GB</label>
+			<label index="trafficsum">Toplam</label>
+		</languageKey>
+		<languageKey index="ru" type="array"><label index="title">Список загрузки</label>
+			<label index="allUsers">Все пользователи</label>
+			<label index="loggedInUsers">Все (зарегистрир.) пользователи</label>
+			<label index="notLoggedIn">Не зарегистрир. пользователи</label>
+			<label index="trafficUsed">Использованный трафик</label>
+			<label index="noTrafficUsed">Нет трафика!</label>
+			<label index="allTime">Показать весь трафик</label>
+			<label index="byTime">Показать трафик во времени</label>
+			<label index="timeframe">Период времени</label>
+			<label index="from">От (Формат: дд.мм.гг)</label>
+			<label index="to">До (Формат: дд.мм.гг)</label>
+			<label index="submit">Направить</label>
+			<label index="user">Пользователь</label>
+			<label index="files">Файлы</label>
+			<label index="date">Дата</label>
+			<label index="traffic">Трафик GB</label>
+			<label index="trafficsum">Сумма</label>
+		</languageKey>
+		<languageKey index="ro" type="array"><label index="title">Jurnal descarcare</label>
+			<label index="allUsers">Toti utilizatorii</label>
+			<label index="loggedInUsers">Toti utilizatorii (conectati)</label>
+			<label index="notLoggedIn">Niciun utilizator conectat</label>
+			<label index="trafficUsed">Trafic utilizator</label>
+			<label index="noTrafficUsed">Fara trafic!</label>
+			<label index="allTime">Afisare trafic total</label>
+			<label index="byTime">Afisare trafic dupa perioada timp</label>
+			<label index="timeframe">Perioada timp</label>
+			<label index="from">De la (Format: dd.mm.YY)</label>
+			<label index="to">La (Format: dd.mm.YY)</label>
+			<label index="submit">Trimite</label>
+			<label index="user">Utilizator</label>
+			<label index="files">Fisiere</label>
+			<label index="date">Data</label>
+			<label index="traffic">Trafic GB</label>
+			<label index="trafficsum">Total</label>
+		</languageKey>
+		<languageKey index="pl" type="array"><label index="title">Download Lista</label>
+			<label index="allUsers">Wszyscy użytkownicy</label>
+			<label index="loggedInUsers">Wszyscy  (zalogowani) użytkownicy</label>
+			<label index="notLoggedIn">Brak zalogowanych użytkowników</label>
+			<label index="trafficUsed">Used traffic</label>
+			<label index="noTrafficUsed">No traffic!</label>
+			<label index="allTime">Show all traffic</label>
+			<label index="byTime">Pokaż według ram czasowych</label>
+			<label index="timeframe">Ramy czasowe</label>
+			<label index="from">Z (Format: dd.mm.YY)</label>
+			<label index="to">Do (Format: dd.mm.YY)</label>
+			<label index="submit">Nadawać</label>
+			<label index="user">Użytkownik</label>
+			<label index="files">Pliki</label>
+			<label index="date">Data</label>
+			<label index="traffic">Traffic GB</label>
+			<label index="trafficsum">Suma</label>
+		</languageKey>
 	</data>
 </T3locallang>
