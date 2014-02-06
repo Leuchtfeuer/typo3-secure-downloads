@@ -142,7 +142,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 		if ($this->configurationManager->getValue('enableFileAbstractionLayerHandling')) {
 			$hashString = implode(',', $userGroupIds) . $resourceUri . $validityPeriod;
 		} elseif ($this->configurationManager->getValue('enableGroupCheck')) {
-			$hashString = implode(',', $userGroupIds) . $resourceUri . $validityPeriod;
+			$hashString = $userId . implode(',', $userGroupIds) . $resourceUri . $validityPeriod;
 		} else {
 			$hashString = $userId . $resourceUri . $validityPeriod;
 		}

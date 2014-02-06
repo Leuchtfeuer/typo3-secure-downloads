@@ -27,10 +27,16 @@
 unset($MCONF);
 require_once('conf.php');
 require_once($BACK_PATH.'init.php');
-require_once($BACK_PATH.'template.php');
+if (file_exists($BACK_PATH.'template.php'))
+	require_once($BACK_PATH.'template.php');
+else
+	require_once($BACK_PATH.'/sysext/backend/Classes/Template/DocumentTemplate.php');
 
 $LANG->includeLLFile('EXT:naw_securedl/modLog/locallang.xml');
-require_once(PATH_t3lib.'class.t3lib_scbase.php');
+if (file_exists(PATH_t3lib.'class.t3lib_scbase.php'))
+	require_once(PATH_t3lib.'class.t3lib_scbase.php');
+else
+	require_once($BACK_PATH.'/sysext/backend/Classes/Module/BaseScriptClass.php');
 $BE_USER->modAccess($MCONF,1);    // This checks permissions and exits if the users has no permission for entry.
 	// DEFAULT initialization of a module [END]
 
@@ -284,7 +290,9 @@ class  tx_nawsecuredl_module1 extends t3lib_SCbase {
 
 		if ($rows) {
 
-			/* @var $table tx_nawsecuredl_table */
+			/**
+			 * @var $table tx_nawsecuredl_table
+			 */
 			$table = t3lib_div::makeInstance('tx_nawsecuredl_table');
 			$table->setHeader(array($LANG->getLL('user'),$LANG->getLL('files'),$LANG->getLL('date'),$LANG->getLL('traffic')));
 
