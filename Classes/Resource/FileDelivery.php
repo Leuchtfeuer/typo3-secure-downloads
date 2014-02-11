@@ -291,7 +291,12 @@ class FileDelivery {
 			header('Expires: 0'); // set expiration time
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 			header('Content-Type: ' . $strMimeType);
-			header('Content-Length: ' . $this->fileSize);
+
+			$zlib_oc = @ini_get('zlib.output_compression');
+
+			if ( ! $zlib_oc) {
+				header('Content-Length: ' . $this->fileSize);
+			}
 
 			if ($forcedownload == true){
 				header('Content-Disposition: attachment; filename="' . $fileName . '"');
