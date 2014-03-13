@@ -110,7 +110,7 @@ class HtmlParser {
 	public function parse($html) {
 		$rest = $html;
 		$result = '';
-		while (preg_match('/(?i)(<link|<source|<a|<img)+?.[^>]*(href|src)=(\"??)([^\" >]*?)\\3[^>]*>/siU', $html, $match)) {  // suchendes secured Verzeichnis
+		while (preg_match('/(?i)(<link|<source|<a|<img|<video)+?.[^>]*(href|src|poster)=(\"??)([^\" >]*?)\\3[^>]*>/siU', $html, $match)) {  // suchendes secured Verzeichnis
 			$cont = explode($match[0], $html, 2);
 			$vor = $cont[0];
 			$tag = $match[0];
