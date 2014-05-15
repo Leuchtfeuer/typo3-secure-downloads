@@ -153,8 +153,8 @@ class  tx_nawsecuredl_module1 extends t3lib_SCbase {
 			$this->content.=$this->doc->startPage($LANG->getLL('title'));
 			$this->content.=$this->doc->header($LANG->getLL('title'));
 			$this->content.=$this->doc->spacer(5);
-			$this->content.=$this->doc->section('',$this->doc->funcMenu($headerSection,t3lib_BEfunc::getFuncMenu($this->id,'SET[mode]',$this->MOD_SETTINGS['mode'],$this->MOD_MENU['mode'])));
-			$this->content.=$this->doc->section('',$this->doc->funcMenu('',t3lib_BEfunc::getFuncMenu($this->id,'SET[users]',$this->MOD_SETTINGS['users'],$this->MOD_MENU['users'])));
+			$this->content.=$this->doc->section('',$this->doc->funcMenu($headerSection,t3lib_BEfunc::getFuncMenu($this->id,'SET[mode]',$this->MOD_SETTINGS['mode'],$this->MOD_MENU['mode'],'index.php')));
+			$this->content.=$this->doc->section('',$this->doc->funcMenu('',t3lib_BEfunc::getFuncMenu($this->id,'SET[users]',$this->MOD_SETTINGS['users'],$this->MOD_MENU['users'],'index.php')));
 
 
 			if (1 == (int)$this->MOD_SETTINGS['mode']) {
