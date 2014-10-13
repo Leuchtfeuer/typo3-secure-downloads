@@ -4,7 +4,7 @@
 	"description": "\"Secure Download\": Apply TYPO3 access rights to ALL file assets (PDFs, TGZs or JPGs etc. - configurable) - protect them from direct access.",
 	"homepage": "http://forge.typo3.org/projects/extension-naw_securedl/",
 	"license": ["GPL-2.0+"],
-	"version": "1.8.0",
+	"version": "1.8.1",
 	"require": {
 		"typo3/cms-core": "*"
 	}

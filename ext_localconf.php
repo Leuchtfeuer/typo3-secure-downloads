@@ -51,16 +51,14 @@ if (substr(TYPO3_branch, 0, 1) === '4') {
 	// Default publishing target is PHP delivery (we might possibly make that configurable somehow)
 	$publishingTarget = 'Bitmotion\\NawSecuredl\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget';
 
-	if ($configurationManager->getValue('enableFileAbstractionLayerHandling')) {
-		if ($configurationManager->getValue('apacheDelivery')) {
-			$objectManager->registerImplementation('Bitmotion\\NawSecuredl\\Security\\Authorization\\Resource\\AccessRestrictionPublisher', 'Bitmotion\\NawSecuredl\\Security\\Authorization\\Resource\\Apache2AccessRestrictionPublisher');
-			if (TYPO3_MODE === 'FE') {
-				// Apache delivery. The eID script registration can be omitted
-				// No it cannot, because we need that from backend context which generates URLs with eID script
-//				unset($TYPO3_CONF_VARS['FE']['eID_include']['tx_nawsecuredl']);
-				$publishingTarget = 'Bitmotion\\NawSecuredl\\Resource\\Publishing\\Apache2DeliveryProtectedResourcePublishingTarget';
-				$TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['checkDataSubmission']['naw_securedl_set_access_token_cookie'] = 'Bitmotion\NawSecuredl\Security\Authorization\Resource\\AccessTokenCookiePublisher';
-			}
+	if ($configurationManager->getValue('apacheDelivery')) {
+		$objectManager->registerImplementation('Bitmotion\\NawSecuredl\\Security\\Authorization\\Resource\\AccessRestrictionPublisher', 'Bitmotion\\NawSecuredl\\Security\\Authorization\\Resource\\Apache2AccessRestrictionPublisher');
+		if (TYPO3_MODE === 'FE') {
+			// Apache delivery. The eID script registration can be omitted
+			// No it cannot, because we need that from backend context which generates URLs with eID script
+//			unset($TYPO3_CONF_VARS['FE']['eID_include']['tx_nawsecuredl']);
+			$publishingTarget = 'Bitmotion\\NawSecuredl\\Resource\\Publishing\\Apache2DeliveryProtectedResourcePublishingTarget';
+			$TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['checkDataSubmission']['naw_securedl_set_access_token_cookie'] = 'Bitmotion\NawSecuredl\Security\Authorization\Resource\\AccessTokenCookiePublisher';
 		}
 	} else {
 		$TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'][] = ':&Tx_NawSecuredl_Service_SecureDownloadService->parseFE';
