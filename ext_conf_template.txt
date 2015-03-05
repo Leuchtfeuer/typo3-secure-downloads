@@ -3,7 +3,7 @@
 securedDirs = typo3temp|fileadmin|uploads
 
 # cat=basic/parsing; type=string; label=File Type Pattern: A file type pattern for files that should be secured. Multiple file type patterns can be separated by a pipe.
-filetype = \.(pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz)
+filetype = pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
 
 # cat=basic/parsing; type=string; label=Domain: A domain prefix before the securedDirs part (e.g. http://www.host.com/). Not needed for internal (relative) links.
 domain = http://mydomain.com/|http://my.other.domain.org/
@@ -35,7 +35,7 @@ apacheDelivery = 0
 forcedownload = 0
 
 # cat=filedelivery; type=string; label=forcedownloadtype:a list of filetypes that should not be opened inline in a browser, seperated by a pipe. Only used if forcedownload is true
-forcedownloadtype = \.(odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz)
+forcedownloadtype = odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
 
 # cat=filedelivery; type=string; label=additionalMimeTypes: Comma separated list of additional MIME types (file extension / mime type pairs, in which file extension and MIME type is separated by a pipe symbol). Can be used to override existing MIME type settings of the extension as well.
 additionalMimeTypes = txt|text/plain,html|text/html

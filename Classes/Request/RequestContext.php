@@ -85,6 +85,7 @@ class RequestContext {
 		} else {
 			throw new \LogicException('Unknown Context.', 1377180593);
 		}
+
 	}
 
 	/**
@@ -174,6 +175,8 @@ class RequestContext {
 				$this->additionalSecret = GeneralUtility::getRandomHexString(64);
 				$typoScriptFrontendController->config['tx_securedownload.']['additionalSecret'] = $this->additionalSecret;
 			}
+		} else {
+			$this->additionalSecret = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
 		}
 		if (
 			isset($typoScriptFrontendController->config['config']['tx_nawsecuredl_enable'])

@@ -116,7 +116,12 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 	protected function isPubliclyAvailable(ResourceInterface $resource) {
 		$resourceUri = $this->getResourceUri($resource);
 		$securedFoldersExpression = $this->configurationManager->getValue('securedDirs');
-		$fileExtensionExpression = $this->configurationManager->getValue('filetype');
+		if (substr($this->configurationManager->getValue('filetype'),0,1) === '\\') {
+			$fileExtensionExpression = $this->configurationManager->getValue('filetype');
+		} else {
+			$fileExtensionExpression = '\\.(' . $this->configurationManager->getValue('filetype') . ')';
+		}
+
 		// TODO: maybe check if the resource is available without authentication by doing a head request
 		return !(preg_match('/(('. HtmlParser::softQuoteExpression($securedFoldersExpression) . ')+?\/.*?(?:(?i)' . ($fileExtensionExpression) . '))/i', $resourceUri, $matchedUrls)
 			&& is_array($matchedUrls)

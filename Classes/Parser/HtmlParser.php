@@ -99,6 +99,9 @@ class HtmlParser {
 				$this->$setterMethodName($setting);
 			}
 		}
+		if (substr($this->fileExtensionPattern,0,1) !== '\\') {
+			$this->fileExtensionPattern = '\\.(' . $this->fileExtensionPattern . ')';
+		}
 	}
 
 	/**
