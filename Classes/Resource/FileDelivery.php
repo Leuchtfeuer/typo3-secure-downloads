@@ -264,6 +264,18 @@ class FileDelivery {
 
 			if ((bool)$this->extensionConfiguration['forcedownload'] === TRUE){
 				$forcetypes = GeneralUtility::trimExplode("|", $this->extensionConfiguration['forcedownloadtype']);
+
+				// Handle the regex
+				foreach ($forcetypes as &$forcetype) {
+					if (preg_match('/\?/',$forcetype)) {
+						$position = strpos($forcetype,'?');
+						$start = $position - 1;
+						$end = $position + 1;
+						array_push($forcetypes, substr($forcetype,0,$start) . substr($forcetype,$end));
+						$forcetype = str_replace('?', '',$forcetype);
+					}
+				}
+
 				if (is_array($forcetypes)){
 					if (in_array($strFileExtension, $forcetypes)) {
 						$forcedownload = TRUE;
