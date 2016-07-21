@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Tests\Unit\Resource;
+namespace Bitmotion\SecureDownloads\Tests\Unit\Resource;
 
 /***************************************************************
  *  Copyright notice
@@ -42,12 +42,12 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 	protected $backupGlobalsBlacklist = array('TYPO3_DB');
 
 	/**
-	 * @var \PHPUnit_Framework_MockObject_MockObject|\Bitmotion\NawSecuredl\Resource\FileDelivery
+	 * @var \PHPUnit_Framework_MockObject_MockObject|\Bitmotion\SecureDownloads\Resource\FileDelivery
 	 */
 	protected $fixture;
 
 	public function setUp() {
-		$this->fixture = $this->getAccessibleMock('Bitmotion\\NawSecuredl\\Resource\\FileDelivery', array('exitScript', 'getExtensionConfiguration', 'hashValid', 'expiryTimeExceeded', 'initializeUserAuthentication'), array(), '', FALSE);
+		$this->fixture = $this->getAccessibleMock('Bitmotion\\SecureDownloads\\Resource\\FileDelivery', array('exitScript', 'getExtensionConfiguration', 'hashValid', 'expiryTimeExceeded', 'initializeUserAuthentication'), array(), '', FALSE);
 		$this->fixture->expects($this->any())->method('hashValid')->will($this->returnValue(TRUE));
 		$this->fixture->expects($this->any())->method('expiryTimeExceeded')->will($this->returnValue(FALSE));
 	}
@@ -70,7 +70,7 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 	 * @test
 	 */
 	public function withCheckGroupAccessEnabledDirectoryConfigurationIsChecked(){
-		$this->fixture = $this->getAccessibleMock('Bitmotion\\NawSecuredl\\Resource\\FileDelivery', array('exitScript', 'getExtensionConfiguration', 'hashValid', 'expiryTimeExceeded', 'softQuoteExpression', 'initializeUserAuthentication'));
+		$this->fixture = $this->getAccessibleMock('Bitmotion\\SecureDownloads\\Resource\\FileDelivery', array('exitScript', 'getExtensionConfiguration', 'hashValid', 'expiryTimeExceeded', 'softQuoteExpression', 'initializeUserAuthentication'));
 		$this->fixture->_set('extensionConfiguration', array(
 			'enableGroupCheck' => '1',
 			'groupCheckDirs' => 'foo',

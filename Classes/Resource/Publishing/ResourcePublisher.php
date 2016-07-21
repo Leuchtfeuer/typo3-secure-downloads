@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Resource\Publishing;
+namespace Bitmotion\SecureDownloads\Resource\Publishing;
 
 /***************************************************************
  *  Copyright notice
@@ -24,69 +24,85 @@ namespace Bitmotion\NawSecuredl\Resource\Publishing;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use Bitmotion\SecureDownloads\Configuration\ConfigurationManager;
+use Bitmotion\SecureDownloads\Security\Authorization\Resource\AccessRestrictionPublisher;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class ResourcePublisher
- * @package Bitmotion\NawSecuredl\Resource\Publishing
+ * @package Bitmotion\SecureDownloads\Resource\Publishing
  */
-class ResourcePublisher implements \TYPO3\CMS\Core\SingletonInterface {
-	/**
-	 * @var ResourcePublishingTargetInterface
-	 */
-	protected $publishingTarget;
+class ResourcePublisher implements SingletonInterface
+{
+    /**
+     * @var ResourcePublishingTargetInterface
+     */
+    protected $publishingTarget;
 
-	/**
-	 * @param ResourcePublishingTargetInterface $publishingTarget
-	 */
-	public function injectPublishingTarget(ResourcePublishingTargetInterface $publishingTarget) {
-		$this->publishingTarget = $publishingTarget;
-	}
+    /**
+     * @param ResourcePublishingTargetInterface $publishingTarget
+     */
+    public function injectPublishingTarget(ResourcePublishingTargetInterface $publishingTarget)
+    {
+        $this->publishingTarget = $publishingTarget;
+    }
 
-	/**
-	 * Returns the web URI pointing to the published resource
-	 *
-	 * @param ResourceInterface $resource The resource to publish
-	 * @return mixed Either the web URI of the published resource or FALSE if the resource source file doesn't exist or the resource could not be published for other reasons
-	 */
-	public function getResourceWebUri(ResourceInterface $resource) {
-		return $this->getPublishingTarget()->getResourceWebUri($resource);
-	}
+    /**
+     * Returns the web URI pointing to the published resource
+     *
+     * @param ResourceInterface $resource The resource to publish
+     *
+     * @return mixed Either the web URI of the published resource or FALSE if the resource source file doesn't exist or
+     *     the resource could not be published for other reasons
+     */
+    public function getResourceWebUri(ResourceInterface $resource)
+    {
+        return $this->getPublishingTarget()->getResourceWebUri($resource);
+    }
 
-	/**
-	 * Publishes a persistent resource to the web accessible resources directory
-	 *
-	 * @param ResourceInterface $resource The resource to publish
-	 * @return string Either the web URI of the published resource or FALSE if the resource source file doesn't exist or the resource could not be published for other reasons
-	 */
-	public function publishResource(ResourceInterface $resource) {
-		return $this->getPublishingTarget()->publishResource($resource);
-	}
+    /**
+     * Publishes a persistent resource to the web accessible resources directory
+     *
+     * @param ResourceInterface $resource The resource to publish
+     *
+     * @return string Either the web URI of the published resource or FALSE if the resource source file doesn't exist
+     *     or the resource could not be published for other reasons
+     */
+    public function publishResource(ResourceInterface $resource)
+    {
+        return $this->getPublishingTarget()->publishResource($resource);
+    }
 
-	/**
-	 * Builds a delivery URI from a URI which is in document root but protected through the webserver
-	 *
-	 * @param $resourceUri
-	 * @return string
-	 */
-	public function publishResourceUri($resourceUri) {
-		return $this->getPublishingTarget()->publishResourceUri($resourceUri);
-	}
+    /**
+     * Builds a delivery URI from a URI which is in document root but protected through the webserver
+     *
+     * @param $resourceUri
+     *
+     * @return string
+     */
+    public function publishResourceUri($resourceUri)
+    {
+        return $this->getPublishingTarget()->publishResourceUri($resourceUri);
+    }
 
-	/**
-	 * @return \Bitmotion\NawSecuredl\Resource\Publishing\ResourcePublishingTargetInterface
-	 */
-	protected function getPublishingTarget() {
-		// Check if we have DI, if not, lazily instatiate the publishing target
-		if (is_null($this->publishingTarget)) {
-			$this->publishingTarget = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublishingTarget');
-			if (method_exists($this->publishingTarget, 'injectConfigurationManager')) {
-				$this->publishingTarget->injectConfigurationManager(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Configuration\\ConfigurationManager'));
-			}
-			if (method_exists($this->publishingTarget, 'injectAccessRestrictionPublisher')) {
-				$this->publishingTarget->injectAccessRestrictionPublisher(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Security\\Authorization\\Resource\\AccessRestrictionPublisher'));
-			}
-		}
-		return $this->publishingTarget;
-	}
+    /**
+     * @return \Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublishingTargetInterface
+     */
+    protected function getPublishingTarget()
+    {
+        // Check if we have DI, if not, lazily instatiate the publishing target
+        if (is_null($this->publishingTarget)) {
+            $this->publishingTarget = GeneralUtility::makeInstance(ResourcePublishingTarget::class);
+            if (method_exists($this->publishingTarget, 'injectConfigurationManager')) {
+                $this->publishingTarget->injectConfigurationManager(GeneralUtility::makeInstance(ConfigurationManager::class));
+            }
+            if (method_exists($this->publishingTarget, 'injectAccessRestrictionPublisher')) {
+                $this->publishingTarget->injectAccessRestrictionPublisher(GeneralUtility::makeInstance(AccessRestrictionPublisher::class));
+            }
+        }
+
+        return $this->publishingTarget;
+    }
 }

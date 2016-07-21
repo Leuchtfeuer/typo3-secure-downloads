@@ -1,0 +1,41 @@
+
+<f:be.container pageTitle="Download Traffic" loadExtJsTheme="TRUE" includeCssFiles="{0: '{f:uri.resource(path:\'Styles/Styles.css\')}'}" loadJQuery="TRUE">
+	<div class="module" data-module-id data-module-name>
+		<div class="module-docheader t3js-module-docheader">
+
+			<div class="module-docheader-bar module-docheader-bar-navigation t3js-module-docheader-bar t3js-module-docheader-bar-navigation">
+				<div class="module-docheader-bar-column-left">
+					<div class="form-inline">
+						<div class="form-group form-group-sm">
+							<f:be.menus.actionMenu defaultController="Log">
+								<f:be.menus.actionMenuItem label="{f:translate(key:'option.by_page')}" controller="" action="list" />
+								<f:be.menus.actionMenuItem label="{f:translate(key:'option.overview')}" controller="" action="list" arguments="{mode: 'overview'}" />
+							</f:be.menus.actionMenu>
+						</div>
+					</div>
+				</div>
+				<div class="module-docheader-bar-column-right">
+					<f:be.pagePath />
+					<f:be.pageInfo />
+				</div>
+			</div>
+
+			<div class="module-docheader-bar module-docheader-bar-buttons t3js-module-docheader-bar t3js-module-docheader-bar-buttons">
+				<div class="module-docheader-bar-column-left">
+					<f:be.buttons.csh />
+				</div>
+				<div class="module-docheader-bar-column-right">
+					<div class="btn-toolbar" role="toolbar" aria-label>
+						<f:be.buttons.shortcut />
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<div class="module-body t3js-module-body">
+			<f:flashMessages />
+			<f:render section="content" />
+		</div>
+	</div>
+
+</f:be.container>

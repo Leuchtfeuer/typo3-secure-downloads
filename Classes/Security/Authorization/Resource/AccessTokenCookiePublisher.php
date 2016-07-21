@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Security\Authorization\Resource;
+namespace Bitmotion\SecureDownloads\Security\Authorization\Resource;
 
 /***************************************************************
  *  Copyright notice
@@ -24,52 +24,53 @@ namespace Bitmotion\NawSecuredl\Security\Authorization\Resource;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use Bitmotion\NawSecuredl\Request\RequestContext;
+use Bitmotion\SecureDownloads\Request\RequestContext;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This class implements a hook and publishes a cookie with the access token suitable for the current request
  */
-class AccessTokenCookiePublisher implements SingletonInterface {
+class AccessTokenCookiePublisher implements SingletonInterface
+{
 
-	/**
-	 * @param RequestContext $requestContext
-	 */
-	public function __construct(RequestContext $requestContext = NULL) {
-		$this->requestContext = $requestContext ?: GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Request\\RequestContext');
-	}
+    /**
+     * @param RequestContext $requestContext
+     */
+    public function __construct(RequestContext $requestContext = null)
+    {
+        $this->requestContext = $requestContext ?: GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Request\\RequestContext');
+    }
 
-	/**
-	 * This is the method called by TYPO3 when TSFE bootstrapping is ready but rendernig not done yet
-	 */
-	public function checkDataSubmission() {
-		$this->publishAccessTokenToCookie();
-	}
+    /**
+     * This is the method called by TYPO3 when TSFE bootstrapping is ready but rendernig not done yet
+     */
+    public function checkDataSubmission()
+    {
+        $this->publishAccessTokenToCookie();
+    }
 
-	/**
-	 * Publishes the cookie if a user is logged in
-	 */
-	protected function publishAccessTokenToCookie() {
-		if ($this->requestContext->isUserLoggedIn()) {
-			$token = $this->requestContext->getAccessToken();
-			// Check does not work because the cookie path is set to be only valid in publishing directory
-//			if ($_COOKIE[$this->requestContext->getCookieName()] !== $token) {
-				$contextPath = implode('/', array_merge(
-					array($this->requestContext->getLocationId()),
-					array(sha1($token))
-				));
-				setcookie(
-					$this->requestContext->getCookieName(),
-					$token,
-					NULL,
-					'/typo3temp/secure_downloads/' . $contextPath . '/',
-					NULL,
-					NULL,
-					TRUE
-				);
-//			}
-		}
-	}
+    /**
+     * Publishes the cookie if a user is logged in
+     */
+    protected function publishAccessTokenToCookie()
+    {
+        if ($this->requestContext->isUserLoggedIn()) {
+            $token = $this->requestContext->getAccessToken();
+            $contextPath = implode(
+                '/',
+                array_merge(array($this->requestContext->getLocationId()), array(sha1($token)))
+            );
+            setcookie(
+                $this->requestContext->getCookieName(),
+                $token,
+                null,
+                '/typo3temp/secure_downloads/' . $contextPath . '/',
+                null,
+                null,
+                true
+            );
+        }
+    }
 }
 

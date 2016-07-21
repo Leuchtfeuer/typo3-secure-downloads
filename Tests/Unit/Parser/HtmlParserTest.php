@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Tests\Unit\Parser;
+namespace Bitmotion\SecureDownloads\Tests\Unit\Parser;
 
 /***************************************************************
  *  Copyright notice
@@ -67,7 +67,7 @@ class HtmlParserTest extends \Tx_Phpunit_TestCase {
 	 * @dataProvider parseContentTestDataProvider
 	 */
 	public function allConfiguredAssetsAreReplacedInHtml($originalHtml, $expectedHtml) {
-		$delegateMock = $this->getMock('Bitmotion\\NawSecuredl\\Parser\\HtmlParserDelegateInterface');
+		$delegateMock = $this->getMock('Bitmotion\\SecureDownloads\\Parser\\HtmlParserDelegateInterface');
 		$delegateMock->expects($this->any())
 			->method('publishResourceUri')
 			->will($this->returnCallback(function($resourceUri) {return 'securedl/' . $resourceUri;}));
@@ -76,7 +76,7 @@ class HtmlParserTest extends \Tx_Phpunit_TestCase {
 			'domainPattern' => '/',
 			'fileExtensionPattern' => 'jpe?g|pdf',
 		);
-		$fixture = $this->getMock('Bitmotion\\NawSecuredl\\Parser\\HtmlParser', array('dummy'), array($delegateMock, $settings));
+		$fixture = $this->getMock('Bitmotion\\SecureDownloads\\Parser\\HtmlParser', array('dummy'), array($delegateMock, $settings));
 
 		$actualHtml = $fixture->parse($originalHtml);
 

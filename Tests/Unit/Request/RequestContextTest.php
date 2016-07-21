@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Tests\Unit\Request;
+namespace Bitmotion\SecureDownloads\Tests\Unit\Request;
 
 /***************************************************************
  *  Copyright notice
@@ -48,7 +48,7 @@ class RequestContextTest extends \Tx_Phpunit_TestCase {
 		$fakeFrontend->config['config'] = array();
 		$GLOBALS['TSFE'] = $fakeFrontend;
 
-		$fixture = $this->getAccessibleMock('Bitmotion\\NawSecuredl\\Request\\RequestContext', array('isFrontendRequest'), array(), '', FALSE);
+		$fixture = $this->getAccessibleMock('Bitmotion\\SecureDownloads\\Request\\RequestContext', array('isFrontendRequest'), array(), '', FALSE);
 		$fixture->expects($this->any())->method('isFrontendRequest')->will($this->returnValue(TRUE));
 		$fixture->__construct();
 
@@ -60,10 +60,10 @@ class RequestContextTest extends \Tx_Phpunit_TestCase {
 	 */
 	public function isRewritingEnabledWillReturnTrueWhenExplicitlyEnabled() {
 		$fakeFrontend = $this->getMock('tslib_fe', array(), array(), '', FALSE);
-		$fakeFrontend->config['config']['tx_nawsecuredl_enable'] = '1';
+		$fakeFrontend->config['config']['tx_securedownloads_enable'] = '1';
 		$GLOBALS['TSFE'] = $fakeFrontend;
 
-		$fixture = $this->getAccessibleMock('Bitmotion\\NawSecuredl\\Request\\RequestContext', array('isFrontendRequest'), array(), '', FALSE);
+		$fixture = $this->getAccessibleMock('Bitmotion\\SecureDownloads\\Request\\RequestContext', array('isFrontendRequest'), array(), '', FALSE);
 		$fixture->expects($this->any())->method('isFrontendRequest')->will($this->returnValue(TRUE));
 		$fixture->__construct();
 
@@ -75,10 +75,10 @@ class RequestContextTest extends \Tx_Phpunit_TestCase {
 	 */
 	public function isRewritingEnabledWillReturnFalseWhenExplicitlyDisabled() {
 		$fakeFrontend = $this->getMock('tslib_fe', array(), array(), '', FALSE);
-		$fakeFrontend->config['config']['tx_nawsecuredl_enable'] = '0';
+		$fakeFrontend->config['config']['tx_securedownloads_enable'] = '0';
 		$GLOBALS['TSFE'] = $fakeFrontend;
 
-		$fixture = $this->getAccessibleMock('Bitmotion\\NawSecuredl\\Request\\RequestContext', array('isFrontendRequest'), array(), '', FALSE);
+		$fixture = $this->getAccessibleMock('Bitmotion\\SecureDownloads\\Request\\RequestContext', array('isFrontendRequest'), array(), '', FALSE);
 		$fixture->expects($this->any())->method('isFrontendRequest')->will($this->returnValue(TRUE));
 		$fixture->__construct();
 

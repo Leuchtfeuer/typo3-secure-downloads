@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Parser;
+namespace Bitmotion\SecureDownloads\Parser;
 
 /***************************************************************
  *  Copyright notice
@@ -25,11 +25,13 @@ namespace Bitmotion\NawSecuredl\Parser;
  ***************************************************************/
 
 
-interface HtmlParserDelegateInterface {
+interface HtmlParserDelegateInterface
+{
 
-	/**
-	 * @param string $resourceUri
-	 * @return string
-	 */
-	public function publishResourceUri($resourceUri);
+    /**
+     * @param string $resourceUri
+     *
+     * @return string
+     */
+    public function publishResourceUri($resourceUri);
 }

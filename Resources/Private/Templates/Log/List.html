@@ -1,0 +1,69 @@
+<f:layout name="Default" />
+<f:section name="content">
+
+	<f:if condition="{mode} == 'overview'">
+		<f:then>
+			<h1><f:translate key="heading" /></h1>
+		</f:then>
+		<f:else>
+			<h1><f:translate key="heading_for_page" arguments="{0: page.title}" /></h1>
+		</f:else>
+	</f:if>
+
+	<f:flashMessages />
+
+	<f:render partial="Backend/Filter" arguments="{_all}"/>
+
+	<div class="com-sm-12">
+		Found <strong><f:format.number decimals="0">{f:count(subject: logs)}</f:format.number></strong>
+		assets (traffic sum: <strong><f:format.bytes>{stat.trafficSum}</f:format.bytes></strong>)
+		in a timeframe from <strong><f:format.date format="{f:translate(key:'dateformat')}">@{stat.from}</f:format.date></strong>
+		till <strong><f:format.date format="{f:translate(key:'dateformat')}">@{stat.till}</f:format.date></strong>.
+	</div>
+
+	<hr />
+
+	<f:if condition="{logs}">
+		<f:widget.paginate objects="{logs}" as="paginatedLogs" configuration="{itemsPerPage: 100, insertAbove: 1, maximumNumberOfLinks: 10}">
+			<table class="table table-striped table-hover typo3-page-pages" >
+				<thead>
+				<tr>
+					<th><f:translate key="tx_securedownloads_domain_model_log.tstamp" /></th>
+					<th><f:translate key="tx_securedownloads_domain_model_log.file_name" /></th>
+					<th><f:translate key="tx_securedownloads_domain_model_log.filesize" /></th>
+					<th><f:translate key="tx_securedownloads_domain_model_log.filetype" /></th>
+					<th><f:translate key="tx_securedownloads_domain_model_log.media_type" /></th>
+					<th><f:translate key="tx_securedownloads_domain_model_log.typo3_mode" /></th>
+					<th><f:translate key="tx_securedownloads_domain_model_log.user" /></th>
+				</tr>
+				</thead>
+
+				<tbody>
+				<f:for each="{paginatedLogs}" as="log">
+					<tr>
+						<td><f:format.date format="{f:translate(key:'dateformat')}">@{log.tstamp}</f:format.date></td>
+						<td><abbr title="{log.filePath}">{log.fileName}</abbr></td>
+						<td><f:format.bytes>{log.fileSize}</f:format.bytes></td>
+						<td>{log.fileType}</td>
+						<td>{log.mediaType}</td>
+						<td>{log.typo3Mode}</td>
+						<td>
+							<f:if condition="{log.user}">
+								<f:then>
+									{log.userObject.username}
+								</f:then>
+								<f:else>
+									{f:translate(key:'no_user')}
+								</f:else>
+							</f:if>
+						</td>
+					</tr>
+				</f:for>
+				</tbody>
+
+			</table>
+		</f:widget.paginate>
+	</f:if>
+
+
+</f:section>

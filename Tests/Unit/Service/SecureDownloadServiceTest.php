@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Tests\Unit\Service;
+namespace Bitmotion\SecureDownloads\Tests\Unit\Service;
 
 /***************************************************************
  *  Copyright notice
@@ -41,10 +41,10 @@ class SecureDownloadServiceTest extends \Tx_Phpunit_TestCase {
 	protected $backupGlobalsBlacklist = array('TYPO3_DB');
 
 	/**
-	 * @return \PHPUnit_Framework_MockObject_MockObject|\Bitmotion\NawSecuredl\Request\RequestContext
+	 * @return \PHPUnit_Framework_MockObject_MockObject|\Bitmotion\SecureDownloads\Request\RequestContext
 	 */
 	protected function getRequestContextMock() {
-		$requestContextMock = $this->getMock('Bitmotion\\NawSecuredl\\Request\\RequestContext');
+		$requestContextMock = $this->getMock('Bitmotion\\SecureDownloads\\Request\\RequestContext');
 		$requestContextMock->expects($this->any())->method('isFrontendRequest')->will($this->returnValue(TRUE));
 		$requestContextMock->expects($this->any())->method('getCacheLifetime')->will($this->returnValue(0));
 		$requestContextMock->expects($this->any())->method('getUserId')->will($this->returnValue(999));
@@ -60,7 +60,7 @@ class SecureDownloadServiceTest extends \Tx_Phpunit_TestCase {
 		$dummy = array();
 		$requestContextMock = $this->getRequestContextMock();
 		$requestContextMock->expects($this->any())->method('isUrlRewritingEnabled')->will($this->returnValue(FALSE));
-		$fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('getHtmlParser'), array($requestContextMock));
+		$fixture = $this->getMock('Bitmotion\\SecureDownloads\\Service\\SecureDownloadService', array('getHtmlParser'), array($requestContextMock));
 		$fixture->expects($this->never())->method('getHtmlParser');
 		$fixture->parseFE($dummy, $this->getMock('tslib_fe', array(), array(), '', FALSE));
 	}
@@ -72,9 +72,9 @@ class SecureDownloadServiceTest extends \Tx_Phpunit_TestCase {
 		$dummy = array();
 		$requestContextMock = $this->getRequestContextMock();
 		$requestContextMock->expects($this->any())->method('isUrlRewritingEnabled')->will($this->returnValue(TRUE));
-		$htmlParserMock = $this->getMock('Bitmotion\\NawSecuredl\\Parser\\HtmlParser', array(), array(), '', FALSE);
+		$htmlParserMock = $this->getMock('Bitmotion\\SecureDownloads\\Parser\\HtmlParser', array(), array(), '', FALSE);
 		$htmlParserMock->expects($this->once())->method('parse');
-		$fixture = $this->getMock('Bitmotion\\NawSecuredl\\Service\\SecureDownloadService', array('getHtmlParser'), array($requestContextMock));
+		$fixture = $this->getMock('Bitmotion\\SecureDownloads\\Service\\SecureDownloadService', array('getHtmlParser'), array($requestContextMock));
 		$fixture->expects($this->once())->method('getHtmlParser')->will($this->returnValue($htmlParserMock));
 		$fixture->parseFE($dummy, $this->getMock('tslib_fe', array(), array(), '', FALSE));
 	}

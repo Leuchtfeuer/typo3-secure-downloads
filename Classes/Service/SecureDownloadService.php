@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Service;
+namespace Bitmotion\SecureDownloads\Service;
 
 /***************************************************************
  *  Copyright notice
@@ -25,134 +25,141 @@ namespace Bitmotion\NawSecuredl\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use Bitmotion\NawSecuredl\Parser\HtmlParser;
-use Bitmotion\NawSecuredl\Configuration\ConfigurationManager;
-use Bitmotion\NawSecuredl\Parser\HtmlParserDelegateInterface;
-use Bitmotion\NawSecuredl\Request\RequestContext;
-use Bitmotion\NawSecuredl\Resource\Publishing\ResourcePublisher;
+use Bitmotion\SecureDownloads\Parser\HtmlParser;
+use Bitmotion\SecureDownloads\Configuration\ConfigurationManager;
+use Bitmotion\SecureDownloads\Parser\HtmlParserDelegateInterface;
+use Bitmotion\SecureDownloads\Request\RequestContext;
+use Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublisher;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * @author Dietrich Heise <typo3-ext(at)bitmotion.de>
- * @author Helmut Hummel <helmut.hummel@typo3.org>
- */
-class SecureDownloadService implements HtmlParserDelegateInterface {
-	/**
-	 * @var RequestContext
-	 */
-	protected $requestContext;
+class SecureDownloadService implements HtmlParserDelegateInterface
+{
+    /**
+     * @var RequestContext
+     */
+    protected $requestContext;
 
-	/**
-	 * @var ConfigurationManager
-	 */
-	protected $configurationManager;
+    /**
+     * @var ConfigurationManager
+     */
+    protected $configurationManager;
 
-	/**
-	 * @var HtmlParser
-	 */
-	protected $htmlParser;
+    /**
+     * @var HtmlParser
+     */
+    protected $htmlParser;
 
-	/**
-	 * @var ResourcePublisher
-	 */
-	protected $resourcePublisher;
+    /**
+     * @var ResourcePublisher
+     */
+    protected $resourcePublisher;
 
-	/**
-	 * @param RequestContext $requestContext
-	 * @param ConfigurationManager $configurationManager
-	 */
-	public function __construct($requestContext = NULL, $configurationManager = NULL) {
-		$this->requestContext = $requestContext ?: new RequestContext();
-		$this->configurationManager = $configurationManager ?: \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Configuration\\ConfigurationManager');
-	}
+    /**
+     * @param RequestContext       $requestContext
+     * @param ConfigurationManager $configurationManager
+     */
+    public function __construct($requestContext = null, $configurationManager = null)
+    {
+        $this->requestContext = $requestContext ?: new RequestContext();
+        $this->configurationManager = $configurationManager ?: GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Configuration\\ConfigurationManager');
+    }
 
-	/**
-	 * This method is called by the frontend rendering hook contentPostProc->output
-	 *
-	 * @param array $parameters
-	 * @param \tslib_fe $typoScriptFrontendController
-	 */
-	public function parseFE(array &$parameters, $typoScriptFrontendController) {
-		// Parsing the content if not explicitly disabled
-		if ($this->requestContext->isUrlRewritingEnabled()) {
-			$typoScriptFrontendController->content = $this->getHtmlParser()->parse($typoScriptFrontendController->content);
-		}
-	}
+    /**
+     * This method is called by the frontend rendering hook contentPostProc->output
+     *
+     * @param array     $parameters
+     * @param \tslib_fe $typoScriptFrontendController
+     */
+    public function parseFE(array &$parameters, $typoScriptFrontendController)
+    {
+        // Parsing the content if not explicitly disabled
+        if ($this->requestContext->isUrlRewritingEnabled()) {
+            $typoScriptFrontendController->content = $this->getHtmlParser()->parse($typoScriptFrontendController->content);
+        }
+    }
 
-	/**
-	 * Transforms a relative file URL to a secure download protected URL
-	 *
-	 * @param string $originalUri
-	 * @return string
-	 */
-	public function publishResourceUri($originalUri) {
-		$transformedUri = $this->getResourcePublisher()->publishResourceUri(rawurldecode($originalUri));
+    /**
+     * Transforms a relative file URL to a secure download protected URL
+     *
+     * @param string $originalUri
+     *
+     * @return string
+     */
+    public function publishResourceUri($originalUri)
+    {
+        $transformedUri = $this->getResourcePublisher()->publishResourceUri(rawurldecode($originalUri));
 
-		// Hook for makeSecure:
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/Classes/Service/SecureDownloadService.php']['makeSecure'])) {
-			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/Classes/Service/SecureDownloadService.php']['makeSecure'] as $_funcRef)   {
-				$transformedUri = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $transformedUri, $this);
-			}
-		}
-		// Hook for makeSecure: (old class name, for compatibility reasons)
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl.php']['makeSecure'])) {
-			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/naw_securedl/class.tx_nawsecuredl.php']['makeSecure'] as $_funcRef)   {
-				$transformedUri = \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $transformedUri, $this);
-			}
-		}
+        // Hook for makeSecure:
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'] as $_funcRef) {
+                $transformedUri = GeneralUtility::callUserFunction($_funcRef, $transformedUri, $this);
+            }
+        }
+        // Hook for makeSecure: (old class name, for compatibility reasons)
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/class.tx_securedownloads.php']['makeSecure'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/class.tx_securedownloads.php']['makeSecure'] as $_funcRef) {
+                $transformedUri = GeneralUtility::callUserFunction($_funcRef, $transformedUri, $this);
+            }
+        }
 
-		return $transformedUri;
-	}
+        return $transformedUri;
+    }
 
-	/**
-	 * Method kept for compatibility
-	 *
-	 * @param string $html
-	 * @return string
-	 */
-	public function parseContent($html) {
-		return $this->getHtmlParser()->parse($html);
-	}
+    /**
+     * Method kept for compatibility
+     *
+     * @param string $html
+     *
+     * @return string
+     */
+    public function parseContent($html)
+    {
+        return $this->getHtmlParser()->parse($html);
+    }
 
-	/**
-	 * Method kept for compatibility
-	 *
-	 * @param string $originalUri
-	 * @return string
-	 */
-	public function makeSecure($originalUri) {
-		return $this->publishResourceUri($originalUri);
-	}
+    /**
+     * Method kept for compatibility
+     *
+     * @param string $originalUri
+     *
+     * @return string
+     */
+    public function makeSecure($originalUri)
+    {
+        return $this->publishResourceUri($originalUri);
+    }
 
-	/**
-	 * Lazily instantiates the HTML parser
-	 * Must be called AFTER the configuration manager has been initialized
-	 *
-	 * @return \Bitmotion\NawSecuredl\Parser\HtmlParser
-	 */
-	protected function getHtmlParser() {
-		if (is_null($this->htmlParser)) {
-			$this->htmlParser = new HtmlParser(
-				$this,
-				array(
-					'domainPattern' => $this->configurationManager->getValue('domain'),
-					'folderPattern' => $this->configurationManager->getValue('securedDirs'),
-					'fileExtensionPattern' => $this->configurationManager->getValue('filetype'),
-					'logLevel' => $this->configurationManager->getValue('debug'),
-				)
-			);
-		}
-		return $this->htmlParser;
-	}
+    /**
+     * Lazily instantiates the HTML parser
+     * Must be called AFTER the configuration manager has been initialized
+     *
+     * @return \Bitmotion\SecureDownloads\Parser\HtmlParser
+     */
+    protected function getHtmlParser()
+    {
+        if (is_null($this->htmlParser)) {
+            $this->htmlParser = new HtmlParser($this, array(
+                    'domainPattern' => $this->configurationManager->getValue('domain'),
+                    'folderPattern' => $this->configurationManager->getValue('securedDirs'),
+                    'fileExtensionPattern' => $this->configurationManager->getValue('securedFiletypes'),
+                    'logLevel' => $this->configurationManager->getValue('debug'),
+                ));
+        }
 
-	/**
-	 * Lazily intatiates the resource publisher
-	 *
-	 * @return ResourcePublisher
-	 */
-	protected function getResourcePublisher() {
-		if (is_null($this->resourcePublisher)) {
-			$this->resourcePublisher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Bitmotion\\NawSecuredl\\Resource\\Publishing\\ResourcePublisher');
-		}
-		return $this->resourcePublisher;
-	}
+        return $this->htmlParser;
+    }
+
+    /**
+     * Lazily intatiates the resource publisher
+     *
+     * @return ResourcePublisher
+     */
+    protected function getResourcePublisher()
+    {
+        if (is_null($this->resourcePublisher)) {
+            $this->resourcePublisher = GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Resource\\Publishing\\ResourcePublisher');
+        }
+
+        return $this->resourcePublisher;
+    }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Resource;
+namespace Bitmotion\SecureDownloads\Resource;
 
 /***************************************************************
  *  Copyright notice
@@ -32,42 +32,45 @@ use TYPO3\CMS\Core\Utility\PathUtility;
 
 /**
  * Class UrlGenerationInterceptor
- * @package Bitmotion\NawSecuredl\Resource
+ * @package Bitmotion\SecureDownloads\Resource
  */
-class UrlGenerationInterceptor {
-	/**
-	 * @var Publishing\ResourcePublisher
-	 */
-	protected $resourcePublisher;
+class UrlGenerationInterceptor
+{
+    /**
+     * @var Publishing\ResourcePublisher
+     */
+    protected $resourcePublisher;
 
-	/**
-	 * @param Publishing\ResourcePublisher $resourcePublisher
-	 */
-	public function injectResourcePublisher(Publishing\ResourcePublisher $resourcePublisher) {
-		$this->resourcePublisher = $resourcePublisher;
-	}
+    /**
+     * @param Publishing\ResourcePublisher $resourcePublisher
+     */
+    public function injectResourcePublisher(Publishing\ResourcePublisher $resourcePublisher)
+    {
+        $this->resourcePublisher = $resourcePublisher;
+    }
 
-	/**
-	 * @param ResourceStorage $storage
-	 * @param AbstractDriver $driver
-	 * @param ResourceInterface $resource
-	 * @param boolean $relativeToCurrentScript
-	 * @param array $urlData
-	 */
-	public function getPublicUrl(ResourceStorage $storage, AbstractDriver $driver, ResourceInterface $resource, $relativeToCurrentScript, array $urlData) {
-		if (!$driver instanceof LocalDriver) {
-			// We cannot handle other files than local files yet
-			return;
-		}
-		$publicUrl = $this->resourcePublisher->getResourceWebUri($resource);
-		if ($publicUrl !== FALSE) {
-			// If requested, make the path relative to the current script in order to make it possible
-			// to use the relative file
-			if ($relativeToCurrentScript) {
-				$publicUrl = PathUtility::getRelativePathTo(PathUtility::dirname((PATH_site . $publicUrl))) . PathUtility::basename($publicUrl);
-			}
-			// $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
-			$urlData['publicUrl'] =  $publicUrl;
-		}
-	}
+    /**
+     * @param ResourceStorage $storage
+     * @param AbstractDriver $driver
+     * @param ResourceInterface $resource
+     * @param boolean $relativeToCurrentScript
+     * @param array $urlData
+     */
+    public function getPublicUrl(ResourceStorage $storage, AbstractDriver $driver, ResourceInterface $resource, $relativeToCurrentScript, array $urlData)
+    {
+        if (!$driver instanceof LocalDriver) {
+            // We cannot handle other files than local files yet
+            return;
+        }
+        $publicUrl = $this->resourcePublisher->getResourceWebUri($resource);
+        if ($publicUrl !== false) {
+            // If requested, make the path relative to the current script in order to make it possible
+            // to use the relative file
+            if ($relativeToCurrentScript) {
+                $publicUrl = PathUtility::getRelativePathTo(PathUtility::dirname((PATH_site . $publicUrl))) . PathUtility::basename($publicUrl);
+            }
+            // $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
+            $urlData['publicUrl'] = $publicUrl;
+        }
+    }
 }

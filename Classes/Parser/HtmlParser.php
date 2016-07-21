@@ -1,11 +1,11 @@
 <?php
-namespace Bitmotion\NawSecuredl\Parser;
+namespace Bitmotion\SecureDownloads\Parser;
 
 /***************************************************************
  *  Copyright notice
  *
  *  (c) 2013 Helmut Hummel (helmut.hummel@typo3.org)
- *  (c) 2013 Dietrich Heise ( typo3-ext(at)bitmotion.de )
+ *  (c) 2016 Florian Wessels (typo3-ext@bitmotion.de)
  *  All rights reserved
  *
  *  This script is part of the Typo3 project. The Typo3 project is
@@ -27,174 +27,201 @@ namespace Bitmotion\NawSecuredl\Parser;
 
 /**
  * Class HtmlParser
- * @package Bitmotion\NawSecuredl\Parser
+ * @package Bitmotion\SecureDownloads\Parser
  */
-class HtmlParser {
-	/**
-	 * @var integer
-	 */
-	protected $logLevel = 0;
+class HtmlParser
+{
+    /**
+     * @var int
+     */
+    protected $logLevel = 0;
 
-	/**
-	 * Domain Pattern
-	 * 
-	 * @var string
-	 */
-	protected $domainPattern;
+    /**
+     * Domain Pattern
+     *
+     * @var string
+     */
+    protected $domainPattern;
 
-	/**
-	 * Folder pattern
-	 * 
-	 * @var string
-	 */
-	protected $folderPattern;
+    /**
+     * Folder pattern
+     *
+     * @var string
+     */
+    protected $folderPattern;
 
-	/**
-	 * @var string File extension pattern
-	 */
-	protected $fileExtensionPattern;
+    /**
+     * @var string File extension pattern
+     */
+    protected $fileExtensionPattern;
 
-	/**
-	 * @var HtmlParserDelegateInterface
-	 */
-	protected $delegate;
+    /**
+     * @var HtmlParserDelegateInterface
+     */
+    protected $delegate;
 
-	/**
-	 * @param string $accessProtectedDomain
-	 */
-	public function setDomainPattern($accessProtectedDomain) {
-		$this->domainPattern = $accessProtectedDomain;
-	}
+    /**
+     * @var string
+     */
+    protected $tagPattern;
 
-	/**
-	 * @param string $accessProtectedFileExtensions
-	 */
-	public function setFileExtensionPattern($accessProtectedFileExtensions) {
-		$this->fileExtensionPattern = $accessProtectedFileExtensions;
-	}
+    /**
+     * @param string $accessProtectedDomain
+     */
+    public function setDomainPattern($accessProtectedDomain)
+    {
+        $this->domainPattern = $this->softQuoteExpression($accessProtectedDomain);
+    }
 
-	/**
-	 * @param string $accessProtectedFolders
-	 */
-	public function setFolderPattern($accessProtectedFolders) {
-		$this->folderPattern = $accessProtectedFolders;
-	}
+    /**
+     * @param string $accessProtectedFileExtensions
+     */
+    public function setFileExtensionPattern($accessProtectedFileExtensions)
+    {
+        $this->fileExtensionPattern = $accessProtectedFileExtensions;
+    }
 
-	/**
-	 * @param integer $logLevel
-	 */
-	public function setLogLevel($logLevel) {
-		$this->logLevel = (int)$logLevel;
-	}
+    /**
+     * @param string $accessProtectedFolders
+     */
+    public function setFolderPattern($accessProtectedFolders)
+    {
+        $this->folderPattern = $this->softQuoteExpression($accessProtectedFolders);
+    }
 
-	/**
-	 * @param HtmlParserDelegateInterface $delegate
-	 * @param array $settings
-	 */
-	public function __construct(HtmlParserDelegateInterface $delegate, array $settings) {
-		$this->delegate = $delegate;
-		foreach ($settings as $settingKey => $setting) {
-			$setterMethodName = 'set' . ucfirst($settingKey);
-			if (method_exists($this, $setterMethodName)) {
-				$this->$setterMethodName($setting);
-			}
-		}
-		if (substr($this->fileExtensionPattern,0,1) !== '\\') {
-			$this->fileExtensionPattern = '\\.(' . $this->fileExtensionPattern . ')';
-		}
-	}
+    /**
+     * @param integer $logLevel
+     */
+    public function setLogLevel($logLevel)
+    {
+        $this->logLevel = (int)$logLevel;
+    }
 
-	/**
-	 * Parses the HTML output and replaces the links to configured files with secured ones
-	 *
-	 * @param string $html
-	 * @return string
-	 */
-	public function parse($html) {
-		$rest = $html;
-		$result = '';
-		while (preg_match('/(?i)(<link|<source|<a|<img|<video)+?.[^>]*(href|src|poster)=(\"??)([^\" >]*?)\\3[^>]*>/siU', $html, $match)) {  // suchendes secured Verzeichnis
-			$cont = explode($match[0], $html, 2);
-			$vor = $cont[0];
-			$tag = $match[0];
-			if ($this->logLevel === 2 || $this->logLevel === 3) {
-				debug('tag:' . $tag);
-			}
+    /**
+     * @param HtmlParserDelegateInterface $delegate
+     * @param array                       $settings
+     */
+    public function __construct(HtmlParserDelegateInterface $delegate, array $settings)
+    {
+        $this->delegate = $delegate;
+        foreach ($settings as $settingKey => $setting) {
+            $setterMethodName = 'set' . ucfirst($settingKey);
+            if (method_exists($this, $setterMethodName)) {
+                $this->$setterMethodName($setting);
+            }
+        }
+        if (substr($this->fileExtensionPattern, 0, 1) !== '\\') {
+            $this->fileExtensionPattern = '\\.(' . $this->fileExtensionPattern . ')';
+        }
 
-			$rest = $cont[1];
+        $this->tagPattern = '/"(?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))"/i';
+    }
 
-			if ($this->logLevel === 1 || $this->logLevel === 3) {
-				debug(array('html-tag:'=>$tag));
-			}
+    /**
+     * Parses the HTML output and replaces the links to configured files with secured ones
+     *
+     * @param string $html
+     *
+     * @return string
+     */
+    public function parse($html)
+    {
+        $rest = $html;
+        $result = '';
+        while (preg_match('/(?i)(<link|<source|<a|<img|<video)+?.[^>]*(href|src|poster)=(\"??)([^\" >]*?)\\3[^>]*>/siU', $html, $match)) {  // suchendes secured Verzeichnis
+            $cont = explode($match[0], $html, 2);
+            $vor = $cont[0];
+            $tag = $match[0];
 
-			$tag = $this->parseTag($tag, $this->folderPattern);
+            if ($this->logLevel === 3) {
+                DebuggerUtility::var_dump($tag, 'Tag:');
+            }
 
-			$result .= $vor . $tag;
-			$html = $rest;
-		}
-		return $result . $rest;
-	}
+            $rest = $cont[1];
 
-	/**
-	 * Investigate the HTML-Tag...
-	 *
-	 * @param $tag
-	 * @param $toSecureDirectoryExpression
-	 * @return string
-	 */
-	protected function parseTag($tag, $toSecureDirectoryExpression) {
-		if (preg_match('/"(?:' . $this->softQuoteExpression($this->domainPattern) . ')?(\/?(?:' . $this->softQuoteExpression($toSecureDirectoryExpression) . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))"/i', $tag, $matchedUrls)) {
+            $tag = $this->parseTag($tag);
 
-			if ($this->logLevel === 2 || $this->logLevel === 3) {
-				debug('/"(?:' . $this->softQuoteExpression($this->domainPattern) . ')?(\/?(?:' . $this->softQuoteExpression($toSecureDirectoryExpression) . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))"/i');
-			}
-			if ($this->logLevel === 2 || $this->logLevel === 3) {
-				debug($matchedUrls);
-			}
+            $result .= $vor . $tag;
+            $html = $rest;
+        }
 
-			$replace = htmlspecialchars($this->delegate->publishResourceUri($matchedUrls[1]));
-			$tagexp = explode($matchedUrls[1], $tag, 2);
+        return $result . $rest;
+    }
 
-			if ($this->logLevel === 2 || $this->logLevel === 3) {
-				debug($tagexp[0]);
-			}
-			if ($this->logLevel === 2 || $this->logLevel === 3) {
-				debug($replace);
-			}
-			if ($this->logLevel === 2 || $this->logLevel === 3) {
-				debug($tagexp[1]);
-			}
+    /**
+     * Investigate the HTML-Tag...
+     *
+     * @param string $tag
+     *
+     * @return string
+     */
+    protected function parseTag($tag)
+    {
+        if (preg_match($this->tagPattern, $tag, $matchedUrls)) {
+            $replace = htmlspecialchars($this->delegate->publishResourceUri($matchedUrls[1]));
+            $tagexp = explode($matchedUrls[1], $tag, 2);
 
-			$tag = $tagexp[0] . $replace;
-			$tmp = $tagexp[1];
+            $tag = $this->recursion($tagexp[0] . $replace, $tagexp[1]);
 
-			// search in the rest on the tag (e.g. for vHWin=window.open...)
-			if (preg_match('/\'(?:' . $this->softQuoteExpression($this->domainPattern) . ')?.*?(\/?(?:' . $this->softQuoteExpression($toSecureDirectoryExpression) . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))\'/i', $tmp, $matchedUrls)) {
-				$replace = htmlspecialchars($this->delegate->publishResourceUri($matchedUrls[1]));
-				$tagexp = explode($matchedUrls[1], $tmp, 2);
-				$add = $tagexp[0] . '/' . $replace . $tagexp[1];
-			} else {
-				$add = $tagexp[1];
-			}
+            // Some output for debugging
+            if ($this->logLevel === 1) {
+                DebuggerUtility::var_dump($tag, 'New output:');
+            } elseif ($this->logLevel === 2 || $this->logLevel === 3) {
+                DebuggerUtility::var_dump($this->tagPattern, 'Regular Expression:');
+                DebuggerUtility::var_dump($matchedUrls, 'Match:');
+                DebuggerUtility::var_dump(array($tagexp[0], $replace, $tagexp[1]), 'Build Tag:');
+                DebuggerUtility::var_dump($tag, 'New output:');
+            }
+        }
 
-			$tag .= $add;
-		}
-		return $tag;
-	}
+        return $tag;
+    }
 
-	/**
-	 * Quotes special some characters for the regular expression.
-	 * Leave braces and brackets as is to have more flexibility in configuration.
-	 *
-	 * @param string $string
-	 * @return string
-	 */
-	static public function softQuoteExpression($string) {
-		$string = str_replace('\\', '\\\\', $string);
-		$string = str_replace(' ', '\ ', $string);
-		$string = str_replace('/', '\/', $string);
-		$string = str_replace('.', '\.', $string);
-		$string = str_replace(':', '\:', $string);
-		return $string;
-	}
+
+    /**
+     * Search recursive in the rest of the tag (e.g. for vHWin=window.open...).
+     *
+     * @param string $tag
+     * @param string $tmp
+     *
+     * @return string
+     */
+    private function recursion($tag, $tmp)
+    {
+        if (preg_match($this->tagPattern, $tmp, $matchedUrls)) {
+            $replace = htmlspecialchars($this->delegate->publishResourceUri($matchedUrls[1]));
+            $tagexp = explode($matchedUrls[1], $tmp, 2);
+
+            if ($this->logLevel === 2 || $this->logLevel === 3) {
+                DebuggerUtility::var_dump(array($tagexp[0], $replace, $tagexp[1]), 'Further Match:');
+            }
+
+            $tag .= $tagexp[0] . '/' . $replace;
+
+            return $this->recursion($tag, $tagexp[1]);
+
+        }
+
+        return $tag . $tmp;
+    }
+
+
+    /**
+     * Quotes special some characters for the regular expression.
+     * Leave braces and brackets as is to have more flexibility in configuration.
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    static public function softQuoteExpression($string)
+    {
+        $string = str_replace('\\', '\\\\', $string);
+        $string = str_replace(' ', '\ ', $string);
+        $string = str_replace('/', '\/', $string);
+        $string = str_replace('.', '\.', $string);
+        $string = str_replace(':', '\:', $string);
+
+        return $string;
+    }
 }

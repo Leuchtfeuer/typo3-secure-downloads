@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Configuration;
+namespace Bitmotion\SecureDownloads\Configuration;
 
 /***************************************************************
  *  Copyright notice
@@ -24,37 +24,43 @@ namespace Bitmotion\NawSecuredl\Configuration;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\SingletonInterface;
 
-class ConfigurationManager implements \TYPO3\CMS\Core\SingletonInterface {
-	/**
-	 * @var string
-	 */
-	protected $extensionKey = 'naw_securedl';
+class ConfigurationManager implements SingletonInterface
+{
+    /**
+     * @var string
+     */
+    protected $extensionKey = 'secure_downloads';
 
-	/**
-	 * @var array
-	 */
-	protected $configuration = array();
+    /**
+     * @var array
+     */
+    protected $configuration = array();
 
-	/**
-	 * @param string|NULL $extensionKey
-	 */
-	public function __construct($extensionKey = NULL) {
-		$this->extensionKey = $extensionKey ?: $this->extensionKey;
-		if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extensionKey])) {
-			$this->configuration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extensionKey]);
-		}
-	}
+    /**
+     * @param string|null $extensionKey
+     */
+    public function __construct($extensionKey = null)
+    {
+        $this->extensionKey = $extensionKey ?: $this->extensionKey;
+        if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extensionKey])) {
+            $this->configuration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extensionKey]);
+        }
+    }
 
-	/**
-	 * @param string $key
-	 * @return mixed
-	 */
-	public function getValue($key) {
-		if (is_array($this->configuration) && array_key_exists($key, $this->configuration)) {
-			return $this->configuration[$key];
-		} else {
-			return NULL;
-		}
-	}
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function getValue($key)
+    {
+        if (is_array($this->configuration) && array_key_exists($key, $this->configuration)) {
+
+            return $this->configuration[$key];
+        }
+
+        return null;
+    }
 }

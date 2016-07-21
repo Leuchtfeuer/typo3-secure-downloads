@@ -1,5 +1,5 @@
 <?php
-namespace Bitmotion\NawSecuredl\Tests\Unit\Resurce\Publishing;
+namespace Bitmotion\SecureDownloads\Tests\Unit\Resurce\Publishing;
 
 /***************************************************************
  *  Copyright notice
@@ -44,16 +44,16 @@ class PhpDeliveryProtectedResourcePublishingTargetTest extends \Tx_Phpunit_TestC
 	 * @test
 	 */
 	public function linkFormatIsSetToDefaultIfNotSetInConfiguration() {
-		$fixture = $this->getAccessibleMock('Bitmotion\\NawSecuredl\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget', array('dummy'));
+		$fixture = $this->getAccessibleMock('Bitmotion\\SecureDownloads\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget', array('dummy'));
 
-		$configurationManagerMock = $this->getMock('Bitmotion\\NawSecuredl\\Configuration\\ConfigurationManager');
+		$configurationManagerMock = $this->getMock('Bitmotion\\SecureDownloads\\Configuration\\ConfigurationManager');
 		$configurationManagerMock->expects($this->any())
 			->method('getValue')
 			->with('linkFormat')
 			->will($this->returnValue(NULL));
 		$fixture->_set('configurationManager', $configurationManagerMock);
 
-		$this->assertSame('index.php?eID=tx_nawsecuredl&u=999&g=4%2C7%2C8%2C3&t=0&hash=abcdefgh&file=foo', $fixture->_call('buildUri', 'foo', 999, array(4,7,8,3), 0, 'abcdefgh'));
+		$this->assertSame('index.php?eID=tx_securedownloads&u=999&g=4%2C7%2C8%2C3&t=0&hash=abcdefgh&file=foo', $fixture->_call('buildUri', 'foo', 999, array(4,7,8,3), 0, 'abcdefgh'));
 	}
 
 
@@ -61,16 +61,16 @@ class PhpDeliveryProtectedResourcePublishingTargetTest extends \Tx_Phpunit_TestC
 	 * @test
 	 */
 	public function linkFormatIsSetToDefaultIfHasOldConfiguration() {
-		$fixture = $this->getAccessibleMock('Bitmotion\\NawSecuredl\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget', array('dummy'));
+		$fixture = $this->getAccessibleMock('Bitmotion\\SecureDownloads\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget', array('dummy'));
 
-		$configurationManagerMock = $this->getMock('Bitmotion\\NawSecuredl\\Configuration\\ConfigurationManager');
+		$configurationManagerMock = $this->getMock('Bitmotion\\SecureDownloads\\Configuration\\ConfigurationManager');
 		$configurationManagerMock->expects($this->any())
 			->method('getValue')
 			->with('linkFormat')
 			->will($this->returnValue('securedl/###FEUSER###/###TIMEOUT###/###HASH###/###FILE###'));
 		$fixture->_set('configurationManager', $configurationManagerMock);
 
-		$this->assertSame('index.php?eID=tx_nawsecuredl&u=999&g=4%2C7%2C8%2C3&t=0&hash=abcdefgh&file=foo', $fixture->_call('buildUri', 'foo', 999, array(4,7,8,3), 0, 'abcdefgh'));
+		$this->assertSame('index.php?eID=tx_securedownloads&u=999&g=4%2C7%2C8%2C3&t=0&hash=abcdefgh&file=foo', $fixture->_call('buildUri', 'foo', 999, array(4,7,8,3), 0, 'abcdefgh'));
 	}
 
 
@@ -78,9 +78,9 @@ class PhpDeliveryProtectedResourcePublishingTargetTest extends \Tx_Phpunit_TestC
 	 * @test
 	 */
 	public function linkFormatIsNotSetToDefaultIfHasNewConfiguration() {
-		$fixture = $this->getAccessibleMock('Bitmotion\\NawSecuredl\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget', array('dummy'));
+		$fixture = $this->getAccessibleMock('Bitmotion\\SecureDownloads\\Resource\\Publishing\\PhpDeliveryProtectedResourcePublishingTarget', array('dummy'));
 
-		$configurationManagerMock = $this->getMock('Bitmotion\\NawSecuredl\\Configuration\\ConfigurationManager');
+		$configurationManagerMock = $this->getMock('Bitmotion\\SecureDownloads\\Configuration\\ConfigurationManager');
 		$configurationManagerMock->expects($this->any())
 			->method('getValue')
 			->with('linkFormat')

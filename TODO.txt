@@ -1,1 +1,0 @@
-- change the use of showpic.php (will be removed in future typo3 versions) *done*
