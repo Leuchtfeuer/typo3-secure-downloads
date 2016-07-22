@@ -1,0 +1,16 @@
+.DS_Store
+._*
+
+*~
+*.bak
+*.idea
+*.project
+*.swp
+.buildpath
+.cache
+.project
+.session
+.settings
+.TemporaryItems
+.webprj
+.idea
