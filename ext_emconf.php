@@ -14,8 +14,8 @@ $EM_CONF[$_EXTKEY] = [
     'author_email' => 'typo3-ext(at)bitmotion.de',
     'constraints' => [
         'depends' => [
-            'php' => '5.5.0',
-            'typo3' => '6.2.0',
+            'php' => '5.5.0-7.0.99',
+            'typo3' => '6.2.0-8.2.99',
         ],
         'conflicts' => [
             'naw_securedl' => '',
