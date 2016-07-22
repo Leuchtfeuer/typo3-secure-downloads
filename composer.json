@@ -10,7 +10,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Bitmotion\\SecureDownloads": "Classes"
+      "Bitmotion\\SecureDownloads\\": "Classes"
     }
   },
   "replace": {
