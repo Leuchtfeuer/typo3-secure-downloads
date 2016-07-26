@@ -20,7 +20,7 @@ return array(
 			'endtime' => 'endtime',
 		),
 		'searchFields' => 'file_id,file_name,file_path,file_size,file_type,media_type,bytes_downloaded,protected,host,typo3_mode,user,page,tstamp,',
-		'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('secure_downloads') . 'Resources/Public/Icons/tx_securedownloads_domain_model_log.gif'
+		'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('secure_downloads') . 'Resources/Public/Icons/tx_securedownloads_domain_model_log.png'
 	),
 	'interface' => array(
 		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, file_id, file_name, file_path, file_size, file_type, media_type, bytes_downloaded, protected, host, typo3_mode, user, page, tstamp',
