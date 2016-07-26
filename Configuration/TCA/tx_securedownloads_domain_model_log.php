@@ -34,7 +34,7 @@ return array(
 	'columns' => array(
 	
 		'sys_language_uid' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.language',
 			'config' => array(
 				'type' => 'select',
@@ -49,7 +49,7 @@ return array(
 		),
 		'l10n_parent' => array(
 			'displayCond' => 'FIELD:sys_language_uid:>:0',
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.l18n_parent',
 			'config' => array(
 				'type' => 'select',
@@ -77,14 +77,14 @@ return array(
 		),
 	
 		'hidden' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
 			'config' => array(
 				'type' => 'check',
 			),
 		),
 		'starttime' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'l10n_mode' => 'mergeIfNotBlank',
 			'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.starttime',
 			'config' => array(
@@ -100,7 +100,7 @@ return array(
 			),
 		),
 		'endtime' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'l10n_mode' => 'mergeIfNotBlank',
 			'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.endtime',
 			'config' => array(
@@ -117,7 +117,7 @@ return array(
 		),
 
 		'file_id' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.file_id',
 			'config' => array(
 				'type' => 'input',
@@ -126,7 +126,7 @@ return array(
 			),
 		),
 		'file_name' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.file_name',
 			'config' => array(
 				'type' => 'input',
@@ -135,7 +135,7 @@ return array(
 			),
 		),
 		'file_path' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.file_path',
 			'config' => array(
 				'type' => 'input',
@@ -144,7 +144,7 @@ return array(
 			),
 		),
 		'file_size' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.file_size',
 			'config' => array(
 				'type' => 'input',
@@ -153,7 +153,7 @@ return array(
 			)
 		),
 		'file_type' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.file_type',
 			'config' => array(
 				'type' => 'input',
@@ -162,7 +162,7 @@ return array(
 			),
 		),
 		'media_type' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.media_type',
 			'config' => array(
 				'type' => 'input',
@@ -171,7 +171,7 @@ return array(
 			),
 		),
 		'bytes_downloaded' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.bytes_downloaded',
 			'config' => array(
 				'type' => 'input',
@@ -180,7 +180,7 @@ return array(
 			)
 		),
 		'protected' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.protected',
 			'config' => array(
 				'type' => 'input',
@@ -189,7 +189,7 @@ return array(
 			),
 		),
 		'host' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.host',
 			'config' => array(
 				'type' => 'input',
@@ -198,7 +198,7 @@ return array(
 			),
 		),
 		'typo3_mode' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.typo3_mode',
 			'config' => array(
 				'type' => 'input',
@@ -207,7 +207,7 @@ return array(
 			),
 		),
 		'user' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.user',
 			'config' => array(
 				'type' => 'input',
@@ -216,7 +216,7 @@ return array(
 			),
 		),
 		'page' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.page',
 			'config' => array(
 				'type' => 'input',
@@ -225,7 +225,7 @@ return array(
 			)
 		),
 		'tstamp' => array(
-			'exclude' => 1,
+			'exclude' => 0,
 			'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.tstamp',
 			'config' => array(
 				'type' => 'input',
