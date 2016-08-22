@@ -24,6 +24,7 @@ namespace Bitmotion\SecureDownloads\Parser;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Class HtmlParser
@@ -114,7 +115,7 @@ class HtmlParser
             $this->fileExtensionPattern = '\\.(' . $this->fileExtensionPattern . ')';
         }
 
-        $this->tagPattern = '/"(?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))"/i';
+        $this->tagPattern = '/["\'](?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']/i';
     }
 
     /**
@@ -126,9 +127,16 @@ class HtmlParser
      */
     public function parse($html)
     {
+        if ($this->logLevel >= 1) {
+            $time_start = $this->microtime_float();
+        }
+
         $rest = $html;
         $result = '';
-        while (preg_match('/(?i)(<link|<source|<a|<img|<video)+?.[^>]*(href|src|poster)=(\"??)([^\" >]*?)\\3[^>]*>/siU', $html, $match)) {  // suchendes secured Verzeichnis
+        $pattern = '/((data-[a-z0-9]*)|(href|src|poster))=["\']{1}(.*)["\']{1}/siU';
+
+
+        while (preg_match($pattern, $html, $match)) {  // suchendes secured Verzeichnis
             $cont = explode($match[0], $html, 2);
             $vor = $cont[0];
             $tag = $match[0];
@@ -145,6 +153,12 @@ class HtmlParser
             $html = $rest;
         }
 
+        if ($this->logLevel >= 1) {
+            $time_end = $this->microtime_float();
+            $time = $time_end - $time_start;
+            DebuggerUtility::var_dump($time, 'Scriptlaufzeit');
+        }
+
         return $result . $rest;
     }
 
@@ -158,15 +172,14 @@ class HtmlParser
     protected function parseTag($tag)
     {
         if (preg_match($this->tagPattern, $tag, $matchedUrls)) {
-            $replace = htmlspecialchars($this->delegate->publishResourceUri($matchedUrls[1]));
+            $replace = $this->delegate->publishResourceUri($matchedUrls[1]);
             $tagexp = explode($matchedUrls[1], $tag, 2);
-
             $tag = $this->recursion($tagexp[0] . $replace, $tagexp[1]);
 
             // Some output for debugging
             if ($this->logLevel === 1) {
                 DebuggerUtility::var_dump($tag, 'New output:');
-            } elseif ($this->logLevel === 2 || $this->logLevel === 3) {
+            } elseif ($this->logLevel >= 2) {
                 DebuggerUtility::var_dump($this->tagPattern, 'Regular Expression:');
                 DebuggerUtility::var_dump($matchedUrls, 'Match:');
                 DebuggerUtility::var_dump(array($tagexp[0], $replace, $tagexp[1]), 'Build Tag:');
@@ -189,10 +202,10 @@ class HtmlParser
     private function recursion($tag, $tmp)
     {
         if (preg_match($this->tagPattern, $tmp, $matchedUrls)) {
-            $replace = htmlspecialchars($this->delegate->publishResourceUri($matchedUrls[1]));
+            $replace = $this->delegate->publishResourceUri($matchedUrls[1]);
             $tagexp = explode($matchedUrls[1], $tmp, 2);
 
-            if ($this->logLevel === 2 || $this->logLevel === 3) {
+            if ($this->logLevel >= 2) {
                 DebuggerUtility::var_dump(array($tagexp[0], $replace, $tagexp[1]), 'Further Match:');
             }
 
@@ -223,5 +236,11 @@ class HtmlParser
         $string = str_replace(':', '\:', $string);
 
         return $string;
+    }
+
+    protected function microtime_float()
+    {
+        list($usec, $sec) = explode(" ", microtime());
+        return ($usec + $sec);
     }
 }
