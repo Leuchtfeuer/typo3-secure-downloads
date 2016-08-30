@@ -1,0 +1,23 @@
+﻿.. ==================================================
+.. FOR YOUR INFORMATION
+.. --------------------------------------------------
+.. -*- coding: utf-8 -*- with BOM.
+
+.. include:: ../../Includes.txt
+
+2.0.1 - 2016/07/22
+==================
+
+Bugfix release
+---------------
+
+Fix bug in composer.json and move documentation.
+
+All Changes
+-----------
+This is a list of all changes in this release: ::
+
+        2016-07-22 [RELEASE] Release version 2.0.1 (Commit b4a8ba4 by Florian Wessels)
+        2016-07-22 [TASK] Convert documentation to odt (Commit 5eab1ac by Florian Wessels)
+        2016-07-21 Merge pull request #2 from helhum/patch-1 (Commit 4e9fe1b by Florian Wessels)
+        2016-07-21 [!!!][TASK] Fix and streamline composer.json (Commit 5f433cf by Helmut Hummel)

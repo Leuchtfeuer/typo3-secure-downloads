@@ -1,0 +1,27 @@
+﻿.. ==================================================
+.. FOR YOUR INFORMATION
+.. --------------------------------------------------
+.. -*- coding: utf-8 -*- with BOM.
+
+.. include:: ../../Includes.txt
+
+2.0.3 - 2016/08/??
+==================
+
+??? release
+---------------
+
+2.0.3
+
+All Changes
+-----------
+This is a list of all changes in this release: ::
+
+        2016-07-26 [TYPO] Fix typo (Commit f8d0578 by Florian Wessels)
+        2016-07-26 [TASK] Modify ordering of extension configuration (Commit 3ec522b by Florian Wessels)
+        2016-07-26 [TASK] Do not exclude fields from log model (Commit fdb44b5 by Florian Wessels)
+        2016-07-26 [TASK] Add language file for log model (Commit f4459dd by Florian Wessels)
+        2016-07-26 [FOLLOW-UP] Add icon file for log model (Commit f06ce55 by Florian Wessels)
+        2016-07-26 [BUGFIX] Use proper icon file for log model (Commit 797a4c1 by Florian Wessels)
+        2016-07-26 [CLEANUP] Remove unused language file (Commit df75a53 by Florian Wessels)
+        2016-07-26 [TASK] Set version to 2.0.3-dev (Commit e1ebd28 by Florian Wessels)

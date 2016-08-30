@@ -1,0 +1,24 @@
+﻿.. ==================================================
+.. FOR YOUR INFORMATION
+.. --------------------------------------------------
+.. -*- coding: utf-8 -*- with BOM.
+
+.. include:: ../../Includes.txt
+
+2.0.2 - 2016/07/22
+==================
+
+Bugfix release
+---------------
+
+Release of version 2.0.2. Contains bugfixes only.
+
+All Changes
+-----------
+This is a list of all changes in this release: ::
+
+        2016-07-22 [RELEASE] Release 2.0.2 (Commit 397bacf by Florian Wessels)
+        2016-07-22 [BUGFIX] Fix composer error (Commit 02ec0a1 by Florian Wessels)
+        2016-07-22 [TASK] Add .gitignore file (Commit 75d755a by Florian Wessels)
+        2016-07-22 [TASK] Update dependencies up to TYPO3 8.2.99 and PHP 7.0.99 (Commit 343c727 by Florian Wessels)
+        2016-07-22 [TASK] Set version to 2.0.2-dev (Commit cfb112e by Florian Wessels)
