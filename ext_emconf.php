@@ -8,8 +8,7 @@ $EM_CONF[$_EXTKEY] = [
     'state' => 'beta',
     'uploadfolder' => false,
     'createDirs' => '',
-    'internal' => '',
-    'clearcacheonload' => true,
+    'clearCacheOnLoad' => true,
     'author' => 'Florian Wessels, Helmut Hummel',
     'author_email' => 'typo3-ext@bitmotion.de',
     'author_company' => 'Bitmotion GmbH',
@@ -23,7 +22,5 @@ $EM_CONF[$_EXTKEY] = [
         ],
         'suggests' => [
         ],
-    ],
-    'suggests' => [
     ],
 ];
