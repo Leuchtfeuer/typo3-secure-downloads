@@ -24,8 +24,6 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use Bitmotion\SecureDownloads\Configuration\ConfigurationManager;
-use Bitmotion\SecureDownloads\Security\Authorization\Resource\AccessRestrictionPublisher;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -88,18 +86,18 @@ class ResourcePublisher implements SingletonInterface
     }
 
     /**
-     * @return \Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublishingTargetInterface
+     * @return ResourcePublishingTargetInterface
      */
     protected function getPublishingTarget()
     {
         // Check if we have DI, if not, lazily instatiate the publishing target
         if (is_null($this->publishingTarget)) {
-            $this->publishingTarget = GeneralUtility::makeInstance(ResourcePublishingTarget::class);
+            $this->publishingTarget = GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Resource\\Publishing\\ResourcePublishingTargetInterface');
             if (method_exists($this->publishingTarget, 'injectConfigurationManager')) {
-                $this->publishingTarget->injectConfigurationManager(GeneralUtility::makeInstance(ConfigurationManager::class));
+                $this->publishingTarget->injectConfigurationManager(GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Configuration\\ConfigurationManager'));
             }
             if (method_exists($this->publishingTarget, 'injectAccessRestrictionPublisher')) {
-                $this->publishingTarget->injectAccessRestrictionPublisher(GeneralUtility::makeInstance(AccessRestrictionPublisher::class));
+                $this->publishingTarget->injectAccessRestrictionPublisher(GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Resource\\Publishing\\AccessRestrictionPublisherInterface'));
             }
         }
 

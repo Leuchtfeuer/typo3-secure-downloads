@@ -1,6 +1,6 @@
 <?php
 
-$EM_CONF[$_EXTKEY] = [
+$EM_CONF[$_EXTKEY] = array(
     'title' => 'Secure Downloads',
     'description' => '"Secure Download": Apply TYPO3 access rights to ALL file assets (PDFs, TGZs or JPGs etc. - configurable) - protect them from direct access.',
     'category' => 'fe',
@@ -12,15 +12,15 @@ $EM_CONF[$_EXTKEY] = [
     'author' => 'Florian Wessels, Helmut Hummel',
     'author_email' => 'typo3-ext@bitmotion.de',
     'author_company' => 'Bitmotion GmbH',
-    'constraints' => [
-        'depends' => [
-            'php' => '5.5.0-7.0.99',
+    'constraints' => array(
+        'depends' => array(
+            'php' => '5.3.0-7.0.99',
             'typo3' => '6.2.0-8.3.99',
-        ],
-        'conflicts' => [
+        ),
+        'conflicts' => array(
             'naw_securedl' => '',
-        ],
-        'suggests' => [
-        ],
-    ],
-];
+        ),
+        'suggests' => array(
+        ),
+    ),
+);

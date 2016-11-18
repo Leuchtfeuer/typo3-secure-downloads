@@ -31,6 +31,7 @@ use Bitmotion\SecureDownloads\Parser\HtmlParserDelegateInterface;
 use Bitmotion\SecureDownloads\Request\RequestContext;
 use Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublisher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class SecureDownloadService implements HtmlParserDelegateInterface
 {
@@ -68,7 +69,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
      * This method is called by the frontend rendering hook contentPostProc->output
      *
      * @param array     $parameters
-     * @param \tslib_fe $typoScriptFrontendController
+     * @param TypoScriptFrontendController $typoScriptFrontendController
      */
     public function parseFE(array &$parameters, $typoScriptFrontendController)
     {

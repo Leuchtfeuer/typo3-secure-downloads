@@ -485,6 +485,7 @@ class FileDelivery
 
     /**
      * Looks up the mime type for a give file extension
+     * TODO: Use PHP functions instead - if available?
      *
      * @param string $strFileExtension lowercase file extension
      *

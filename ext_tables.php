@@ -14,13 +14,13 @@ if (TYPO3_MODE == 'BE' && $_EXTCONF['log']) {
         // Make module a submodule of 'web'
         'web',    // Submodule key
         '10',    // Position
-        [
+        array(
             'Log' => 'list',
-        ], [
+        ), array(
             'access' => 'user,group',
             'icon' => 'EXT:' . $_EXTKEY . '/ext_icon.svg',
             'labels' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_log.xlf',
-        ]);
+        ));
 }
 
 unset ($_EXTCONF);
