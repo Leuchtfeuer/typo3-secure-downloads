@@ -5,7 +5,7 @@ namespace Bitmotion\SecureDownloads\Domain\Model;
  *
  *  Copyright notice
  *
- *  (c) 2016 Florian Wessels (typo3-ext@bitmotion.de)
+ *  (c) 2016 Bitmotion GmbH (typo3-ext@bitmotion.de)
  *
  *  All rights reserved
  *

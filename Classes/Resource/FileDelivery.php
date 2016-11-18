@@ -4,7 +4,8 @@ namespace Bitmotion\SecureDownloads\Resource;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2005-2007 Dietrich Heise (typo3-ext(at)bitmotion.de)
+ *  (c) 2005 Bitmotion GmbH (typo3-ext@bitmotion.de)
+ *
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is

@@ -5,7 +5,7 @@ namespace Bitmotion\SecureDownloads\Core;
  *
  *  Copyright notice
  *
- *  (c) 2016 Florian Wessels (typo3-ext@bitmotion.de)
+ *  (c) 2016 Bitmotion GmbH (typo3-ext@bitmotion.de)
  *
  *  All rights reserved
  *

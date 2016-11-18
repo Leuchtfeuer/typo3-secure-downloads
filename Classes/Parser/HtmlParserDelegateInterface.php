@@ -4,7 +4,8 @@ namespace Bitmotion\SecureDownloads\Parser;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Helmut Hummel (helmut.hummel@typo3.org)
+ *  (c) 2013 Bitmotion GmbH (typo3-ext@bitmotion.de)
+ *
  *  All rights reserved
  *
  *  This script is part of the Typo3 project. The Typo3 project is
