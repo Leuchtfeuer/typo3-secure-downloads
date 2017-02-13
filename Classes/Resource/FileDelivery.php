@@ -408,8 +408,6 @@ class FileDelivery
 
             $log->setPage($this->pageId);
 
-            // Do not save the IP address
-            //$log->setHost($_SERVER['REMOTE_ADDR']);
 
             // TODO: Get the current downloaded filesize
             $log->setBytesDownloaded(0);
