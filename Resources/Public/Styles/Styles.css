@@ -7,9 +7,6 @@ ul.f3-widget-paginator {
 
 ul.f3-widget-paginator > li {
 	display: inline;
-}
-
-ul.f3-widget-paginator > li > a {
 	position: relative;
 	float: left;
 	padding: 6px 12px;
@@ -21,22 +18,17 @@ ul.f3-widget-paginator > li > a {
 	border: 1px solid #ddd;
 }
 
+ul.f3-widget-paginator > li > a {
+	display: block;
+}
+
 ul.f3-widget-paginator > li > a:hover {
 	z-index: 2;
 	color: #23527c;
-	background-color: #eee;
-	border-color: #ddd;
 }
 
 ul.f3-widget-paginator > li.current {
-	position: relative;
-	float: left;
-	padding: 6px 12px;
-	margin-left: -1px;
-	line-height: 1.42857143;
-	text-decoration: none;
 	border: 1px solid #337ab7;
-	z-index: 3;
 	color: #fff;
 	cursor: default;
 	background-color: #337ab7;
