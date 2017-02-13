@@ -93,7 +93,7 @@ class ResourcePublisher implements SingletonInterface
     {
         // Check if we have DI, if not, lazily instatiate the publishing target
         if (is_null($this->publishingTarget)) {
-            $this->publishingTarget = GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Resource\\Publishing\\ResourcePublishingTargetInterface');
+            $this->publishingTarget = GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Resource\\Publishing\\ResourcePublisher');
             if (method_exists($this->publishingTarget, 'injectConfigurationManager')) {
                 $this->publishingTarget->injectConfigurationManager(GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Configuration\\ConfigurationManager'));
             }
