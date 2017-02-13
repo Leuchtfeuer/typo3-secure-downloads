@@ -9,13 +9,12 @@ $_EXTCONF = unserialize($_EXTCONF);
 /**
  * Registers a Backend Module
  */
-if (TYPO3_MODE == 'BE' && $_EXTCONF['log']) {
+if (TYPO3_MODE === 'BE' && $_EXTCONF['log']) {
     \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule('Bitmotion.' . $_EXTKEY, 'web',
-        // Make module a submodule of 'web'
-        'web',    // Submodule key
-        '10',    // Position
+        'TrafficLog',
+        '10',
         array(
-            'Log' => 'list',
+            'Log' => 'show,list',
         ), array(
             'access' => 'user,group',
             'icon' => 'EXT:' . $_EXTKEY . '/ext_icon.svg',

@@ -25,16 +25,30 @@ namespace Bitmotion\SecureDownloads\Controller;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-use Bitmotion\SecureDownloads\Domain\Model\Log;
+use Bitmotion\SecureDownloads\Domain\Model\Filter;
+use Bitmotion\SecureDownloads\Domain\Model\Statistic;
+use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
+use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 
 /**
  * LogController
  */
 class LogController extends ActionController
 {
+    /**
+     * @var BackendTemplateView
+     */
+    protected $view;
+
+    /**
+     * @var BackendTemplateView
+     */
+    protected $defaultViewObjectName = 'TYPO3\\CMS\\Backend\\View\\BackendTemplateView';
 
     /**
      * logRepository
@@ -42,7 +56,7 @@ class LogController extends ActionController
      * @var \Bitmotion\SecureDownloads\Domain\Repository\LogRepository
      * @inject
      */
-    protected $logRepository = NULL;
+    protected $logRepository = null;
 
     /**
      * pageRepository
@@ -50,61 +64,68 @@ class LogController extends ActionController
      * @var \TYPO3\CMS\Frontend\Page\PageRepository
      * @inject
      */
-    protected $pageRepository = NULL;
+    protected $pageRepository = null;
+
+    public function initializeAction()
+    {
+        parent::initializeAction();
+
+        if ($this->arguments->hasArgument('filter')) {
+            $this->arguments->getArgument('filter')->getPropertyMappingConfiguration()->allowAllProperties();
+        }
+    }
 
     /**
      * action list
      *
+     * @param Filter $filter
+     *
      * @return void
      */
-    public function listAction()
+    public function listAction(Filter $filter = null)
     {
-        $pageId = (int)GeneralUtility::_GP('id');
-
-        $mode = $this->getMode($pageId);
-
-        $filter = $this->handleFilter($mode, $pageId);
-
-        $logs = $this->logRepository->findFiltered($filter);
+        $logEntries = $this->logRepository->findByFilter($filter);
 
         $this->view->assignMultiple(array(
-            'logs' => $logs,
-            'mode' => $mode,
-            'page' => $this->getPageObject($pageId),
+            'logs' => $logEntries,
             'users' => $this->getUsers(),
             'fileTypes' => $this->getFileTypes(),
             'filter' => $filter,
-            'stat' => $this->getStatistic($logs),
+            'statistic' => new Statistic($logEntries),
         ));
     }
 
     /**
-     * @param int $pageId
+     * action show
      *
-     * @return string
+     * @param Filter $filter
+     *
+     * @return void
      */
-    private function getMode($pageId)
+    public function showAction(Filter $filter = null)
     {
-        if ($pageId === 0) {
-            return 'overview';
-        } elseif ($this->request->hasArgument('mode') && !empty($this->request->getArgument('mode'))) {
-            return $this->request->getArgument('mode');
-        } else {
-            return 'singlePage';
-        }
-    }
+        $pageId = (int)GeneralUtility::_GP('id');
 
-    /**
-     * @param int $pageId
-     *
-     * @return array|null
-     */
-    private function getPageObject($pageId)
-    {
-        if (!empty($pageId) && $pageId !== 0) {
-            return $this->pageRepository->getPage($pageId);
+        if ($pageId == 0) {
+            $this->redirect('list');
         }
-        return null;
+
+        if ($filter === null) {
+            $filter = new Filter();
+        }
+
+        $filter->setPageId($pageId);
+
+        $logEntries = $this->logRepository->findByFilter($filter);
+
+        $this->view->assignMultiple(array(
+            'logs' => $logEntries,
+            'page' => $this->pageRepository->getPage($pageId),
+            'users' => $this->getUsers(),
+            'fileTypes' => $this->getFileTypes(),
+            'filter' => $filter,
+            'statistic' => new Statistic($logEntries),
+        ));
     }
 
     /**
@@ -113,8 +134,8 @@ class LogController extends ActionController
     private function getUsers()
     {
         $users = array();
-
         $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('user','tx_securedownloads_domain_model_log','user != 0','user');
+
         while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
             $getUserRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','fe_users','uid = ' . $row['user']);
             $users[] = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($getUserRes);
@@ -139,89 +160,61 @@ class LogController extends ActionController
     }
 
     /**
-     * @param string $mode
-     * @param int $pageId
+     * Set up the doc header properly here
      *
-     * @return array
+     * @param ViewInterface $view
+     *
+     * @throws \InvalidArgumentException
      */
-    private function handleFilter($mode, $pageId)
+    public function initializeView(ViewInterface $view)
     {
-        $filter = array('mode' => $mode, 'page' => $pageId);
+        /** @var BackendTemplateView $view */
+        parent::initializeView($view);
 
-        if ($this->request->hasArgument('filter')) {
-
-            $postFilter = $this->request->getArgument('filter');
-            $pattern = '/^((([0-9]{2})|([0-9]{4}))-([0-3]{1})?[0-9]{1}-([01]{1})?[0-9]{1})\s?((([0-2]{1})?[0-9]{1}(:([0-5]{1})?[0-9]{1}(:([0-5]{1})?[0-9]{1})?)?)?)$/';
-
-            if (array_key_exists('from',$postFilter) && !preg_match($pattern, $postFilter['from'])) {
-                $filter['from'] = '';
-            } else {
-                $filter['fromTstamp'] = $this->getTimestamp($postFilter['from']);
-            }
-
-            if (array_key_exists('till',$postFilter) && !preg_match($pattern, $postFilter['till'])) {
-                $filter['till'] = '';
-            } else {
-                $filter['tillTstamp'] = $this->getTimestamp($postFilter['till']);
-            }
-
-            return array_merge($postFilter, $filter);
-        }
-
-        return $filter;
+        /** @var PageRenderer $pageRenderer */
+        $pageRenderer = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Page\\PageRenderer');
+        $pageRenderer->addCssFile(ExtensionManagementUtility::extRelPath('secure_downloads') . 'Resources/Public/Styles/Styles.css');
+        $this->createMenu();
     }
 
     /**
-     * @param string $timeString
-     *
-     * @return int
+     * Create menu
+     * @throws \InvalidArgumentException
      */
-    private function getTimestamp($timeString)
+    private function createMenu()
     {
-        list($date, $time) = explode(' ',$timeString);
+        $menu = $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
+        $menu->setIdentifier('secure_downloads');
 
-        if (!empty($time)) {
-            $till = new \DateTime($date . 'T' . $time);
-        } elseif (!empty($date)) {
-            $till = new \DateTime($date . 'T00:00:00');
-        } else {
-            $till = new \DateTime($timeString);
-        }
-        return $till->getTimestamp();
-    }
+        if ((int)GeneralUtility::_GP('id') !== 0) {
+            $actions = array(
+                array('controller' => 'Log', 'action' => 'show', 'label' => 'Show by Page'),
+                array('controller' => 'Log', 'action' => 'list', 'label' => 'Overview'),
+            );
 
-    /**
-     * @param QueryResultInterface $logs
-     *
-     * @return array
-     */
-    private function getStatistic($logs)
-    {
-        $sum = 0;
-        $from = time();
-        $till = 0;
-
-        $count = $logs->count();
-
-        if ($count > 0) {
-            $till = $logs->getFirst()->getTstamp();
-            $i = 1;
-
-            /** @var Log $log */
-            foreach ($logs as $log) {
-                $sum += $log->getFileSize();
-                if ($i === $count) {
-                    $from = $log->getTstamp();
-                }
-                $i++;
+            foreach ($actions as $action) {
+                $isActive = $this->request->getControllerName() === $action['controller'] && $this->request->getControllerActionName() === $action['action'];
+                $item = $menu->makeMenuItem()->setTitle($action['label'])->setHref($this->getUriBuilder()->reset()->uriFor($action['action'],
+                    array(), $action['controller']))->setActive($isActive);
+                $menu->addMenuItem($item);
             }
         }
 
-        return array(
-            'trafficSum' => $sum,
-            'from' => $from,
-            'till' => $till,
-        );
+        $this->view->assign('action', $this->request->getControllerActionName());
+
+        $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
+    }
+
+    /**
+     * @return UriBuilder
+     */
+    protected function getUriBuilder()
+    {
+        /** @var UriBuilder $uriBuilder */
+        $uriBuilder = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Web\\Routing\\UriBuilder');
+        $uriBuilder->setRequest($this->request);
+
+        return $uriBuilder;
     }
 
 }

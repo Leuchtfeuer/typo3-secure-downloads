@@ -26,6 +26,7 @@ namespace Bitmotion\SecureDownloads\Domain\Repository;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use Bitmotion\SecureDownloads\Domain\Model\Filter;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
@@ -41,53 +42,62 @@ class LogRepository extends Repository
     public function initializeObject()
     {
         /** @var Typo3QuerySettings $querySettings*/
-        $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
+        $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
         $querySettings->setRespectStoragePage(false);
         $querySettings->setRespectSysLanguage(false);
         $this->setDefaultQuerySettings($querySettings);
     }
 
     /**
-     * @param $filter
-     *
-     * @return QueryResultInterface
+     * @param null|Filter $filter
+     * @return array|QueryResultInterface
      */
-    public function findFiltered($filter)
+    public function findByFilter($filter)
     {
         $query = $this->createQuery();
 
-        $conditions = array();
+        if ($filter instanceof Filter) {
+            $constraints = array();
 
-        if (array_key_exists('mode', $filter) && $filter['mode'] === 'singlePage') {
-            $conditions[] = $query->equals('page', $filter['page']);
-        }
-
-        if (array_key_exists('user', $filter) && !empty($filter['user'])) {
-            switch ($filter['user']) {
-                case -2:
-                    $conditions[] = $query->equals('user', null);
-                    break;
-                case -1:
-                    $conditions[] = $query->logicalNot($query->equals('user', null));
-                    break;
-                default:
-                    $conditions[] = $query->equals('user', $filter['user']);
+            // FileType
+            if ($filter->getFileType() !== '' && $filter->getFileType() !== '0') {
+                $constraints[] = $query->equals('mediaType', $filter->getFileType());
             }
-        }
 
-        if (array_key_exists('fileType', $filter) && !empty($filter['fileType'])) {
-            $conditions[] = $query->equals('mediaType', $filter['fileType']);
-        }
+            // User Type
+            if ($filter->getUserType() != 0) {
+                $userQuery = $query->equals('user', null);
 
-        if (array_key_exists('fromTstamp', $filter) && !empty($filter['fromTstamp'])) {
-            $conditions[] = $query->greaterThanOrEqual('tstamp', $filter['fromTstamp']);
-        }
-        if (array_key_exists('tillTstamp', $filter) && !empty($filter['tillTstamp'])) {
-            $conditions[] = $query->lessThanOrEqual('tstamp', $filter['tillTstamp']);
-        }
+                if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_ON) {
+                    $constraints[] = $query->logicalNot($userQuery);
+                }
+                if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_OFF) {
+                    $constraints[] = $userQuery;
+                }
+            }
 
-        if (count($conditions) > 0) {
-            $query->matching($query->logicalAnd($conditions));
+            // User
+            if ($filter->getFeUserId() !== 0) {
+                $constraints[] = $query->equals('user', $filter->getFeUserId());
+            }
+
+            // Timeframe
+            if ($filter->getFrom() !== '' && $filter->getFrom() !== null) {
+                $constraints[] = $query->greaterThanOrEqual('tstamp', $filter->getFrom());
+            }
+
+            if ($filter->getTill() !== '' && $filter->getTill() !== null) {
+                $constraints[] = $query->lessThanOrEqual('tstamp', $filter->getTill());
+            }
+
+            // Page
+            if ($filter->getPageId() !== 0) {
+                $constraints[] = $query->equals('page', $filter->getPageId());
+            }
+
+            if (count($constraints) > 0) {
+                $query->matching($query->logicalAnd($constraints));
+            }
         }
 
         return $query->execute();
