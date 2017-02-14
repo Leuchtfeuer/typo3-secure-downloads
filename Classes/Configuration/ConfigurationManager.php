@@ -59,7 +59,7 @@ class ConfigurationManager implements SingletonInterface
      */
     public function getValue($key)
     {
-        if (is_array($this->configuration) && array_key_exists($key, $this->configuration)) {
+        if (is_array($this->configuration) && isset($key, $this->configuration)) {
 
             return $this->configuration[$key];
         }

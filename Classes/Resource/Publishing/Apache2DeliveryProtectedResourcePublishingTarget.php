@@ -40,7 +40,7 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
     protected $accessRestrictionPublisher;
 
     /**
-     * @param \Bitmotion\SecureDownloads\Security\Authorization\Resource\AccessRestrictionPublisherInterface $accessRestrictionPublisher
+     * @param AccessRestrictionPublisherInterface $accessRestrictionPublisher
      */
     public function injectAccessRestrictionPublisher(AccessRestrictionPublisherInterface $accessRestrictionPublisher)
     {

@@ -52,7 +52,7 @@ class ObjectManager implements SingletonInterface
      */
     public function registerImplementation($className, $alternativeClassName)
     {
-        if (!array_key_exists($className, $this->alternativeImplementation)) {
+        if (!isset($className, $this->alternativeImplementation)) {
             if (interface_exists($className)) {
                 throw new \InvalidArgumentException('Cannot register implementation for Interfaces', 1378921763);
             }

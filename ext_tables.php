@@ -6,11 +6,13 @@ if (!defined('TYPO3_MODE')) {
 
 $_EXTCONF = unserialize($_EXTCONF);
 
-/**
- * Registers a Backend Module
+/*
+ * Register the backend module if we are in BE context and the log option is set in extension configuration
  */
 if (TYPO3_MODE === 'BE' && $_EXTCONF['log']) {
-    \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule('Bitmotion.' . $_EXTKEY, 'web',
+    \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
+        'Bitmotion.' . $_EXTKEY,
+        'web',
         'TrafficLog',
         '10',
         [
@@ -19,7 +21,8 @@ if (TYPO3_MODE === 'BE' && $_EXTCONF['log']) {
             'access' => 'user,group',
             'icon' => 'EXT:' . $_EXTKEY . '/ext_icon.svg',
             'labels' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_log.xlf',
-        ]);
+        ]
+    );
 }
 
 unset ($_EXTCONF);

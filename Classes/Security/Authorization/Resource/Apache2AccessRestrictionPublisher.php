@@ -79,20 +79,10 @@ Allow from env=session_match
      */
     public function publishAccessRestrictionsForPath($path)
     {
-//		$remoteAddress = $this->requestContext->getIpAddress();
         $cookieName = $this->requestContext->getCookieName();
         $cookieValue = $this->requestContext->getAccessToken();
-
-//		if ($remoteAddress !== NULL) {
-//			$content = sprintf(
-//				$this->htaccessTemplateIpCheck,
-//				$remoteAddress,
-//				$cookieName,
-//				$cookieValue
-//			);
-//		} else {
         $content = sprintf($this->htaccessTemplate, $cookieName, $cookieValue);
-//		}
+
         file_put_contents($path . '.htaccess', $content);
     }
 }

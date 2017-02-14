@@ -38,6 +38,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class AccessTokenCookiePublisher implements SingletonInterface
 {
+    /**
+     * @var RequestContext
+     */
+    protected $requestContext = null;
 
     /**
      * @param RequestContext $requestContext

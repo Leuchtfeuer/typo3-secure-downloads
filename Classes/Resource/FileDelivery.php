@@ -467,6 +467,7 @@ class FileDelivery
             // TODO: Get the current downloaded filesize
             $log->setBytesDownloaded(0);
 
+            // TODO: Use repository for inserting and updating records
             if (is_null($this->logRowUid)) {
                 $this->databaseConnection->exec_INSERTquery('tx_securedownloads_domain_model_log', $log->toArray());
                 $this->logRowUid = $this->databaseConnection->sql_insert_id();

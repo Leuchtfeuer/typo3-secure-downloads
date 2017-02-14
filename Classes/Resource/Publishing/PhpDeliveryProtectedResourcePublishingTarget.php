@@ -153,14 +153,6 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         return GeneralUtility::hmac($hashString, 'bitmotion_securedownload');
     }
 
-
-
-
-    /*
-     * HELPER MEHTOD
-     * TODO: Refactor it to a hash service
-     */
-
     /**
      * Builds a URI which uses a PHP Script to access the resource
      *

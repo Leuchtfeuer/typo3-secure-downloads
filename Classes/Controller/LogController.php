@@ -97,6 +97,48 @@ class LogController extends ActionController
     }
 
     /**
+     * @return array
+     */
+    private function getUsers()
+    {
+        $users = [];
+        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+            'user',
+            'tx_securedownloads_domain_model_log', 'user != 0',
+            'user'
+        );
+
+        while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+            $getUserRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'fe_users', 'uid = ' . $row['user']);
+            $users[] = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($getUserRes);
+        }
+
+        return $users;
+    }
+
+    /**
+     * @return array
+     */
+    private function getFileTypes()
+    {
+        $fileTypes = [];
+
+        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+            'media_type',
+            'tx_securedownloads_domain_model_log',
+            '',
+            'media_type',
+            'media_type ASC'
+        );
+
+        while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+            $fileTypes[] = ['title' => $row['media_type']];
+        }
+
+        return $fileTypes;
+    }
+
+    /**
      * action show
      *
      * @param Filter $filter
@@ -127,39 +169,6 @@ class LogController extends ActionController
             'filter' => $filter,
             'statistic' => new Statistic($logEntries),
         ]);
-    }
-
-    /**
-     * @return array
-     */
-    private function getUsers()
-    {
-        $users = [];
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('user', 'tx_securedownloads_domain_model_log', 'user != 0',
-            'user');
-
-        while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-            $getUserRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'fe_users', 'uid = ' . $row['user']);
-            $users[] = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($getUserRes);
-        }
-
-        return $users;
-    }
-
-    /**
-     * @return array
-     */
-    private function getFileTypes()
-    {
-        $fileTypes = [];
-
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('media_type', 'tx_securedownloads_domain_model_log', '',
-            'media_type', 'media_type ASC');
-        while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-            $fileTypes[] = ['title' => $row['media_type']];
-        }
-
-        return $fileTypes;
     }
 
     /**
