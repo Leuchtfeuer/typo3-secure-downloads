@@ -43,7 +43,7 @@ class ShowImageController extends \TYPO3\CMS\Frontend\Controller\ShowImageContro
      */
     public function printContent()
     {
-        $secureDownloadService = GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Service\\SecureDownloadService');
+        $secureDownloadService = GeneralUtility::makeInstance(SecureDownloadService::class);
         echo $secureDownloadService->parseContent($this->content);
     }
 }

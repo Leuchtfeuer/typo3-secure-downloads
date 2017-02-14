@@ -45,7 +45,7 @@ class LogRepository extends Repository
     public function initializeObject()
     {
         /** @var Typo3QuerySettings $querySettings */
-        $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
         $querySettings->setRespectStoragePage(false);
         $querySettings->setRespectSysLanguage(false);
         $this->setDefaultQuerySettings($querySettings);

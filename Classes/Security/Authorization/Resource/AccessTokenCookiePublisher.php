@@ -48,7 +48,7 @@ class AccessTokenCookiePublisher implements SingletonInterface
      */
     public function __construct(RequestContext $requestContext = null)
     {
-        $this->requestContext = $requestContext ?: GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Request\\RequestContext');
+        $this->requestContext = $requestContext ?: GeneralUtility::makeInstance(RequestContext::class);
     }
 
     /**

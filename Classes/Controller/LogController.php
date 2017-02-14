@@ -49,7 +49,7 @@ class LogController extends ActionController
     /**
      * @var BackendTemplateView
      */
-    protected $defaultViewObjectName = 'TYPO3\\CMS\\Backend\\View\\BackendTemplateView';
+    protected $defaultViewObjectName = BackendTemplateView::class;
 
     /**
      * logRepository
@@ -184,7 +184,7 @@ class LogController extends ActionController
         parent::initializeView($view);
 
         /** @var PageRenderer $pageRenderer */
-        $pageRenderer = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Page\\PageRenderer');
+        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->addCssFile(ExtensionManagementUtility::extRelPath('secure_downloads') . 'Resources/Public/Styles/Styles.css');
         $this->createMenu();
     }
@@ -223,7 +223,7 @@ class LogController extends ActionController
     protected function getUriBuilder()
     {
         /** @var UriBuilder $uriBuilder */
-        $uriBuilder = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Mvc\\Web\\Routing\\UriBuilder');
+        $uriBuilder = $this->objectManager->get(UriBuilder::class);
         $uriBuilder->setRequest($this->request);
 
         return $uriBuilder;

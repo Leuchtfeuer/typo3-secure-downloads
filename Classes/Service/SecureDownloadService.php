@@ -65,7 +65,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
     public function __construct($requestContext = null, $configurationManager = null)
     {
         $this->requestContext = $requestContext ?: new RequestContext();
-        $this->configurationManager = $configurationManager ?: GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Configuration\\ConfigurationManager');
+        $this->configurationManager = $configurationManager ?: GeneralUtility::makeInstance(ConfigurationManager::class);
     }
 
     /**
@@ -161,7 +161,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
     protected function getResourcePublisher()
     {
         if (is_null($this->resourcePublisher)) {
-            $this->resourcePublisher = GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Resource\\Publishing\\ResourcePublisher');
+            $this->resourcePublisher = GeneralUtility::makeInstance(ResourcePublisher::class);
         }
 
         return $this->resourcePublisher;
