@@ -66,6 +66,7 @@ class RequestContext
 
     /**
      * @var string
+     * @deprecated Do not store IP Address of user
      */
     protected $ipAddress;
 
@@ -168,6 +169,7 @@ class RequestContext
 
     /**
      * Sets the IP address
+     * @deprecated
      */
     private function setIpAddress()
     {
@@ -192,6 +194,7 @@ class RequestContext
 
     /**
      * Initializes the request context, when called from a backend request
+     * @deprecated
      */
     protected function initializeBackendContext()
     {
@@ -253,6 +256,7 @@ class RequestContext
 
     /**
      * @return string
+     * @deprecated
      */
     public function getIpAddress()
     {
