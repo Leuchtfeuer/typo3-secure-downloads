@@ -38,7 +38,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ResourcePublisher implements SingletonInterface
 {
     /**
-     * @var ResourcePublishingTargetInterface
+     * @var ResourcePublisher
      */
     protected $publishingTarget;
 
