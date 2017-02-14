@@ -4,7 +4,8 @@
 		<label for="user" class="col-sm-1 control-label"><f:translate key="tx_securedownloads_domain_model_log.user" /></label>
 		<div class="col-sm-5">
 			<div class="col-sm-12">
-				<select id="user" name="tx_securedownloads_web_securedownloadstrafficlog[filter][feUserId]" class="form-control">
+				<select id="user" name="tx_securedownloads_web_securedownloadstrafficlog[filter][feUserId]"
+						class="form-control">
 					<optgroup label="{f:translate(key:'select.general')}">
 						<option value="0">{f:translate(key:'tx_securedownloads_domain_model_log.all')}</option>
 						<option value="-1" {f:if(condition: '-1 == {filter.userType}', then: 'selected="selected"')}>{f:translate(key:'select.logged_in')}</option>
@@ -19,30 +20,42 @@
 			</div>
 		</div>
 
-		<label for="filetype" class="col-sm-1 control-label"><f:translate key="tx_securedownloads_domain_model_log.filetype" /></label>
+		<label for="filetype" class="col-sm-1 control-label">
+			<f:translate key="tx_securedownloads_domain_model_log.filetype" />
+		</label>
 		<div class="col-sm-5">
 			<div class="col-sm-12">
-				<f:form.select id="filetype" class="form-control" property="fileType" options="{fileTypes}" optionValueField="title" optionLabelField="title" prependOptionValue="0" prependOptionLabel="{f:translate(key:'tx_securedownloads_domain_model_log.all')}" />
+				<f:form.select id="filetype" class="form-control" property="fileType" options="{fileTypes}"
+							   optionValueField="title" optionLabelField="title" prependOptionValue="0"
+							   prependOptionLabel="{f:translate(key:'tx_securedownloads_domain_model_log.all')}" />
 			</div>
 		</div>
 	</div>
 
 
 	<div class="form-group">
-		<label class="col-sm-1 control-label"><f:translate key="tx_securedownloads_domain_model_log.timeframe" /></label>
+		<label class="col-sm-1 control-label">
+			<f:translate key="tx_securedownloads_domain_model_log.timeframe" />
+		</label>
 		<div class="col-sm-5">
 			<div class="col-sm-6">
-				<f:form.textfield placeholder="{f:translate(key:'timeframe.from')}: YYYY-mm-dd HH:ii:ss" property="from" class="form-control" value="{filter.from -> f:format.date(format: 'Y-m-d H:i:s')}"/>
+				<f:form.textfield placeholder="{f:translate(key:'timeframe.from')}: YYYY-mm-dd HH:ii:ss"
+								  property="from" class="form-control"
+								  value="{filter.from -> f:format.date(format: 'Y-m-d H:i:s')}"/>
 			</div>
 			<div class="col-sm-6">
-				<f:form.textfield placeholder="{f:translate(key:'timeframe.till')}: YYYY-mm-dd HH:ii:ss" property="till" class="form-control" value="{filter.till -> f:format.date(format: 'Y-m-d H:i:s')}"/>
+				<f:form.textfield placeholder="{f:translate(key:'timeframe.till')}: YYYY-mm-dd HH:ii:ss"
+								  property="till" class="form-control"
+								  value="{filter.till -> f:format.date(format: 'Y-m-d H:i:s')}"/>
 			</div>
 		</div>
 
 		<div class="col-sm-1"></div>
 		<div class="col-sm-5">
 			<div class="col-sm-6">
-				<f:link.action action="{action}" class="btn btn-default btn-block"><f:translate key="button.reset" /></f:link.action>
+				<f:link.action action="{action}" class="btn btn-default btn-block">
+					<f:translate key="button.reset" />
+				</f:link.action>
 			</div>
 			<div class="col-sm-6">
 				<button type="submit" class="btn btn-primary btn-block">{f:translate(key:'button.filter')}</button>
