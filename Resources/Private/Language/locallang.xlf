@@ -1,98 +1,99 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="messages" date="2016-07-20T16:46:48Z" product-name="secure_downloads">
-		<header/>
-		<body>
-			<trans-unit id="tx_securedownloads_domain_model_log">
-				<source>Log</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.file_id">
-				<source>File Id</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.file_name">
-				<source>File Name</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.file_path">
-				<source>File Path</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.filesize">
-				<source>Filesize</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.filetype">
-				<source>Filetype</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.media_type">
-				<source>Media Type</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.bytes_downloaded">
-				<source>Bytes downloaded</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.protected">
-				<source>Protected</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.host">
-				<source>Host</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.typo3_mode">
-				<source>TYPO3 Mode</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.user">
-				<source>User</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.page">
-				<source>Page</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.tstamp">
-				<source>Time</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.timeframe">
-				<source>Timeframe</source>
-			</trans-unit>
-			<trans-unit id="tx_securedownloads_domain_model_log.all">
-				<source>All</source>
-			</trans-unit>
-			<trans-unit id="select.general">
-				<source>General</source>
-			</trans-unit>
-			<trans-unit id="select.by_user">
-				<source>By User</source>
-			</trans-unit>
-			<trans-unit id="select.logged_in">
-				<source>All logged in users</source>
-			</trans-unit>
-			<trans-unit id="select.not_logged_in">
-				<source>All not logged in users</source>
-			</trans-unit>
-			<trans-unit id="timeframe.from">
-				<source>From</source>
-			</trans-unit>
-			<trans-unit id="timeframe.till">
-				<source>Till</source>
-			</trans-unit>
-			<trans-unit id="button.reset">
-				<source>Reset</source>
-			</trans-unit>
-			<trans-unit id="button.filter">
-				<source>Filter</source>
-			</trans-unit>
-			<trans-unit id="dateformat">
-				<source>Y-m-d H:i:s</source>
-			</trans-unit>
-			<trans-unit id="no_user">
-				<source>None</source>
-			</trans-unit>
-			<trans-unit id="heading">
-				<source>Download Traffic</source>
-			</trans-unit>
-			<trans-unit id="heading_for_page">
-				<source>Download Traffic for Page "%s"</source>
-			</trans-unit>
-			<trans-unit id="option.overview">
-				<source>Overview</source>
-			</trans-unit>
-			<trans-unit id="option.by_page">
-				<source>Show by page</source>
-			</trans-unit>
-		</body>
-	</file>
+    <file source-language="en" datatype="plaintext" original="messages" date="2016-07-20T16:46:48Z"
+          product-name="secure_downloads">
+        <header/>
+        <body>
+            <trans-unit id="tx_securedownloads_domain_model_log">
+                <source>Log</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.file_id">
+                <source>File Id</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.file_name">
+                <source>File Name</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.file_path">
+                <source>File Path</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.filesize">
+                <source>Filesize</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.filetype">
+                <source>Filetype</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.media_type">
+                <source>Media Type</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.bytes_downloaded">
+                <source>Bytes downloaded</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.protected">
+                <source>Protected</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.host">
+                <source>Host</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.typo3_mode">
+                <source>TYPO3 Mode</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.user">
+                <source>User</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.page">
+                <source>Page</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.tstamp">
+                <source>Time</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.timeframe">
+                <source>Timeframe</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.all">
+                <source>All</source>
+            </trans-unit>
+            <trans-unit id="select.general">
+                <source>General</source>
+            </trans-unit>
+            <trans-unit id="select.by_user">
+                <source>By User</source>
+            </trans-unit>
+            <trans-unit id="select.logged_in">
+                <source>All logged in users</source>
+            </trans-unit>
+            <trans-unit id="select.not_logged_in">
+                <source>All not logged in users</source>
+            </trans-unit>
+            <trans-unit id="timeframe.from">
+                <source>From</source>
+            </trans-unit>
+            <trans-unit id="timeframe.till">
+                <source>Till</source>
+            </trans-unit>
+            <trans-unit id="button.reset">
+                <source>Reset</source>
+            </trans-unit>
+            <trans-unit id="button.filter">
+                <source>Filter</source>
+            </trans-unit>
+            <trans-unit id="dateformat">
+                <source>Y-m-d H:i:s</source>
+            </trans-unit>
+            <trans-unit id="no_user">
+                <source>None</source>
+            </trans-unit>
+            <trans-unit id="heading">
+                <source>Download Traffic</source>
+            </trans-unit>
+            <trans-unit id="heading_for_page">
+                <source>Download Traffic for Page "%s"</source>
+            </trans-unit>
+            <trans-unit id="option.overview">
+                <source>Overview</source>
+            </trans-unit>
+            <trans-unit id="option.by_page">
+                <source>Show by page</source>
+            </trans-unit>
+        </body>
+    </file>
 </xliff>
