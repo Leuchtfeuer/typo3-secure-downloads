@@ -36,7 +36,7 @@ class ObjectManager implements SingletonInterface
      *
      * @var array
      */
-    private $alternativeImplementation = array();
+    private $alternativeImplementation = [];
 
     /**
      * register a classname that should be used if a dependency is required.

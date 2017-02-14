@@ -86,13 +86,13 @@ class LogController extends ActionController
     {
         $logEntries = $this->logRepository->findByFilter($filter);
 
-        $this->view->assignMultiple(array(
+        $this->view->assignMultiple([
             'logs' => $logEntries,
             'users' => $this->getUsers(),
             'fileTypes' => $this->getFileTypes(),
             'filter' => $filter,
             'statistic' => new Statistic($logEntries),
-        ));
+        ]);
     }
 
     /**
@@ -118,14 +118,14 @@ class LogController extends ActionController
 
         $logEntries = $this->logRepository->findByFilter($filter);
 
-        $this->view->assignMultiple(array(
+        $this->view->assignMultiple([
             'logs' => $logEntries,
             'page' => $this->pageRepository->getPage($pageId),
             'users' => $this->getUsers(),
             'fileTypes' => $this->getFileTypes(),
             'filter' => $filter,
             'statistic' => new Statistic($logEntries),
-        ));
+        ]);
     }
 
     /**
@@ -133,11 +133,12 @@ class LogController extends ActionController
      */
     private function getUsers()
     {
-        $users = array();
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('user','tx_securedownloads_domain_model_log','user != 0','user');
+        $users = [];
+        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('user', 'tx_securedownloads_domain_model_log', 'user != 0',
+            'user');
 
         while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-            $getUserRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','fe_users','uid = ' . $row['user']);
+            $getUserRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'fe_users', 'uid = ' . $row['user']);
             $users[] = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($getUserRes);
         }
 
@@ -149,11 +150,12 @@ class LogController extends ActionController
      */
     private function getFileTypes()
     {
-        $fileTypes = array();
+        $fileTypes = [];
 
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('media_type','tx_securedownloads_domain_model_log','','media_type','media_type ASC');
+        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('media_type', 'tx_securedownloads_domain_model_log', '',
+            'media_type', 'media_type ASC');
         while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-            $fileTypes[] = array('title' => $row['media_type']);
+            $fileTypes[] = ['title' => $row['media_type']];
         }
 
         return $fileTypes;
@@ -187,15 +189,15 @@ class LogController extends ActionController
         $menu->setIdentifier('secure_downloads');
 
         if ((int)GeneralUtility::_GP('id') !== 0) {
-            $actions = array(
-                array('controller' => 'Log', 'action' => 'show', 'label' => 'Show by Page'),
-                array('controller' => 'Log', 'action' => 'list', 'label' => 'Overview'),
-            );
+            $actions = [
+                ['controller' => 'Log', 'action' => 'show', 'label' => 'Show by Page'],
+                ['controller' => 'Log', 'action' => 'list', 'label' => 'Overview'],
+            ];
 
             foreach ($actions as $action) {
                 $isActive = $this->request->getControllerName() === $action['controller'] && $this->request->getControllerActionName() === $action['action'];
                 $item = $menu->makeMenuItem()->setTitle($action['label'])->setHref($this->getUriBuilder()->reset()->uriFor($action['action'],
-                    array(), $action['controller']))->setActive($isActive);
+                    [], $action['controller']))->setActive($isActive);
                 $menu->addMenuItem($item);
             }
         }

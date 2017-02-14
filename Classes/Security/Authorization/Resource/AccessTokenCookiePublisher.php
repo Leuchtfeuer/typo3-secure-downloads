@@ -60,7 +60,7 @@ class AccessTokenCookiePublisher implements SingletonInterface
             $token = $this->requestContext->getAccessToken();
             $contextPath = implode(
                 '/',
-                array_merge(array($this->requestContext->getLocationId()), array(sha1($token)))
+                array_merge([$this->requestContext->getLocationId()], [sha1($token)])
             );
             setcookie(
                 $this->requestContext->getCookieName(),

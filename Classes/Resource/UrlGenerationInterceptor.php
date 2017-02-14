@@ -57,8 +57,13 @@ class UrlGenerationInterceptor
      * @param boolean $relativeToCurrentScript
      * @param array $urlData
      */
-    public function getPublicUrl(ResourceStorage $storage, AbstractDriver $driver, ResourceInterface $resource, $relativeToCurrentScript, array $urlData)
-    {
+    public function getPublicUrl(
+        ResourceStorage $storage,
+        AbstractDriver $driver,
+        ResourceInterface $resource,
+        $relativeToCurrentScript,
+        array $urlData
+    ) {
         if (!$driver instanceof LocalDriver) {
             // We cannot handle other files than local files yet
             return;

@@ -36,7 +36,7 @@ class ConfigurationManager implements SingletonInterface
     /**
      * @var array
      */
-    protected $configuration = array();
+    protected $configuration = [];
 
     /**
      * @param string|null $extensionKey

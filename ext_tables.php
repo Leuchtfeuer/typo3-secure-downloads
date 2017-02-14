@@ -13,13 +13,13 @@ if (TYPO3_MODE === 'BE' && $_EXTCONF['log']) {
     \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule('Bitmotion.' . $_EXTKEY, 'web',
         'TrafficLog',
         '10',
-        array(
+        [
             'Log' => 'show,list',
-        ), array(
+        ], [
             'access' => 'user,group',
             'icon' => 'EXT:' . $_EXTKEY . '/ext_icon.svg',
             'labels' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_log.xlf',
-        ));
+        ]);
 }
 
 unset ($_EXTCONF);

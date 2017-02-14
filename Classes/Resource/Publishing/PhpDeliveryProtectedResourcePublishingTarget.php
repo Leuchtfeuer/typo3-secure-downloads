@@ -28,6 +28,7 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Class PhpDeliveryProtectedResourcePublishingTarget
@@ -63,70 +64,6 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
     }
 
     /**
-     * Builds a URI which uses a PHP Script to access the resource
-     *
-     * @param string $resourceUri
-     *
-     * @return string
-     */
-    public function publishResourceUri($resourceUri)
-    {
-        $this->setResourcesSourcePath(PATH_site);
-
-        return $this->buildUri($resourceUri);
-    }
-
-    /**
-     * Builds a URI which uses a PHP Script to access the resource
-     * by taking several parameters into account
-     *
-     * @param string $resourceUri
-     *
-     * @return string
-     */
-    protected function buildUri($resourceUri)
-    {
-        $userId = $this->getRequestContext()->getUserId();
-        $userGroupIds = $this->getRequestContext()->getUserGroupIds();
-        $validityPeriod = $this->calculateLinkLifetime();
-        $hash = $this->getHash($resourceUri, $userId, $userGroupIds, $validityPeriod);
-
-        $linkFormat = $this->configurationManager->getValue('linkFormat');
-        // Parsing the link format, and return this instead (an flexible link format is useful for mod_rewrite tricks ;)
-        if (is_null($linkFormat) || strpos($linkFormat, '###FEGROUPS###') === false) {
-            $linkFormat = 'index.php?eID=tx_securedownloads&p=###PAGE###&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
-        }
-        $tokens = array('###FEUSER###', '###FEGROUPS###', '###FILE###', '###TIMEOUT###', '###HASH###', '###PAGE###');
-        $replacements = array(
-            $userId,
-            rawurlencode(implode(',', $userGroupIds)),
-            GeneralUtility::rawUrlEncodeFP($resourceUri),
-            $validityPeriod,
-            $hash,
-            $GLOBALS['TSFE']->id,
-        );
-        $downloadUri = str_replace($tokens, $replacements, $linkFormat);
-
-        return $downloadUri;
-    }
-
-    /**
-     * @return integer
-     */
-    protected function calculateLinkLifetime()
-    {
-        $lifeTimeToAdd = $this->configurationManager->getValue('cachetimeadd');
-
-        if ($this->getRequestContext()->getCacheLifetime() === 0) {
-            $validityPeriod = 86400 + $GLOBALS['EXEC_TIME'] + $lifeTimeToAdd;
-        } else {
-            $validityPeriod = $this->getRequestContext()->getCacheLifetime() + $GLOBALS['EXEC_TIME'] + $lifeTimeToAdd;
-        }
-
-        return $validityPeriod;
-    }
-
-    /**
      * Checks if a resource which lies in document root is really publicly available
      * This is currently only done by checking configured secure paths, not by requesting the resources
      *
@@ -149,13 +86,55 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
                 $resourceUri, $matchedUrls) && is_array($matchedUrls) && $matchedUrls[0] === $resourceUri);
     }
 
-
-
-
-    /*
-     * HELPER MEHTOD
-     * TODO: Refactor it to a hash service
+    /**
+     * Builds a URI which uses a PHP Script to access the resource
+     * by taking several parameters into account
+     *
+     * @param string $resourceUri
+     *
+     * @return string
      */
+    protected function buildUri($resourceUri)
+    {
+        $userId = $this->getRequestContext()->getUserId();
+        $userGroupIds = $this->getRequestContext()->getUserGroupIds();
+        $validityPeriod = $this->calculateLinkLifetime();
+        $hash = $this->getHash($resourceUri, $userId, $userGroupIds, $validityPeriod);
+
+        $linkFormat = $this->configurationManager->getValue('linkFormat');
+        // Parsing the link format, and return this instead (an flexible link format is useful for mod_rewrite tricks ;)
+        if (is_null($linkFormat) || strpos($linkFormat, '###FEGROUPS###') === false) {
+            $linkFormat = 'index.php?eID=tx_securedownloads&p=###PAGE###&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
+        }
+        $tokens = ['###FEUSER###', '###FEGROUPS###', '###FILE###', '###TIMEOUT###', '###HASH###', '###PAGE###'];
+        $replacements = [
+            $userId,
+            rawurlencode(implode(',', $userGroupIds)),
+            GeneralUtility::rawUrlEncodeFP($resourceUri),
+            $validityPeriod,
+            $hash,
+            $GLOBALS['TSFE']->id,
+        ];
+        $downloadUri = str_replace($tokens, $replacements, $linkFormat);
+
+        return $downloadUri;
+    }
+
+    /**
+     * @return integer
+     */
+    protected function calculateLinkLifetime()
+    {
+        $lifeTimeToAdd = $this->configurationManager->getValue('cachetimeadd');
+
+        if ($this->getRequestContext()->getCacheLifetime() === 0) {
+            $validityPeriod = 86400 + $GLOBALS['EXEC_TIME'] + $lifeTimeToAdd;
+        } else {
+            $validityPeriod = $this->getRequestContext()->getCacheLifetime() + $GLOBALS['EXEC_TIME'] + $lifeTimeToAdd;
+        }
+
+        return $validityPeriod;
+    }
 
     /**
      * @param string $resourceUri
@@ -174,5 +153,27 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         }
 
         return GeneralUtility::hmac($hashString, 'bitmotion_securedownload');
+    }
+
+
+
+
+    /*
+     * HELPER MEHTOD
+     * TODO: Refactor it to a hash service
+     */
+
+    /**
+     * Builds a URI which uses a PHP Script to access the resource
+     *
+     * @param string $resourceUri
+     *
+     * @return string
+     */
+    public function publishResourceUri($resourceUri)
+    {
+        $this->setResourcesSourcePath(PATH_site);
+
+        return $this->buildUri($resourceUri);
     }
 }

@@ -5,7 +5,6 @@ namespace Bitmotion\SecureDownloads\Parser;
  *  Copyright notice
  *
  *  (c) 2013 Bitmotion GmbH (typo3-ext@bitmotion.de)
-
  *  All rights reserved
  *
  *  This script is part of the Typo3 project. The Typo3 project is
@@ -67,11 +66,50 @@ class HtmlParser
     protected $tagPattern;
 
     /**
+     * @param HtmlParserDelegateInterface $delegate
+     * @param array $settings
+     */
+    public function __construct(HtmlParserDelegateInterface $delegate, array $settings)
+    {
+        $this->delegate = $delegate;
+        foreach ($settings as $settingKey => $setting) {
+            $setterMethodName = 'set' . ucfirst($settingKey);
+            if (method_exists($this, $setterMethodName)) {
+                $this->$setterMethodName($setting);
+            }
+        }
+        if (substr($this->fileExtensionPattern, 0, 1) !== '\\') {
+            $this->fileExtensionPattern = '\\.(' . $this->fileExtensionPattern . ')';
+        }
+
+        $this->tagPattern = '/["\'](?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']/i';
+    }
+
+    /**
      * @param string $accessProtectedDomain
      */
     public function setDomainPattern($accessProtectedDomain)
     {
         $this->domainPattern = $this->softQuoteExpression($accessProtectedDomain);
+    }
+
+    /**
+     * Quotes special some characters for the regular expression.
+     * Leave braces and brackets as is to have more flexibility in configuration.
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    static public function softQuoteExpression($string)
+    {
+        $string = str_replace('\\', '\\\\', $string);
+        $string = str_replace(' ', '\ ', $string);
+        $string = str_replace('/', '\/', $string);
+        $string = str_replace('.', '\.', $string);
+        $string = str_replace(':', '\:', $string);
+
+        return $string;
     }
 
     /**
@@ -96,26 +134,6 @@ class HtmlParser
     public function setLogLevel($logLevel)
     {
         $this->logLevel = (int)$logLevel;
-    }
-
-    /**
-     * @param HtmlParserDelegateInterface $delegate
-     * @param array                       $settings
-     */
-    public function __construct(HtmlParserDelegateInterface $delegate, array $settings)
-    {
-        $this->delegate = $delegate;
-        foreach ($settings as $settingKey => $setting) {
-            $setterMethodName = 'set' . ucfirst($settingKey);
-            if (method_exists($this, $setterMethodName)) {
-                $this->$setterMethodName($setting);
-            }
-        }
-        if (substr($this->fileExtensionPattern, 0, 1) !== '\\') {
-            $this->fileExtensionPattern = '\\.(' . $this->fileExtensionPattern . ')';
-        }
-
-        $this->tagPattern = '/["\'](?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']/i';
     }
 
     /**
@@ -162,6 +180,12 @@ class HtmlParser
         return $result . $rest;
     }
 
+    protected function microtime_float()
+    {
+        list($usec, $sec) = explode(" ", microtime());
+        return ($usec + $sec);
+    }
+
     /**
      * Investigate the HTML-Tag...
      *
@@ -182,14 +206,13 @@ class HtmlParser
             } elseif ($this->logLevel >= 2) {
                 DebuggerUtility::var_dump($this->tagPattern, 'Regular Expression:');
                 DebuggerUtility::var_dump($matchedUrls, 'Match:');
-                DebuggerUtility::var_dump(array($tagexp[0], $replace, $tagexp[1]), 'Build Tag:');
+                DebuggerUtility::var_dump([$tagexp[0], $replace, $tagexp[1]], 'Build Tag:');
                 DebuggerUtility::var_dump($tag, 'New output:');
             }
         }
 
         return $tag;
     }
-
 
     /**
      * Search recursive in the rest of the tag (e.g. for vHWin=window.open...).
@@ -206,7 +229,7 @@ class HtmlParser
             $tagexp = explode($matchedUrls[1], $tmp, 2);
 
             if ($this->logLevel >= 2) {
-                DebuggerUtility::var_dump(array($tagexp[0], $replace, $tagexp[1]), 'Further Match:');
+                DebuggerUtility::var_dump([$tagexp[0], $replace, $tagexp[1]], 'Further Match:');
             }
 
             $tag .= $tagexp[0] . '/' . $replace;
@@ -216,31 +239,5 @@ class HtmlParser
         }
 
         return $tag . $tmp;
-    }
-
-
-    /**
-     * Quotes special some characters for the regular expression.
-     * Leave braces and brackets as is to have more flexibility in configuration.
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    static public function softQuoteExpression($string)
-    {
-        $string = str_replace('\\', '\\\\', $string);
-        $string = str_replace(' ', '\ ', $string);
-        $string = str_replace('/', '\/', $string);
-        $string = str_replace('.', '\.', $string);
-        $string = str_replace(':', '\:', $string);
-
-        return $string;
-    }
-
-    protected function microtime_float()
-    {
-        list($usec, $sec) = explode(" ", microtime());
-        return ($usec + $sec);
     }
 }

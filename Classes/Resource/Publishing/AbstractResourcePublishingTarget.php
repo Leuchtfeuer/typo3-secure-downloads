@@ -110,6 +110,14 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
     }
 
     /**
+     * Sets the URI of resources by removing the absolute path to the document root from the absolute publishing path
+     */
+    protected function detectResourcesBaseUri()
+    {
+        $this->resourcesBaseUri = substr($this->resourcesPublishingPath, strlen(PATH_site));
+    }
+
+    /**
      * @param ResourceStorage $storage
      *
      * @return string
@@ -133,14 +141,6 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
     {
         $this->resourcesSourcePath = $resourceSourcePath;
         $this->detectResourcesPublishingPath();
-    }
-
-    /**
-     * Sets the URI of resources by removing the absolute path to the document root from the absolute publishing path
-     */
-    protected function detectResourcesBaseUri()
-    {
-        $this->resourcesBaseUri = substr($this->resourcesPublishingPath, strlen(PATH_site));
     }
 
     /**

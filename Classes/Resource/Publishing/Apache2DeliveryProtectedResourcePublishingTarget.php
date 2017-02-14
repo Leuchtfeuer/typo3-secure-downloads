@@ -84,13 +84,20 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
     }
 
     /**
-     * @param ResourceInterface $resource
+     * @param string $sourcePath
      *
      * @return string
      */
-    protected function buildResourceWebUri(ResourceInterface $resource)
+    protected function buildPublishingPathPartBySourcePath($sourcePath)
     {
-        return substr($this->buildResourcePublishPathAndFilename($resource), strlen(PATH_site));
+        $contextHash = '0';
+        if ($this->getRequestContext()->isUserLoggedIn()) {
+            $contextHash = sha1($this->getRequestContext()->getAccessToken());
+        }
+        $pathParts = array_merge([$this->getRequestContext()->getLocationId()], [$contextHash],
+            [sha1(dirname($sourcePath))], [basename($sourcePath)]);
+
+        return implode('/', $pathParts);
     }
 
     /**
@@ -105,6 +112,35 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
         return (file_exists($pathAndFilename)) ? $pathAndFilename : false;
     }
 
+    /**
+     * @param ResourceInterface $resource
+     *
+     * @return string
+     */
+    protected function buildResourceWebUri(ResourceInterface $resource)
+    {
+        return substr($this->buildResourcePublishPathAndFilename($resource), strlen(PATH_site));
+    }
+
+    protected function mirrorFile($fileSourcePath, $fileTargetPath)
+    {
+        $publishingDirectory = dirname($fileTargetPath) . '/';
+        $this->assureDirectoryPathExists($publishingDirectory);
+        if ($this->getRequestContext()->isUserLoggedIn()) {
+            $this->accessRestrictionPublisher->publishAccessRestrictionsForPath($publishingDirectory);
+        }
+        symlink($fileSourcePath, $fileTargetPath);
+    }
+
+    /**
+     * @param $absolutePath
+     */
+    protected function assureDirectoryPathExists($absolutePath)
+    {
+        if (!is_dir($absolutePath)) {
+            GeneralUtility::mkdir_deep(PATH_site, substr($absolutePath, strlen(PATH_site)));
+        }
+    }
 
     /**
      * Builds a delivery URI from a URI which is in document root but protected through the webserver
@@ -141,16 +177,6 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
     }
 
     /**
-     * @param string $resourceUri
-     *
-     * @return string
-     */
-    protected function buildResourceUriWebUri($resourceUri)
-    {
-        return substr($this->buildResourceUriPublishPathAndFilename($resourceUri), strlen(PATH_site));
-    }
-
-    /**
      * @param $resourceUri
      *
      * @return string
@@ -161,22 +187,14 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
         return PATH_site . $resourceUri;
     }
 
-
     /**
-     * @param string $sourcePath
+     * @param string $resourceUri
      *
      * @return string
      */
-    protected function buildPublishingPathPartBySourcePath($sourcePath)
+    protected function buildResourceUriWebUri($resourceUri)
     {
-        $contextHash = '0';
-        if ($this->getRequestContext()->isUserLoggedIn()) {
-            $contextHash = sha1($this->getRequestContext()->getAccessToken());
-        }
-        $pathParts = array_merge(array($this->getRequestContext()->getLocationId()), array($contextHash),
-            array(sha1(dirname($sourcePath))), array(basename($sourcePath)));
-
-        return implode('/', $pathParts);
+        return substr($this->buildResourceUriPublishPathAndFilename($resourceUri), strlen(PATH_site));
     }
 
     /**
@@ -187,26 +205,6 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
         if ($this->resourcesPublishingPath === null) {
             $this->resourcesPublishingPath = PATH_site . 'typo3temp/secure_downloads/';
             $this->assureDirectoryPathExists($this->resourcesPublishingPath);
-        }
-    }
-
-    protected function mirrorFile($fileSourcePath, $fileTargetPath)
-    {
-        $publishingDirectory = dirname($fileTargetPath) . '/';
-        $this->assureDirectoryPathExists($publishingDirectory);
-        if ($this->getRequestContext()->isUserLoggedIn()) {
-            $this->accessRestrictionPublisher->publishAccessRestrictionsForPath($publishingDirectory);
-        }
-        symlink($fileSourcePath, $fileTargetPath);
-    }
-
-    /**
-     * @param $absolutePath
-     */
-    protected function assureDirectoryPathExists($absolutePath)
-    {
-        if (!is_dir($absolutePath)) {
-            GeneralUtility::mkdir_deep(PATH_site, substr($absolutePath, strlen(PATH_site)));
         }
     }
 }

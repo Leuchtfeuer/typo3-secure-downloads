@@ -124,6 +124,59 @@ class Log extends AbstractEntity
      */
     protected $tstamp = 0;
 
+    /**
+     * Returns the tstamp
+     *
+     * @return int $tstamp
+     */
+    public function getTstamp()
+    {
+        return $this->tstamp;
+    }
+
+    /**
+     * Sets the tstamp
+     *
+     * @param int $tstamp
+     * @return void
+     */
+    public function setTstamp($tstamp)
+    {
+        $this->tstamp = $tstamp;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getUserObject()
+    {
+        if ($this->user !== null && $this->user !== 0) {
+            $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'fe_users', 'uid = ' . $this->user);
+            return $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+        }
+
+        return null;
+    }
+
+    public function toArray()
+    {
+        return [
+            'file_id' => $this->getFileId(),
+            'file_name' => $this->getFileName(),
+            'file_path' => $this->getFilePath(),
+            'file_size' => $this->getFileSize(),
+            'file_type' => $this->getFileType(),
+            'media_type' => $this->getMediaType(),
+            'bytes_downloaded' => $this->getBytesDownloaded(),
+            'protected' => $this->getProtected(),
+            'host' => $this->getHost(),
+            'typo3_mode' => $this->getTypo3Mode(),
+            'user' => $this->getUser(),
+            'page' => $this->getPage(),
+            'tstamp' => time(),
+            'crdate' => time(),
+        ];
+    }
 
     /**
      * Returns the fileId
@@ -375,60 +428,6 @@ class Log extends AbstractEntity
     public function setPage($page)
     {
         $this->page = $page;
-    }
-
-    /**
-     * Returns the tstamp
-     *
-     * @return int $tstamp
-     */
-    public function getTstamp()
-    {
-        return $this->tstamp;
-    }
-
-    /**
-     * Sets the tstamp
-     *
-     * @param int $tstamp
-     * @return void
-     */
-    public function setTstamp($tstamp)
-    {
-        $this->tstamp = $tstamp;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getUserObject()
-    {
-        if ($this->user !== null && $this->user !== 0) {
-            $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','fe_users','uid = ' . $this->user);
-            return $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-        }
-
-        return null;
-    }
-
-    public function toArray()
-    {
-        return array(
-            'file_id' => $this->getFileId(),
-            'file_name' => $this->getFileName(),
-            'file_path' => $this->getFilePath(),
-            'file_size' => $this->getFileSize(),
-            'file_type' => $this->getFileType(),
-            'media_type' => $this->getMediaType(),
-            'bytes_downloaded' => $this->getBytesDownloaded(),
-            'protected' => $this->getProtected(),
-            'host' => $this->getHost(),
-            'typo3_mode' => $this->getTypo3Mode(),
-            'user' => $this->getUser(),
-            'page' => $this->getPage(),
-            'tstamp' => time(),
-            'crdate' => time(),
-        );
     }
 
 }

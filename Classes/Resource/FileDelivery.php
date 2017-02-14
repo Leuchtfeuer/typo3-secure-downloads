@@ -42,7 +42,7 @@ class FileDelivery
     /**
      * @var array
      */
-    protected $extensionConfiguration = array();
+    protected $extensionConfiguration = [];
 
     /**
      * @var \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication
@@ -135,7 +135,7 @@ class FileDelivery
 
         // Hook for init:
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init'])) {
-            $_params = array(
+            $_params = [
                 'pObj' => $this,
                 'userId' => &$this->userId,
                 'userGroups' => &$this->userGroups,
@@ -143,7 +143,7 @@ class FileDelivery
                 'expiryTime' => &$this->expiryTime,
                 'hash' => &$this->hash,
                 'calculatedHash' => &$this->calculatedHash,
-            );
+            ];
             foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init'] as $_funcRef) {
                 GeneralUtility::callUserFunction($_funcRef, $_params, $this);
             }
@@ -167,6 +167,68 @@ class FileDelivery
     }
 
     /**
+     * Returns the configuration array
+     *
+     * @return array
+     */
+    protected function getExtensionConfiguration()
+    {
+        static $extensionConfiguration = [];
+
+        if (!$extensionConfiguration) {
+            $extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['secure_downloads']);
+        }
+
+        return $extensionConfiguration;
+    }
+
+    /**
+     * TODO: Refactor it to a hash service
+     *
+     * @param string $resourceUri
+     * @param integer $userId
+     * @param         array <integer> $userGroupIds
+     * @param integer $validityPeriod
+     *
+     * @return string
+     */
+    protected function getHash($resourceUri, $userId, $userGroupIds, $validityPeriod)
+    {
+        if ($this->extensionConfiguration['enableGroupCheck']) {
+            $hashString = $userId . $userGroupIds . $resourceUri . $validityPeriod;
+        } else {
+            $hashString = $userId . $resourceUri . $validityPeriod;
+        }
+
+        return GeneralUtility::hmac($hashString, 'bitmotion_securedownload');
+    }
+
+    /**
+     * @return boolean
+     */
+    protected function hashValid()
+    {
+        return ($this->calculatedHash === $this->hash);
+    }
+
+    /**
+     * @param string $message
+     */
+    protected function exitScript($message)
+    {
+        header('HTTP/1.1 403 Forbidden');
+        exit($message);
+    }
+
+    /**
+     * @return boolean
+     */
+    protected function expiryTimeExceeded()
+    {
+        return (intval($this->expiryTime) < time());
+    }
+
+    /**
      *
      */
     protected function initializeUserAuthentication()
@@ -179,22 +241,6 @@ class FileDelivery
         if (!$this->databaseConnection->isConnected()) {
             $this->databaseConnection->connectDB();
         }
-    }
-
-    /**
-     * @return boolean
-     */
-    protected function hashValid()
-    {
-        return ($this->calculatedHash === $this->hash);
-    }
-
-    /**
-     * @return boolean
-     */
-    protected function expiryTimeExceeded()
-    {
-        return (intval($this->expiryTime) < time());
     }
 
     /**
@@ -249,6 +295,16 @@ class FileDelivery
     }
 
     /**
+     * @param string $string
+     *
+     * @return mixed
+     */
+    protected function softQuoteExpression($string)
+    {
+        return HtmlParser::softQuoteExpression($string);
+    }
+
+    /**
      * Output the requested file
      */
     public function deliver()
@@ -266,7 +322,7 @@ class FileDelivery
 
         // Hook for pre-output:
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['preOutput'])) {
-            $_params = array('pObj' => &$this);
+            $_params = ['pObj' => &$this];
             foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['preOutput'] as $_funcRef) {
                 GeneralUtility::callUserFunction($_funcRef, $_params, $this);
             }
@@ -308,11 +364,11 @@ class FileDelivery
             // Hook for output:
             // TODO: deprecate this hook?
             if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['output'])) {
-                $_params = array(
+                $_params = [
                     'pObj' => &$this,
                     'fileExtension' => '.' . $strFileExtension, // Add leading dot for compatibility in this hook
                     'mimeType' => &$strMimeType,
-                );
+                ];
                 foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['output'] as $_funcRef) {
                     GeneralUtility::callUserFunction($_funcRef, $_params, $this);
                 }
@@ -423,63 +479,14 @@ class FileDelivery
         }
     }
 
-
     /**
-     * Returns the configuration array
-     *
-     * @return array
-     */
-    protected function getExtensionConfiguration()
-    {
-        static $extensionConfiguration = array();
-
-        if (!$extensionConfiguration) {
-            $extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['secure_downloads']);
-        }
-
-        return $extensionConfiguration;
-    }
-
-    /**
-     * In some cases php needs the filesize as php_memory, so big files cannot
-     * be transferred. This function mitigates this problem.
-     *
-     * @param string $strFileName
+     * Checks if logging has been enabled in configuration
      *
      * @return bool
      */
-    protected function readfile_chunked($strFileName)
+    protected function isLoggingEnabled()
     {
-        $chunksize = intval($this->extensionConfiguration['outputChunkSize']); // how many bytes per chunk
-        $timeout = ini_get('max_execution_time');
-        $bytes_sent = 0;
-        $handle = fopen($strFileName, 'rb');
-        if ($handle === false) {
-            return false;
-        }
-        while (!feof($handle) && (!connection_aborted())) {
-            set_time_limit($timeout);
-            $buffer = fread($handle, $chunksize);
-            print $buffer;
-            $bytes_sent += $chunksize;
-            ob_flush();
-            flush();
-            $this->logDownload(MathUtility::forceIntegerInRange($bytes_sent, 0, $this->fileSize));
-        }
-
-        return fclose($handle);
-    }
-
-    /**
-     * Extracts the file extension out of a complete file name.
-     *
-     * @param string $strFileName
-     *
-     * @return string
-     */
-    protected function getFileExtensionByFilename($strFileName)
-    {
-        return GeneralUtility::strtolower(ltrim(strrchr($strFileName, '.'), '.'));
+        return (bool)$this->extensionConfiguration['log'];
     }
 
     /**
@@ -496,7 +503,7 @@ class FileDelivery
         $checkForImageFiles = false;
 
         // Array with key/value pairs consisting of file extension (without dot in front) and mime type
-        $arrMimeTypes = array(
+        $arrMimeTypes = [
             // MS-Office filetypes
             'pps' => 'application/vnd.ms-powerpoint',
             'doc' => 'application/msword',
@@ -549,7 +556,7 @@ class FileDelivery
             'swf' => 'application/x-shockwave-flash',
             'htm' => 'text/html',
             'html' => 'text/html',
-        );
+        ];
 
         // Read all additional MIME types from the EM configuration into the array $strAdditionalMimeTypesArray
         if ($this->extensionConfiguration['additionalMimeTypes']) {
@@ -596,59 +603,51 @@ class FileDelivery
         return $strMimeType;
     }
 
-    /**
-     * Checks if logging has been enabled in configuration
-     *
-     * @return bool
-     */
-    protected function isLoggingEnabled()
-    {
-        return (bool)$this->extensionConfiguration['log'];
-    }
-
-    /**
-     * @param string $string
-     *
-     * @return mixed
-     */
-    protected function softQuoteExpression($string)
-    {
-        return HtmlParser::softQuoteExpression($string);
-    }
-
     /*
      * HELPER METHODS
      *
      */
 
     /**
-     * TODO: Refactor it to a hash service
+     * Extracts the file extension out of a complete file name.
      *
-     * @param string  $resourceUri
-     * @param integer $userId
-     * @param         array <integer> $userGroupIds
-     * @param integer $validityPeriod
+     * @param string $strFileName
      *
      * @return string
      */
-    protected function getHash($resourceUri, $userId, $userGroupIds, $validityPeriod)
+    protected function getFileExtensionByFilename($strFileName)
     {
-        if ($this->extensionConfiguration['enableGroupCheck']) {
-            $hashString = $userId . $userGroupIds . $resourceUri . $validityPeriod;
-        } else {
-            $hashString = $userId . $resourceUri . $validityPeriod;
-        }
-
-        return GeneralUtility::hmac($hashString, 'bitmotion_securedownload');
+        return GeneralUtility::strtolower(ltrim(strrchr($strFileName, '.'), '.'));
     }
 
     /**
-     * @param string $message
+     * In some cases php needs the filesize as php_memory, so big files cannot
+     * be transferred. This function mitigates this problem.
+     *
+     * @param string $strFileName
+     *
+     * @return bool
      */
-    protected function exitScript($message)
+    protected function readfile_chunked($strFileName)
     {
-        header('HTTP/1.1 403 Forbidden');
-        exit($message);
+        $chunksize = intval($this->extensionConfiguration['outputChunkSize']); // how many bytes per chunk
+        $timeout = ini_get('max_execution_time');
+        $bytes_sent = 0;
+        $handle = fopen($strFileName, 'rb');
+        if ($handle === false) {
+            return false;
+        }
+        while (!feof($handle) && (!connection_aborted())) {
+            set_time_limit($timeout);
+            $buffer = fread($handle, $chunksize);
+            print $buffer;
+            $bytes_sent += $chunksize;
+            ob_flush();
+            flush();
+            $this->logDownload(MathUtility::forceIntegerInRange($bytes_sent, 0, $this->fileSize));
+        }
+
+        return fclose($handle);
     }
 }
 

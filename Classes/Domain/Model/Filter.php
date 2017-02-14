@@ -128,6 +128,32 @@ class Filter
     }
 
     /**
+     * @param $dateString
+     * @return string
+     */
+    private function formatDate($dateString)
+    {
+        if ($dateString == '') {
+            return null;
+        }
+
+        list($date, $time) = explode(' ', trim($dateString));
+
+        if ($date == '') {
+            list($year, $month, $day) = explode('-', $dateString);
+        } else {
+            list($year, $month, $day) = explode('-', $date);
+            list($hour, $minute, $second) = explode(':', $time);
+        }
+
+        $dateTime = new \DateTime();
+        $dateTime->setDate($year, (int)$month, (int)$day);
+        $dateTime->setTime((int)$hour, (int)$minute, (int)$second);
+
+        return $dateTime->getTimestamp();
+    }
+
+    /**
      * @return string
      */
     public function getTill()
@@ -186,32 +212,6 @@ class Filter
     public function setUserType($userType)
     {
         $this->userType = $userType;
-    }
-
-    /**
-     * @param $dateString
-     * @return string
-     */
-    private function formatDate($dateString)
-    {
-        if ($dateString == '') {
-            return null;
-        }
-
-        list($date, $time) = explode(' ', trim($dateString));
-
-        if ($date == '') {
-            list($year, $month, $day) = explode('-', $dateString);
-        } else {
-            list($year, $month, $day) = explode('-', $date);
-            list($hour, $minute, $second) = explode(':', $time);
-        }
-
-        $dateTime = new \DateTime();
-        $dateTime->setDate($year, (int)$month, (int)$day);
-        $dateTime->setTime((int)$hour, (int)$minute, (int)$second);
-
-        return $dateTime->getTimestamp();
     }
 
 }

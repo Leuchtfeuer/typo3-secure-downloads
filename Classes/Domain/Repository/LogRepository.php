@@ -35,13 +35,13 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 class LogRepository extends Repository
 {
 
-    protected $defaultOrderings = array(
-        'tstamp' => QueryInterface::ORDER_DESCENDING
-    );
+    protected $defaultOrderings = [
+        'tstamp' => QueryInterface::ORDER_DESCENDING,
+    ];
 
     public function initializeObject()
     {
-        /** @var Typo3QuerySettings $querySettings*/
+        /** @var Typo3QuerySettings $querySettings */
         $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
         $querySettings->setRespectStoragePage(false);
         $querySettings->setRespectSysLanguage(false);
@@ -57,7 +57,7 @@ class LogRepository extends Repository
         $query = $this->createQuery();
 
         if ($filter instanceof Filter) {
-            $constraints = array();
+            $constraints = [];
 
             // FileType
             if ($filter->getFileType() !== '' && $filter->getFileType() !== '0') {

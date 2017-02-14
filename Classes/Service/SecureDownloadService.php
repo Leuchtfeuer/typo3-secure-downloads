@@ -56,7 +56,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
     protected $resourcePublisher;
 
     /**
-     * @param RequestContext       $requestContext
+     * @param RequestContext $requestContext
      * @param ConfigurationManager $configurationManager
      */
     public function __construct($requestContext = null, $configurationManager = null)
@@ -68,7 +68,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
     /**
      * This method is called by the frontend rendering hook contentPostProc->output
      *
-     * @param array     $parameters
+     * @param array $parameters
      * @param TypoScriptFrontendController $typoScriptFrontendController
      */
     public function parseFE(array &$parameters, $typoScriptFrontendController)
@@ -80,30 +80,23 @@ class SecureDownloadService implements HtmlParserDelegateInterface
     }
 
     /**
-     * Transforms a relative file URL to a secure download protected URL
+     * Lazily instantiates the HTML parser
+     * Must be called AFTER the configuration manager has been initialized
      *
-     * @param string $originalUri
-     *
-     * @return string
+     * @return \Bitmotion\SecureDownloads\Parser\HtmlParser
      */
-    public function publishResourceUri($originalUri)
+    protected function getHtmlParser()
     {
-        $transformedUri = $this->getResourcePublisher()->publishResourceUri(rawurldecode($originalUri));
-
-        // Hook for makeSecure:
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'] as $_funcRef) {
-                $transformedUri = GeneralUtility::callUserFunction($_funcRef, $transformedUri, $this);
-            }
-        }
-        // Hook for makeSecure: (old class name, for compatibility reasons)
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/class.tx_securedownloads.php']['makeSecure'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/class.tx_securedownloads.php']['makeSecure'] as $_funcRef) {
-                $transformedUri = GeneralUtility::callUserFunction($_funcRef, $transformedUri, $this);
-            }
+        if (is_null($this->htmlParser)) {
+            $this->htmlParser = new HtmlParser($this, [
+                'domainPattern' => $this->configurationManager->getValue('domain'),
+                'folderPattern' => $this->configurationManager->getValue('securedDirs'),
+                'fileExtensionPattern' => $this->configurationManager->getValue('securedFiletypes'),
+                'logLevel' => $this->configurationManager->getValue('debug'),
+            ]);
         }
 
-        return $transformedUri;
+        return $this->htmlParser;
     }
 
     /**
@@ -131,23 +124,30 @@ class SecureDownloadService implements HtmlParserDelegateInterface
     }
 
     /**
-     * Lazily instantiates the HTML parser
-     * Must be called AFTER the configuration manager has been initialized
+     * Transforms a relative file URL to a secure download protected URL
      *
-     * @return \Bitmotion\SecureDownloads\Parser\HtmlParser
+     * @param string $originalUri
+     *
+     * @return string
      */
-    protected function getHtmlParser()
+    public function publishResourceUri($originalUri)
     {
-        if (is_null($this->htmlParser)) {
-            $this->htmlParser = new HtmlParser($this, array(
-                    'domainPattern' => $this->configurationManager->getValue('domain'),
-                    'folderPattern' => $this->configurationManager->getValue('securedDirs'),
-                    'fileExtensionPattern' => $this->configurationManager->getValue('securedFiletypes'),
-                    'logLevel' => $this->configurationManager->getValue('debug'),
-                ));
+        $transformedUri = $this->getResourcePublisher()->publishResourceUri(rawurldecode($originalUri));
+
+        // Hook for makeSecure:
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'] as $_funcRef) {
+                $transformedUri = GeneralUtility::callUserFunction($_funcRef, $transformedUri, $this);
+            }
+        }
+        // Hook for makeSecure: (old class name, for compatibility reasons)
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/class.tx_securedownloads.php']['makeSecure'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/class.tx_securedownloads.php']['makeSecure'] as $_funcRef) {
+                $transformedUri = GeneralUtility::callUserFunction($_funcRef, $transformedUri, $this);
+            }
         }
 
-        return $this->htmlParser;
+        return $transformedUri;
     }
 
     /**

@@ -62,6 +62,25 @@ class ResourcePublisher implements SingletonInterface
     }
 
     /**
+     * @return ResourcePublishingTargetInterface
+     */
+    protected function getPublishingTarget()
+    {
+        // Check if we have DI, if not, lazily instatiate the publishing target
+        if (is_null($this->publishingTarget)) {
+            $this->publishingTarget = GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Resource\\Publishing\\ResourcePublisher');
+            if (method_exists($this->publishingTarget, 'injectConfigurationManager')) {
+                $this->publishingTarget->injectConfigurationManager(GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Configuration\\ConfigurationManager'));
+            }
+            if (method_exists($this->publishingTarget, 'injectAccessRestrictionPublisher')) {
+                $this->publishingTarget->injectAccessRestrictionPublisher(GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Resource\\Publishing\\AccessRestrictionPublisherInterface'));
+            }
+        }
+
+        return $this->publishingTarget;
+    }
+
+    /**
      * Publishes a persistent resource to the web accessible resources directory
      *
      * @param ResourceInterface $resource The resource to publish
@@ -84,24 +103,5 @@ class ResourcePublisher implements SingletonInterface
     public function publishResourceUri($resourceUri)
     {
         return $this->getPublishingTarget()->publishResourceUri($resourceUri);
-    }
-
-    /**
-     * @return ResourcePublishingTargetInterface
-     */
-    protected function getPublishingTarget()
-    {
-        // Check if we have DI, if not, lazily instatiate the publishing target
-        if (is_null($this->publishingTarget)) {
-            $this->publishingTarget = GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Resource\\Publishing\\ResourcePublisher');
-            if (method_exists($this->publishingTarget, 'injectConfigurationManager')) {
-                $this->publishingTarget->injectConfigurationManager(GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Configuration\\ConfigurationManager'));
-            }
-            if (method_exists($this->publishingTarget, 'injectAccessRestrictionPublisher')) {
-                $this->publishingTarget->injectAccessRestrictionPublisher(GeneralUtility::makeInstance('Bitmotion\\SecureDownloads\\Resource\\Publishing\\AccessRestrictionPublisherInterface'));
-            }
-        }
-
-        return $this->publishingTarget;
     }
 }

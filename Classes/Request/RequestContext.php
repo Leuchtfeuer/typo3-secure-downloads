@@ -42,7 +42,7 @@ class RequestContext
     /**
      * @var array<int>
      */
-    protected $userGroupIds = array(0);
+    protected $userGroupIds = [0];
 
     /**
      * @var int
@@ -91,84 +91,15 @@ class RequestContext
     }
 
     /**
-     * @return string
-     */
-    public function getAdditionalSecret()
-    {
-        return $this->additionalSecret;
-    }
-
-    /**
-     * @return array
-     */
-    public function getUserGroupIds()
-    {
-        return $this->userGroupIds;
-    }
-
-    /**
-     * @return int
-     */
-    public function getUserId()
-    {
-        return $this->userId;
-    }
-
-    /**
      * @return bool
      */
-    public function isUserLoggedIn()
+    public function isFrontendRequest()
     {
-        if (empty($this->currentUser->user['uid'])) {
-            return false;
+        if (defined('TYPO3_MODE') && TYPO3_MODE === 'FE') {
+            return true;
         }
 
-        return true;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCacheLifetime()
-    {
-        return $this->cacheLifetime;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isUrlRewritingEnabled()
-    {
-        return $this->urlRewritingEnabled;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCookieName()
-    {
-        return $this->cookieName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIpAddress()
-    {
-        return $this->ipAddress;
-    }
-
-    public function getAccessToken()
-    {
-        return GeneralUtility::hmac(implode(',', $this->getUserGroupIds()), $this->additionalSecret);
-    }
-
-    /**
-     * @return string
-     */
-    public function getLocationId()
-    {
-        return $this->locationId;
+        return false;
     }
 
     /**
@@ -212,6 +143,18 @@ class RequestContext
     }
 
     /**
+     * @return bool
+     */
+    public function isUserLoggedIn()
+    {
+        if (empty($this->currentUser->user['uid'])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Use the encryptionKey as additionalSecret if defined
      */
     private function setAdditionalSecret()
@@ -236,6 +179,18 @@ class RequestContext
     }
 
     /**
+     * @return bool
+     */
+    protected function isBackendRequest()
+    {
+        if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Initializes the request context, when called from a backend request
      */
     protected function initializeBackendContext()
@@ -257,26 +212,71 @@ class RequestContext
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function isFrontendRequest()
+    public function getAdditionalSecret()
     {
-        if (defined('TYPO3_MODE') && TYPO3_MODE === 'FE') {
-            return true;
-        }
+        return $this->additionalSecret;
+    }
 
-        return false;
+    /**
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCacheLifetime()
+    {
+        return $this->cacheLifetime;
     }
 
     /**
      * @return bool
      */
-    protected function isBackendRequest()
+    public function isUrlRewritingEnabled()
     {
-        if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
-            return true;
-        }
+        return $this->urlRewritingEnabled;
+    }
 
-        return false;
+    /**
+     * @return string
+     */
+    public function getCookieName()
+    {
+        return $this->cookieName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIpAddress()
+    {
+        return $this->ipAddress;
+    }
+
+    public function getAccessToken()
+    {
+        return GeneralUtility::hmac(implode(',', $this->getUserGroupIds()), $this->additionalSecret);
+    }
+
+    /**
+     * @return array
+     */
+    public function getUserGroupIds()
+    {
+        return $this->userGroupIds;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocationId()
+    {
+        return $this->locationId;
     }
 }
