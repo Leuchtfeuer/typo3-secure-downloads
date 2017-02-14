@@ -1,0 +1,4 @@
+<DirectoryMatch "^/path-to-typo3/fileadmin/.+/locked/">
+    Order deny,allow
+    Deny from all
+</DirectoryMatch>

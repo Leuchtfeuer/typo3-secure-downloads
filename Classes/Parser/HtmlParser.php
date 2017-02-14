@@ -83,6 +83,7 @@ class HtmlParser
         }
 
         $this->tagPattern = '/["\'](?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']/i';
+        $this->tagPattern  = '/["\'](?:' . $this->domainPattern . ')?(\/?.+(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']/i';
     }
 
     /**
