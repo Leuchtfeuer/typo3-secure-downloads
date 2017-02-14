@@ -25,7 +25,10 @@ namespace Bitmotion\SecureDownloads\Parser;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-
+/**
+ * Interface HtmlParserDelegateInterface
+ * @package Bitmotion\SecureDownloads\Parser
+ */
 interface HtmlParserDelegateInterface
 {
 

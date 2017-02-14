@@ -26,8 +26,8 @@ namespace Bitmotion\SecureDownloads\Security\Authorization\Resource;
  ***************************************************************/
 
 /**
- * Interface for access restriction publishers
- *
+ * Interface AccessRestrictionPublisherInterface
+ * @package Bitmotion\SecureDownloads\Security\Authorization\Resource
  */
 interface AccessRestrictionPublisherInterface
 {

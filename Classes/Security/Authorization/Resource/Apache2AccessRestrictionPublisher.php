@@ -24,13 +24,16 @@ namespace Bitmotion\SecureDownloads\Security\Authorization\Resource;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 use Bitmotion\SecureDownloads\Request\RequestContext;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
+ * Class Apache2AccessRestrictionPublisher
+ *
  * An access restriction publisher that publishes .htaccess files to configure apache2 restrictions
+ *
+ * @package Bitmotion\SecureDownloads\Security\Authorization\Resource
  */
 class Apache2AccessRestrictionPublisher implements AccessRestrictionPublisherInterface, SingletonInterface
 {

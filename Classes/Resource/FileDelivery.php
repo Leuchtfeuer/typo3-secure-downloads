@@ -24,7 +24,6 @@ namespace Bitmotion\SecureDownloads\Resource;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 use Bitmotion\SecureDownloads\Domain\Model\Log;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -33,8 +32,8 @@ use TYPO3\CMS\Frontend\Utility\EidUtility;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
 
 /**
- * @author Dietrich Heise <typo3-ext(at)bitmotion.de>
- * @author Helmut Hummel <typo3-ext(at)bitmotion.de>
+ * Class FileDelivery
+ * @package Bitmotion\SecureDownloads\Resource
  */
 class FileDelivery
 {

@@ -28,7 +28,8 @@ namespace Bitmotion\SecureDownloads\Domain\Model;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**
- * Log
+ * Class Log
+ * @package Bitmotion\SecureDownloads\Domain\Model
  */
 class Log extends AbstractEntity
 {

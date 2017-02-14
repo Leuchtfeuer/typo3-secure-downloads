@@ -30,7 +30,11 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * This class implements a hook and publishes a cookie with the access token suitable for the current request
+ */
+
+/**
+ * Class AccessTokenCookiePublisher
+ * @package Bitmotion\SecureDownloads\Security\Authorization\Resource
  */
 class AccessTokenCookiePublisher implements SingletonInterface
 {

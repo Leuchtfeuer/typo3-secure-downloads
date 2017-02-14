@@ -28,7 +28,8 @@ namespace Bitmotion\SecureDownloads\Domain\Model;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 /**
- * Statistic
+ * Class Statistic
+ * @package Bitmotion\SecureDownloads\Domain\Model
  */
 class Statistic
 {

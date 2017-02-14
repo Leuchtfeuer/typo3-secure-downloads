@@ -24,7 +24,6 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Resource\ResourceStorage;

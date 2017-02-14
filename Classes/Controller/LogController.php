@@ -36,7 +36,8 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 
 /**
- * LogController
+ * Class LogController
+ * @package Bitmotion\SecureDownloads\Controller
  */
 class LogController extends ActionController
 {

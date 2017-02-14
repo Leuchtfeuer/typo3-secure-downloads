@@ -25,9 +25,12 @@ namespace Bitmotion\SecureDownloads\Core;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 use TYPO3\CMS\Core\SingletonInterface;
 
+/**
+ * Class ObjectManager
+ * @package Bitmotion\SecureDownloads\Core
+ */
 class ObjectManager implements SingletonInterface
 {
     /**

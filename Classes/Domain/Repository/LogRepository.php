@@ -25,13 +25,16 @@ namespace Bitmotion\SecureDownloads\Domain\Repository;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 use Bitmotion\SecureDownloads\Domain\Model\Filter;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
+/**
+ * Class LogRepository
+ * @package Bitmotion\SecureDownloads\Domain\Repository
+ */
 class LogRepository extends Repository
 {
 
