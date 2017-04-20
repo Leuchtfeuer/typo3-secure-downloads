@@ -25,11 +25,11 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use Bitmotion\SecureDownloads\Configuration\ConfigurationManager;
-use Bitmotion\SecureDownloads\Security\Authorization\Resource\AccessRestrictionPublisherInterface;
 use Bitmotion\SecureDownloads\Security\Authorization\Resource\Apache2AccessRestrictionPublisher;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Class ResourcePublisher
@@ -70,7 +70,7 @@ class ResourcePublisher implements SingletonInterface
     {
         // Check if we have DI, if not, lazily instatiate the publishing target
         if (is_null($this->publishingTarget)) {
-            $this->publishingTarget = GeneralUtility::makeInstance(ResourcePublisher::class);
+            $this->publishingTarget = GeneralUtility::makeInstance(ObjectManager::class)->get(ResourcePublishingTargetInterface::class);
             if (method_exists($this->publishingTarget, 'injectConfigurationManager')) {
                 $this->publishingTarget->injectConfigurationManager(GeneralUtility::makeInstance(ConfigurationManager::class));
             }
