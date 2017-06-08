@@ -82,6 +82,35 @@ class HtmlParserTest extends \Tx_Phpunit_TestCase {
 
 		$this->assertSame($expectedHtml, $actualHtml);
 	}
+
+
+
+	/** 
+	 * @param $originalHtml
+	 * @param $expectedHtml
+	 * @test
+	 * @dataProvider parseContentTestDataProvider
+	 */
+	public function secureDirRegexTest($originalHtml, $expectedHtml) {
+		$delegateMock = $this->getMock('Bitmotion\\SecureDownloads\\Parser\\HtmlParserDelegateInterface');
+		$delegateMock->expects($this->any())
+			->method('publishResourceUri')
+			->will($this->returnCallback(function($resourceUri) {return 'securedl/' . $resourceUri;}));
+		$settings = array(
+			'folderPatternRaw' => true,
+			'folderPattern' => '(.+\/)*secure\/',
+			'domainPattern' => 'http://www.example.com',
+			'fileExtensionPattern' => 'jpe?g|pdf',
+		);
+		$fixture = $this->getMock('Bitmotion\\SecureDownloads\\Parser\\HtmlParser', array('dummy'), array($delegateMock, $settings));
+
+		$actualHtml = $fixture->parse($originalHtml);
+
+		$this->assertSame($expectedHtml, $actualHtml);
+
+	}
+
+
 }
 
 ?>

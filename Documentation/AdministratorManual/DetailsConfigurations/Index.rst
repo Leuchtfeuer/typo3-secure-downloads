@@ -13,7 +13,7 @@ Details on configuration evaluation
 The three basic config fields *securedDirs*, *securedFiletypes*, *domain* allow regular expressions.
 
 .. hint::
-	Some characters (slash, backslash, dot, blank) are automatically quoted for your convenience.
+	Some characters (slash, backslash, dot, blank) are automatically quoted for your convenience. To disable quoting for securedDirs, set securedDirsRaw to true.
 
 For filetype (meaning actually the file extension), all upper/lowercase combinations are automatically included (e.g. “gif” would also cover “giF”.)
 
@@ -28,6 +28,14 @@ If for example you need to secure fileadmin and typo3temp, but not uploads: ::
 To secure everything under fileadmin/secure or typo3temp, you need to write ::
 
 	fileadmin/secure|typo3temp
+
+In order to write this rule with secureDirsRaw actived, you need to escape ::
+
+	fileadmin\/secure|typo3temp
+
+In order to secure all directories 'secure' anywhere in the directory tree, set secureDirsRaw to true and set securedDirs to ::
+
+	(.+\/)*secure\/
 
 You also can group some elements with regular expression, but you should be carefull with grouping because the complex regex in the extension does not work if some other matches were output by the regex.
 
