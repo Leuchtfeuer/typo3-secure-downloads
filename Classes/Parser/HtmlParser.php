@@ -50,6 +50,14 @@ class HtmlParser
      */
     protected $folderPattern;
 
+
+    /**
+     * Use raw regex of folderPattern (do not escape)
+     *
+     * @var bool
+     */
+    protected $folderPatternRaw;
+
     /**
      * @var string File extension pattern
      */
@@ -125,7 +133,19 @@ class HtmlParser
      */
     public function setFolderPattern($accessProtectedFolders)
     {
-        $this->folderPattern = $this->softQuoteExpression($accessProtectedFolders);
+        if ($this->folderPatternRaw) {
+            $this->folderPattern = $accessProtectedFolders;
+        } else {
+            $this->folderPattern = $this->softQuoteExpression($accessProtectedFolders);
+        }
+    }
+
+    /**
+     * @param bool $folderPatternRaw
+     */
+    public function setFolderPatternRaw($folderPatternRaw)
+    {
+        $this->folderPatternRaw = $folderPatternRaw;
     }
 
     /**
@@ -195,6 +215,7 @@ class HtmlParser
      */
     protected function parseTag($tag)
     {
+
         if (preg_match($this->tagPattern, $tag, $matchedUrls)) {
             $replace = $this->delegate->publishResourceUri($matchedUrls[1]);
             $tagexp = explode($matchedUrls[1], $tag, 2);

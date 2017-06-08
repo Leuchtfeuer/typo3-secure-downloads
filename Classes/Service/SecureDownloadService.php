@@ -93,6 +93,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
         if (is_null($this->htmlParser)) {
             $this->htmlParser = new HtmlParser($this, [
                 'domainPattern' => $this->configurationManager->getValue('domain'),
+		'folderPatternRaw' => $this->configurationManager->getValue('securedDirsRaw'),
                 'folderPattern' => $this->configurationManager->getValue('securedDirs'),
                 'fileExtensionPattern' => $this->configurationManager->getValue('securedFiletypes'),
                 'logLevel' => $this->configurationManager->getValue('debug'),

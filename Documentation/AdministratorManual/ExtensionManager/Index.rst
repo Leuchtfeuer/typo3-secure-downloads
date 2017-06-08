@@ -26,6 +26,7 @@ Properties
 	groupCheckDirs_                      basic                                string
 	excludeGroups_                       basic                                string
 	securedDirs_                         basic                                string
+	securedDirsRaw_                     basic                                boolean
 	securedFiletypes_                    basic                                string
 	domain_                              basic                                string
 	apacheDelivery_                      filedelivery                         boolean
@@ -145,6 +146,22 @@ securedDirs
          :code:`typo3temp|fileadmin|uploads`
 
 .. _adminSecuredFiletypes:
+
+
+securedDirsRaw
+""""""""""""""
+.. container:: table-row
+
+   Property
+         basic.securedDirsRaw
+   Data type
+         boolean
+   Description
+         Use string in securedDirs as raw regular expression. That means, this extension will not escape any characters
+         in the string. Make sure to do all escaping in securedDirs yourself, e.g. typo3temp|fileadmin\/uploads|uploads. 
+   Default
+         :code:`false`
+
 
 securedFiletypes
 """"""""""""""""
