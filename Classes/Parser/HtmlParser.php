@@ -148,7 +148,6 @@ class HtmlParser
         if ($this->logLevel >= 1) {
             $time_start = $this->microtime_float();
         }
-
         $rest = $html;
         $result = '';
         $pattern = '/((data-[a-z0-9]*)|(href|src|poster))=["\']{1}(.*)["\']{1}/siU';
