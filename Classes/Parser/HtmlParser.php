@@ -151,7 +151,7 @@ class HtmlParser
 		
         $html = $this->parseLocal($html, '/(url\()["\']{1}(.*)["\'\)]{1}/siU');
         $html = $this->parseLocal($html, '/(url\()\&#039;{1}(.*)\&#039;\){1}/siU');
-        $html = $this->parseLocal($html, '/(data-[a-z0-9])=["\']{1}(.)["\']{1}/siU');
+        $html = $this->parseLocal($html, '/(data-[a-z0-9]*)=["\']{1}(.*)["\']{1}/siU');
         $html = $this->parseLocal($html, '/(href|src|poster)=["\']{1}(.*)["\']{1}/siU');
 		
         return $html;
