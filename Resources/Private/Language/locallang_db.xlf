@@ -46,6 +46,12 @@
             <trans-unit id="tx_securedownloads_domain_model_log.tstamp">
                 <source>Time</source>
             </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.file_size">
+                <source>File Size</source>
+            </trans-unit>
+            <trans-unit id="tx_securedownloads_domain_model_log.file_type">
+                <source>File Type</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>
