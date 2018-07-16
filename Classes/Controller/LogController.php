@@ -28,6 +28,9 @@ namespace Bitmotion\SecureDownloads\Controller;
 use Bitmotion\SecureDownloads\Domain\Model\Filter;
 use Bitmotion\SecureDownloads\Domain\Model\Statistic;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -102,15 +105,39 @@ class LogController extends ActionController
     private function getUsers()
     {
         $users = [];
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-            'user',
-            'tx_securedownloads_domain_model_log', 'user != 0',
-            'user'
-        );
 
-        while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-            $getUserRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'fe_users', 'uid = ' . $row['user']);
-            $users[] = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($getUserRes);
+        /** @var DeletedRestriction $deletedRestriction */
+        $deletedRestriction = GeneralUtility::makeInstance(DeletedRestriction::class);
+
+        /** @var QueryBuilder $logQueryBuilder */
+        $logQueryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+        $logQueryBuilder
+            ->getRestrictions()
+            ->removeAll()
+            ->add($deletedRestriction);
+
+        $res = $logQueryBuilder
+            ->select('user')
+            ->from('tx_securedownloads_domain_model_log')
+            ->where($logQueryBuilder->expr()->neq('user', 0))
+            ->groupBy('user')
+            ->execute();
+
+        while ($row = $res->fetch()) {
+            /** @var QueryBuilder $userQueryBuilder */
+            $userQueryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('fe_users');
+            $userQueryBuilder
+                ->getRestrictions()
+                ->removeAll()
+                ->add($deletedRestriction);
+
+            $getUserRes = $userQueryBuilder
+                ->select('*')
+                ->from('fe_users')
+                ->where($userQueryBuilder->expr()->eq('uid', $row['user']))
+                ->execute();
+
+            $users[] = $getUserRes->fetch();
         }
 
         return $users;
@@ -123,15 +150,24 @@ class LogController extends ActionController
     {
         $fileTypes = [];
 
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-            'media_type',
-            'tx_securedownloads_domain_model_log',
-            '',
-            'media_type',
-            'media_type ASC'
-        );
+        /** @var DeletedRestriction $deletedRestriction */
+        $deletedRestriction = GeneralUtility::makeInstance(DeletedRestriction::class);
 
-        while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+        /** @var QueryBuilder $logQueryBuilder */
+        $logQueryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+        $logQueryBuilder
+            ->getRestrictions()
+            ->removeAll()
+            ->add($deletedRestriction);
+
+        $res = $logQueryBuilder
+            ->select('media_type')
+            ->from('tx_securedownloads_domain_model_log')
+            ->groupBy('media_type')
+            ->orderBy('media_type', 'ASC')
+            ->execute();
+
+        while ($row = $res->fetch()) {
             $fileTypes[] = ['title' => $row['media_type']];
         }
 

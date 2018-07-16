@@ -25,6 +25,10 @@ namespace Bitmotion\SecureDownloads\Domain\Model;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**
@@ -152,8 +156,24 @@ class Log extends AbstractEntity
     public function getUserObject()
     {
         if ($this->user !== null && $this->user !== 0) {
-            $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'fe_users', 'uid = ' . $this->user);
-            return $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+
+            /** @var DeletedRestriction $deletedRestriction */
+            $deletedRestriction = GeneralUtility::makeInstance(DeletedRestriction::class);
+
+            /** @var QueryBuilder $queryBuilder */
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('fe_users');
+            $queryBuilder
+                ->getRestrictions()
+                ->removeAll()
+                ->add($deletedRestriction);
+
+            $res = $queryBuilder
+                ->select('*')
+                ->from('fe_users')
+                ->where($queryBuilder->expr()->eq('uid', $this->user))
+                ->execute();
+
+            return $res->fetch();
         }
 
         return null;
