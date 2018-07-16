@@ -108,7 +108,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         $replacements = [
             $userId,
             rawurlencode(implode(',', $userGroupIds)),
-            GeneralUtility::rawUrlEncodeFP($resourceUri),
+            str_replace('%2F', '/', rawurlencode($resourceUri)),
             $validityPeriod,
             $hash,
             $GLOBALS['TSFE']->id,
