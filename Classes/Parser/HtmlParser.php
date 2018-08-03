@@ -148,35 +148,40 @@ class HtmlParser
         if ($this->logLevel >= 1) {
             $time_start = $this->microtime_float();
         }
-
+		
+        $html = $this->parseLocal($html, '/(url\()["\']{1}(.*)["\'\)]{1}/siU');
+        $html = $this->parseLocal($html, '/(url\()\&#039;{1}(.*)\&#039;\){1}/siU');
+        $html = $this->parseLocal($html, '/(data-[a-z0-9]*)=["\']{1}(.*)["\']{1}/siU');
+        $html = $this->parseLocal($html, '/(href|src|poster)=["\']{1}(.*)["\']{1}/siU');
+		
+        return $html;
+    }
+    
+    private function parseLocal($html, $pattern) {
         $rest = $html;
         $result = '';
-        $pattern = '/((data-[a-z0-9]*)|(href|src|poster))=["\']{1}(.*)["\']{1}/siU';
-
-
-        while (preg_match($pattern, $html, $match)) {  // suchendes secured Verzeichnis
+		
+        while (preg_match($pattern, $html, $match)) { // suchendes secured Verzeichnis
             $cont = explode($match[0], $html, 2);
             $vor = $cont[0];
             $tag = $match[0];
-
             if ($this->logLevel === 3) {
                 DebuggerUtility::var_dump($tag, 'Tag:');
             }
-
             $rest = $cont[1];
-
+            $tag = str_replace("&#039;", "'", $tag);
             $tag = $this->parseTag($tag);
-
             $result .= $vor . $tag;
             $html = $rest;
         }
-
-        if ($this->logLevel >= 1) {
+		
+		if ($this->logLevel >= 1) {
             $time_end = $this->microtime_float();
             $time = $time_end - $time_start;
             DebuggerUtility::var_dump($time, 'Scriptlaufzeit');
         }
-
+		
+		
         return $result . $rest;
     }
 
