@@ -215,5 +215,3 @@ class FileDeliveryTest extends \Tx_Phpunit_TestCase {
 	}
 
 }
-
-?>

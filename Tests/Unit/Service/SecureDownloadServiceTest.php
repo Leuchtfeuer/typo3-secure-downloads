@@ -79,5 +79,3 @@ class SecureDownloadServiceTest extends \Tx_Phpunit_TestCase {
 		$fixture->parseFE($dummy, $this->getMock('tslib_fe', array(), array(), '', FALSE));
 	}
 }
-
-?>

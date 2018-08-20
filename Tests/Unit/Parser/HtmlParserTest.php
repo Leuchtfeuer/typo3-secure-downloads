@@ -83,5 +83,3 @@ class HtmlParserTest extends \Tx_Phpunit_TestCase {
 		$this->assertSame($expectedHtml, $actualHtml);
 	}
 }
-
-?>

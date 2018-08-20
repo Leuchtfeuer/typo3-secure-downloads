@@ -90,5 +90,3 @@ class PhpDeliveryProtectedResourcePublishingTargetTest extends \Tx_Phpunit_TestC
 		$this->assertSame('securedl/999/4%2C7%2C8%2C3/0/abcdefgh/foo', $fixture->_call('buildUri', 'foo', 999, array(4,7,8,3), 0, 'abcdefgh'));
 	}
 }
-
-?>
