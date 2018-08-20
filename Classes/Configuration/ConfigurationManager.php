@@ -47,6 +47,7 @@ class ConfigurationManager implements SingletonInterface
     public function __construct($extensionKey = null)
     {
         $this->extensionKey = $extensionKey ?: $this->extensionKey;
+        // TODO: Deprecated since TYPO3 9.0
         if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extensionKey])) {
             $this->configuration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extensionKey]);
         }

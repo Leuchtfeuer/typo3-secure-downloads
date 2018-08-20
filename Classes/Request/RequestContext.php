@@ -122,6 +122,7 @@ class RequestContext
             $this->userGroupIds = array_unique(array_map('intval', $this->currentUser->groupData['uid']));
             sort($this->userGroupIds);
 
+            // TODO: $typoScriptFrontendController->config is deprecated since TYPO3 9.0
             if (isset($typoScriptFrontendController->config['tx_securedownloads']['additionalSecret'])) {
                 $this->additionalSecret = $typoScriptFrontendController->config['tx_securedownloads']['additionalSecret'];
             } else {

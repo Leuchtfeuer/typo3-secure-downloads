@@ -173,6 +173,7 @@ class FileDelivery
         static $extensionConfiguration = [];
 
         if (!$extensionConfiguration) {
+            // TODO: Deprecated since TYPO3 9.0
             $extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['secure_downloads']);
         }
 

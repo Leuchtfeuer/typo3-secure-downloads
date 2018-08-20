@@ -78,6 +78,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
     {
         // Parsing the content if not explicitly disabled
         if ($this->requestContext->isUrlRewritingEnabled()) {
+            // TODO: $typoScriptFrontendController->content is deprecated since TYPO3 9.0
             $typoScriptFrontendController->content = $this->getHtmlParser()->parse($typoScriptFrontendController->content);
         }
     }
