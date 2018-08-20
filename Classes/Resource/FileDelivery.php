@@ -25,6 +25,7 @@ namespace Bitmotion\SecureDownloads\Resource;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use Bitmotion\SecureDownloads\Domain\Model\Log;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
@@ -52,11 +53,6 @@ class FileDelivery
      * @var int
      */
     protected $fileSize;
-
-    /**
-     * @var int
-     */
-    protected $logRowUid;
 
     /**
      * @var int
@@ -97,11 +93,6 @@ class FileDelivery
      * @var string
      */
     protected $calculatedHash;
-
-    /**
-     * @var \TYPO3\CMS\Core\Database\DatabaseConnection
-     */
-    protected $databaseConnection;
 
     /**
      * Check the access rights
@@ -234,12 +225,6 @@ class FileDelivery
     {
         $this->feUserObj = EidUtility::initFeUser();
         $this->feUserObj->fetchGroupData();
-        $this->databaseConnection = $GLOBALS['TYPO3_DB'];
-        // This is obsolete since 6.1 but required for versions before.
-        // It can be removed once support for TYPO3 below 6.1 is dropped.
-        if (!$this->databaseConnection->isConnected()) {
-            $this->databaseConnection->connectDB();
-        }
     }
 
     /**
@@ -463,19 +448,14 @@ class FileDelivery
 
             $log->setPage($this->pageId);
 
-
             // TODO: Get the current downloaded filesize
             $log->setBytesDownloaded(0);
 
-            // TODO: Use repository for inserting and updating records
-            if (is_null($this->logRowUid)) {
-                $this->databaseConnection->exec_INSERTquery('tx_securedownloads_domain_model_log', $log->toArray());
-                $this->logRowUid = $this->databaseConnection->sql_insert_id();
-            } else {
-                $this->databaseConnection->exec_UPDATEquery('tx_securedownloads_domain_model_log',
-                    '`uid`=' . (int)$this->logRowUid, $log->toArray());
-            }
-
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+            $queryBuilder
+                ->insert('tx_securedownloads_domain_model_log')
+                ->values($log->toArray())
+                ->execute();
         }
     }
 
