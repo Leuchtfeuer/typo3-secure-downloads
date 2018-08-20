@@ -35,7 +35,7 @@ if ($configurationManager->getValue('apacheDelivery')) {
     }
 
 } else {
-    $TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'][] = ':&' . \Bitmotion\SecureDownloads\Service\SecureDownloadService::class . '->parseFE';
+    $TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'][] = \Bitmotion\SecureDownloads\Service\SecureDownloadService::class . '->parseFE';
 }
 
 $objectManager->registerImplementation(
