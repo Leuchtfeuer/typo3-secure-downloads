@@ -27,6 +27,7 @@ namespace Bitmotion\SecureDownloads\Controller;
  ***************************************************************/
 use Bitmotion\SecureDownloads\Domain\Model\Filter;
 use Bitmotion\SecureDownloads\Domain\Model\Statistic;
+use Bitmotion\SecureDownloads\Domain\Repository\LogRepository;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -34,6 +35,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
+use TYPO3\CMS\Frontend\Page\PageRepository;
 
 /**
  * Class LogController
@@ -54,18 +56,32 @@ class LogController extends ActionController
     /**
      * logRepository
      *
-     * @var \Bitmotion\SecureDownloads\Domain\Repository\LogRepository
-     * @inject
+     * @var LogRepository
      */
-    protected $logRepository = null;
+    protected $logRepository;
 
     /**
      * pageRepository
      *
      * @var \TYPO3\CMS\Frontend\Page\PageRepository
-     * @inject
      */
     protected $pageRepository = null;
+
+    /**
+     * @param LogRepository $logRepository
+     */
+    public function injectLogRepository(LogRepository $logRepository)
+    {
+        $this->logRepository = $logRepository;
+    }
+
+    /**
+     * @param PageRepository $pageRepository
+     */
+    public function injectPageRepository(PageRepository $pageRepository)
+    {
+        $this->pageRepository = $pageRepository;
+    }
 
     public function initializeAction()
     {
