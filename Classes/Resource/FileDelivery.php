@@ -100,6 +100,8 @@ class FileDelivery
     protected $isProcessed = false;
 
     /**
+     * FileDelivery constructor.
+     *
      * Check the access rights
      */
     function __construct()
@@ -166,7 +168,7 @@ class FileDelivery
      *
      * @return array
      */
-    protected function getExtensionConfiguration()
+    protected function getExtensionConfiguration(): array
     {
         static $extensionConfiguration = [];
 
@@ -181,13 +183,13 @@ class FileDelivery
      * TODO: Refactor it to a hash service
      *
      * @param string $resourceUri
-     * @param integer $userId
-     * @param         array <integer> $userGroupIds
+     * @param int $userId
+     * @param string $userGroupIds
      * @param integer $validityPeriod
      *
      * @return string
      */
-    protected function getHash($resourceUri, $userId, $userGroupIds, $validityPeriod)
+    protected function getHash(string $resourceUri, int $userId, string $userGroupIds, int $validityPeriod = 0): string
     {
         if ($this->extensionConfiguration['enableGroupCheck']) {
             $hashString = $userId . $userGroupIds . $resourceUri . $validityPeriod;
@@ -199,9 +201,9 @@ class FileDelivery
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    protected function hashValid()
+    protected function hashValid(): bool
     {
         return ($this->calculatedHash === $this->hash);
     }
@@ -209,16 +211,16 @@ class FileDelivery
     /**
      * @param string $message
      */
-    protected function exitScript($message)
+    protected function exitScript(string $message)
     {
         header('HTTP/1.1 403 Forbidden');
         exit($message);
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    protected function expiryTimeExceeded()
+    protected function expiryTimeExceeded(): bool
     {
         return (intval($this->expiryTime) < time());
     }
@@ -233,9 +235,9 @@ class FileDelivery
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    protected function checkUserAccess()
+    protected function checkUserAccess(): bool
     {
 
         return ($this->userId === (int)$this->feUserObj->user['uid']);
@@ -246,9 +248,9 @@ class FileDelivery
      * to the group list of the current user or both have at least one group
      * in common.
      *
-     * @return boolean
+     * @return bool
      */
-    protected function checkGroupAccess()
+    protected function checkGroupAccess(): bool
     {
         $accessAllowed = false;
         if (empty($this->extensionConfiguration['enableGroupCheck'])) {
@@ -286,9 +288,9 @@ class FileDelivery
     /**
      * @param string $string
      *
-     * @return mixed
+     * @return string
      */
-    protected function softQuoteExpression($string)
+    protected function softQuoteExpression(string $string): string
     {
         return HtmlParser::softQuoteExpression($string);
     }
@@ -384,7 +386,7 @@ class FileDelivery
             $strOutputFunction = trim($this->extensionConfiguration['outputFunction']);
             switch ($strOutputFunction) {
                 case 'readfile_chunked':
-                    $this->readfile_chunked($file);
+                    $this->readFileFactional($file);
                     break;
 
                 case 'fpassthru':
@@ -417,7 +419,7 @@ class FileDelivery
      *
      * @param int $fileSize
      */
-    protected function logDownload($fileSize = 0)
+    protected function logDownload(int $fileSize = 0)
     {
         if ($this->isLoggingEnabled() && $this->isProcessed === false) {
 
@@ -471,7 +473,7 @@ class FileDelivery
      *
      * @return bool
      */
-    protected function isLoggingEnabled()
+    protected function isLoggingEnabled(): bool
     {
         return (bool)$this->extensionConfiguration['log'];
     }
@@ -484,7 +486,7 @@ class FileDelivery
      *
      * @return string mime type
      */
-    protected function getMimeTypeByFileExtension($strFileExtension)
+    protected function getMimeTypeByFileExtension(string $strFileExtension): string
     {
         // Check files with unknown file extensions, if they are image files (currently disabled)
         $checkForImageFiles = false;
@@ -602,7 +604,7 @@ class FileDelivery
      *
      * @return string
      */
-    protected function getFileExtensionByFilename($strFileName)
+    protected function getFileExtensionByFilename(string $strFileName): string
     {
         return mb_strtolower(ltrim(mb_strrchr($strFileName, '.'), '.'));
     }
@@ -615,7 +617,7 @@ class FileDelivery
      *
      * @return bool
      */
-    protected function readfile_chunked($strFileName)
+    protected function readFileFactional(string $strFileName): bool
     {
         $chunksize = intval($this->extensionConfiguration['outputChunkSize']); // how many bytes per chunk
         $timeout = ini_get('max_execution_time');

@@ -40,5 +40,5 @@ interface AccessRestrictionPublisherInterface
      *
      * @return void
      */
-    public function publishAccessRestrictionsForPath($path);
+    public function publishAccessRestrictionsForPath(string $path);
 }

@@ -74,7 +74,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
      * @param array $parameters
      * @param TypoScriptFrontendController $typoScriptFrontendController
      */
-    public function parseFE(array &$parameters, $typoScriptFrontendController)
+    public function parseFE(array &$parameters, TypoScriptFrontendController $typoScriptFrontendController)
     {
         // Parsing the content if not explicitly disabled
         if ($this->requestContext->isUrlRewritingEnabled()) {
@@ -86,9 +86,9 @@ class SecureDownloadService implements HtmlParserDelegateInterface
      * Lazily instantiates the HTML parser
      * Must be called AFTER the configuration manager has been initialized
      *
-     * @return \Bitmotion\SecureDownloads\Parser\HtmlParser
+     * @return HtmlParser
      */
-    protected function getHtmlParser()
+    protected function getHtmlParser(): HtmlParser
     {
         if (is_null($this->htmlParser)) {
             $this->htmlParser = new HtmlParser($this, [
@@ -109,7 +109,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
      *
      * @return string
      */
-    public function parseContent($html)
+    public function parseContent(string $html): string
     {
         return $this->getHtmlParser()->parse($html);
     }
@@ -121,7 +121,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
      *
      * @return string
      */
-    public function makeSecure($originalUri)
+    public function makeSecure(string $originalUri): string
     {
         return $this->publishResourceUri($originalUri);
     }
@@ -133,7 +133,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
      *
      * @return string
      */
-    public function publishResourceUri($originalUri)
+    public function publishResourceUri(string $originalUri): string
     {
         $transformedUri = $this->getResourcePublisher()->publishResourceUri(rawurldecode($originalUri));
 
@@ -158,7 +158,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
      *
      * @return ResourcePublisher
      */
-    protected function getResourcePublisher()
+    protected function getResourcePublisher(): ResourcePublisher
     {
         if (is_null($this->resourcePublisher)) {
             $this->resourcePublisher = GeneralUtility::makeInstance(ResourcePublisher::class);

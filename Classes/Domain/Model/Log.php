@@ -83,6 +83,7 @@ class Log extends AbstractEntity
      * bytesDownloaded
      *
      * @var int
+     * @deprecated
      */
     protected $bytesDownloaded = 0;
 
@@ -134,7 +135,7 @@ class Log extends AbstractEntity
      *
      * @return int $tstamp
      */
-    public function getTstamp()
+    public function getTstamp(): int
     {
         return $this->tstamp;
     }
@@ -145,7 +146,7 @@ class Log extends AbstractEntity
      * @param int $tstamp
      * @return void
      */
-    public function setTstamp($tstamp)
+    public function setTstamp(int $tstamp)
     {
         $this->tstamp = $tstamp;
     }
@@ -168,7 +169,7 @@ class Log extends AbstractEntity
         return null;
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'file_id' => $this->getFileId(),
@@ -193,7 +194,7 @@ class Log extends AbstractEntity
      *
      * @return string $fileId
      */
-    public function getFileId()
+    public function getFileId(): string
     {
         return $this->fileId;
     }
@@ -204,7 +205,7 @@ class Log extends AbstractEntity
      * @param string $fileId
      * @return void
      */
-    public function setFileId($fileId)
+    public function setFileId(string $fileId)
     {
         $this->fileId = $fileId;
     }
@@ -214,7 +215,7 @@ class Log extends AbstractEntity
      *
      * @return string $fileName
      */
-    public function getFileName()
+    public function getFileName(): string
     {
         return $this->fileName;
     }
@@ -225,7 +226,7 @@ class Log extends AbstractEntity
      * @param string $fileName
      * @return void
      */
-    public function setFileName($fileName)
+    public function setFileName(string $fileName)
     {
         $this->fileName = $fileName;
     }
@@ -235,7 +236,7 @@ class Log extends AbstractEntity
      *
      * @return string $filePath
      */
-    public function getFilePath()
+    public function getFilePath(): string
     {
         return $this->filePath;
     }
@@ -246,7 +247,7 @@ class Log extends AbstractEntity
      * @param string $filePath
      * @return void
      */
-    public function setFilePath($filePath)
+    public function setFilePath(string $filePath)
     {
         $this->filePath = $filePath;
     }
@@ -256,7 +257,7 @@ class Log extends AbstractEntity
      *
      * @return int $fileSize
      */
-    public function getFileSize()
+    public function getFileSize(): int
     {
         return $this->fileSize;
     }
@@ -267,7 +268,7 @@ class Log extends AbstractEntity
      * @param int $fileSize
      * @return void
      */
-    public function setFileSize($fileSize)
+    public function setFileSize(int $fileSize)
     {
         $this->fileSize = $fileSize;
     }
@@ -277,7 +278,7 @@ class Log extends AbstractEntity
      *
      * @return string $fileType
      */
-    public function getFileType()
+    public function getFileType(): string
     {
         return $this->fileType;
     }
@@ -288,7 +289,7 @@ class Log extends AbstractEntity
      * @param string $fileType
      * @return void
      */
-    public function setFileType($fileType)
+    public function setFileType(string $fileType)
     {
         $this->fileType = $fileType;
     }
@@ -298,7 +299,7 @@ class Log extends AbstractEntity
      *
      * @return string $mediaType
      */
-    public function getMediaType()
+    public function getMediaType(): string
     {
         return $this->mediaType;
     }
@@ -309,7 +310,7 @@ class Log extends AbstractEntity
      * @param string $mediaType
      * @return void
      */
-    public function setMediaType($mediaType)
+    public function setMediaType(string $mediaType)
     {
         $this->mediaType = $mediaType;
     }
@@ -318,8 +319,9 @@ class Log extends AbstractEntity
      * Returns the bytesDownloaded
      *
      * @return int $bytesDownloaded
+     * @deprecated
      */
-    public function getBytesDownloaded()
+    public function getBytesDownloaded(): int
     {
         return $this->bytesDownloaded;
     }
@@ -329,8 +331,9 @@ class Log extends AbstractEntity
      *
      * @param int $bytesDownloaded
      * @return void
+     * @deprecated
      */
-    public function setBytesDownloaded($bytesDownloaded)
+    public function setBytesDownloaded(int $bytesDownloaded)
     {
         $this->bytesDownloaded = $bytesDownloaded;
     }
@@ -340,7 +343,7 @@ class Log extends AbstractEntity
      *
      * @return string $protected
      */
-    public function getProtected()
+    public function getProtected(): string
     {
         return $this->protected;
     }
@@ -351,7 +354,7 @@ class Log extends AbstractEntity
      * @param string $protected
      * @return void
      */
-    public function setProtected($protected)
+    public function setProtected(string $protected)
     {
         $this->protected = $protected;
     }
@@ -361,7 +364,7 @@ class Log extends AbstractEntity
      *
      * @return string $host
      */
-    public function getHost()
+    public function getHost(): string
     {
         return $this->host;
     }
@@ -372,7 +375,7 @@ class Log extends AbstractEntity
      * @param string $host
      * @return void
      */
-    public function setHost($host)
+    public function setHost(string $host)
     {
         $this->host = $host;
     }
@@ -383,7 +386,7 @@ class Log extends AbstractEntity
      * @return string $typo3Mode
      * @deprecated
      */
-    public function getTypo3Mode()
+    public function getTypo3Mode(): string
     {
         return $this->typo3Mode;
     }
@@ -395,7 +398,7 @@ class Log extends AbstractEntity
      * @return void
      * @deprecated
      */
-    public function setTypo3Mode($typo3Mode)
+    public function setTypo3Mode(string $typo3Mode)
     {
         $this->typo3Mode = $typo3Mode;
     }
@@ -405,9 +408,9 @@ class Log extends AbstractEntity
      *
      * @return int $user
      */
-    public function getUser()
+    public function getUser(): int
     {
-        return $this->user;
+        return (int)$this->user;
     }
 
     /**
@@ -416,7 +419,7 @@ class Log extends AbstractEntity
      * @param int $user
      * @return void
      */
-    public function setUser($user)
+    public function setUser(int $user)
     {
         $this->user = $user;
     }
@@ -426,7 +429,7 @@ class Log extends AbstractEntity
      *
      * @return int $page
      */
-    public function getPage()
+    public function getPage(): int
     {
         return $this->page;
     }
@@ -437,7 +440,7 @@ class Log extends AbstractEntity
      * @param int $page
      * @return void
      */
-    public function setPage($page)
+    public function setPage(int $page)
     {
         $this->page = $page;
     }

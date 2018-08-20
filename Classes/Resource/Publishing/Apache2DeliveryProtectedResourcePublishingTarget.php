@@ -77,7 +77,7 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
      *
      * @return string
      */
-    protected function buildResourcePublishPathAndFilename(ResourceInterface $resource)
+    protected function buildResourcePublishPathAndFilename(ResourceInterface $resource): string
     {
         return $this->resourcesPublishingPath . $this->buildPublishingPathPartBySourcePath($this->getResourceSourcePathAndFileName($resource));
     }
@@ -87,7 +87,7 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
      *
      * @return string
      */
-    protected function buildPublishingPathPartBySourcePath($sourcePath)
+    protected function buildPublishingPathPartBySourcePath($sourcePath): string
     {
         $contextHash = '0';
         if ($this->getRequestContext()->isUserLoggedIn()) {
@@ -104,7 +104,7 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
      *
      * @return string
      */
-    protected function getResourceSourcePathAndFileName(ResourceInterface $resource)
+    protected function getResourceSourcePathAndFileName(ResourceInterface $resource): string
     {
         $pathAndFilename = $this->resourcesSourcePath . ltrim($resource->getIdentifier(), '/');
 
@@ -116,12 +116,16 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
      *
      * @return string
      */
-    protected function buildResourceWebUri(ResourceInterface $resource)
+    protected function buildResourceWebUri(ResourceInterface $resource): string
     {
         return substr($this->buildResourcePublishPathAndFilename($resource), strlen(PATH_site));
     }
 
-    protected function mirrorFile($fileSourcePath, $fileTargetPath)
+    /**
+     * @param string $fileSourcePath
+     * @param string $fileTargetPath
+     */
+    protected function mirrorFile(string $fileSourcePath, string $fileTargetPath)
     {
         $publishingDirectory = dirname($fileTargetPath) . '/';
         $this->assureDirectoryPathExists($publishingDirectory);
@@ -134,7 +138,7 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
     /**
      * @param $absolutePath
      */
-    protected function assureDirectoryPathExists($absolutePath)
+    protected function assureDirectoryPathExists(string $absolutePath)
     {
         if (!is_dir($absolutePath)) {
             GeneralUtility::mkdir_deep(PATH_site, substr($absolutePath, strlen(PATH_site)));
@@ -144,11 +148,11 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
     /**
      * Builds a delivery URI from a URI which is in document root but protected through the webserver
      *
-     * @param $resourceUri
+     * @param string $resourceUri
      *
      * @return string
      */
-    public function publishResourceUri($resourceUri)
+    public function publishResourceUri(string $resourceUri): string
     {
         $this->setResourcesSourcePath(PATH_site);
         $publishedResourcePathAndFilename = $this->buildResourceUriPublishPathAndFilename($resourceUri);
@@ -170,17 +174,17 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
      *
      * @return string
      */
-    protected function buildResourceUriPublishPathAndFilename($resourceUri)
+    protected function buildResourceUriPublishPathAndFilename(string $resourceUri): string
     {
         return $this->resourcesPublishingPath . $this->buildPublishingPathPartBySourcePath($this->getResourceUriSourcePathAndFileName($resourceUri));
     }
 
     /**
-     * @param $resourceUri
+     * @param string $resourceUri
      *
      * @return string
      */
-    protected function getResourceUriSourcePathAndFileName($resourceUri)
+    protected function getResourceUriSourcePathAndFileName(string $resourceUri): string
     {
         //TODO: Check if we need to check for backpaths here
         return PATH_site . $resourceUri;
@@ -191,7 +195,7 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
      *
      * @return string
      */
-    protected function buildResourceUriWebUri($resourceUri)
+    protected function buildResourceUriWebUri(string $resourceUri): string
     {
         return substr($this->buildResourceUriPublishPathAndFilename($resourceUri), strlen(PATH_site));
     }

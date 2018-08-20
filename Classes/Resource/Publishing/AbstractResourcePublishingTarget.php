@@ -89,7 +89,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      *
      * @return string
      */
-    protected function getResourceUri(ResourceInterface $resource)
+    protected function getResourceUri(ResourceInterface $resource): string
     {
         return PathUtility::getCanonicalPath($this->getResourcesBaseUri() . '/' . $resource->getIdentifier());
     }
@@ -99,7 +99,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      *
      * @return string The base URI
      */
-    public function getResourcesBaseUri()
+    public function getResourcesBaseUri(): string
     {
         if ($this->resourcesBaseUri === null) {
             $this->detectResourcesBaseUri();
@@ -121,7 +121,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      *
      * @return string
      */
-    protected function getResourcesSourcePathByResourceStorage(ResourceStorage $storage)
+    protected function getResourcesSourcePathByResourceStorage(ResourceStorage $storage): string
     {
         $storageConfiguration = $storage->getConfiguration();
         if ($storageConfiguration['pathType'] === 'absolute') {
@@ -136,7 +136,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
     /**
      * @param string $resourceSourcePath Absolute path to resources
      */
-    protected function setResourcesSourcePath($resourceSourcePath)
+    protected function setResourcesSourcePath(string $resourceSourcePath)
     {
         $this->resourcesSourcePath = $resourceSourcePath;
         $this->detectResourcesPublishingPath();
@@ -161,7 +161,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      *
      * @return bool
      */
-    protected function isSourcePathInDocumentRoot()
+    protected function isSourcePathInDocumentRoot(): bool
     {
         return GeneralUtility::isFirstPartOfStr($this->resourcesSourcePath, PATH_site);
     }
@@ -169,7 +169,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
     /**
      * @return RequestContext
      */
-    protected function getRequestContext()
+    protected function getRequestContext(): RequestContext
     {
         if ($this->requestContext === null) {
             $this->buildRequestContext();

@@ -38,6 +38,9 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 class LogRepository extends Repository
 {
 
+    /**
+     * @var array
+     */
     protected $defaultOrderings = [
         'tstamp' => QueryInterface::ORDER_DESCENDING,
     ];

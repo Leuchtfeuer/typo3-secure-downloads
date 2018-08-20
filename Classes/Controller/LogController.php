@@ -35,6 +35,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Frontend\Page\PageRepository;
 
 /**
@@ -104,6 +105,7 @@ class LogController extends ActionController
      */
     public function listAction(Filter $filter = null)
     {
+        DebuggerUtility::var_dump($filter, 'FILTER');
         $logEntries = $this->logRepository->findByFilter($filter);
 
         $this->view->assignMultiple([
@@ -118,9 +120,10 @@ class LogController extends ActionController
     /**
      * @return array
      */
-    private function getUsers()
+    private function getUsers(): array
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+
         return $queryBuilder
             ->select('users.uid as uid', 'users.username as username')
             ->from('tx_securedownloads_domain_model_log', 'log')
@@ -134,9 +137,10 @@ class LogController extends ActionController
     /**
      * @return array
      */
-    private function getFileTypes()
+    private function getFileTypes(): array
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+
         return $queryBuilder
             ->select('media_type')
             ->from('tx_securedownloads_domain_model_log')
@@ -230,7 +234,7 @@ class LogController extends ActionController
     /**
      * @return UriBuilder
      */
-    protected function getUriBuilder()
+    protected function getUriBuilder(): UriBuilder
     {
         /** @var UriBuilder $uriBuilder */
         $uriBuilder = $this->objectManager->get(UriBuilder::class);

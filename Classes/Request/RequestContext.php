@@ -75,6 +75,9 @@ class RequestContext
      */
     protected $locationId;
 
+    /**
+     * RequestContext constructor.
+     */
     public function __construct()
     {
         if ($this->isFrontendRequest()) {
@@ -89,7 +92,7 @@ class RequestContext
     /**
      * @return bool
      */
-    public function isFrontendRequest()
+    public function isFrontendRequest(): bool
     {
         if (defined('TYPO3_MODE') && TYPO3_MODE === 'FE') {
             return true;
@@ -139,7 +142,7 @@ class RequestContext
     /**
      * @return bool
      */
-    public function isUserLoggedIn()
+    public function isUserLoggedIn(): bool
     {
         if (empty($this->currentUser->user['uid'])) {
             return false;
@@ -163,7 +166,7 @@ class RequestContext
     /**
      * @return bool
      */
-    protected function isBackendRequest()
+    protected function isBackendRequest(): bool
     {
         if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
             return true;
@@ -175,7 +178,7 @@ class RequestContext
     /**
      * @return string
      */
-    public function getAdditionalSecret()
+    public function getAdditionalSecret(): string
     {
         return $this->additionalSecret;
     }
@@ -183,7 +186,7 @@ class RequestContext
     /**
      * @return int
      */
-    public function getUserId()
+    public function getUserId(): int
     {
         return $this->userId;
     }
@@ -191,7 +194,7 @@ class RequestContext
     /**
      * @return int
      */
-    public function getCacheLifetime()
+    public function getCacheLifetime(): int
     {
         return $this->cacheLifetime;
     }
@@ -199,7 +202,7 @@ class RequestContext
     /**
      * @return bool
      */
-    public function isUrlRewritingEnabled()
+    public function isUrlRewritingEnabled(): bool
     {
         return $this->urlRewritingEnabled;
     }
@@ -207,12 +210,15 @@ class RequestContext
     /**
      * @return string
      */
-    public function getCookieName()
+    public function getCookieName(): string
     {
         return $this->cookieName;
     }
 
-    public function getAccessToken()
+    /**
+     * @return string
+     */
+    public function getAccessToken(): string
     {
         return GeneralUtility::hmac(implode(',', $this->getUserGroupIds()), $this->additionalSecret);
     }
@@ -220,7 +226,7 @@ class RequestContext
     /**
      * @return array
      */
-    public function getUserGroupIds()
+    public function getUserGroupIds(): array
     {
         return $this->userGroupIds;
     }
@@ -228,7 +234,7 @@ class RequestContext
     /**
      * @return string
      */
-    public function getLocationId()
+    public function getLocationId(): string
     {
         return $this->locationId;
     }

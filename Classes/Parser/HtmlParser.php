@@ -88,7 +88,7 @@ class HtmlParser
     /**
      * @param string $accessProtectedDomain
      */
-    public function setDomainPattern($accessProtectedDomain)
+    public function setDomainPattern(string $accessProtectedDomain)
     {
         $this->domainPattern = $this->softQuoteExpression($accessProtectedDomain);
     }
@@ -101,7 +101,7 @@ class HtmlParser
      *
      * @return string
      */
-    static public function softQuoteExpression($string)
+    static public function softQuoteExpression(string $string): string
     {
         $string = str_replace('\\', '\\\\', $string);
         $string = str_replace(' ', '\ ', $string);
@@ -115,7 +115,7 @@ class HtmlParser
     /**
      * @param string $accessProtectedFileExtensions
      */
-    public function setFileExtensionPattern($accessProtectedFileExtensions)
+    public function setFileExtensionPattern(string $accessProtectedFileExtensions)
     {
         $this->fileExtensionPattern = $accessProtectedFileExtensions;
     }
@@ -123,17 +123,17 @@ class HtmlParser
     /**
      * @param string $accessProtectedFolders
      */
-    public function setFolderPattern($accessProtectedFolders)
+    public function setFolderPattern(string $accessProtectedFolders)
     {
         $this->folderPattern = $this->softQuoteExpression($accessProtectedFolders);
     }
 
     /**
-     * @param integer $logLevel
+     * @param int $logLevel
      */
-    public function setLogLevel($logLevel)
+    public function setLogLevel(int $logLevel)
     {
-        $this->logLevel = (int)$logLevel;
+        $this->logLevel = $logLevel;
     }
 
     /**
@@ -143,7 +143,7 @@ class HtmlParser
      *
      * @return string
      */
-    public function parse($html)
+    public function parse(string $html): string
     {
         if ($this->logLevel >= 1) {
             $time_start = $this->microtime_float();
@@ -180,7 +180,10 @@ class HtmlParser
         return $result . $rest;
     }
 
-    protected function microtime_float()
+    /**
+     * @return float
+     */
+    protected function microtime_float(): float
     {
         list($usec, $sec) = explode(" ", microtime());
         return ($usec + $sec);
@@ -193,7 +196,7 @@ class HtmlParser
      *
      * @return string
      */
-    protected function parseTag($tag)
+    protected function parseTag(string $tag): string
     {
         if (preg_match($this->tagPattern, $tag, $matchedUrls)) {
             $replace = $this->delegate->publishResourceUri($matchedUrls[1]);
@@ -222,7 +225,7 @@ class HtmlParser
      *
      * @return string
      */
-    private function recursion($tag, $tmp)
+    private function recursion(string $tag, string $tmp): string
     {
         if (preg_match($this->tagPattern, $tmp, $matchedUrls)) {
             $replace = $this->delegate->publishResourceUri($matchedUrls[1]);

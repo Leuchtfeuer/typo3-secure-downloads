@@ -77,7 +77,7 @@ Allow from env=session_match
      *
      * @return void
      */
-    public function publishAccessRestrictionsForPath($path)
+    public function publishAccessRestrictionsForPath(string $path)
     {
         $cookieName = $this->requestContext->getCookieName();
         $cookieValue = $this->requestContext->getAccessToken();
