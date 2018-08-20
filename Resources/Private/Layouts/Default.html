@@ -1,15 +1,13 @@
-<f:be.container pageTitle="Download Traffic">
-	<f:be.security.ifAuthenticated>
-		<f:then>
-			<div id="tx-securedownloads">
-				<f:flashMessages/>
-				<f:render section="content"/>
-			</div>
-		</f:then>
-		<f:else>
-			<f:be.infobox title="Unauthorized" state="2">
-				You are not allowed to access the secure downloads log.
-			</f:be.infobox>
-		</f:else>
-	</f:be.security.ifAuthenticated>
-</f:be.container>
+<f:be.security.ifAuthenticated>
+	<f:then>
+		<div id="tx-securedownloads">
+			<f:flashMessages/>
+			<f:render section="content"/>
+		</div>
+	</f:then>
+	<f:else>
+		<f:be.infobox title="Unauthorized" state="2">
+			You are not allowed to access the secure downloads log.
+		</f:be.infobox>
+	</f:else>
+</f:be.security.ifAuthenticated>
