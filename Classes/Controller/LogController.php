@@ -83,6 +83,9 @@ class LogController extends ActionController
         $this->pageRepository = $pageRepository;
     }
 
+    /**
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException
+     */
     public function initializeAction()
     {
         parent::initializeAction();
@@ -157,9 +160,10 @@ class LogController extends ActionController
     /**
      * action show
      *
-     * @param Filter $filter
+     * @param Filter|null $filter
      *
-     * @return void
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function showAction(Filter $filter = null)
     {
