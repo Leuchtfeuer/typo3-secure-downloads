@@ -194,7 +194,7 @@ class LogController extends ActionController
 
         /** @var PageRenderer $pageRenderer */
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        $pageRenderer->addCssFile(ExtensionManagementUtility::extRelPath('secure_downloads') . 'Resources/Public/Styles/Styles.css');
+        $pageRenderer->addCssFile('EXT:secure_downloads/Resources/Public/Styles/Styles.css');
         $this->createMenu();
     }
 
