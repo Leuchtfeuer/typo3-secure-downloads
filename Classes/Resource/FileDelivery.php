@@ -95,6 +95,11 @@ class FileDelivery
     protected $calculatedHash;
 
     /**
+     * @var bool
+     */
+    protected $isProcessed = false;
+
+    /**
      * Check the access rights
      */
     function __construct()
@@ -414,7 +419,7 @@ class FileDelivery
      */
     protected function logDownload($fileSize = 0)
     {
-        if ($this->isLoggingEnabled()) {
+        if ($this->isLoggingEnabled() && $this->isProcessed === false) {
 
             $log = new Log();
 
@@ -456,6 +461,8 @@ class FileDelivery
                 ->insert('tx_securedownloads_domain_model_log')
                 ->values($log->toArray())
                 ->execute();
+
+            $this->isProcessed = true;
         }
     }
 
