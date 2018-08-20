@@ -82,7 +82,7 @@ class HtmlParser
             $this->fileExtensionPattern = '\\.(' . $this->fileExtensionPattern . ')';
         }
 
-        $this->tagPattern = '/["\'](?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']/i';
+        $this->tagPattern = '/["\']?(?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']?/i';
     }
 
     /**
@@ -150,7 +150,7 @@ class HtmlParser
         }
 
         $result = '';
-        $pattern = '/(((data|ng|v)-[a-z0-9]*)|(href|src|poster))=["\']{1}(.*)["\']{1}/siU';
+        $pattern = '/((((data|ng|v)-[a-z0-9]*)|(href|src|poster))=["\']{1}(.*)["\']{1})|url\((.*)\)/siU';
 
         while (preg_match($pattern, $html, $match)) {
             $htmlContent = explode($match[0], $html, 2);
