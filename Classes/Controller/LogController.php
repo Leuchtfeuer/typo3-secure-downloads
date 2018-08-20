@@ -98,9 +98,9 @@ class LogController extends ActionController
     /**
      * action list
      *
-     * @param Filter $filter
+     * @param Filter|null $filter
      *
-     * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
     public function listAction(Filter $filter = null)
     {
@@ -153,6 +153,7 @@ class LogController extends ActionController
      *
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
     public function showAction(Filter $filter = null)
     {
