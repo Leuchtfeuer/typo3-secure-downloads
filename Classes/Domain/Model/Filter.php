@@ -148,7 +148,10 @@ class Filter
 
         $dateTime = new \DateTime();
         $dateTime->setDate($year, (int)$month, (int)$day);
-        $dateTime->setTime((int)$hour, (int)$minute, (int)$second);
+
+        if (isset($hour) && isset($minute) && isset($second)) {
+            $dateTime->setTime((int)$hour, (int)$minute, (int)$second);
+        }
 
         return $dateTime->getTimestamp();
     }
