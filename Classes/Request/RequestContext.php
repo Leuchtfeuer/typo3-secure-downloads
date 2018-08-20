@@ -25,6 +25,7 @@ namespace Bitmotion\SecureDownloads\Request;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
+use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
@@ -163,7 +164,7 @@ class RequestContext
         if (!empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'])) {
             $this->additionalSecret = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
         } else {
-            $this->additionalSecret = GeneralUtility::getRandomHexString(64);
+            $this->additionalSecret = GeneralUtility::makeInstance(Random::class)->generateRandomHexString(64);
         }
     }
 
