@@ -29,6 +29,7 @@ use Bitmotion\SecureDownloads\Domain\Model\Filter;
 use Bitmotion\SecureDownloads\Domain\Model\Statistic;
 use Bitmotion\SecureDownloads\Domain\Repository\LogRepository;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -120,19 +121,14 @@ class LogController extends ActionController
      */
     private function getUsers()
     {
-        $users = [];
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-            'user',
-            'tx_securedownloads_domain_model_log', 'user != 0',
-            'user'
-        );
-
-        while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-            $getUserRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'fe_users', 'uid = ' . $row['user']);
-            $users[] = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($getUserRes);
-        }
-
-        return $users;
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+        return $queryBuilder
+            ->select('user.uid as uid', 'user.username as username')
+            ->from('tx_securedownloads_domain_model_log', 'log')
+            ->join('log', 'fe_users', 'users', $queryBuilder->expr()->eq('users.uid', 'log.user'))
+            ->where($queryBuilder->expr()->neq('user', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)))
+            ->execute()
+            ->fetchAll();
     }
 
     /**
@@ -140,21 +136,14 @@ class LogController extends ActionController
      */
     private function getFileTypes()
     {
-        $fileTypes = [];
-
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-            'media_type',
-            'tx_securedownloads_domain_model_log',
-            '',
-            'media_type',
-            'media_type ASC'
-        );
-
-        while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-            $fileTypes[] = ['title' => $row['media_type']];
-        }
-
-        return $fileTypes;
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+        return $queryBuilder
+            ->select('media_type')
+            ->from('tx_securedownloads_domain_model_log')
+            ->groupBy('media_type')
+            ->orderBy('media_type', 'ASC')
+            ->execute()
+            ->fetchAll();
     }
 
     /**
