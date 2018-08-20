@@ -25,6 +25,9 @@ namespace Bitmotion\SecureDownloads\Domain\Model;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**
@@ -152,8 +155,13 @@ class Log extends AbstractEntity
     public function getUserObject()
     {
         if ($this->user !== null && $this->user !== 0) {
-            $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'fe_users', 'uid = ' . $this->user);
-            return $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('fe_users');
+            return $queryBuilder
+                ->select('*')
+                ->from('fe_users')
+                ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->user, \PDO::PARAM_INT)))
+                ->execute()
+                ->fetchAll();
         }
 
         return null;
