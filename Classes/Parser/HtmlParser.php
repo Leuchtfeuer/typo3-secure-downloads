@@ -149,26 +149,25 @@ class HtmlParser
             $time_start = $this->microtime_float();
         }
 
-        $rest = $html;
         $result = '';
-        $pattern = '/((data-[a-z0-9]*)|(href|src|poster))=["\']{1}(.*)["\']{1}/siU';
+        $pattern = '/(((data|ng|v)-[a-z0-9]*)|(href|src|poster))=["\']{1}(.*)["\']{1}/siU';
 
-
-        while (preg_match($pattern, $html, $match)) {  // suchendes secured Verzeichnis
-            $cont = explode($match[0], $html, 2);
-            $vor = $cont[0];
-            $tag = $match[0];
+        while (preg_match($pattern, $html, $match)) {
+            $htmlContent = explode($match[0], $html, 2);
 
             if ($this->logLevel === 3) {
-                DebuggerUtility::var_dump($tag, 'Tag:');
+                DebuggerUtility::var_dump($match[0], 'Tag:');
             }
 
-            $rest = $cont[1];
+            // Parse tag
+            $tag = $this->parseTag($match[0]);
 
-            $tag = $this->parseTag($tag);
+            // Add tag to HTML before matching tag
+            $result .= $htmlContent[0] . $tag;
 
-            $result .= $vor . $tag;
-            $html = $rest;
+            // all HTML after matching tag
+            $html = $htmlContent[1];
+
         }
 
         if ($this->logLevel >= 1) {
@@ -177,7 +176,7 @@ class HtmlParser
             DebuggerUtility::var_dump($time, 'Scriptlaufzeit');
         }
 
-        return $result . $rest;
+        return $result . $html;
     }
 
     /**
