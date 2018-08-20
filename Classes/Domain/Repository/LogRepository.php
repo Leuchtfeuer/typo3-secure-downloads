@@ -53,7 +53,9 @@ class LogRepository extends Repository
 
     /**
      * @param null|Filter $filter
+     *
      * @return array|QueryResultInterface
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
     public function findByFilter($filter)
     {
