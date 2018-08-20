@@ -570,7 +570,7 @@ class FileDelivery
                 list($strAdditionalFileExtension, $strAdditionalMimeType) = GeneralUtility::trimExplode('|',
                     $strAdditionalMimeTypeItem);
                 if (!empty($strAdditionalFileExtension) && !empty($strAdditionalMimeType)) {
-                    $strAdditionalFileExtension = GeneralUtility::strtolower($strAdditionalFileExtension);
+                    $strAdditionalFileExtension = mb_strtolower($strAdditionalFileExtension);
                     $arrMimeTypes[$strAdditionalFileExtension] = $strAdditionalMimeType;
                 }
             }
@@ -617,7 +617,7 @@ class FileDelivery
      */
     protected function getFileExtensionByFilename($strFileName)
     {
-        return GeneralUtility::strtolower(ltrim(strrchr($strFileName, '.'), '.'));
+        return mb_strtolower(ltrim(mb_strrchr($strFileName, '.'), '.'));
     }
 
     /**
@@ -650,5 +650,3 @@ class FileDelivery
         return fclose($handle);
     }
 }
-
-?>

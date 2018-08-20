@@ -104,6 +104,7 @@ class Log extends AbstractEntity
      * typo3Mode
      *
      * @var string
+     * @deprecated
      */
     protected $typo3Mode = '';
 
@@ -380,6 +381,7 @@ class Log extends AbstractEntity
      * Returns the typo3Mode
      *
      * @return string $typo3Mode
+     * @deprecated
      */
     public function getTypo3Mode()
     {
@@ -391,6 +393,7 @@ class Log extends AbstractEntity
      *
      * @param string $typo3Mode
      * @return void
+     * @deprecated
      */
     public function setTypo3Mode($typo3Mode)
     {
