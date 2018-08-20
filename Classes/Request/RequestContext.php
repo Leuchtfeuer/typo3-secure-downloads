@@ -66,12 +66,6 @@ class RequestContext
     protected $additionalSecret = 'secure_download_token';
 
     /**
-     * @var string
-     * @deprecated Do not store IP Address of user
-     */
-    protected $ipAddress;
-
-    /**
      * @var AbstractUserAuthentication
      */
     protected $currentUser;
@@ -86,7 +80,7 @@ class RequestContext
         if ($this->isFrontendRequest()) {
             $this->initializeFrontendContext();
         } elseif ($this->isBackendRequest()) {
-            $this->initializeBackendContext();
+            // TODO: Reintroduce this feature?
         } else {
             throw new \LogicException('Unknown Context.', 1377180593);
         }
@@ -140,8 +134,6 @@ class RequestContext
         }
 
         $this->locationId = (string)$typoScriptFrontendController->id;
-        $this->setIpAddress();
-
     }
 
     /**
@@ -169,19 +161,6 @@ class RequestContext
     }
 
     /**
-     * Sets the IP address
-     * @deprecated
-     */
-    private function setIpAddress()
-    {
-        if (isset($_SERVER['REMOTE_ADDR'])) {
-            $this->ipAddress = $_SERVER['REMOTE_ADDR'];
-        } else {
-            $this->ipAddress = null;
-        }
-    }
-
-    /**
      * @return bool
      */
     protected function isBackendRequest()
@@ -191,28 +170,6 @@ class RequestContext
         }
 
         return false;
-    }
-
-    /**
-     * Initializes the request context, when called from a backend request
-     * @deprecated
-     */
-    protected function initializeBackendContext()
-    {
-        /*
-        Disabled for now, because we do only have php delivery script which is called in a frontend context (eID)
-        If we switch to checkDataSubmission Hook for file delivery, we might activate this again
-        TODO: decouple and refactor PHP delivery
-        $this->currentUser = $GLOBALS['BE_USER'];
-        if (!empty($this->currentUser->user['uid'])) {
-            $this->userId = (int)$this->currentUser->user['uid'];
-        }
-        if (!empty($this->currentUser->user['usergroup'])) {
-            $this->userGroupIds = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->currentUser->user['usergroup'], TRUE);
-        }
-        */
-
-        $this->setIpAddress();
     }
 
     /**
@@ -253,15 +210,6 @@ class RequestContext
     public function getCookieName()
     {
         return $this->cookieName;
-    }
-
-    /**
-     * @return string
-     * @deprecated
-     */
-    public function getIpAddress()
-    {
-        return $this->ipAddress;
     }
 
     public function getAccessToken()
