@@ -162,7 +162,7 @@ class Log extends AbstractEntity
                 ->from('fe_users')
                 ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->user, \PDO::PARAM_INT)))
                 ->execute()
-                ->fetchAll();
+                ->fetch();
         }
 
         return null;

@@ -31,7 +31,6 @@ use Bitmotion\SecureDownloads\Domain\Repository\LogRepository;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
@@ -123,10 +122,11 @@ class LogController extends ActionController
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
         return $queryBuilder
-            ->select('user.uid as uid', 'user.username as username')
+            ->select('users.uid as uid', 'users.username as username')
             ->from('tx_securedownloads_domain_model_log', 'log')
             ->join('log', 'fe_users', 'users', $queryBuilder->expr()->eq('users.uid', 'log.user'))
             ->where($queryBuilder->expr()->neq('user', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)))
+            ->groupBy('users.uid')
             ->execute()
             ->fetchAll();
     }
