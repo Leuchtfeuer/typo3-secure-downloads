@@ -23,6 +23,8 @@ namespace Bitmotion\SecureDownloads\Parser;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
@@ -199,16 +201,21 @@ class HtmlParser
     {
         if (preg_match($this->tagPattern, $tag, $matchedUrls)) {
             $resourceUri = $matchedUrls[1];
-            $containsAbsRefPrefix = \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($matchedUrls[1], $GLOBALS['TSFE']->absRefPrefix);
+
+            // Handle absRefPrefix
+            $containsAbsRefPrefix = GeneralUtility::isFirstPartOfStr($matchedUrls[1], $GLOBALS['TSFE']->absRefPrefix);
             if ($containsAbsRefPrefix) {
                 $resourceUri = substr($resourceUri, strlen($GLOBALS['TSFE']->absRefPrefix));
             }
+
             $replace = $this->delegate->publishResourceUri($resourceUri);
+
             if ($containsAbsRefPrefix) {
                 $replace = $GLOBALS['TSFE']->absRefPrefix . $replace;
             }
-            $tagexp = explode($matchedUrls[1], $tag, 2);
-            $tag = $this->recursion($tagexp[0] . $replace, $tagexp[1]);
+
+            $tagParts = explode($matchedUrls[1], $tag, 2);
+            $tag = $this->recursion($tagParts[0] . $replace, $tagParts[1]);
 
             // Some output for debugging
             if ($this->logLevel === 1) {
@@ -216,7 +223,7 @@ class HtmlParser
             } elseif ($this->logLevel >= 2) {
                 DebuggerUtility::var_dump($this->tagPattern, 'Regular Expression:');
                 DebuggerUtility::var_dump($matchedUrls, 'Match:');
-                DebuggerUtility::var_dump([$tagexp[0], $replace, $tagexp[1]], 'Build Tag:');
+                DebuggerUtility::var_dump([$tagParts[0], $replace, $tagParts[1]], 'Build Tag:');
                 DebuggerUtility::var_dump($tag, 'New output:');
             }
         }
