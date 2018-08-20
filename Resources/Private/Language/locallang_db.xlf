@@ -16,10 +16,10 @@
             <trans-unit id="tx_securedownloads_domain_model_log.file_path">
                 <source>File Path</source>
             </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.filesize">
+            <trans-unit id="tx_securedownloads_domain_model_log.file_size">
                 <source>Filesize</source>
             </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.filetype">
+            <trans-unit id="tx_securedownloads_domain_model_log.file_type">
                 <source>Filetype</source>
             </trans-unit>
             <trans-unit id="tx_securedownloads_domain_model_log.media_type">
