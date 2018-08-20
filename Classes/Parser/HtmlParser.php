@@ -198,7 +198,15 @@ class HtmlParser
     protected function parseTag(string $tag): string
     {
         if (preg_match($this->tagPattern, $tag, $matchedUrls)) {
-            $replace = $this->delegate->publishResourceUri($matchedUrls[1]);
+            $resourceUri = $matchedUrls[1];
+            $containsAbsRefPrefix = \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($matchedUrls[1], $GLOBALS['TSFE']->absRefPrefix);
+            if ($containsAbsRefPrefix) {
+                $resourceUri = substr($resourceUri, strlen($GLOBALS['TSFE']->absRefPrefix));
+            }
+            $replace = $this->delegate->publishResourceUri($resourceUri);
+            if ($containsAbsRefPrefix) {
+                $replace = $GLOBALS['TSFE']->absRefPrefix . $replace;
+            }
             $tagexp = explode($matchedUrls[1], $tag, 2);
             $tag = $this->recursion($tagexp[0] . $replace, $tagexp[1]);
 
