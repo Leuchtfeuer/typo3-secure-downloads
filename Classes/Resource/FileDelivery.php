@@ -321,7 +321,7 @@ class FileDelivery
 
         // Hook for pre-output:
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['preOutput'])) {
-            $_params = ['pObj' => &$this];
+            $_params = ['pObj' => &$this, 'file' => &$file, 'downloadName' => &$fileName];
             foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['preOutput'] as $_funcRef) {
                 GeneralUtility::callUserFunction($_funcRef, $_params, $this);
             }
