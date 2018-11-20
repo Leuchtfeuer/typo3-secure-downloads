@@ -66,7 +66,7 @@ class ResourcePublisher implements SingletonInterface
     /**
      * @return ResourcePublishingTargetInterface
      */
-    protected function getPublishingTarget()
+    protected function getPublishingTarget(): ResourcePublishingTargetInterface
     {
         // Check if we have DI, if not, lazily instatiate the publishing target
         if (is_null($this->publishingTarget)) {
@@ -98,11 +98,11 @@ class ResourcePublisher implements SingletonInterface
     /**
      * Builds a delivery URI from a URI which is in document root but protected through the webserver
      *
-     * @param $resourceUri
+     * @param string $resourceUri
      *
      * @return string
      */
-    public function publishResourceUri($resourceUri)
+    public function publishResourceUri(string $resourceUri): string
     {
         return $this->getPublishingTarget()->publishResourceUri($resourceUri);
     }

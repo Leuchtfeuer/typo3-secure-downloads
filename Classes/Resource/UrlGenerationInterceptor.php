@@ -1,4 +1,5 @@
 <?php
+
 namespace Bitmotion\SecureDownloads\Resource;
 
 /***************************************************************
@@ -24,6 +25,8 @@ namespace Bitmotion\SecureDownloads\Resource;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+use Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublisher;
 use TYPO3\CMS\Core\Resource\Driver\AbstractDriver;
 use TYPO3\CMS\Core\Resource\Driver\LocalDriver;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
@@ -37,14 +40,14 @@ use TYPO3\CMS\Core\Utility\PathUtility;
 class UrlGenerationInterceptor
 {
     /**
-     * @var Publishing\ResourcePublisher
+     * @var ResourcePublisher
      */
     protected $resourcePublisher;
 
     /**
-     * @param Publishing\ResourcePublisher $resourcePublisher
+     * @param ResourcePublisher $resourcePublisher
      */
-    public function injectResourcePublisher(Publishing\ResourcePublisher $resourcePublisher)
+    public function injectResourcePublisher(ResourcePublisher $resourcePublisher)
     {
         $this->resourcePublisher = $resourcePublisher;
     }
@@ -60,7 +63,7 @@ class UrlGenerationInterceptor
         ResourceStorage $storage,
         AbstractDriver $driver,
         ResourceInterface $resource,
-        $relativeToCurrentScript,
+        bool $relativeToCurrentScript,
         array $urlData
     ) {
         if (!$driver instanceof LocalDriver) {

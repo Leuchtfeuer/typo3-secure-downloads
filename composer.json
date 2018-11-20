@@ -1,12 +1,35 @@
 {
   "name": "bitmotion/secure-downloads",
-  "type": "typo3-cms-extension",
   "description": "\"Secure Download\": Apply TYPO3 access rights to ALL file assets (PDFs, TGZs or JPGs etc. - configurable) - protect them from direct access.",
-  "license": [
-    "GPL-2.0+"
+  "keywords": [
+    "TYPO3",
+    "Downloads",
+    "Secure"
+  ],
+  "type": "typo3-cms-extension",
+  "license": "GPL-3.0-or-later",
+  "homepage": "https://www.bitmotion.de",
+  "support": {
+    "email": "typo3-ext@bitmotion.de",
+    "issues": "https://github.com/bitmotion/typo3-secure-downloads/issues",
+    "source": "https://github.com/bitmotion/typo3-secure-downloads/"
+  },
+  "authors": [
+    {
+      "name": "Florian Wessels",
+      "email": "f.wessels@bitmotion.de",
+      "role": "Developer",
+      "homepage": "https://www.bitmotion.de"
+    },
+    {
+      "name": "Helmut Hummel",
+      "email": "info@helhum.io",
+      "role": "Developer",
+      "homepage": "https://helhum.io/"
+    }
   ],
   "require": {
-    "typo3/cms-core": "^7.6 || ^8.7"
+    "typo3/cms-core": "^8.7 || ^9.3"
   },
   "conflict": {
     "typo3-ter/naw-securedl": "*"

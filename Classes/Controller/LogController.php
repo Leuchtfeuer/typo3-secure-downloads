@@ -27,13 +27,16 @@ namespace Bitmotion\SecureDownloads\Controller;
  ***************************************************************/
 use Bitmotion\SecureDownloads\Domain\Model\Filter;
 use Bitmotion\SecureDownloads\Domain\Model\Statistic;
+use Bitmotion\SecureDownloads\Domain\Repository\LogRepository;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Frontend\Page\PageRepository;
 
 /**
  * Class LogController
@@ -54,19 +57,36 @@ class LogController extends ActionController
     /**
      * logRepository
      *
-     * @var \Bitmotion\SecureDownloads\Domain\Repository\LogRepository
-     * @inject
+     * @var LogRepository
      */
-    protected $logRepository = null;
+    protected $logRepository;
 
     /**
      * pageRepository
      *
      * @var \TYPO3\CMS\Frontend\Page\PageRepository
-     * @inject
      */
     protected $pageRepository = null;
 
+    /**
+     * @param LogRepository $logRepository
+     */
+    public function injectLogRepository(LogRepository $logRepository)
+    {
+        $this->logRepository = $logRepository;
+    }
+
+    /**
+     * @param PageRepository $pageRepository
+     */
+    public function injectPageRepository(PageRepository $pageRepository)
+    {
+        $this->pageRepository = $pageRepository;
+    }
+
+    /**
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException
+     */
     public function initializeAction()
     {
         parent::initializeAction();
@@ -79,12 +99,13 @@ class LogController extends ActionController
     /**
      * action list
      *
-     * @param Filter $filter
+     * @param Filter|null $filter
      *
-     * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
     public function listAction(Filter $filter = null)
     {
+        DebuggerUtility::var_dump($filter, 'FILTER');
         $logEntries = $this->logRepository->findByFilter($filter);
 
         $this->view->assignMultiple([
@@ -99,51 +120,44 @@ class LogController extends ActionController
     /**
      * @return array
      */
-    private function getUsers()
+    private function getUsers(): array
     {
-        $users = [];
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-            'user',
-            'tx_securedownloads_domain_model_log', 'user != 0',
-            'user'
-        );
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
 
-        while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-            $getUserRes = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'fe_users', 'uid = ' . $row['user']);
-            $users[] = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($getUserRes);
-        }
-
-        return $users;
+        return $queryBuilder
+            ->select('users.uid as uid', 'users.username as username')
+            ->from('tx_securedownloads_domain_model_log', 'log')
+            ->join('log', 'fe_users', 'users', $queryBuilder->expr()->eq('users.uid', 'log.user'))
+            ->where($queryBuilder->expr()->neq('user', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)))
+            ->groupBy('users.uid')
+            ->execute()
+            ->fetchAll();
     }
 
     /**
      * @return array
      */
-    private function getFileTypes()
+    private function getFileTypes(): array
     {
-        $fileTypes = [];
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
 
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-            'media_type',
-            'tx_securedownloads_domain_model_log',
-            '',
-            'media_type',
-            'media_type ASC'
-        );
-
-        while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-            $fileTypes[] = ['title' => $row['media_type']];
-        }
-
-        return $fileTypes;
+        return $queryBuilder
+            ->select('media_type')
+            ->from('tx_securedownloads_domain_model_log')
+            ->groupBy('media_type')
+            ->orderBy('media_type', 'ASC')
+            ->execute()
+            ->fetchAll();
     }
 
     /**
      * action show
      *
-     * @param Filter $filter
+     * @param Filter|null $filter
      *
-     * @return void
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
     public function showAction(Filter $filter = null)
     {
@@ -185,7 +199,7 @@ class LogController extends ActionController
 
         /** @var PageRenderer $pageRenderer */
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        $pageRenderer->addCssFile(ExtensionManagementUtility::extRelPath('secure_downloads') . 'Resources/Public/Styles/Styles.css');
+        $pageRenderer->addCssFile('EXT:secure_downloads/Resources/Public/Styles/Styles.css');
         $this->createMenu();
     }
 
@@ -220,7 +234,7 @@ class LogController extends ActionController
     /**
      * @return UriBuilder
      */
-    protected function getUriBuilder()
+    protected function getUriBuilder(): UriBuilder
     {
         /** @var UriBuilder $uriBuilder */
         $uriBuilder = $this->objectManager->get(UriBuilder::class);

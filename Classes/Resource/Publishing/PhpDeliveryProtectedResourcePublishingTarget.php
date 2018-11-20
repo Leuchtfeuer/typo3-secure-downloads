@@ -92,7 +92,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      *
      * @return string
      */
-    protected function buildUri($resourceUri)
+    protected function buildUri(string $resourceUri): string
     {
         $userId = $this->getRequestContext()->getUserId();
         $userGroupIds = $this->getRequestContext()->getUserGroupIds();
@@ -108,7 +108,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         $replacements = [
             $userId,
             rawurlencode(implode(',', $userGroupIds)),
-            GeneralUtility::rawUrlEncodeFP($resourceUri),
+            str_replace('%2F', '/', rawurlencode($resourceUri)),
             $validityPeriod,
             $hash,
             $GLOBALS['TSFE']->id,
@@ -121,7 +121,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
     /**
      * @return integer
      */
-    protected function calculateLinkLifetime()
+    protected function calculateLinkLifetime(): int
     {
         $lifeTimeToAdd = $this->configurationManager->getValue('cachetimeadd');
 
@@ -137,12 +137,12 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
     /**
      * @param string $resourceUri
      * @param integer $userId
-     * @param         array <integer> $userGroupIds
+     * @param array $userGroupIds
      * @param integer $validityPeriod
      *
      * @return string
      */
-    protected function getHash($resourceUri, $userId, array $userGroupIds, $validityPeriod)
+    protected function getHash(string $resourceUri, int $userId, array $userGroupIds, int $validityPeriod): string
     {
         if ($this->configurationManager->getValue('enableGroupCheck')) {
             $hashString = $userId . implode(',', $userGroupIds) . $resourceUri . $validityPeriod;
@@ -160,7 +160,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      *
      * @return string
      */
-    public function publishResourceUri($resourceUri)
+    public function publishResourceUri(string $resourceUri): string
     {
         $this->setResourcesSourcePath(PATH_site);
 

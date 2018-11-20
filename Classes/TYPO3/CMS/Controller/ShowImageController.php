@@ -44,6 +44,8 @@ class ShowImageController extends \TYPO3\CMS\Frontend\Controller\ShowImageContro
     public function printContent()
     {
         $secureDownloadService = GeneralUtility::makeInstance(SecureDownloadService::class);
+
+        // TODO: Deprecated since TYPO3 9.0
         echo $secureDownloadService->parseContent($this->content);
     }
 }

@@ -25,6 +25,7 @@ namespace Bitmotion\SecureDownloads\Request;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
+use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
@@ -65,12 +66,6 @@ class RequestContext
     protected $additionalSecret = 'secure_download_token';
 
     /**
-     * @var string
-     * @deprecated Do not store IP Address of user
-     */
-    protected $ipAddress;
-
-    /**
      * @var AbstractUserAuthentication
      */
     protected $currentUser;
@@ -80,12 +75,15 @@ class RequestContext
      */
     protected $locationId;
 
+    /**
+     * RequestContext constructor.
+     */
     public function __construct()
     {
         if ($this->isFrontendRequest()) {
             $this->initializeFrontendContext();
         } elseif ($this->isBackendRequest()) {
-            $this->initializeBackendContext();
+            // TODO: Reintroduce this feature?
         } else {
             throw new \LogicException('Unknown Context.', 1377180593);
         }
@@ -94,7 +92,7 @@ class RequestContext
     /**
      * @return bool
      */
-    public function isFrontendRequest()
+    public function isFrontendRequest(): bool
     {
         if (defined('TYPO3_MODE') && TYPO3_MODE === 'FE') {
             return true;
@@ -124,6 +122,7 @@ class RequestContext
             $this->userGroupIds = array_unique(array_map('intval', $this->currentUser->groupData['uid']));
             sort($this->userGroupIds);
 
+            // TODO: $typoScriptFrontendController->config is deprecated since TYPO3 9.0
             if (isset($typoScriptFrontendController->config['tx_securedownloads']['additionalSecret'])) {
                 $this->additionalSecret = $typoScriptFrontendController->config['tx_securedownloads']['additionalSecret'];
             } else {
@@ -139,14 +138,12 @@ class RequestContext
         }
 
         $this->locationId = (string)$typoScriptFrontendController->id;
-        $this->setIpAddress();
-
     }
 
     /**
      * @return bool
      */
-    public function isUserLoggedIn()
+    public function isUserLoggedIn(): bool
     {
         if (empty($this->currentUser->user['uid'])) {
             return false;
@@ -163,27 +160,14 @@ class RequestContext
         if (!empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'])) {
             $this->additionalSecret = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
         } else {
-            $this->additionalSecret = GeneralUtility::getRandomHexString(64);
-        }
-    }
-
-    /**
-     * Sets the IP address
-     * @deprecated
-     */
-    private function setIpAddress()
-    {
-        if (isset($_SERVER['REMOTE_ADDR'])) {
-            $this->ipAddress = $_SERVER['REMOTE_ADDR'];
-        } else {
-            $this->ipAddress = null;
+            $this->additionalSecret = GeneralUtility::makeInstance(Random::class)->generateRandomHexString(64);
         }
     }
 
     /**
      * @return bool
      */
-    protected function isBackendRequest()
+    protected function isBackendRequest(): bool
     {
         if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
             return true;
@@ -193,31 +177,9 @@ class RequestContext
     }
 
     /**
-     * Initializes the request context, when called from a backend request
-     * @deprecated
-     */
-    protected function initializeBackendContext()
-    {
-        /*
-        Disabled for now, because we do only have php delivery script which is called in a frontend context (eID)
-        If we switch to checkDataSubmission Hook for file delivery, we might activate this again
-        TODO: decouple and refactor PHP delivery
-        $this->currentUser = $GLOBALS['BE_USER'];
-        if (!empty($this->currentUser->user['uid'])) {
-            $this->userId = (int)$this->currentUser->user['uid'];
-        }
-        if (!empty($this->currentUser->user['usergroup'])) {
-            $this->userGroupIds = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->currentUser->user['usergroup'], TRUE);
-        }
-        */
-
-        $this->setIpAddress();
-    }
-
-    /**
      * @return string
      */
-    public function getAdditionalSecret()
+    public function getAdditionalSecret(): string
     {
         return $this->additionalSecret;
     }
@@ -225,7 +187,7 @@ class RequestContext
     /**
      * @return int
      */
-    public function getUserId()
+    public function getUserId(): int
     {
         return $this->userId;
     }
@@ -233,7 +195,7 @@ class RequestContext
     /**
      * @return int
      */
-    public function getCacheLifetime()
+    public function getCacheLifetime(): int
     {
         return $this->cacheLifetime;
     }
@@ -241,7 +203,7 @@ class RequestContext
     /**
      * @return bool
      */
-    public function isUrlRewritingEnabled()
+    public function isUrlRewritingEnabled(): bool
     {
         return $this->urlRewritingEnabled;
     }
@@ -249,21 +211,15 @@ class RequestContext
     /**
      * @return string
      */
-    public function getCookieName()
+    public function getCookieName(): string
     {
         return $this->cookieName;
     }
 
     /**
      * @return string
-     * @deprecated
      */
-    public function getIpAddress()
-    {
-        return $this->ipAddress;
-    }
-
-    public function getAccessToken()
+    public function getAccessToken(): string
     {
         return GeneralUtility::hmac(implode(',', $this->getUserGroupIds()), $this->additionalSecret);
     }
@@ -271,7 +227,7 @@ class RequestContext
     /**
      * @return array
      */
-    public function getUserGroupIds()
+    public function getUserGroupIds(): array
     {
         return $this->userGroupIds;
     }
@@ -279,7 +235,7 @@ class RequestContext
     /**
      * @return string
      */
-    public function getLocationId()
+    public function getLocationId(): string
     {
         return $this->locationId;
     }

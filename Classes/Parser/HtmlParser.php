@@ -23,6 +23,8 @@ namespace Bitmotion\SecureDownloads\Parser;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
@@ -82,13 +84,13 @@ class HtmlParser
             $this->fileExtensionPattern = '\\.(' . $this->fileExtensionPattern . ')';
         }
 
-        $this->tagPattern = '/["\'](?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']/i';
+        $this->tagPattern = '/["\']?(?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']?/i';
     }
 
     /**
      * @param string $accessProtectedDomain
      */
-    public function setDomainPattern($accessProtectedDomain)
+    public function setDomainPattern(string $accessProtectedDomain)
     {
         $this->domainPattern = $this->softQuoteExpression($accessProtectedDomain);
     }
@@ -101,7 +103,7 @@ class HtmlParser
      *
      * @return string
      */
-    static public function softQuoteExpression($string)
+    static public function softQuoteExpression(string $string): string
     {
         $string = str_replace('\\', '\\\\', $string);
         $string = str_replace(' ', '\ ', $string);
@@ -115,7 +117,7 @@ class HtmlParser
     /**
      * @param string $accessProtectedFileExtensions
      */
-    public function setFileExtensionPattern($accessProtectedFileExtensions)
+    public function setFileExtensionPattern(string $accessProtectedFileExtensions)
     {
         $this->fileExtensionPattern = $accessProtectedFileExtensions;
     }
@@ -123,17 +125,17 @@ class HtmlParser
     /**
      * @param string $accessProtectedFolders
      */
-    public function setFolderPattern($accessProtectedFolders)
+    public function setFolderPattern(string $accessProtectedFolders)
     {
         $this->folderPattern = $this->softQuoteExpression($accessProtectedFolders);
     }
 
     /**
-     * @param integer $logLevel
+     * @param int $logLevel
      */
-    public function setLogLevel($logLevel)
+    public function setLogLevel(int $logLevel)
     {
-        $this->logLevel = (int)$logLevel;
+        $this->logLevel = $logLevel;
     }
 
     /**
@@ -143,32 +145,30 @@ class HtmlParser
      *
      * @return string
      */
-    public function parse($html)
+    public function parse(string $html): string
     {
         if ($this->logLevel >= 1) {
             $time_start = $this->microtime_float();
         }
 
-        $rest = $html;
         $result = '';
-        $pattern = '/((data-[a-z0-9]*)|(href|src|poster))=["\']{1}(.*)["\']{1}/siU';
+        $pattern = '/((((data|ng|v)-[a-z0-9]*)|(href|src|poster))=["\']{1}(.*)["\']{1})|url\((.*)\)/siU';
 
-
-        while (preg_match($pattern, $html, $match)) {  // suchendes secured Verzeichnis
-            $cont = explode($match[0], $html, 2);
-            $vor = $cont[0];
-            $tag = $match[0];
+        while (preg_match($pattern, $html, $match)) {
+            $htmlContent = explode($match[0], $html, 2);
 
             if ($this->logLevel === 3) {
-                DebuggerUtility::var_dump($tag, 'Tag:');
+                DebuggerUtility::var_dump($match[0], 'Tag:');
             }
 
-            $rest = $cont[1];
+            // Parse tag
+            $tag = $this->parseTag($match[0]);
 
-            $tag = $this->parseTag($tag);
+            // Add tag to HTML before matching tag
+            $result .= $htmlContent[0] . $tag;
 
-            $result .= $vor . $tag;
-            $html = $rest;
+            // all HTML after matching tag
+            $html = $htmlContent[1];
         }
 
         if ($this->logLevel >= 1) {
@@ -177,10 +177,13 @@ class HtmlParser
             DebuggerUtility::var_dump($time, 'Scriptlaufzeit');
         }
 
-        return $result . $rest;
+        return $result . $html;
     }
 
-    protected function microtime_float()
+    /**
+     * @return float
+     */
+    protected function microtime_float(): float
     {
         list($usec, $sec) = explode(" ", microtime());
         return ($usec + $sec);
@@ -193,12 +196,25 @@ class HtmlParser
      *
      * @return string
      */
-    protected function parseTag($tag)
+    protected function parseTag(string $tag): string
     {
         if (preg_match($this->tagPattern, $tag, $matchedUrls)) {
-            $replace = $this->delegate->publishResourceUri($matchedUrls[1]);
-            $tagexp = explode($matchedUrls[1], $tag, 2);
-            $tag = $this->recursion($tagexp[0] . $replace, $tagexp[1]);
+            $resourceUri = $matchedUrls[1];
+
+            // Handle absRefPrefix
+            $containsAbsRefPrefix = GeneralUtility::isFirstPartOfStr($matchedUrls[1], $GLOBALS['TSFE']->absRefPrefix);
+            if ($containsAbsRefPrefix) {
+                $resourceUri = substr($resourceUri, strlen($GLOBALS['TSFE']->absRefPrefix));
+            }
+
+            $replace = $this->delegate->publishResourceUri($resourceUri);
+
+            if ($containsAbsRefPrefix) {
+                $replace = $GLOBALS['TSFE']->absRefPrefix . $replace;
+            }
+
+            $tagParts = explode($matchedUrls[1], $tag, 2);
+            $tag = $this->recursion($tagParts[0] . $replace, $tagParts[1]);
 
             // Some output for debugging
             if ($this->logLevel === 1) {
@@ -206,7 +222,7 @@ class HtmlParser
             } elseif ($this->logLevel >= 2) {
                 DebuggerUtility::var_dump($this->tagPattern, 'Regular Expression:');
                 DebuggerUtility::var_dump($matchedUrls, 'Match:');
-                DebuggerUtility::var_dump([$tagexp[0], $replace, $tagexp[1]], 'Build Tag:');
+                DebuggerUtility::var_dump([$tagParts[0], $replace, $tagParts[1]], 'Build Tag:');
                 DebuggerUtility::var_dump($tag, 'New output:');
             }
         }
@@ -222,7 +238,7 @@ class HtmlParser
      *
      * @return string
      */
-    private function recursion($tag, $tmp)
+    private function recursion(string $tag, string $tmp): string
     {
         if (preg_match($this->tagPattern, $tmp, $matchedUrls)) {
             $replace = $this->delegate->publishResourceUri($matchedUrls[1]);

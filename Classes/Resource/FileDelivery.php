@@ -25,6 +25,7 @@ namespace Bitmotion\SecureDownloads\Resource;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use Bitmotion\SecureDownloads\Domain\Model\Log;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
@@ -52,11 +53,6 @@ class FileDelivery
      * @var int
      */
     protected $fileSize;
-
-    /**
-     * @var int
-     */
-    protected $logRowUid;
 
     /**
      * @var int
@@ -99,11 +95,13 @@ class FileDelivery
     protected $calculatedHash;
 
     /**
-     * @var \TYPO3\CMS\Core\Database\DatabaseConnection
+     * @var bool
      */
-    protected $databaseConnection;
+    protected $isProcessed = false;
 
     /**
+     * FileDelivery constructor.
+     *
      * Check the access rights
      */
     function __construct()
@@ -170,11 +168,12 @@ class FileDelivery
      *
      * @return array
      */
-    protected function getExtensionConfiguration()
+    protected function getExtensionConfiguration(): array
     {
         static $extensionConfiguration = [];
 
         if (!$extensionConfiguration) {
+            // TODO: Deprecated since TYPO3 9.0
             $extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['secure_downloads']);
         }
 
@@ -185,13 +184,13 @@ class FileDelivery
      * TODO: Refactor it to a hash service
      *
      * @param string $resourceUri
-     * @param integer $userId
-     * @param         array <integer> $userGroupIds
+     * @param int $userId
+     * @param string $userGroupIds
      * @param integer $validityPeriod
      *
      * @return string
      */
-    protected function getHash($resourceUri, $userId, $userGroupIds, $validityPeriod)
+    protected function getHash(string $resourceUri, int $userId, string $userGroupIds, int $validityPeriod = 0): string
     {
         if ($this->extensionConfiguration['enableGroupCheck']) {
             $hashString = $userId . $userGroupIds . $resourceUri . $validityPeriod;
@@ -203,9 +202,9 @@ class FileDelivery
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    protected function hashValid()
+    protected function hashValid(): bool
     {
         return ($this->calculatedHash === $this->hash);
     }
@@ -213,16 +212,16 @@ class FileDelivery
     /**
      * @param string $message
      */
-    protected function exitScript($message)
+    protected function exitScript(string $message)
     {
         header('HTTP/1.1 403 Forbidden');
         exit($message);
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    protected function expiryTimeExceeded()
+    protected function expiryTimeExceeded(): bool
     {
         return (intval($this->expiryTime) < time());
     }
@@ -234,18 +233,12 @@ class FileDelivery
     {
         $this->feUserObj = EidUtility::initFeUser();
         $this->feUserObj->fetchGroupData();
-        $this->databaseConnection = $GLOBALS['TYPO3_DB'];
-        // This is obsolete since 6.1 but required for versions before.
-        // It can be removed once support for TYPO3 below 6.1 is dropped.
-        if (!$this->databaseConnection->isConnected()) {
-            $this->databaseConnection->connectDB();
-        }
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    protected function checkUserAccess()
+    protected function checkUserAccess(): bool
     {
 
         return ($this->userId === (int)$this->feUserObj->user['uid']);
@@ -256,9 +249,9 @@ class FileDelivery
      * to the group list of the current user or both have at least one group
      * in common.
      *
-     * @return boolean
+     * @return bool
      */
-    protected function checkGroupAccess()
+    protected function checkGroupAccess(): bool
     {
         $accessAllowed = false;
         if (empty($this->extensionConfiguration['enableGroupCheck'])) {
@@ -296,9 +289,9 @@ class FileDelivery
     /**
      * @param string $string
      *
-     * @return mixed
+     * @return string
      */
-    protected function softQuoteExpression($string)
+    protected function softQuoteExpression(string $string): string
     {
         return HtmlParser::softQuoteExpression($string);
     }
@@ -394,7 +387,7 @@ class FileDelivery
             $strOutputFunction = trim($this->extensionConfiguration['outputFunction']);
             switch ($strOutputFunction) {
                 case 'readfile_chunked':
-                    $this->readfile_chunked($file);
+                    $this->readFileFactional($file);
                     break;
 
                 case 'fpassthru':
@@ -427,9 +420,9 @@ class FileDelivery
      *
      * @param int $fileSize
      */
-    protected function logDownload($fileSize = 0)
+    protected function logDownload(int $fileSize = 0)
     {
-        if ($this->isLoggingEnabled()) {
+        if ($this->isLoggingEnabled() && $this->isProcessed === false) {
 
             $log = new Log();
 
@@ -455,7 +448,7 @@ class FileDelivery
 
             }
 
-            $log->setUser($this->feUserObj->user['uid']);
+            $log->setUser((int)$this->feUserObj->user['uid']);
 
             if (defined('TYPO3_MODE')) {
                 $log->setTypo3Mode(TYPO3_MODE);
@@ -463,19 +456,16 @@ class FileDelivery
 
             $log->setPage($this->pageId);
 
-
             // TODO: Get the current downloaded filesize
             $log->setBytesDownloaded(0);
 
-            // TODO: Use repository for inserting and updating records
-            if (is_null($this->logRowUid)) {
-                $this->databaseConnection->exec_INSERTquery('tx_securedownloads_domain_model_log', $log->toArray());
-                $this->logRowUid = $this->databaseConnection->sql_insert_id();
-            } else {
-                $this->databaseConnection->exec_UPDATEquery('tx_securedownloads_domain_model_log',
-                    '`uid`=' . (int)$this->logRowUid, $log->toArray());
-            }
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+            $queryBuilder
+                ->insert('tx_securedownloads_domain_model_log')
+                ->values($log->toArray())
+                ->execute();
 
+            $this->isProcessed = true;
         }
     }
 
@@ -484,7 +474,7 @@ class FileDelivery
      *
      * @return bool
      */
-    protected function isLoggingEnabled()
+    protected function isLoggingEnabled(): bool
     {
         return (bool)$this->extensionConfiguration['log'];
     }
@@ -497,7 +487,7 @@ class FileDelivery
      *
      * @return string mime type
      */
-    protected function getMimeTypeByFileExtension($strFileExtension)
+    protected function getMimeTypeByFileExtension(string $strFileExtension): string
     {
         // Check files with unknown file extensions, if they are image files (currently disabled)
         $checkForImageFiles = false;
@@ -570,7 +560,7 @@ class FileDelivery
                 list($strAdditionalFileExtension, $strAdditionalMimeType) = GeneralUtility::trimExplode('|',
                     $strAdditionalMimeTypeItem);
                 if (!empty($strAdditionalFileExtension) && !empty($strAdditionalMimeType)) {
-                    $strAdditionalFileExtension = GeneralUtility::strtolower($strAdditionalFileExtension);
+                    $strAdditionalFileExtension = mb_strtolower($strAdditionalFileExtension);
                     $arrMimeTypes[$strAdditionalFileExtension] = $strAdditionalMimeType;
                 }
             }
@@ -615,9 +605,9 @@ class FileDelivery
      *
      * @return string
      */
-    protected function getFileExtensionByFilename($strFileName)
+    protected function getFileExtensionByFilename(string $strFileName): string
     {
-        return GeneralUtility::strtolower(ltrim(strrchr($strFileName, '.'), '.'));
+        return mb_strtolower(ltrim(mb_strrchr($strFileName, '.'), '.'));
     }
 
     /**
@@ -628,7 +618,7 @@ class FileDelivery
      *
      * @return bool
      */
-    protected function readfile_chunked($strFileName)
+    protected function readFileFactional(string $strFileName): bool
     {
         $chunksize = intval($this->extensionConfiguration['outputChunkSize']); // how many bytes per chunk
         $timeout = ini_get('max_execution_time');
@@ -650,5 +640,3 @@ class FileDelivery
         return fclose($handle);
     }
 }
-
-?>

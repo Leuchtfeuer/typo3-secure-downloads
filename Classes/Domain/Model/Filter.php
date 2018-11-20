@@ -81,7 +81,7 @@ class Filter
     /**
      * @return int
      */
-    public function getPageId()
+    public function getPageId(): int
     {
         return $this->pageId;
     }
@@ -89,7 +89,7 @@ class Filter
     /**
      * @param int $pageId
      */
-    public function setPageId($pageId)
+    public function setPageId(int $pageId)
     {
         $this->pageId = $pageId;
     }
@@ -97,7 +97,7 @@ class Filter
     /**
      * @return string
      */
-    public function getFileType()
+    public function getFileType(): string
     {
         return $this->fileType;
     }
@@ -105,13 +105,13 @@ class Filter
     /**
      * @param string $fileType
      */
-    public function setFileType($fileType)
+    public function setFileType(string $fileType)
     {
         $this->fileType = $fileType;
     }
 
     /**
-     * @return string
+     * @return int|null
      */
     public function getFrom()
     {
@@ -121,17 +121,18 @@ class Filter
     /**
      * @param string $from
      */
-    public function setFrom($from)
+    public function setFrom(string $from)
     {
         $this->from = $from;
 
     }
 
     /**
-     * @param $dateString
-     * @return string
+     * @param string $dateString
+     *
+     * @return int|null
      */
-    private function formatDate($dateString)
+    private function formatDate(string $dateString)
     {
         if ($dateString == '') {
             return null;
@@ -148,13 +149,16 @@ class Filter
 
         $dateTime = new \DateTime();
         $dateTime->setDate($year, (int)$month, (int)$day);
-        $dateTime->setTime((int)$hour, (int)$minute, (int)$second);
+
+        if (isset($hour) && isset($minute) && isset($second)) {
+            $dateTime->setTime((int)$hour, (int)$minute, (int)$second);
+        }
 
         return $dateTime->getTimestamp();
     }
 
     /**
-     * @return string
+     * @return int|null
      */
     public function getTill()
     {
@@ -164,7 +168,7 @@ class Filter
     /**
      * @param string $till
      */
-    public function setTill($till)
+    public function setTill(string $till)
     {
         $this->till = $till;
     }
@@ -172,7 +176,7 @@ class Filter
     /**
      * @return int
      */
-    public function getFeUserId()
+    public function getFeUserId(): int
     {
         return $this->feUserId;
     }
@@ -180,7 +184,7 @@ class Filter
     /**
      * @param int $feUserId
      */
-    public function setFeUserId($feUserId)
+    public function setFeUserId(int $feUserId)
     {
         switch ($feUserId) {
             case Filter::USER_TYPE_LOGGED_ON:
@@ -201,7 +205,7 @@ class Filter
     /**
      * @return int
      */
-    public function getUserType()
+    public function getUserType(): int
     {
         return $this->userType;
     }
@@ -209,7 +213,7 @@ class Filter
     /**
      * @param int $userType
      */
-    public function setUserType($userType)
+    public function setUserType(int $userType)
     {
         $this->userType = $userType;
     }

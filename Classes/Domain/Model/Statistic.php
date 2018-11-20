@@ -59,7 +59,7 @@ class Statistic
      *
      * @param QueryResultInterface $logEntries
      */
-    public function __construct($logEntries)
+    public function __construct(QueryResultInterface $logEntries)
     {
         $this->from = new \DateTime();
         $this->till = new \DateTime();
@@ -83,7 +83,7 @@ class Statistic
     /**
      * @return float
      */
-    public function getTraffic()
+    public function getTraffic(): float
     {
         return $this->traffic;
     }
@@ -91,7 +91,7 @@ class Statistic
     /**
      * @return \DateTime
      */
-    public function getFrom()
+    public function getFrom(): \DateTime
     {
         return $this->from;
     }
@@ -99,7 +99,7 @@ class Statistic
     /**
      * @return \DateTime
      */
-    public function getTill()
+    public function getTill(): \DateTime
     {
         return $this->till;
     }
