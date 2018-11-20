@@ -169,7 +169,6 @@ class HtmlParser
 
             // all HTML after matching tag
             $html = $htmlContent[1];
-
         }
 
         if ($this->logLevel >= 1) {

@@ -448,7 +448,7 @@ class FileDelivery
 
             }
 
-            $log->setUser($this->feUserObj->user['uid']);
+            $log->setUser((int)$this->feUserObj->user['uid']);
 
             if (defined('TYPO3_MODE')) {
                 $log->setTypo3Mode(TYPO3_MODE);
