@@ -29,7 +29,7 @@
     }
   ],
   "require": {
-    "typo3/cms-core": "^8.7 || ^9.3"
+    "typo3/cms-core": "^8.7 || ^9.5"
   },
   "conflict": {
     "typo3-ter/naw-securedl": "*"
