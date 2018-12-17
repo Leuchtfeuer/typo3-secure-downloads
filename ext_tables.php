@@ -15,7 +15,7 @@ if (TYPO3_MODE === 'BE' && $_EXTCONF['log']) {
             'Log' => 'show,list',
         ], [
             'access' => 'user,group',
-            'icon' => 'EXT:secure_downloads/ext_icon.svg',
+            'icon' => 'EXT:secure_downloads/Resources/Public/Icons/Extension.svg',
             'labels' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_log.xlf',
         ]
     );
