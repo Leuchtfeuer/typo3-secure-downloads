@@ -109,8 +109,10 @@ class RequestContext
         /** @var TypoScriptFrontendController $typoScriptFrontendController */
         $typoScriptFrontendController = $GLOBALS['TSFE'];
 
-        if (isset($typoScriptFrontendController->page['cache_timeout'])) {
+        if (isset($typoScriptFrontendController->page['cache_timeout']) && $typoScriptFrontendController->page['cache_timeout'] > 0 ) {
             $this->cacheLifetime = (int)$typoScriptFrontendController->page['cache_timeout'];
+        } elseif (isset($typoScriptFrontendController->config['config']['cache_period'])) {
+            $this->cacheLifetime = (int)$typoScriptFrontendController->config['config']['cache_period'];
         } else {
             $this->cacheLifetime = 0;
         }
