@@ -214,7 +214,7 @@ class HtmlParser
             }
 
             $tagParts = explode($matchedUrls[1], $tag, 2);
-            $tag = $this->recursion($tagParts[0] . $replace, $tagParts[1]);
+            $tag = $this->recursion(rtrim($tagParts[0], '/') . '/' . $replace, $tagParts[1]);
 
             // Some output for debugging
             if ($this->logLevel === 1) {
