@@ -7,7 +7,7 @@
     "Secure"
   ],
   "type": "typo3-cms-extension",
-  "license": "GPL-3.0-or-later",
+  "license": "GPL-2.0-or-later",
   "homepage": "https://www.bitmotion.de",
   "support": {
     "email": "typo3-ext@bitmotion.de",
