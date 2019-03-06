@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Resource;
 
 /***************************************************************
@@ -33,10 +33,6 @@ use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Utility\PathUtility;
 
-/**
- * Class UrlGenerationInterceptor
- * @package Bitmotion\SecureDownloads\Resource
- */
 class UrlGenerationInterceptor
 {
     protected $resourcePublisher;
@@ -46,13 +42,6 @@ class UrlGenerationInterceptor
         $this->resourcePublisher = $resourcePublisher;
     }
 
-    /**
-     * @param ResourceStorage $storage
-     * @param AbstractDriver $driver
-     * @param ResourceInterface $resource
-     * @param boolean $relativeToCurrentScript
-     * @param array $urlData
-     */
     public function getPublicUrl(
         ResourceStorage $storage,
         AbstractDriver $driver,

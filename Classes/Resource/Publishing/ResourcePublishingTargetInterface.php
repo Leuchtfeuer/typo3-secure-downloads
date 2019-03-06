@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Resource\Publishing;
 
 /***************************************************************
@@ -26,10 +27,6 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
  ***************************************************************/
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 
-/**
- * Interface ResourcePublishingTargetInterface
- * @package Bitmotion\SecureDownloads\Resource\Publishing
- */
 interface ResourcePublishingTargetInterface
 {
     /**
@@ -54,10 +51,6 @@ interface ResourcePublishingTargetInterface
 
     /**
      * Builds a delivery URI from a URI which is in document root but protected through the webserver
-     *
-     * @param string $resourceUri
-     *
-     * @return string
      */
-    public function publishResourceUri(string $resourceUri): string;
+    public function publishResourceUri(string $resourceUri);
 }

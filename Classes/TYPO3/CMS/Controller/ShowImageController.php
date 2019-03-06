@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\TYPO3\CMS\Controller;
 
 /***************************************************************
@@ -28,11 +29,7 @@ use Bitmotion\SecureDownloads\Service\SecureDownloadService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Class ShowImageController
- *
  * Fixes the image controller until the bug itself is fixed in TYPO3
- *
- * @package Bitmotion\SecureDownloads\TYPO3\CMS\Controller
  */
 class ShowImageController extends \TYPO3\CMS\Frontend\Controller\ShowImageController
 {

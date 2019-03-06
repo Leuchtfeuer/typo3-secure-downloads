@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Security\Authorization\Resource;
 
 /***************************************************************
@@ -25,13 +26,8 @@ namespace Bitmotion\SecureDownloads\Security\Authorization\Resource;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-/**
- * Interface AccessRestrictionPublisherInterface
- * @package Bitmotion\SecureDownloads\Security\Authorization\Resource
- */
 interface AccessRestrictionPublisherInterface
 {
-
     /**
      * Publishes access restrictions for file path.
      * This could be a e.g. .htaccess file to deny public access for the directory or its files

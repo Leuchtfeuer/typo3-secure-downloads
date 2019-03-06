@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Resource\Publishing;
 
 /***************************************************************
@@ -28,10 +29,6 @@ use Bitmotion\SecureDownloads\Security\Authorization\Resource\AccessRestrictionP
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class Apache2ProtectedResourcePublishingTarget
- * @package Bitmotion\SecureDownloads\Resource\Publishing
- */
 class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourcePublishingTarget
 {
     /**
@@ -39,9 +36,6 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
      */
     protected $accessRestrictionPublisher;
 
-    /**
-     * @param AccessRestrictionPublisherInterface $accessRestrictionPublisher
-     */
     public function injectAccessRestrictionPublisher(AccessRestrictionPublisherInterface $accessRestrictionPublisher)
     {
         $this->accessRestrictionPublisher = $accessRestrictionPublisher;
@@ -72,59 +66,42 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
         return $publishedResourceWebUri;
     }
 
-    /**
-     * @param ResourceInterface $resource
-     *
-     * @return string
-     */
     protected function buildResourcePublishPathAndFilename(ResourceInterface $resource): string
     {
         return $this->resourcesPublishingPath . $this->buildPublishingPathPartBySourcePath($this->getResourceSourcePathAndFileName($resource));
     }
 
-    /**
-     * @param string $sourcePath
-     *
-     * @return string
-     */
-    protected function buildPublishingPathPartBySourcePath($sourcePath): string
+    protected function buildPublishingPathPartBySourcePath(string $sourcePath): string
     {
         $contextHash = '0';
         if ($this->getRequestContext()->isUserLoggedIn()) {
             $contextHash = sha1($this->getRequestContext()->getAccessToken());
         }
-        $pathParts = array_merge([$this->getRequestContext()->getLocationId()], [$contextHash],
-            [sha1(dirname($sourcePath))], [basename($sourcePath)]);
+        $pathParts = array_merge(
+            [$this->getRequestContext()->getLocationId()],
+            [$contextHash],
+            [sha1(dirname($sourcePath))],
+            [basename($sourcePath)]
+        );
 
         return implode('/', $pathParts);
     }
 
     /**
-     * @param ResourceInterface $resource
-     *
-     * @return string
+     * @return bool|string
      */
-    protected function getResourceSourcePathAndFileName(ResourceInterface $resource): string
+    protected function getResourceSourcePathAndFileName(ResourceInterface $resource)
     {
         $pathAndFilename = $this->resourcesSourcePath . ltrim($resource->getIdentifier(), '/');
 
         return (file_exists($pathAndFilename)) ? $pathAndFilename : false;
     }
 
-    /**
-     * @param ResourceInterface $resource
-     *
-     * @return string
-     */
     protected function buildResourceWebUri(ResourceInterface $resource): string
     {
         return substr($this->buildResourcePublishPathAndFilename($resource), strlen(PATH_site));
     }
 
-    /**
-     * @param string $fileSourcePath
-     * @param string $fileTargetPath
-     */
     protected function mirrorFile(string $fileSourcePath, string $fileTargetPath)
     {
         $publishingDirectory = dirname($fileTargetPath) . '/';
@@ -135,9 +112,6 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
         symlink($fileSourcePath, $fileTargetPath);
     }
 
-    /**
-     * @param $absolutePath
-     */
     protected function assureDirectoryPathExists(string $absolutePath)
     {
         if (!is_dir($absolutePath)) {
@@ -148,11 +122,9 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
     /**
      * Builds a delivery URI from a URI which is in document root but protected through the webserver
      *
-     * @param string $resourceUri
-     *
-     * @return string
+     * @return string|bool
      */
-    public function publishResourceUri(string $resourceUri): string
+    public function publishResourceUri(string $resourceUri)
     {
         $this->setResourcesSourcePath(PATH_site);
         $publishedResourcePathAndFilename = $this->buildResourceUriPublishPathAndFilename($resourceUri);
@@ -169,32 +141,17 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
         return $publishedResourceWebUri;
     }
 
-    /**
-     * @param string $resourceUri
-     *
-     * @return string
-     */
     protected function buildResourceUriPublishPathAndFilename(string $resourceUri): string
     {
         return $this->resourcesPublishingPath . $this->buildPublishingPathPartBySourcePath($this->getResourceUriSourcePathAndFileName($resourceUri));
     }
 
-    /**
-     * @param string $resourceUri
-     *
-     * @return string
-     */
     protected function getResourceUriSourcePathAndFileName(string $resourceUri): string
     {
         //TODO: Check if we need to check for backpaths here
         return PATH_site . $resourceUri;
     }
 
-    /**
-     * @param string $resourceUri
-     *
-     * @return string
-     */
     protected function buildResourceUriWebUri(string $resourceUri): string
     {
         return substr($this->buildResourceUriPublishPathAndFilename($resourceUri), strlen(PATH_site));

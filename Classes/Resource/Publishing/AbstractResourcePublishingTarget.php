@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Resource\Publishing;
 
 /***************************************************************
@@ -24,18 +25,14 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-use TYPO3\CMS\Core\Resource\ResourceInterface;
-use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Resource\ResourceStorage;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\PathUtility;
 use Bitmotion\SecureDownloads\Configuration\ConfigurationManager;
 use Bitmotion\SecureDownloads\Request\RequestContext;
+use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\Resource\ResourceStorage;
+use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 
-/**
- * Class AbstractResourcePublishingTarget
- * @package Bitmotion\SecureDownloads\Resource\Publishing
- */
 abstract class AbstractResourcePublishingTarget implements ResourcePublishingTargetInterface, SingletonInterface
 {
     /**
@@ -78,11 +75,6 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
         return $this->publishResource($resource);
     }
 
-    /**
-     * @param ResourceInterface $resource
-     *
-     * @return string
-     */
     protected function getResourceUri(ResourceInterface $resource): string
     {
         return PathUtility::getCanonicalPath($this->getResourcesBaseUri() . '/' . $resource->getIdentifier());
@@ -110,11 +102,6 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
         $this->resourcesBaseUri = substr($this->resourcesPublishingPath, strlen(PATH_site));
     }
 
-    /**
-     * @param ResourceStorage $storage
-     *
-     * @return string
-     */
     protected function getResourcesSourcePathByResourceStorage(ResourceStorage $storage): string
     {
         $storageConfiguration = $storage->getConfiguration();
@@ -144,25 +131,19 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
         if ($this->resourcesPublishingPath === null) {
             if ($this->isSourcePathInDocumentRoot()) {
                 $this->resourcesPublishingPath = $this->resourcesSourcePath;
-            } else {
-                // TODO: handle this case
             }
+            // TODO: handle this case
         }
     }
 
     /**
      * Checks if the source path is somewhere below the document root
-     *
-     * @return bool
      */
     protected function isSourcePathInDocumentRoot(): bool
     {
         return GeneralUtility::isFirstPartOfStr($this->resourcesSourcePath, PATH_site);
     }
 
-    /**
-     * @return RequestContext
-     */
     protected function getRequestContext(): RequestContext
     {
         if ($this->requestContext === null) {

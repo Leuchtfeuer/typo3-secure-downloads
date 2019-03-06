@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Core;
 
 /***************************************************************
@@ -27,17 +28,11 @@ namespace Bitmotion\SecureDownloads\Core;
  ***************************************************************/
 use TYPO3\CMS\Core\SingletonInterface;
 
-/**
- * Class ObjectManager
- * @package Bitmotion\SecureDownloads\Core
- */
 class ObjectManager implements SingletonInterface
 {
     /**
      * Registered alternative implementations of a class
      * e.g. used to know the class for a AbstractClass or a Dependency
-     *
-     * @var array
      */
     private $alternativeImplementation = [];
 
@@ -45,12 +40,9 @@ class ObjectManager implements SingletonInterface
      * register a classname that should be used if a dependency is required.
      * e.g. used to define default class for a interface
      *
-     * @param string $className
-     * @param string $alternativeClassName
-     *
      * @throws \InvalidArgumentException
      */
-    public function registerImplementation($className, $alternativeClassName)
+    public function registerImplementation(string $className, string $alternativeClassName)
     {
         if (!array_key_exists($className, $this->alternativeImplementation)) {
             if (interface_exists($className)) {
@@ -58,9 +50,7 @@ class ObjectManager implements SingletonInterface
             }
             $this->alternativeImplementation[$className] = $alternativeClassName;
             class_alias($alternativeClassName, $className);
-        } else {
-            // Ignore this error
         }
+        // Ignore this error
     }
-
 }

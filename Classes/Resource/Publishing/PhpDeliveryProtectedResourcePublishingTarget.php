@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Resource\Publishing;
 
 /***************************************************************
@@ -28,10 +29,6 @@ use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class PhpDeliveryProtectedResourcePublishingTarget
- * @package Bitmotion\SecureDownloads\Resource\Publishing
- */
 class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePublishingTarget
 {
     /**
@@ -49,12 +46,10 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         if (!$this->getRequestContext()->isFrontendRequest()) {
             $this->setResourcesSourcePath($this->getResourcesSourcePathByResourceStorage($resource->getStorage()));
             if ($this->isSourcePathInDocumentRoot()) {
+                // We need to use absolute paths then or copy the files around, or...
                 if (!$this->isPubliclyAvailable($resource)) {
                     $publicUrl = $this->buildUri($this->getResourceUri($resource));
                 }
-            } else {
-                // TODO: Maybe implement this case?
-                // We need to use absolute paths then or copy the files around, or...
             }
         }
 
@@ -64,12 +59,8 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
     /**
      * Checks if a resource which lies in document root is really publicly available
      * This is currently only done by checking configured secure paths, not by requesting the resources
-     *
-     * @param ResourceInterface $resource
-     *
-     * @return bool
      */
-    protected function isPubliclyAvailable(ResourceInterface $resource)
+    protected function isPubliclyAvailable(ResourceInterface $resource): bool
     {
         $resourceUri = $this->getResourceUri($resource);
         $securedFoldersExpression = $this->configurationManager->getValue('securedDirs');
@@ -80,17 +71,16 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         }
 
         // TODO: maybe check if the resource is available without authentication by doing a head request
-        return !(preg_match('/((' . HtmlParser::softQuoteExpression($securedFoldersExpression) . ')+?\/.*?(?:(?i)' . ($fileExtensionExpression) . '))/i',
-                $resourceUri, $matchedUrls) && is_array($matchedUrls) && $matchedUrls[0] === $resourceUri);
+        return !(preg_match(
+            '/((' . HtmlParser::softQuoteExpression($securedFoldersExpression) . ')+?\/.*?(?:(?i)' . ($fileExtensionExpression) . '))/i',
+                $resourceUri,
+            $matchedUrls
+        ) && is_array($matchedUrls) && $matchedUrls[0] === $resourceUri);
     }
 
     /**
      * Builds a URI which uses a PHP Script to access the resource
      * by taking several parameters into account
-     *
-     * @param string $resourceUri
-     *
-     * @return string
      */
     protected function buildUri(string $resourceUri): string
     {
@@ -118,9 +108,6 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         return $downloadUri;
     }
 
-    /**
-     * @return integer
-     */
     protected function calculateLinkLifetime(): int
     {
         $lifeTimeToAdd = $this->configurationManager->getValue('cachetimeadd');
@@ -134,14 +121,6 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         return $validityPeriod;
     }
 
-    /**
-     * @param string $resourceUri
-     * @param integer $userId
-     * @param array $userGroupIds
-     * @param integer $validityPeriod
-     *
-     * @return string
-     */
     protected function getHash(string $resourceUri, int $userId, array $userGroupIds, int $validityPeriod): string
     {
         if ($this->configurationManager->getValue('enableGroupCheck')) {
@@ -155,10 +134,6 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 
     /**
      * Builds a URI which uses a PHP Script to access the resource
-     *
-     * @param string $resourceUri
-     *
-     * @return string
      */
     public function publishResourceUri(string $resourceUri): string
     {

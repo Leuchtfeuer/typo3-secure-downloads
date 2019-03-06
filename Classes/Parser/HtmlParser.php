@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Parser;
 
 /***************************************************************
@@ -27,10 +28,6 @@ namespace Bitmotion\SecureDownloads\Parser;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
-/**
- * Class HtmlParser
- * @package Bitmotion\SecureDownloads\Parser
- */
 class HtmlParser
 {
     /**
@@ -39,21 +36,17 @@ class HtmlParser
     protected $logLevel = 0;
 
     /**
-     * Domain Pattern
-     *
      * @var string
      */
     protected $domainPattern;
 
     /**
-     * Folder pattern
-     *
      * @var string
      */
     protected $folderPattern;
 
     /**
-     * @var string File extension pattern
+     * @var string
      */
     protected $fileExtensionPattern;
 
@@ -67,10 +60,6 @@ class HtmlParser
      */
     protected $tagPattern;
 
-    /**
-     * @param HtmlParserDelegateInterface $delegate
-     * @param array $settings
-     */
     public function __construct(HtmlParserDelegateInterface $delegate, array $settings)
     {
         $this->delegate = $delegate;
@@ -87,9 +76,6 @@ class HtmlParser
         $this->tagPattern = '/["\']?(?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']?/i';
     }
 
-    /**
-     * @param string $accessProtectedDomain
-     */
     public function setDomainPattern(string $accessProtectedDomain)
     {
         $this->domainPattern = $this->softQuoteExpression($accessProtectedDomain);
@@ -98,12 +84,8 @@ class HtmlParser
     /**
      * Quotes special some characters for the regular expression.
      * Leave braces and brackets as is to have more flexibility in configuration.
-     *
-     * @param string $string
-     *
-     * @return string
      */
-    static public function softQuoteExpression(string $string): string
+    public static function softQuoteExpression(string $string): string
     {
         $string = str_replace('\\', '\\\\', $string);
         $string = str_replace(' ', '\ ', $string);
@@ -114,25 +96,16 @@ class HtmlParser
         return $string;
     }
 
-    /**
-     * @param string $accessProtectedFileExtensions
-     */
     public function setFileExtensionPattern(string $accessProtectedFileExtensions)
     {
         $this->fileExtensionPattern = $accessProtectedFileExtensions;
     }
 
-    /**
-     * @param string $accessProtectedFolders
-     */
     public function setFolderPattern(string $accessProtectedFolders)
     {
         $this->folderPattern = $this->softQuoteExpression($accessProtectedFolders);
     }
 
-    /**
-     * @param int $logLevel
-     */
     public function setLogLevel(int $logLevel)
     {
         $this->logLevel = $logLevel;
@@ -140,10 +113,6 @@ class HtmlParser
 
     /**
      * Parses the HTML output and replaces the links to configured files with secured ones
-     *
-     * @param string $html
-     *
-     * @return string
      */
     public function parse(string $html): string
     {
@@ -180,21 +149,15 @@ class HtmlParser
         return $result . $html;
     }
 
-    /**
-     * @return float
-     */
     protected function microtime_float(): float
     {
-        list($usec, $sec) = explode(" ", microtime());
-        return ($usec + $sec);
+        list($usec, $sec) = explode(' ', microtime());
+
+        return $usec + $sec;
     }
 
     /**
      * Investigate the HTML-Tag...
-     *
-     * @param string $tag
-     *
-     * @return string
      */
     protected function parseTag(string $tag): string
     {
@@ -232,11 +195,6 @@ class HtmlParser
 
     /**
      * Search recursive in the rest of the tag (e.g. for vHWin=window.open...).
-     *
-     * @param string $tag
-     * @param string $tmp
-     *
-     * @return string
      */
     private function recursion(string $tag, string $tmp): string
     {
@@ -251,7 +209,6 @@ class HtmlParser
             $tag .= $tagexp[0] . '/' . $replace;
 
             return $this->recursion($tag, $tagexp[1]);
-
         }
 
         return $tag . $tmp;

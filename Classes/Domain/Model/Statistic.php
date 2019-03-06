@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Domain\Model;
 
 /***************************************************************
@@ -27,38 +28,23 @@ namespace Bitmotion\SecureDownloads\Domain\Model;
  ***************************************************************/
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
-/**
- * Class Statistic
- * @package Bitmotion\SecureDownloads\Domain\Model
- */
 class Statistic
 {
     /**
-     * traffic
-     *
      * @var float
      */
     protected $traffic = 0.00;
 
     /**
-     * from
-     *
      * @var \DateTime
      */
     protected $from = null;
 
     /**
-     * till
-     *
      * @var \DateTime
      */
     protected $till = null;
 
-    /**
-     * Statistic constructor.
-     *
-     * @param QueryResultInterface $logEntries
-     */
     public function __construct(QueryResultInterface $logEntries)
     {
         $this->from = new \DateTime();
@@ -80,28 +66,18 @@ class Statistic
         }
     }
 
-    /**
-     * @return float
-     */
     public function getTraffic(): float
     {
         return $this->traffic;
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getFrom(): \DateTime
     {
         return $this->from;
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getTill(): \DateTime
     {
         return $this->till;
     }
-
 }

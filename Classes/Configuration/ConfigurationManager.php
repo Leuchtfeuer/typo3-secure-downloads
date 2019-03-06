@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Configuration;
 
 /***************************************************************
@@ -25,20 +26,10 @@ namespace Bitmotion\SecureDownloads\Configuration;
  ***************************************************************/
 use TYPO3\CMS\Core\SingletonInterface;
 
-/**
- * Class ConfigurationManager
- * @package Bitmotion\SecureDownloads\Configuration
- */
 class ConfigurationManager implements SingletonInterface
 {
-    /**
-     * @var string
-     */
     protected $extensionKey = 'secure_downloads';
 
-    /**
-     * @var array
-     */
     protected $configuration = [];
 
     /**
@@ -53,15 +44,9 @@ class ConfigurationManager implements SingletonInterface
         }
     }
 
-    /**
-     * @param string $key
-     *
-     * @return mixed
-     */
-    public function getValue($key)
+    public function getValue(string $key)
     {
         if (is_array($this->configuration) && isset($key, $this->configuration)) {
-
             return $this->configuration[$key];
         }
 

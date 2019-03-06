@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Request;
 
 /***************************************************************
@@ -29,10 +30,6 @@ use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
-/**
- * Class RequestContext
- * @package Bitmotion\SecureDownloads\Request
- */
 class RequestContext
 {
     /**
@@ -41,7 +38,7 @@ class RequestContext
     protected $userId = 0;
 
     /**
-     * @var array<int>
+     * @var int[]
      */
     protected $userGroupIds = [0];
 
@@ -75,9 +72,6 @@ class RequestContext
      */
     protected $locationId;
 
-    /**
-     * RequestContext constructor.
-     */
     public function __construct()
     {
         if ($this->isFrontendRequest()) {
@@ -89,9 +83,6 @@ class RequestContext
         }
     }
 
-    /**
-     * @return bool
-     */
     public function isFrontendRequest(): bool
     {
         if (defined('TYPO3_MODE') && TYPO3_MODE === 'FE') {
@@ -106,10 +97,9 @@ class RequestContext
      */
     protected function initializeFrontendContext()
     {
-        /** @var TypoScriptFrontendController $typoScriptFrontendController */
         $typoScriptFrontendController = $GLOBALS['TSFE'];
 
-        if (isset($typoScriptFrontendController->page['cache_timeout']) && $typoScriptFrontendController->page['cache_timeout'] > 0 ) {
+        if (isset($typoScriptFrontendController->page['cache_timeout']) && $typoScriptFrontendController->page['cache_timeout'] > 0) {
             $this->cacheLifetime = (int)$typoScriptFrontendController->page['cache_timeout'];
         } elseif (isset($typoScriptFrontendController->config['config']['cache_period'])) {
             $this->cacheLifetime = (int)$typoScriptFrontendController->config['config']['cache_period'];
@@ -142,9 +132,6 @@ class RequestContext
         $this->locationId = (string)$typoScriptFrontendController->id;
     }
 
-    /**
-     * @return bool
-     */
     public function isUserLoggedIn(): bool
     {
         if (empty($this->currentUser->user['uid'])) {
@@ -166,9 +153,6 @@ class RequestContext
         }
     }
 
-    /**
-     * @return bool
-     */
     protected function isBackendRequest(): bool
     {
         if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
@@ -178,65 +162,41 @@ class RequestContext
         return false;
     }
 
-    /**
-     * @return string
-     */
     public function getAdditionalSecret(): string
     {
         return $this->additionalSecret;
     }
 
-    /**
-     * @return int
-     */
     public function getUserId(): int
     {
         return $this->userId;
     }
 
-    /**
-     * @return int
-     */
     public function getCacheLifetime(): int
     {
         return $this->cacheLifetime;
     }
 
-    /**
-     * @return bool
-     */
     public function isUrlRewritingEnabled(): bool
     {
         return $this->urlRewritingEnabled;
     }
 
-    /**
-     * @return string
-     */
     public function getCookieName(): string
     {
         return $this->cookieName;
     }
 
-    /**
-     * @return string
-     */
     public function getAccessToken(): string
     {
         return GeneralUtility::hmac(implode(',', $this->getUserGroupIds()), $this->additionalSecret);
     }
 
-    /**
-     * @return array
-     */
     public function getUserGroupIds(): array
     {
         return $this->userGroupIds;
     }
 
-    /**
-     * @return string
-     */
     public function getLocationId(): string
     {
         return $this->locationId;

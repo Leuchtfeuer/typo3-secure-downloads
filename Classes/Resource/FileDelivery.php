@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Resource;
 
 /***************************************************************
@@ -25,20 +26,15 @@ namespace Bitmotion\SecureDownloads\Resource;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use Bitmotion\SecureDownloads\Domain\Model\Log;
+use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Frontend\Utility\EidUtility;
-use Bitmotion\SecureDownloads\Parser\HtmlParser;
 
-/**
- * Class FileDelivery
- * @package Bitmotion\SecureDownloads\Resource
- */
 class FileDelivery
 {
-
     /**
      * @var array
      */
@@ -157,8 +153,6 @@ class FileDelivery
 
     /**
      * Returns the configuration array
-     *
-     * @return array
      */
     protected function getExtensionConfiguration(): array
     {
@@ -174,13 +168,6 @@ class FileDelivery
 
     /**
      * TODO: Refactor it to a hash service
-     *
-     * @param string $resourceUri
-     * @param int $userId
-     * @param string $userGroupIds
-     * @param integer $validityPeriod
-     *
-     * @return string
      */
     protected function getHash(string $resourceUri, int $userId, string $userGroupIds, int $validityPeriod = 0): string
     {
@@ -193,55 +180,37 @@ class FileDelivery
         return GeneralUtility::hmac($hashString, 'bitmotion_securedownload');
     }
 
-    /**
-     * @return bool
-     */
     protected function hashValid(): bool
     {
         return $this->calculatedHash === $this->hash;
     }
 
-    /**
-     * @param string $message
-     */
     protected function exitScript(string $message)
     {
         header('HTTP/1.1 403 Forbidden');
         exit($message);
     }
 
-    /**
-     * @return bool
-     */
     protected function expiryTimeExceeded(): bool
     {
         return $this->expiryTime < time();
     }
 
-    /**
-     *
-     */
     protected function initializeUserAuthentication()
     {
         $this->feUserObj = EidUtility::initFeUser();
         $this->feUserObj->fetchGroupData();
     }
 
-    /**
-     * @return bool
-     */
     protected function checkUserAccess(): bool
     {
-
-        return ($this->userId === (int)$this->feUserObj->user['uid']);
+        return $this->userId === (int)$this->feUserObj->user['uid'];
     }
 
     /**
      * Returns true if the transmitted group list is identical
      * to the group list of the current user or both have at least one group
      * in common.
-     *
-     * @return bool
      */
     protected function checkGroupAccess(): bool
     {
@@ -250,8 +219,10 @@ class FileDelivery
             return false;
         }
 
-        if (!empty($this->extensionConfiguration['groupCheckDirs']) && !preg_match('/' . $this->softQuoteExpression($this->extensionConfiguration['groupCheckDirs']) . '/',
-                $this->file)
+        if (!empty($this->extensionConfiguration['groupCheckDirs']) && !preg_match(
+            '/' . $this->softQuoteExpression($this->extensionConfiguration['groupCheckDirs']) . '/',
+                $this->file
+        )
         ) {
             return false;
         }
@@ -278,11 +249,6 @@ class FileDelivery
         return $accessAllowed;
     }
 
-    /**
-     * @param string $string
-     *
-     * @return string
-     */
     protected function softQuoteExpression(string $string): string
     {
         return HtmlParser::softQuoteExpression($string);
@@ -313,7 +279,6 @@ class FileDelivery
         }
 
         if (file_exists($file)) {
-
             $this->fileSize = filesize($file);
 
             $this->logDownload();
@@ -398,7 +363,6 @@ class FileDelivery
             if ($strOutputFunction !== 'readfile_chunked' && !connection_aborted()) {
                 $this->logDownload();
             }
-
         } else {
             print 'File does not exist!';
         }
@@ -406,13 +370,10 @@ class FileDelivery
 
     /**
      * Log the access of the file
-     *
-     * @param int $fileSize
      */
     protected function logDownload(int $fileSize = 0)
     {
         if ($this->isProcessed === false && $this->isLoggingEnabled()) {
-
             $log = new Log();
 
             $log->setFileSize($fileSize ?: $this->fileSize);
@@ -422,7 +383,7 @@ class FileDelivery
                 $log->setFileType($fileObject->getExtension());
                 $log->setFileName($fileObject->getNameWithoutExtension());
                 $log->setMediaType($fileObject->getMimeType());
-                $log->setFileId($fileObject->getUid());
+                $log->setFileId((string)$fileObject->getUid());
             } else {
                 $pathinfo = pathinfo($this->file);
 
@@ -430,7 +391,6 @@ class FileDelivery
                 $log->setFileType($pathinfo['extension']);
                 $log->setFileName($pathinfo['filename']);
                 $log->setMediaType($this->getMimeTypeByFileExtension($pathinfo['extension']));
-
             }
 
             $log->setUser((int)$this->feUserObj->user['uid']);
@@ -456,8 +416,6 @@ class FileDelivery
 
     /**
      * Checks if logging has been enabled in configuration
-     *
-     * @return bool
      */
     protected function isLoggingEnabled(): bool
     {
@@ -535,15 +493,19 @@ class FileDelivery
 
         // Read all additional MIME types from the EM configuration into the array $strAdditionalMimeTypesArray
         if ($this->extensionConfiguration['additionalMimeTypes']) {
-
             $strAdditionalFileExtension = '';
             $strAdditionalMimeType = '';
-            $arrAdditionalMimeTypeParts = GeneralUtility::trimExplode(',',
-                $this->extensionConfiguration['additionalMimeTypes'], true);
+            $arrAdditionalMimeTypeParts = GeneralUtility::trimExplode(
+                ',',
+                $this->extensionConfiguration['additionalMimeTypes'],
+                true
+            );
 
             foreach ($arrAdditionalMimeTypeParts as $strAdditionalMimeTypeItem) {
-                list($strAdditionalFileExtension, $strAdditionalMimeType) = GeneralUtility::trimExplode('|',
-                    $strAdditionalMimeTypeItem);
+                list($strAdditionalFileExtension, $strAdditionalMimeType) = GeneralUtility::trimExplode(
+                    '|',
+                    $strAdditionalMimeTypeItem
+                );
                 if (!empty($strAdditionalFileExtension) && !empty($strAdditionalMimeType)) {
                     $strAdditionalFileExtension = mb_strtolower($strAdditionalFileExtension);
                     $arrMimeTypes[$strAdditionalFileExtension] = $strAdditionalMimeType;
@@ -557,7 +519,7 @@ class FileDelivery
         // Check if an specific MIME type is configured for this file extension
         if (array_key_exists($strFileExtension, $arrMimeTypes)) {
             $strMimeType = $arrMimeTypes[$strFileExtension];
-            // files bigger than 32MB are now 'application/octet-stream' by default (getimagesize memory_limit problem)
+        // files bigger than 32MB are now 'application/octet-stream' by default (getimagesize memory_limit problem)
         } elseif ($checkForImageFiles && ($this->fileSize < 1024 * 1024 * 32)) {
             $arrImageInfos = @getimagesize($this->file);
             $intImageType = (int)$arrImageInfos[2];
@@ -576,10 +538,6 @@ class FileDelivery
 
     /**
      * Extracts the file extension out of a complete file name.
-     *
-     * @param string $strFileName
-     *
-     * @return string
      */
     protected function getFileExtensionByFilename(string $strFileName): string
     {
@@ -589,10 +547,6 @@ class FileDelivery
     /**
      * In some cases php needs the filesize as php_memory, so big files cannot
      * be transferred. This function mitigates this problem.
-     *
-     * @param string $strFileName
-     *
-     * @return bool
      */
     protected function readFileFactional(string $strFileName): bool
     {

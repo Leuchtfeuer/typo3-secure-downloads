@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Parser;
 
 /***************************************************************
@@ -25,17 +26,7 @@ namespace Bitmotion\SecureDownloads\Parser;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-/**
- * Interface HtmlParserDelegateInterface
- * @package Bitmotion\SecureDownloads\Parser
- */
 interface HtmlParserDelegateInterface
 {
-
-    /**
-     * @param string $resourceUri
-     *
-     * @return string
-     */
     public function publishResourceUri(string $resourceUri): string;
 }

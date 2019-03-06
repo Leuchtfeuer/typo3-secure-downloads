@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log',
@@ -178,6 +180,5 @@ return [
                 'eval' => 'int',
             ],
         ],
-
     ],
 ];

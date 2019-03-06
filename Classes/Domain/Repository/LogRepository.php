@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Domain\Repository;
 
 /***************************************************************
@@ -31,16 +32,8 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
-/**
- * Class LogRepository
- * @package Bitmotion\SecureDownloads\Domain\Repository
- */
 class LogRepository extends Repository
 {
-
-    /**
-     * @var array
-     */
     protected $defaultOrderings = [
         'tstamp' => QueryInterface::ORDER_DESCENDING,
     ];
@@ -57,10 +50,9 @@ class LogRepository extends Repository
     /**
      * @param null|Filter $filter
      *
-     * @return array|QueryResultInterface
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function findByFilter($filter)
+    public function findByFilter($filter): QueryResultInterface
     {
         $query = $this->createQuery();
 
@@ -111,4 +103,3 @@ class LogRepository extends Repository
         return $query->execute();
     }
 }
-

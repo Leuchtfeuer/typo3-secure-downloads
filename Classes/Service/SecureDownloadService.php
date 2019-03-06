@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Service;
 
 /***************************************************************
@@ -24,18 +25,14 @@ namespace Bitmotion\SecureDownloads\Service;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Bitmotion\SecureDownloads\Configuration\ConfigurationManager;
+use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Bitmotion\SecureDownloads\Parser\HtmlParserDelegateInterface;
 use Bitmotion\SecureDownloads\Request\RequestContext;
 use Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublisher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
-/**
- * Class SecureDownloadService
- * @package Bitmotion\SecureDownloads\Service
- */
 class SecureDownloadService implements HtmlParserDelegateInterface
 {
     protected $requestContext;
@@ -60,9 +57,6 @@ class SecureDownloadService implements HtmlParserDelegateInterface
 
     /**
      * This method is called by the frontend rendering hook contentPostProc->output
-     *
-     * @param array $parameters
-     * @param TypoScriptFrontendController $typoScriptFrontendController
      */
     public function parseFE(array &$parameters, TypoScriptFrontendController $typoScriptFrontendController)
     {
@@ -76,8 +70,6 @@ class SecureDownloadService implements HtmlParserDelegateInterface
     /**
      * Lazily instantiates the HTML parser
      * Must be called AFTER the configuration manager has been initialized
-     *
-     * @return HtmlParser
      */
     protected function getHtmlParser(): HtmlParser
     {
@@ -95,10 +87,6 @@ class SecureDownloadService implements HtmlParserDelegateInterface
 
     /**
      * Method kept for compatibility
-     *
-     * @param string $html
-     *
-     * @return string
      */
     public function parseContent(string $html): string
     {
@@ -107,10 +95,6 @@ class SecureDownloadService implements HtmlParserDelegateInterface
 
     /**
      * Method kept for compatibility
-     *
-     * @param string $originalUri
-     *
-     * @return string
      */
     public function makeSecure(string $originalUri): string
     {
@@ -119,10 +103,6 @@ class SecureDownloadService implements HtmlParserDelegateInterface
 
     /**
      * Transforms a relative file URL to a secure download protected URL
-     *
-     * @param string $originalUri
-     *
-     * @return string
      */
     public function publishResourceUri(string $originalUri): string
     {
@@ -146,8 +126,6 @@ class SecureDownloadService implements HtmlParserDelegateInterface
 
     /**
      * Lazily intatiates the resource publisher
-     *
-     * @return ResourcePublisher
      */
     protected function getResourcePublisher(): ResourcePublisher
     {

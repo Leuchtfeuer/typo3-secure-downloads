@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Resource\Publishing;
 
 /***************************************************************
@@ -31,10 +32,6 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-/**
- * Class ResourcePublisher
- * @package Bitmotion\SecureDownloads\Resource\Publishing
- */
 class ResourcePublisher implements SingletonInterface
 {
     /**
@@ -42,9 +39,6 @@ class ResourcePublisher implements SingletonInterface
      */
     protected $publishingTarget;
 
-    /**
-     * @param ResourcePublishingTargetInterface $publishingTarget
-     */
     public function injectPublishingTarget(ResourcePublishingTargetInterface $publishingTarget)
     {
         $this->publishingTarget = $publishingTarget;
@@ -63,9 +57,6 @@ class ResourcePublisher implements SingletonInterface
         return $this->getPublishingTarget()->getResourceWebUri($resource);
     }
 
-    /**
-     * @return ResourcePublishingTargetInterface
-     */
     protected function getPublishingTarget(): ResourcePublishingTargetInterface
     {
         // Check if we have DI, if not, lazily instatiate the publishing target
@@ -97,10 +88,6 @@ class ResourcePublisher implements SingletonInterface
 
     /**
      * Builds a delivery URI from a URI which is in document root but protected through the webserver
-     *
-     * @param string $resourceUri
-     *
-     * @return string
      */
     public function publishResourceUri(string $resourceUri): string
     {

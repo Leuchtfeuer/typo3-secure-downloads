@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Controller;
 
 /***************************************************************
@@ -37,10 +38,6 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Frontend\Page\PageRepository;
 
-/**
- * Class LogController
- * @package Bitmotion\SecureDownloads\Controller
- */
 class LogController extends ActionController
 {
     /**
@@ -75,10 +72,6 @@ class LogController extends ActionController
     }
 
     /**
-     * action list
-     *
-     * @param Filter|null $filter
-     *
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
     public function listAction(Filter $filter = null)
@@ -94,9 +87,6 @@ class LogController extends ActionController
         ]);
     }
 
-    /**
-     * @return array
-     */
     private function getUsers(): array
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
@@ -111,9 +101,6 @@ class LogController extends ActionController
             ->fetchAll();
     }
 
-    /**
-     * @return array
-     */
     private function getFileTypes(): array
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
@@ -128,10 +115,6 @@ class LogController extends ActionController
     }
 
     /**
-     * action show
-     *
-     * @param Filter|null $filter
-     *
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
@@ -165,16 +148,12 @@ class LogController extends ActionController
     /**
      * Set up the doc header properly here
      *
-     * @param ViewInterface $view
-     *
      * @throws \InvalidArgumentException
      */
     public function initializeView(ViewInterface $view)
     {
-        /** @var BackendTemplateView $view */
         parent::initializeView($view);
 
-        /** @var PageRenderer $pageRenderer */
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->addCssFile('EXT:secure_downloads/Resources/Public/Styles/Styles.css');
         $this->createMenu();
@@ -197,8 +176,11 @@ class LogController extends ActionController
 
             foreach ($actions as $action) {
                 $isActive = $this->request->getControllerName() === $action['controller'] && $this->request->getControllerActionName() === $action['action'];
-                $item = $menu->makeMenuItem()->setTitle($action['label'])->setHref($this->getUriBuilder()->reset()->uriFor($action['action'],
-                    [], $action['controller']))->setActive($isActive);
+                $item = $menu->makeMenuItem()->setTitle($action['label'])->setHref($this->getUriBuilder()->reset()->uriFor(
+                    $action['action'],
+                    [],
+                    $action['controller']
+                ))->setActive($isActive);
                 $menu->addMenuItem($item);
             }
         }
@@ -208,16 +190,11 @@ class LogController extends ActionController
         $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
     }
 
-    /**
-     * @return UriBuilder
-     */
     protected function getUriBuilder(): UriBuilder
     {
-        /** @var UriBuilder $uriBuilder */
         $uriBuilder = $this->objectManager->get(UriBuilder::class);
         $uriBuilder->setRequest($this->request);
 
         return $uriBuilder;
     }
-
 }

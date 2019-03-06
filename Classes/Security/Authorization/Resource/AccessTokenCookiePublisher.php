@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Security\Authorization\Resource;
 
 /***************************************************************
@@ -27,15 +28,7 @@ namespace Bitmotion\SecureDownloads\Security\Authorization\Resource;
 
 use Bitmotion\SecureDownloads\Request\RequestContext;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- */
-
-/**
- * Class AccessTokenCookiePublisher
- * @package Bitmotion\SecureDownloads\Security\Authorization\Resource
- */
 class AccessTokenCookiePublisher implements SingletonInterface
 {
     protected $requestContext;
@@ -76,4 +69,3 @@ class AccessTokenCookiePublisher implements SingletonInterface
         }
     }
 }
-

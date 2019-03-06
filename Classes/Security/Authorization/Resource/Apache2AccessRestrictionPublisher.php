@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Security\Authorization\Resource;
 
 /***************************************************************
@@ -26,14 +27,9 @@ namespace Bitmotion\SecureDownloads\Security\Authorization\Resource;
  ***************************************************************/
 use Bitmotion\SecureDownloads\Request\RequestContext;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Class Apache2AccessRestrictionPublisher
- *
  * An access restriction publisher that publishes .htaccess files to configure apache2 restrictions
- *
- * @package Bitmotion\SecureDownloads\Security\Authorization\Resource
  */
 class Apache2AccessRestrictionPublisher implements AccessRestrictionPublisherInterface, SingletonInterface
 {
@@ -56,14 +52,10 @@ SetEnvIfNoCase ip_ok 0 !session_match
 Allow from env=session_match
 ';
 
-    /**
-     * @param RequestContext $requestContext
-     */
     public function __construct(RequestContext $requestContext)
     {
         $this->requestContext = $requestContext;
     }
-
 
     /**
      * Publishes an Apache2 .htaccess file which allows access to the given directory only for the current session
