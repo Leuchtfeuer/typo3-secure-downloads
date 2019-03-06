@@ -124,7 +124,7 @@ class FileDelivery
         }
 
         $this->hash = GeneralUtility::_GP('hash');
-        $this->expiryTime = GeneralUtility::_GP('t');
+        $this->expiryTime = (int) GeneralUtility::_GP('t');
         $this->file = GeneralUtility::_GP('file');
 
         $this->data = $this->userId . $this->userGroups . $this->file . $this->expiryTime;
