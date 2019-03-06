@@ -99,6 +99,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      */
     protected function detectResourcesBaseUri()
     {
+        // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
         $this->resourcesBaseUri = substr($this->resourcesPublishingPath, strlen(PATH_site));
     }
 
@@ -108,6 +109,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
         if ($storageConfiguration['pathType'] === 'absolute') {
             $sourcePath = PathUtility::getCanonicalPath($storageConfiguration['basePath']) . '/';
         } else {
+            // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
             $sourcePath = PathUtility::getCanonicalPath(PATH_site . $storageConfiguration['basePath']) . '/';
         }
 
@@ -141,6 +143,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      */
     protected function isSourcePathInDocumentRoot(): bool
     {
+        // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
         return GeneralUtility::isFirstPartOfStr($this->resourcesSourcePath, PATH_site);
     }
 

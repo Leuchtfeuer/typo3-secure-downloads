@@ -99,6 +99,7 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
 
     protected function buildResourceWebUri(ResourceInterface $resource): string
     {
+        // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
         return substr($this->buildResourcePublishPathAndFilename($resource), strlen(PATH_site));
     }
 
@@ -115,6 +116,7 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
     protected function assureDirectoryPathExists(string $absolutePath)
     {
         if (!is_dir($absolutePath)) {
+            // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
             GeneralUtility::mkdir_deep(PATH_site, substr($absolutePath, strlen(PATH_site)));
         }
     }
@@ -126,6 +128,7 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
      */
     public function publishResourceUri(string $resourceUri)
     {
+        // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
         $this->setResourcesSourcePath(PATH_site);
         $publishedResourcePathAndFilename = $this->buildResourceUriPublishPathAndFilename($resourceUri);
         $publishedResourceWebUri = $this->buildResourceUriWebUri($resourceUri);
@@ -149,11 +152,13 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
     protected function getResourceUriSourcePathAndFileName(string $resourceUri): string
     {
         //TODO: Check if we need to check for backpaths here
+        // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
         return PATH_site . $resourceUri;
     }
 
     protected function buildResourceUriWebUri(string $resourceUri): string
     {
+        // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
         return substr($this->buildResourceUriPublishPathAndFilename($resourceUri), strlen(PATH_site));
     }
 
@@ -163,6 +168,7 @@ class Apache2DeliveryProtectedResourcePublishingTarget extends AbstractResourceP
     protected function detectResourcesPublishingPath()
     {
         if ($this->resourcesPublishingPath === null) {
+            // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
             $this->resourcesPublishingPath = PATH_site . 'typo3temp/secure_downloads/';
             $this->assureDirectoryPathExists($this->resourcesPublishingPath);
         }

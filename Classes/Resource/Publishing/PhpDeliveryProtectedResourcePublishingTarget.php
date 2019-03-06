@@ -137,6 +137,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      */
     public function publishResourceUri(string $resourceUri): string
     {
+        // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
         $this->setResourcesSourcePath(PATH_site);
 
         return $this->buildUri($resourceUri);

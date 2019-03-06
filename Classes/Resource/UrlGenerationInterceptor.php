@@ -58,6 +58,7 @@ class UrlGenerationInterceptor
             // If requested, make the path relative to the current script in order to make it possible
             // to use the relative file
             if ($relativeToCurrentScript) {
+                // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
                 $publicUrl = PathUtility::getRelativePathTo(PathUtility::dirname((PATH_site . $publicUrl))) . PathUtility::basename($publicUrl);
             }
             // $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
