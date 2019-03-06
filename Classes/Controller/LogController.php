@@ -35,7 +35,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Frontend\Page\PageRepository;
 
 /**
@@ -105,7 +104,6 @@ class LogController extends ActionController
      */
     public function listAction(Filter $filter = null)
     {
-        DebuggerUtility::var_dump($filter, 'FILTER');
         $logEntries = $this->logRepository->findByFilter($filter);
 
         $this->view->assignMultiple([
