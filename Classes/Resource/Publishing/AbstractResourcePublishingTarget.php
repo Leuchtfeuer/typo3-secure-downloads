@@ -58,15 +58,9 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      */
     protected $requestContext;
 
-    /**
-     * @var ConfigurationManager
-     */
     protected $configurationManager;
 
-    /**
-     * @param ConfigurationManager $configurationManager
-     */
-    public function injectConfigurationManager(ConfigurationManager $configurationManager)
+    public function __construct(ConfigurationManager $configurationManager)
     {
         $this->configurationManager = $configurationManager;
     }

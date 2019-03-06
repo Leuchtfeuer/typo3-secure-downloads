@@ -37,10 +37,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Apache2AccessRestrictionPublisher implements AccessRestrictionPublisherInterface, SingletonInterface
 {
-
-    /**
-     * @var RequestContext
-     */
     protected $requestContext;
 
     private $htaccessTemplate = '
@@ -63,9 +59,9 @@ Allow from env=session_match
     /**
      * @param RequestContext $requestContext
      */
-    public function __construct(RequestContext $requestContext = null)
+    public function __construct(RequestContext $requestContext)
     {
-        $this->requestContext = $requestContext ?: GeneralUtility::makeInstance(RequestContext::class);
+        $this->requestContext = $requestContext;
     }
 
 

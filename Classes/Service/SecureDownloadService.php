@@ -38,14 +38,8 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
  */
 class SecureDownloadService implements HtmlParserDelegateInterface
 {
-    /**
-     * @var RequestContext
-     */
     protected $requestContext;
 
-    /**
-     * @var ConfigurationManager
-     */
     protected $configurationManager;
 
     /**
@@ -58,14 +52,10 @@ class SecureDownloadService implements HtmlParserDelegateInterface
      */
     protected $resourcePublisher;
 
-    /**
-     * @param RequestContext $requestContext
-     * @param ConfigurationManager $configurationManager
-     */
-    public function __construct($requestContext = null, $configurationManager = null)
+    public function __construct(RequestContext $requestContext, ConfigurationManager $configurationManager)
     {
-        $this->requestContext = $requestContext ?: new RequestContext();
-        $this->configurationManager = $configurationManager ?: GeneralUtility::makeInstance(ConfigurationManager::class);
+        $this->requestContext = $requestContext;
+        $this->configurationManager = $configurationManager;
     }
 
     /**

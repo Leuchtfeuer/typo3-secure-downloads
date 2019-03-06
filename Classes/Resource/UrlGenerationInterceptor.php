@@ -39,15 +39,9 @@ use TYPO3\CMS\Core\Utility\PathUtility;
  */
 class UrlGenerationInterceptor
 {
-    /**
-     * @var ResourcePublisher
-     */
     protected $resourcePublisher;
 
-    /**
-     * @param ResourcePublisher $resourcePublisher
-     */
-    public function injectResourcePublisher(ResourcePublisher $resourcePublisher)
+    public function __construct(ResourcePublisher $resourcePublisher)
     {
         $this->resourcePublisher = $resourcePublisher;
     }

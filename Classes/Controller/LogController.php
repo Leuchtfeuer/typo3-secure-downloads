@@ -48,39 +48,18 @@ class LogController extends ActionController
      */
     protected $view;
 
-    /**
-     * @var BackendTemplateView
-     */
     protected $defaultViewObjectName = BackendTemplateView::class;
 
-    /**
-     * logRepository
-     *
-     * @var LogRepository
-     */
     protected $logRepository;
 
-    /**
-     * pageRepository
-     *
-     * @var \TYPO3\CMS\Frontend\Page\PageRepository
-     */
     protected $pageRepository = null;
 
-    /**
-     * @param LogRepository $logRepository
-     */
-    public function injectLogRepository(LogRepository $logRepository)
+    public function __construct(LogRepository $logRepository, PageRepository $pageRepository)
     {
         $this->logRepository = $logRepository;
-    }
-
-    /**
-     * @param PageRepository $pageRepository
-     */
-    public function injectPageRepository(PageRepository $pageRepository)
-    {
         $this->pageRepository = $pageRepository;
+
+        parent::__construct();
     }
 
     /**
