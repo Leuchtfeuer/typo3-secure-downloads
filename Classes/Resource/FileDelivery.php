@@ -104,27 +104,21 @@ class FileDelivery
      *
      * Check the access rights
      */
-    function __construct()
+    public function __construct()
     {
         $this->extensionConfiguration = $this->getExtensionConfiguration();
 
-        $this->userId = intval(GeneralUtility::_GP('u'));
-        if (!$this->userId) {
-            $this->userId = 0;
-        }
+        $this->userId = (int)GeneralUtility::_GP('u') ?: 0;
 
-        $this->pageId = intval(GeneralUtility::_GP('p'));
-        if (!$this->pageId) {
-            $this->pageId = 0;
-        }
+        $this->pageId = (int)GeneralUtility::_GP('p') ?: 0;
 
         $this->userGroups = GeneralUtility::_GP('g');
-        if (strlen($this->userGroups) === 0) {
+        if ($this->userGroups === '') {
             $this->userGroups = 0;
         }
 
         $this->hash = GeneralUtility::_GP('hash');
-        $this->expiryTime = GeneralUtility::_GP('t');
+        $this->expiryTime = (int) GeneralUtility::_GP('t');
         $this->file = GeneralUtility::_GP('file');
 
         $this->data = $this->userId . $this->userGroups . $this->file . $this->expiryTime;
@@ -156,10 +150,8 @@ class FileDelivery
 
         $this->initializeUserAuthentication();
 
-        if ($this->userId !== 0) {
-            if (!$this->checkUserAccess() && !$this->checkGroupAccess()) {
-                $this->exitScript('Access denied for User!');
-            }
+        if (($this->userId !== 0) && !$this->checkUserAccess() && !$this->checkGroupAccess()) {
+            $this->exitScript('Access denied for User!');
         }
     }
 
@@ -206,7 +198,7 @@ class FileDelivery
      */
     protected function hashValid(): bool
     {
-        return ($this->calculatedHash === $this->hash);
+        return $this->calculatedHash === $this->hash;
     }
 
     /**
@@ -223,7 +215,7 @@ class FileDelivery
      */
     protected function expiryTimeExceeded(): bool
     {
-        return (intval($this->expiryTime) < time());
+        return $this->expiryTime < time();
     }
 
     /**
@@ -308,7 +300,7 @@ class FileDelivery
         // It helps for filenames with special characters that are present in latin1 encoding.
         // If you have real UTF-8 filenames, use a nix based OS.
         // FIXME: needs to be checked, if the website encoding really is UTF-8 and if UTF-8 filesystem is enabled
-        if (TYPO3_OS == 'WIN') {
+        if (TYPO3_OS === 'WIN') {
             $file = utf8_decode($file);
         }
 
@@ -324,7 +316,7 @@ class FileDelivery
 
             $this->fileSize = filesize($file);
 
-            $this->logDownload(0);
+            $this->logDownload();
 
             $strFileExtension = $this->getFileExtensionByFilename($file);
 
@@ -335,20 +327,17 @@ class FileDelivery
 
                 // Handle the regex
                 foreach ($forcetypes as &$forcetype) {
-                    if (preg_match('/\?/', $forcetype)) {
+                    if (strpos($forcetype, '?') !== false) {
                         $position = strpos($forcetype, '?');
                         $start = $position - 1;
                         $end = $position + 1;
-                        array_push($forcetypes, substr($forcetype, 0, $start) . substr($forcetype, $end));
+                        $forcetypes[] = substr($forcetype, 0, $start) . substr($forcetype, $end);
                         $forcetype = str_replace('?', '', $forcetype);
                     }
                 }
+                unset($forcetype);
 
-                if (is_array($forcetypes)) {
-                    if (in_array($strFileExtension, $forcetypes)) {
-                        $forcedownload = true;
-                    }
-                }
+                $forcedownload = $forcedownload || (is_array($forcetypes) && in_array($strFileExtension, $forcetypes, true));
             }
 
             $strMimeType = $this->getMimeTypeByFileExtension($strFileExtension);
@@ -378,7 +367,7 @@ class FileDelivery
                 header('Content-Length: ' . $this->fileSize);
             }
 
-            if ($forcedownload == true) {
+            if ($forcedownload === true) {
                 header('Content-Disposition: attachment; filename="' . $fileName . '"');
             } else {
                 header('Content-Disposition: inline; filename="' . $fileName . '"');
@@ -406,7 +395,7 @@ class FileDelivery
             // make sure we can detect an aborted connection, call flush
             ob_flush();
             flush();
-            if (!connection_aborted() && $strOutputFunction !== 'readfile_chunked') {
+            if ($strOutputFunction !== 'readfile_chunked' && !connection_aborted()) {
                 $this->logDownload();
             }
 
@@ -422,15 +411,11 @@ class FileDelivery
      */
     protected function logDownload(int $fileSize = 0)
     {
-        if ($this->isLoggingEnabled() && $this->isProcessed === false) {
+        if ($this->isProcessed === false && $this->isLoggingEnabled()) {
 
             $log = new Log();
 
-            if ($fileSize === 0) {
-                $log->setFilesize($this->fileSize);
-            } else {
-                $log->setFilesize($fileSize);
-            }
+            $log->setFileSize($fileSize ?: $this->fileSize);
 
             if ($fileObject = ResourceFactory::getInstance()->retrieveFileOrFolderObject($this->file)) {
                 $log->setFilePath($fileObject->getPublicUrl());
@@ -565,8 +550,7 @@ class FileDelivery
                 }
             }
 
-            unset($strAdditionalFileExtension);
-            unset($strAdditionalMimeType);
+            unset($strAdditionalFileExtension, $strAdditionalMimeType);
         }
 
         //TODO: Add hook to be able to manipulate and/or add mime types
@@ -574,20 +558,12 @@ class FileDelivery
         if (array_key_exists($strFileExtension, $arrMimeTypes)) {
             $strMimeType = $arrMimeTypes[$strFileExtension];
             // files bigger than 32MB are now 'application/octet-stream' by default (getimagesize memory_limit problem)
+        } elseif ($checkForImageFiles && ($this->fileSize < 1024 * 1024 * 32)) {
+            $arrImageInfos = @getimagesize($this->file);
+            $intImageType = (int)$arrImageInfos[2];
+            $strMimeType = $intImageType === 0 ? 'application/octet-stream' : image_type_to_mime_type($intImageType);
         } else {
-            if ($checkForImageFiles && ($this->fileSize < 1024 * 1024 * 32)) {
-                $arrImageInfos = @getimagesize($this->file);
-                $intImageType = (int)$arrImageInfos[2];
-
-                $arrImageMimeType[0] = 'application/octet-stream';
-                $arrImageMimeType[1] = 'image/gif';
-                $arrImageMimeType[2] = 'image/jpeg';
-                $arrImageMimeType[3] = 'image/png';
-
-                $strMimeType = $arrImageMimeType[$intImageType];
-            } else {
-                $strMimeType = 'application/octet-stream';
-            }
+            $strMimeType = 'application/octet-stream';
         }
 
         return $strMimeType;
@@ -620,7 +596,7 @@ class FileDelivery
      */
     protected function readFileFactional(string $strFileName): bool
     {
-        $chunksize = intval($this->extensionConfiguration['outputChunkSize']); // how many bytes per chunk
+        $chunksize = (int)$this->extensionConfiguration['outputChunkSize']; // how many bytes per chunk
         $timeout = ini_get('max_execution_time');
         $bytes_sent = 0;
         $handle = fopen($strFileName, 'rb');
