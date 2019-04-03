@@ -165,14 +165,14 @@ class HtmlParser
             $resourceUri = $matchedUrls[1];
 
             // Handle absRefPrefix
-            $containsAbsRefPrefix = GeneralUtility::isFirstPartOfStr($matchedUrls[1], $GLOBALS['TSFE']->absRefPrefix);
-            if ($containsAbsRefPrefix) {
+            $handleAbsRefPrefix = (GeneralUtility::isFirstPartOfStr($matchedUrls[1], $GLOBALS['TSFE']->absRefPrefix) && $GLOBALS['TSFE']->absRefPrefix !== '/');
+            if ($handleAbsRefPrefix) {
                 $resourceUri = substr($resourceUri, strlen($GLOBALS['TSFE']->absRefPrefix));
             }
 
             $replace = $this->delegate->publishResourceUri($resourceUri);
 
-            if ($containsAbsRefPrefix) {
+            if ($handleAbsRefPrefix) {
                 $replace = $GLOBALS['TSFE']->absRefPrefix . $replace;
             }
 
