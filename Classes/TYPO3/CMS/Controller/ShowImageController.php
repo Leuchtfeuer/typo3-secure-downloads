@@ -25,6 +25,7 @@ namespace Bitmotion\SecureDownloads\TYPO3\CMS\Controller;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
 use Bitmotion\SecureDownloads\Service\SecureDownloadService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
