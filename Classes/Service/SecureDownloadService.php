@@ -49,10 +49,10 @@ class SecureDownloadService implements HtmlParserDelegateInterface
      */
     protected $resourcePublisher;
 
-    public function __construct(RequestContext $requestContext, ConfigurationManager $configurationManager)
+    public function __construct(RequestContext $requestContext = null , ConfigurationManager $configurationManager = null)
     {
-        $this->requestContext = $requestContext;
-        $this->configurationManager = $configurationManager;
+        $this->requestContext = $requestContext ?? GeneralUtility::makeInstance(RequestContext::class);
+        $this->configurationManager = $configurationManager ?? GeneralUtility::makeInstance(ConfigurationManager::class);
     }
 
     /**
