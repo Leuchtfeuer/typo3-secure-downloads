@@ -28,14 +28,15 @@ namespace Bitmotion\SecureDownloads\Security\Authorization\Resource;
 
 use Bitmotion\SecureDownloads\Request\RequestContext;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class AccessTokenCookiePublisher implements SingletonInterface
 {
     protected $requestContext;
 
-    public function __construct(RequestContext $requestContext)
+    public function __construct(RequestContext $requestContext = null)
     {
-        $this->requestContext = $requestContext;
+        $this->requestContext = $requestContext ?? GeneralUtility::makeInstance(RequestContext::class);
     }
 
     /**
