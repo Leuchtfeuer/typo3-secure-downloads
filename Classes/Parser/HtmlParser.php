@@ -25,7 +25,6 @@ namespace Bitmotion\SecureDownloads\Parser;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class HtmlParser
@@ -73,11 +72,15 @@ class HtmlParser
             $this->fileExtensionPattern = '\\.(' . $this->fileExtensionPattern . ')';
         }
 
-        $this->tagPattern = '/["\']?(?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']?/i';
+        $this->tagPattern = '/["\'](?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']?/i';
     }
 
     public function setDomainPattern(string $accessProtectedDomain)
     {
+        if (!empty($GLOBALS['TSFE']->absRefPrefix) && $GLOBALS['TSFE']->absRefPrefix !== '/') {
+            $accessProtectedDomain .= '|' . $GLOBALS['TSFE']->absRefPrefix;
+        }
+
         $this->domainPattern = $this->softQuoteExpression($accessProtectedDomain);
     }
 
@@ -163,19 +166,7 @@ class HtmlParser
     {
         if (preg_match($this->tagPattern, $tag, $matchedUrls)) {
             $resourceUri = $matchedUrls[1];
-
-            // Handle absRefPrefix
-            $handleAbsRefPrefix = (GeneralUtility::isFirstPartOfStr($matchedUrls[1], $GLOBALS['TSFE']->absRefPrefix) && $GLOBALS['TSFE']->absRefPrefix !== '/');
-            if ($handleAbsRefPrefix) {
-                $resourceUri = substr($resourceUri, strlen($GLOBALS['TSFE']->absRefPrefix));
-            }
-
             $replace = $this->delegate->publishResourceUri($resourceUri);
-
-            if ($handleAbsRefPrefix) {
-                $replace = $GLOBALS['TSFE']->absRefPrefix . $replace;
-            }
-
             $tagParts = explode($matchedUrls[1], $tag, 2);
             $tag = $this->recursion(rtrim($tagParts[0], '/') . '/' . $replace, $tagParts[1]);
 
