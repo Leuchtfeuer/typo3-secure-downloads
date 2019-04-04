@@ -94,13 +94,22 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
         return $this->resourcesBaseUri;
     }
 
+    protected function getPathSite(): string
+    {
+        // TODO: Remove condition when we drop TYPO3 8 LTS support
+        if (class_exists('TYPO3\\CMS\\Core\\Core\\Environment')) {
+            return \TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/';
+        }
+
+        return PATH_site;
+    }
+
     /**
      * Sets the URI of resources by removing the absolute path to the document root from the absolute publishing path
      */
     protected function detectResourcesBaseUri()
     {
-        // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
-        $this->resourcesBaseUri = substr($this->resourcesPublishingPath, strlen(PATH_site));
+        $this->resourcesBaseUri = substr($this->resourcesPublishingPath, strlen($this->getPathSite()));
     }
 
     protected function getResourcesSourcePathByResourceStorage(ResourceStorage $storage): string
@@ -109,8 +118,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
         if ($storageConfiguration['pathType'] === 'absolute') {
             $sourcePath = PathUtility::getCanonicalPath($storageConfiguration['basePath']) . '/';
         } else {
-            // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
-            $sourcePath = PathUtility::getCanonicalPath(PATH_site . $storageConfiguration['basePath']) . '/';
+            $sourcePath = PathUtility::getCanonicalPath($this->getPathSite() . $storageConfiguration['basePath']) . '/';
         }
 
         return $sourcePath;
@@ -143,8 +151,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      */
     protected function isSourcePathInDocumentRoot(): bool
     {
-        // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
-        return GeneralUtility::isFirstPartOfStr($this->resourcesSourcePath, PATH_site);
+        return GeneralUtility::isFirstPartOfStr($this->resourcesSourcePath, $this->getPathSite());
     }
 
     protected function getRequestContext(): RequestContext
