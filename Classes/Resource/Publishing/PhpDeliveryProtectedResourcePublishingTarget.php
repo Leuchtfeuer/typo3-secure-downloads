@@ -32,6 +32,19 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePublishingTarget
 {
+    const DEFAULT_LINK_FORMAT = 'index.php?eID=tx_securedownloads&p=###PAGE###&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
+
+    const DEFAULT_CACHE_LIFETIME = 86400;
+
+    const ALLOWED_TOKENS = [
+        '###FEUSER###',
+        '###FEGROUPS###',
+        '###FILE###',
+        '###TIMEOUT###',
+        '###HASH###',
+        '###PAGE###',
+    ];
+
     /**
      * Publishes a persistent resource to the web accessible resources directory
      *
@@ -90,12 +103,10 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         $validityPeriod = $this->calculateLinkLifetime();
         $hash = $this->getHash($resourceUri, $userId, $userGroupIds, $validityPeriod);
 
-        $linkFormat = $this->configurationManager->getValue('linkFormat');
         // Parsing the link format, and return this instead (an flexible link format is useful for mod_rewrite tricks ;)
-        if (is_null($linkFormat) || strpos($linkFormat, '###FEGROUPS###') === false) {
-            $linkFormat = 'index.php?eID=tx_securedownloads&p=###PAGE###&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
-        }
-        $tokens = ['###FEUSER###', '###FEGROUPS###', '###FILE###', '###TIMEOUT###', '###HASH###', '###PAGE###'];
+        $configuredLinkFormat = $this->configurationManager->getValue('linkFormat');
+        $linkFormat = !empty($configuredLinkFormat) ? $configuredLinkFormat : self::DEFAULT_LINK_FORMAT;
+
         $replacements = [
             $userId,
             rawurlencode(implode(',', $userGroupIds)),
@@ -104,22 +115,17 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
             $hash,
             $GLOBALS['TSFE']->id,
         ];
-        $downloadUri = str_replace($tokens, $replacements, $linkFormat);
 
-        return $downloadUri;
+        return str_replace(self::ALLOWED_TOKENS, $replacements, $linkFormat);
     }
 
     protected function calculateLinkLifetime(): int
     {
         $lifeTimeToAdd = $this->configurationManager->getValue('cachetimeadd');
+        $requestCacheLifetime = $this->getRequestContext()->getCacheLifetime();
+        $cacheLifetime = $requestCacheLifetime > 0 ? $requestCacheLifetime : self::DEFAULT_CACHE_LIFETIME;
 
-        if ($this->getRequestContext()->getCacheLifetime() === 0) {
-            $validityPeriod = 86400 + $GLOBALS['EXEC_TIME'] + $lifeTimeToAdd;
-        } else {
-            $validityPeriod = $this->getRequestContext()->getCacheLifetime() + $GLOBALS['EXEC_TIME'] + $lifeTimeToAdd;
-        }
-
-        return $validityPeriod;
+        return $cacheLifetime + $GLOBALS['EXEC_TIME'] + $lifeTimeToAdd;
     }
 
     protected function getHash(string $resourceUri, int $userId, array $userGroupIds, int $validityPeriod): string
