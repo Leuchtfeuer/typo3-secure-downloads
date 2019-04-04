@@ -26,6 +26,7 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -137,8 +138,12 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      */
     public function publishResourceUri(string $resourceUri): string
     {
-        // TODO: PATH_site is deprecated since TYPO3 9.0 use TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/' instead
-        $this->setResourcesSourcePath(PATH_site);
+        // TODO: Remove condition when we drop TYPO3 8 LTS support
+        if (class_exists('TYPO3\\CMS\\Core\\Core\\Environment')) {
+            $this->setResourcesSourcePath(Environment::getPublicPath() . '/');
+        } else {
+            $this->setResourcesSourcePath(PATH_site);
+        }
 
         return $this->buildUri($resourceUri);
     }
