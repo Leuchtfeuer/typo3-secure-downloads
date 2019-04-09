@@ -288,21 +288,25 @@ class FileDelivery
             $forcedownload = false;
 
             if ((bool)$this->extensionConfiguration['forcedownload'] === true) {
-                $forcetypes = GeneralUtility::trimExplode('|', $this->extensionConfiguration['forcedownloadtype']);
+                if ($this->extensionConfiguration['forcedownload'] === '*') {
+                    $forceDownload = true;
+                } else {
+                    $forcetypes = GeneralUtility::trimExplode('|', $this->extensionConfiguration['forcedownloadtype']);
 
-                // Handle the regex
-                foreach ($forcetypes as &$forcetype) {
-                    if (strpos($forcetype, '?') !== false) {
-                        $position = strpos($forcetype, '?');
-                        $start = $position - 1;
-                        $end = $position + 1;
-                        $forcetypes[] = substr($forcetype, 0, $start) . substr($forcetype, $end);
-                        $forcetype = str_replace('?', '', $forcetype);
+                    // Handle the regex
+                    foreach ($forcetypes as &$forcetype) {
+                        if (strpos($forcetype, '?') !== false) {
+                            $position = strpos($forcetype, '?');
+                            $start = $position - 1;
+                            $end = $position + 1;
+                            $forcetypes[] = substr($forcetype, 0, $start) . substr($forcetype, $end);
+                            $forcetype = str_replace('?', '', $forcetype);
+                        }
                     }
-                }
-                unset($forcetype);
+                    unset($forcetype);
 
-                $forcedownload = $forcedownload || (is_array($forcetypes) && in_array($strFileExtension, $forcetypes, true));
+                    $forcedownload = $forcedownload || (is_array($forcetypes) && in_array($strFileExtension, $forcetypes, true));
+                }
             }
 
             $strMimeType = $this->getMimeTypeByFileExtension($strFileExtension);
