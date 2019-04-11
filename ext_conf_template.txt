@@ -41,12 +41,14 @@ forcedownloadtype = odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
 # cat=filedelivery; type=string; label=additionalMimeTypes: Comma separated list of additional MIME types (file extension / mime type pairs, in which file extension and MIME type is separated by a pipe symbol). Can be used to override existing MIME type settings of the extension as well.
 additionalMimeTypes = txt|text/plain,html|text/html
 
-# cat=filedelivery; type=string; label = outputFunction:PHP function which is used to deliver the secured files (one of readfile, readfile_chunked, fpassthru)
+# cat=filedelivery; type=string; label = outputFunction:PHP function which is used to deliver the secured files (one of readfile, readfile_chunked, fpassthru, x-accel-redirect)
 outputFunction = readfile
 
 # cat=filedelivery; type=int; label = outputChunkSize: Size of chunks to be delivered in one go (only relevant if "readfile_chunked" is used) (default: 1048576 Bytes)
 outputChunkSize = 1048576
 
+# cat=filedelivery; type=string; label = protectedPath: Path to protected storage for nginx x-accel-redirect delivery method
+protectedPath =
 
 
 # cat=module; type=boolean; label = log:Log each file access

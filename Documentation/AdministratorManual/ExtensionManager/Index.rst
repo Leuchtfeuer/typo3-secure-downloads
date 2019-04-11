@@ -34,6 +34,7 @@ Properties
 	additionalMimeTypes_                 filedelivery                         string
 	outputFunction_                      filedelivery                         string
 	outputChunkSize_                     filedelivery                         integer
+	protectedPath_                       filedelivery                         string
 	log_                                 module                               boolean
 	debug_                               debug                                integer
 	==================================== ==================================== ==================
@@ -263,6 +264,21 @@ outputChunkSize
          Only applicable if you use readfile_chunked (see outputFunction). Specify the number of bytes, served as one chunk when delivering the file. Choosing this value too low is a performance killer.
    Default
          1048576
+
+.. _adminProtectedPath:
+
+protectedPath
+"""""""""""""""
+.. container:: table-row
+
+   Property
+         filedelivery.protectedPath
+   Data type
+         string
+   Description
+         Only applicable if you use x-accel-redirect (see outputFunction). Specify the protected path used in your nginx location directive;
+   Default
+         empty
 
 .. _adminLog:
 
