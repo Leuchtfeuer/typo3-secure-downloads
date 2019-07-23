@@ -61,6 +61,12 @@ class FileDelivery
     protected $pageId;
 
     /**
+     * Empty, or file name for download
+     * @var string
+     */
+    protected $forceDownload;
+
+    /**
      * @var string
      */
     protected $userGroups;
@@ -108,6 +114,8 @@ class FileDelivery
 
         $this->pageId = (int)GeneralUtility::_GP('p') ?: 0;
 
+        $this->forceDownload = GeneralUtility::_GP('forceDownload');
+
         $this->userGroups = GeneralUtility::_GP('g');
         if ($this->userGroups === '') {
             $this->userGroups = 0;
@@ -118,7 +126,7 @@ class FileDelivery
         $this->file = GeneralUtility::_GP('file');
 
         $this->data = $this->userId . $this->userGroups . $this->file . $this->expiryTime;
-        $this->calculatedHash = $this->getHash($this->file, $this->userId, $this->userGroups, $this->expiryTime);
+        $this->calculatedHash = $this->getHash($this->file, $this->userId, $this->userGroups, $this->expiryTime, $this->forceDownload);
 
         // Hook for init:
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init'])) {
@@ -169,12 +177,12 @@ class FileDelivery
     /**
      * TODO: Refactor it to a hash service
      */
-    protected function getHash(string $resourceUri, int $userId, string $userGroupIds, int $validityPeriod = 0): string
+    protected function getHash(string $resourceUri, int $userId, string $userGroupIds, int $validityPeriod = 0, string $forceDownload = ''): string
     {
         if ($this->extensionConfiguration['enableGroupCheck']) {
-            $hashString = $userId . $userGroupIds . $resourceUri . $validityPeriod;
+            $hashString = $userId . $userGroupIds . $resourceUri . $validityPeriod . $forceDownload;
         } else {
-            $hashString = $userId . $resourceUri . $validityPeriod;
+            $hashString = $userId . $resourceUri . $validityPeriod . $forceDownload;
         }
 
         return GeneralUtility::hmac($hashString, 'bitmotion_securedownload');
@@ -286,6 +294,10 @@ class FileDelivery
             $strFileExtension = $this->getFileExtensionByFilename($file);
 
             $forcedownload = false;
+            if ($this->forceDownload !== '') {
+                $forcedownload = true;
+                $fileName = $this->forceDownload;
+            }
 
             if ((bool)$this->extensionConfiguration['forcedownload'] === true) {
                 $forcetypes = GeneralUtility::trimExplode('|', $this->extensionConfiguration['forcedownloadtype']);

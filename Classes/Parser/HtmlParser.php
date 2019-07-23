@@ -25,6 +25,7 @@ namespace Bitmotion\SecureDownloads\Parser;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class HtmlParser
@@ -134,7 +135,7 @@ class HtmlParser
             }
 
             // Parse tag
-            $tag = $this->parseTag($match[0]);
+            $tag = $this->parseTag($this->getFullTag($htmlContent, $match[0]), $match[0]);
 
             // Add tag to HTML before matching tag
             $result .= $htmlContent[0] . $tag;
@@ -162,8 +163,14 @@ class HtmlParser
     /**
      * Investigate the HTML-Tag...
      */
-    protected function parseTag(string $tag): string
+    protected function parseTag(string $fullTag, string $tag): string
     {
+        $attributes = GeneralUtility::get_tag_attributes($fullTag);
+        $GLOBALS['forceDownload'] = '';
+        if (isset($attributes['download'])) {
+            $GLOBALS['forceDownload'] = $attributes['download'];
+        }
+
         if (preg_match($this->tagPattern, $tag, $matchedUrls)) {
             $resourceUri = $matchedUrls[1];
             $replace = $this->delegate->publishResourceUri($resourceUri);
@@ -180,6 +187,8 @@ class HtmlParser
                 DebuggerUtility::var_dump($tag, 'New output:');
             }
         }
+
+        unset($GLOBALS['forceDownload']);
 
         return $tag;
     }
@@ -203,5 +212,17 @@ class HtmlParser
         }
 
         return $tag . $tmp;
+    }
+
+    protected function getFullTag(array $htmlContent, string $tag): string
+    {
+        if (strrpos($htmlContent[0], '<') === false || strpos($htmlContent[1], '>') === false) {
+            return '';
+        }
+
+        $openingTag = mb_substr($htmlContent[0], strrpos($htmlContent[0], '<'));
+        $closingTag = mb_substr($htmlContent[1], 0, strpos($htmlContent[1], '>') + 1);
+
+        return $openingTag . $tag . $closingTag;
     }
 }

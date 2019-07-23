@@ -87,14 +87,15 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         $userId = $this->getRequestContext()->getUserId();
         $userGroupIds = $this->getRequestContext()->getUserGroupIds();
         $validityPeriod = $this->calculateLinkLifetime();
-        $hash = $this->getHash($resourceUri, $userId, $userGroupIds, $validityPeriod);
+        $forceDownload = $GLOBALS['forceDownload'] ?? '';
+        $hash = $this->getHash($resourceUri, $userId, $userGroupIds, $validityPeriod, $forceDownload);
 
         $linkFormat = $this->configurationManager->getValue('linkFormat');
         // Parsing the link format, and return this instead (an flexible link format is useful for mod_rewrite tricks ;)
         if (is_null($linkFormat) || strpos($linkFormat, '###FEGROUPS###') === false) {
-            $linkFormat = 'index.php?eID=tx_securedownloads&p=###PAGE###&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
+            $linkFormat = 'index.php?eID=tx_securedownloads&p=###PAGE###&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&forceDownload=###FORCEDOWNLOAD###&file=###FILE###';
         }
-        $tokens = ['###FEUSER###', '###FEGROUPS###', '###FILE###', '###TIMEOUT###', '###HASH###', '###PAGE###'];
+        $tokens = ['###FEUSER###', '###FEGROUPS###', '###FILE###', '###TIMEOUT###', '###HASH###', '###PAGE###', '###FORCEDOWNLOAD###'];
         $replacements = [
             $userId,
             rawurlencode(implode(',', $userGroupIds)),
@@ -102,6 +103,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
             $validityPeriod,
             $hash,
             $GLOBALS['TSFE']->id,
+            $forceDownload,
         ];
         $downloadUri = str_replace($tokens, $replacements, $linkFormat);
 
@@ -121,12 +123,12 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         return $validityPeriod;
     }
 
-    protected function getHash(string $resourceUri, int $userId, array $userGroupIds, int $validityPeriod): string
+    protected function getHash(string $resourceUri, int $userId, array $userGroupIds, int $validityPeriod, string $forceDownload): string
     {
         if ($this->configurationManager->getValue('enableGroupCheck')) {
-            $hashString = $userId . implode(',', $userGroupIds) . $resourceUri . $validityPeriod;
+            $hashString = $userId . implode(',', $userGroupIds) . $resourceUri . $validityPeriod . $forceDownload;
         } else {
-            $hashString = $userId . $resourceUri . $validityPeriod;
+            $hashString = $userId . $resourceUri . $validityPeriod . $forceDownload;
         }
 
         return GeneralUtility::hmac($hashString, 'bitmotion_securedownload');
