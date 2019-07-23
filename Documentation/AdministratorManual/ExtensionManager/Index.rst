@@ -155,7 +155,7 @@ securedFiletypes
    Data type
          string
    Description
-         List of file types that should be protected. Multiple file extension patterns can be separated by a pipe (|).
+         List of file types that should be protected. Multiple file extension patterns can be separated by a pipe (|). Use * to include all file extensions.
    Default
          :code:`pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz`
 

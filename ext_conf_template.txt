@@ -5,7 +5,7 @@ domain = http://mydomain.com/|http://my.other.domain.org/
 # cat=basic/parsing; type=string; label=Directory Pattern: What directories shall be protected? Multiple directory patterns can be separated by a pipe (|).
 securedDirs = typo3temp|fileadmin|uploads
 
-# cat=basic/parsing; type=string; label=File Type Pattern: What file types (read: extensions) shall be protected? Multiple file extension patterns can be separated by a pipe (|).
+# cat=basic/parsing; type=string; label=File Type Pattern: What file types (read: extensions) shall be protected? Multiple file extension patterns can be separated by a pipe (|). Use * to include all file extensions.
 securedFiletypes = pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
 
 

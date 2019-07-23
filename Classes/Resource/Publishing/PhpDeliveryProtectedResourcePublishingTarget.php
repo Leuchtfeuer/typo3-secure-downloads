@@ -67,7 +67,11 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         if (substr($this->configurationManager->getValue('securedFiletypes'), 0, 1) === '\\') {
             $fileExtensionExpression = $this->configurationManager->getValue('securedFiletypes');
         } else {
-            $fileExtensionExpression = '\\.(' . $this->configurationManager->getValue('securedFiletypes') . ')';
+            $fileExtensionPattern = $this->configurationManager->getValue('securedFiletypes');
+            if (trim($fileExtensionPattern) === '*') {
+                $fileExtensionPattern = '\\w+';
+            }
+            $fileExtensionExpression = '\\.(' . $fileExtensionPattern . ')';
         }
 
         // TODO: maybe check if the resource is available without authentication by doing a head request

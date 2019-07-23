@@ -69,7 +69,12 @@ class HtmlParser
             }
         }
         if (substr($this->fileExtensionPattern, 0, 1) !== '\\') {
-            $this->fileExtensionPattern = '\\.(' . $this->fileExtensionPattern . ')';
+            $fileExtensionPattern = $this->fileExtensionPattern;
+            if (trim($fileExtensionPattern) === '*') {
+                $fileExtensionPattern = '\\w+';
+            }
+
+            $this->fileExtensionPattern = '\\.(' . $fileExtensionPattern . ')';
         }
 
         $this->tagPattern = '/["\'](?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']?/i';
