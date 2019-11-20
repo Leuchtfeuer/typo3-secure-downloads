@@ -21,15 +21,17 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException;
+use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
+use TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
+use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
 use TYPO3\CMS\Frontend\Page\PageRepository;
 
 class LogController extends ActionController
 {
-    /**
-     * @var BackendTemplateView
-     */
+    /** @var BackendTemplateView */
     protected $view;
 
     protected $defaultViewObjectName = BackendTemplateView::class;
@@ -47,9 +49,9 @@ class LogController extends ActionController
     }
 
     /**
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException
+     * @throws NoSuchArgumentException
      */
-    public function initializeAction()
+    public function initializeAction(): void
     {
         parent::initializeAction();
 
@@ -59,9 +61,11 @@ class LogController extends ActionController
     }
 
     /**
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @param Filter|null $filter
+     *
+     * @throws InvalidQueryException
      */
-    public function listAction(Filter $filter = null)
+    public function listAction(Filter $filter = null): void
     {
         $logEntries = $this->logRepository->findByFilter($filter);
 
@@ -102,11 +106,13 @@ class LogController extends ActionController
     }
 
     /**
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @param Filter|null $filter
+     *
+     * @throws StopActionException
+     * @throws UnsupportedRequestTypeException
+     * @throws InvalidQueryException
      */
-    public function showAction(Filter $filter = null)
+    public function showAction(Filter $filter = null): void
     {
         $pageId = (int)GeneralUtility::_GP('id');
 
@@ -134,10 +140,8 @@ class LogController extends ActionController
 
     /**
      * Set up the doc header properly here
-     *
-     * @throws \InvalidArgumentException
      */
-    public function initializeView(ViewInterface $view)
+    public function initializeView(ViewInterface $view): void
     {
         parent::initializeView($view);
 
@@ -148,9 +152,8 @@ class LogController extends ActionController
 
     /**
      * Create menu
-     * @throws \InvalidArgumentException
      */
-    private function createMenu()
+    private function createMenu(): void
     {
         $menu = $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
         $menu->setIdentifier('secure_downloads');

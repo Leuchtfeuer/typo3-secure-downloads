@@ -63,7 +63,7 @@ class HtmlParser
         $this->tagPattern = '/["\'](?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']?/i';
     }
 
-    public function setDomainPattern(string $accessProtectedDomain)
+    public function setDomainPattern(string $accessProtectedDomain): void
     {
         if (!empty($GLOBALS['TSFE']->absRefPrefix) && $GLOBALS['TSFE']->absRefPrefix !== '/') {
             $accessProtectedDomain .= '|' . $GLOBALS['TSFE']->absRefPrefix;
@@ -87,17 +87,17 @@ class HtmlParser
         return $string;
     }
 
-    public function setFileExtensionPattern(string $accessProtectedFileExtensions)
+    public function setFileExtensionPattern(string $accessProtectedFileExtensions): void
     {
         $this->fileExtensionPattern = $accessProtectedFileExtensions;
     }
 
-    public function setFolderPattern(string $accessProtectedFolders)
+    public function setFolderPattern(string $accessProtectedFolders): void
     {
         $this->folderPattern = $this->softQuoteExpression($accessProtectedFolders);
     }
 
-    public function setLogLevel(int $logLevel)
+    public function setLogLevel(int $logLevel): void
     {
         $this->logLevel = $logLevel;
     }

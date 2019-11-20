@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\CMS\Frontend\Utility\EidUtility;
 
 class FileDelivery
@@ -29,7 +30,7 @@ class FileDelivery
     protected $extensionConfiguration = [];
 
     /**
-     * @var \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication
+     * @var FrontendUserAuthentication
      */
     protected $feUserObj;
 
@@ -173,7 +174,7 @@ class FileDelivery
         return $this->calculatedHash === $this->hash;
     }
 
-    protected function exitScript(string $message)
+    protected function exitScript(string $message): void
     {
         header('HTTP/1.1 403 Forbidden');
         exit($message);
@@ -184,7 +185,7 @@ class FileDelivery
         return $this->expiryTime < time();
     }
 
-    protected function initializeUserAuthentication()
+    protected function initializeUserAuthentication(): void
     {
         $this->feUserObj = EidUtility::initFeUser();
         $this->feUserObj->fetchGroupData();
@@ -245,7 +246,7 @@ class FileDelivery
     /**
      * Output the requested file
      */
-    public function deliver()
+    public function deliver(): void
     {
         $file = GeneralUtility::getFileAbsFileName(ltrim($this->file, '/'));
         $fileName = basename($file);
@@ -359,7 +360,7 @@ class FileDelivery
     /**
      * Log the access of the file
      */
-    protected function logDownload(int $fileSize = 0)
+    protected function logDownload(int $fileSize = 0): void
     {
         if ($this->isProcessed === false && $this->isLoggingEnabled()) {
             $log = new Log();

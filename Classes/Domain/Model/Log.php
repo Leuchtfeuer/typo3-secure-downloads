@@ -93,15 +93,12 @@ class Log extends AbstractEntity
         return $this->tstamp;
     }
 
-    public function setTstamp(int $tstamp)
+    public function setTstamp(int $tstamp): void
     {
         $this->tstamp = $tstamp;
     }
 
-    /**
-     * @return array|null
-     */
-    public function getUserObject()
+    public function getUserObject(): ?array
     {
         if ($this->user !== null && $this->user !== 0) {
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('fe_users');
@@ -140,7 +137,7 @@ class Log extends AbstractEntity
         return $this->fileId;
     }
 
-    public function setFileId(string $fileId)
+    public function setFileId(string $fileId): void
     {
         $this->fileId = $fileId;
     }
@@ -150,7 +147,7 @@ class Log extends AbstractEntity
         return $this->fileName;
     }
 
-    public function setFileName(string $fileName)
+    public function setFileName(string $fileName): void
     {
         $this->fileName = $fileName;
     }
@@ -160,7 +157,7 @@ class Log extends AbstractEntity
         return $this->filePath;
     }
 
-    public function setFilePath(string $filePath)
+    public function setFilePath(string $filePath): void
     {
         $this->filePath = $filePath;
     }
@@ -170,7 +167,7 @@ class Log extends AbstractEntity
         return $this->fileSize;
     }
 
-    public function setFileSize(int $fileSize)
+    public function setFileSize(int $fileSize): void
     {
         $this->fileSize = $fileSize;
     }
@@ -180,7 +177,7 @@ class Log extends AbstractEntity
         return $this->fileType;
     }
 
-    public function setFileType(string $fileType)
+    public function setFileType(string $fileType): void
     {
         $this->fileType = $fileType;
     }
@@ -190,7 +187,7 @@ class Log extends AbstractEntity
         return $this->mediaType;
     }
 
-    public function setMediaType(string $mediaType)
+    public function setMediaType(string $mediaType): void
     {
         $this->mediaType = $mediaType;
     }
@@ -200,7 +197,7 @@ class Log extends AbstractEntity
         return $this->protected;
     }
 
-    public function setProtected(string $protected)
+    public function setProtected(string $protected): void
     {
         $this->protected = $protected;
     }
@@ -210,40 +207,28 @@ class Log extends AbstractEntity
         return $this->host;
     }
 
-    public function setHost(string $host)
+    public function setHost(string $host): void
     {
         $this->host = $host;
     }
 
 
-    /**
-     * @return int $user
-     */
     public function getUser(): int
     {
         return (int)$this->user;
     }
 
-    /**
-     * @return void
-     */
-    public function setUser(int $user)
+    public function setUser(int $user): void
     {
         $this->user = $user;
     }
 
-    /**
-     * @return int $page
-     */
     public function getPage(): int
     {
         return $this->page;
     }
 
-    /**
-     * @return void
-     */
-    public function setPage(int $page)
+    public function setPage(int $page): void
     {
         $this->page = $page;
     }

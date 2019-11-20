@@ -39,7 +39,7 @@ class ShowImageController extends \TYPO3\CMS\Frontend\Controller\ShowImageContro
      *
      * @return void
      */
-    public function printContent()
+    public function printContent(): void
     {
         $secureDownloadService = GeneralUtility::makeInstance(SecureDownloadService::class);
 

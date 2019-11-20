@@ -27,7 +27,7 @@ class ResourcePublisher implements SingletonInterface
      */
     protected $publishingTarget;
 
-    public function injectPublishingTarget(ResourcePublishingTargetInterface $publishingTarget)
+    public function injectPublishingTarget(ResourcePublishingTargetInterface $publishingTarget): void
     {
         $this->publishingTarget = $publishingTarget;
     }
@@ -69,7 +69,7 @@ class ResourcePublisher implements SingletonInterface
      * @return string Either the web URI of the published resource or FALSE if the resource source file doesn't exist
      *     or the resource could not be published for other reasons
      */
-    public function publishResource(ResourceInterface $resource)
+    public function publishResource(ResourceInterface $resource): void
     {
         return $this->getPublishingTarget()->publishResource($resource);
     }

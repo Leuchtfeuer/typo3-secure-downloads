@@ -16,7 +16,6 @@ namespace Bitmotion\SecureDownloads\Request;
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
 use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class RequestContext
 {
@@ -83,7 +82,7 @@ class RequestContext
     /**
      * Initializes the request context, when called from a frontend request
      */
-    protected function initializeFrontendContext()
+    protected function initializeFrontendContext(): void
     {
         $typoScriptFrontendController = $GLOBALS['TSFE'];
 
@@ -132,7 +131,7 @@ class RequestContext
     /**
      * Use the encryptionKey as additionalSecret if defined
      */
-    private function setAdditionalSecret()
+    private function setAdditionalSecret(): void
     {
         if (!empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'])) {
             $this->additionalSecret = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];

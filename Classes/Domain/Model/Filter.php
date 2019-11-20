@@ -36,7 +36,7 @@ class Filter
         return $this->pageId;
     }
 
-    public function setPageId(int $pageId)
+    public function setPageId(int $pageId): void
     {
         $this->pageId = $pageId;
     }
@@ -46,28 +46,22 @@ class Filter
         return $this->fileType;
     }
 
-    public function setFileType(string $fileType)
+    public function setFileType(string $fileType): void
     {
         $this->fileType = $fileType;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getFrom()
+    public function getFrom(): ?int
     {
         return $this->formatDate($this->from);
     }
 
-    public function setFrom(string $from)
+    public function setFrom(string $from): void
     {
         $this->from = $from;
     }
 
-    /**
-     * @return int|null
-     */
-    private function formatDate(string $dateString)
+    private function formatDate(string $dateString): ?int
     {
         if ($dateString == '') {
             return null;
@@ -92,15 +86,12 @@ class Filter
         return $dateTime->getTimestamp();
     }
 
-    /**
-     * @return int|null
-     */
-    public function getTill()
+    public function getTill(): ?int
     {
         return $this->formatDate($this->till);
     }
 
-    public function setTill(string $till)
+    public function setTill(string $till): void
     {
         $this->till = $till;
     }
@@ -110,7 +101,7 @@ class Filter
         return $this->feUserId;
     }
 
-    public function setFeUserId(int $feUserId)
+    public function setFeUserId(int $feUserId): void
     {
         switch ($feUserId) {
             case self::USER_TYPE_LOGGED_ON:
@@ -133,7 +124,7 @@ class Filter
         return $this->userType;
     }
 
-    public function setUserType(int $userType)
+    public function setUserType(int $userType): void
     {
         $this->userType = $userType;
     }

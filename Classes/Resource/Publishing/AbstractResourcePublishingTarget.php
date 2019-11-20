@@ -95,7 +95,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
     /**
      * Sets the URI of resources by removing the absolute path to the document root from the absolute publishing path
      */
-    protected function detectResourcesBaseUri()
+    protected function detectResourcesBaseUri(): void
     {
         $this->resourcesBaseUri = substr($this->resourcesPublishingPath, strlen($this->getPathSite()));
     }
@@ -115,7 +115,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
     /**
      * @param string $resourceSourcePath Absolute path to resources
      */
-    protected function setResourcesSourcePath(string $resourceSourcePath)
+    protected function setResourcesSourcePath(string $resourceSourcePath): void
     {
         $this->resourcesSourcePath = $resourceSourcePath;
         $this->detectResourcesPublishingPath();
@@ -124,7 +124,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
     /**
      * Sets the publishing path depending on the resources path being in document root or not
      */
-    protected function detectResourcesPublishingPath()
+    protected function detectResourcesPublishingPath(): void
     {
         if ($this->resourcesPublishingPath === null) {
             if ($this->isSourcePathInDocumentRoot()) {
@@ -154,7 +154,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
     /**
      * Creates the request context
      */
-    protected function buildRequestContext()
+    protected function buildRequestContext(): void
     {
         $this->requestContext = new RequestContext();
     }

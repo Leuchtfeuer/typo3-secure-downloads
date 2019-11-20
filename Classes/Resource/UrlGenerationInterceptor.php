@@ -35,7 +35,7 @@ class UrlGenerationInterceptor
         ResourceInterface $resource,
         bool $relativeToCurrentScript,
         array $urlData
-    ) {
+    ): void {
         if (!$driver instanceof LocalDriver) {
             // We cannot handle other files than local files yet
             return;

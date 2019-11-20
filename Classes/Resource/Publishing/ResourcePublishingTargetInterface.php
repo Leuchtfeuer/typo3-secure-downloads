@@ -40,5 +40,5 @@ interface ResourcePublishingTargetInterface
     /**
      * Builds a delivery URI from a URI which is in document root but protected through the webserver
      */
-    public function publishResourceUri(string $resourceUri);
+    public function publishResourceUri(string $resourceUri): string;
 }
