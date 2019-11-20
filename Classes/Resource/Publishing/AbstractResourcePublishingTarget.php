@@ -84,12 +84,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 
     protected function getPathSite(): string
     {
-        // TODO: Remove condition when we drop TYPO3 8 LTS support
-        if (class_exists('TYPO3\\CMS\\Core\\Core\\Environment')) {
-            return \TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/';
-        }
-
-        return PATH_site;
+        return \TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/';
     }
 
     /**

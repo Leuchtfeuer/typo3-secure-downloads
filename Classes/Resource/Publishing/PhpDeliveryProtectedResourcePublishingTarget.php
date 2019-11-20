@@ -131,12 +131,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      */
     public function publishResourceUri(string $resourceUri): string
     {
-        // TODO: Remove condition when we drop TYPO3 8 LTS support
-        if (class_exists('TYPO3\\CMS\\Core\\Core\\Environment')) {
-            $this->setResourcesSourcePath(\TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/');
-        } else {
-            $this->setResourcesSourcePath(PATH_site);
-        }
+        $this->setResourcesSourcePath(\TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/');
 
         return $this->buildUri($resourceUri);
     }
