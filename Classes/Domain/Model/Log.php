@@ -64,12 +64,6 @@ class Log extends AbstractEntity
     protected $mediaType = '';
 
     /**
-     * @var int
-     * @deprecated Since 3.0, will be removed in 4.0
-     */
-    protected $bytesDownloaded = 0;
-
-    /**
      * @var string
      */
     protected $protected = '';
@@ -78,11 +72,6 @@ class Log extends AbstractEntity
      * @var string
      */
     protected $host = '';
-
-    /**
-     * @deprecated Since 3.0, will be removed in 4.0
-     */
-    protected $typo3Mode = '';
 
     /**
      * @var int
@@ -137,10 +126,8 @@ class Log extends AbstractEntity
             'file_size' => $this->getFileSize(),
             'file_type' => $this->getFileType(),
             'media_type' => $this->getMediaType(),
-            'bytes_downloaded' => $this->getBytesDownloaded(),
             'protected' => $this->getProtected(),
             'host' => $this->getHost(),
-            'typo3_mode' => $this->getTypo3Mode(),
             'user' => $this->getUser(),
             'page' => $this->getPage(),
             'tstamp' => time(),
@@ -208,22 +195,6 @@ class Log extends AbstractEntity
         $this->mediaType = $mediaType;
     }
 
-    /**
-     * @deprecated Since 3.0, will be removed in 4.0
-     */
-    public function getBytesDownloaded(): int
-    {
-        return $this->bytesDownloaded;
-    }
-
-    /**
-     * @deprecated Since 3.0, will be removed in 4.0
-     */
-    public function setBytesDownloaded(int $bytesDownloaded)
-    {
-        $this->bytesDownloaded = $bytesDownloaded;
-    }
-
     public function getProtected(): string
     {
         return $this->protected;
@@ -244,21 +215,6 @@ class Log extends AbstractEntity
         $this->host = $host;
     }
 
-    /**
-     * @deprecated Since 3.0, will be removed in 4.0
-     */
-    public function getTypo3Mode(): string
-    {
-        return $this->typo3Mode;
-    }
-
-    /**
-     * @deprecated Since 3.0, will be removed in 4.0
-     */
-    public function setTypo3Mode(string $typo3Mode)
-    {
-        $this->typo3Mode = $typo3Mode;
-    }
 
     /**
      * @return int $user

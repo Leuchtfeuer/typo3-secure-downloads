@@ -382,15 +382,7 @@ class FileDelivery
             }
 
             $log->setUser((int)$this->feUserObj->user['uid']);
-
-            if (defined('TYPO3_MODE')) {
-                $log->setTypo3Mode(TYPO3_MODE);
-            }
-
             $log->setPage($this->pageId);
-
-            // TODO: Get the current downloaded filesize
-            $log->setBytesDownloaded(0);
 
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
             $queryBuilder
