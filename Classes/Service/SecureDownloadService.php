@@ -102,12 +102,6 @@ class SecureDownloadService implements HtmlParserDelegateInterface
                 $transformedUri = GeneralUtility::callUserFunction($_funcRef, $transformedUri, $this);
             }
         }
-        // Hook for makeSecure: (old class name, for compatibility reasons)
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/class.tx_securedownloads.php']['makeSecure'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/class.tx_securedownloads.php']['makeSecure'] as $_funcRef) {
-                $transformedUri = GeneralUtility::callUserFunction($_funcRef, $transformedUri, $this);
-            }
-        }
 
         return $transformedUri;
     }
