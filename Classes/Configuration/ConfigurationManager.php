@@ -15,6 +15,9 @@ namespace Bitmotion\SecureDownloads\Configuration;
 
 use TYPO3\CMS\Core\SingletonInterface;
 
+/**
+ * @deprecated Use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration instead.
+ */
 class ConfigurationManager implements SingletonInterface
 {
     protected $extensionKey = 'secure_downloads';
@@ -22,9 +25,9 @@ class ConfigurationManager implements SingletonInterface
     protected $configuration = [];
 
     /**
-     * @param string|null $extensionKey
+     * @deprecated
      */
-    public function __construct($extensionKey = null)
+    public function __construct(?string $extensionKey = null)
     {
         $this->extensionKey = $extensionKey ?: $this->extensionKey;
         // TODO: Deprecated since TYPO3 9.0
@@ -33,7 +36,10 @@ class ConfigurationManager implements SingletonInterface
         }
     }
 
-    public function getValue(string $key)
+    /**
+     * @deprecated
+     */
+    public function getValue(string $key): ?string
     {
         if (is_array($this->configuration) && isset($this->configuration[$key])) {
             return $this->configuration[$key];
