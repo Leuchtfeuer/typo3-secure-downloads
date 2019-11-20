@@ -116,7 +116,7 @@ class LogController extends ActionController
     {
         $pageId = (int)GeneralUtility::_GP('id');
 
-        if ($pageId == 0) {
+        if ($pageId === 0) {
             $this->redirect('list');
         }
 
