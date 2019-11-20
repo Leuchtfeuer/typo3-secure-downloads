@@ -28,7 +28,6 @@ Properties
 	securedDirs_                         basic                                string
 	securedFiletypes_                    basic                                string
 	domain_                              basic                                string
-	apacheDelivery_                      filedelivery                         boolean
 	forcedownload_                       filedelivery                         boolean
 	forcedownloadtype_                   filedelivery                         string
 	additionalMimeTypes_                 filedelivery                         string

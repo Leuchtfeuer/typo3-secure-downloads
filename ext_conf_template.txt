@@ -29,9 +29,6 @@ linkFormat = index.php?eID=tx_securedownloads&p=###PAGE###&u=###FEUSER###&g=###F
 
 
 
-# cat=filedelivery; type=boolean; label=apacheDelivery: Feature to deliver files through Apache not PHP (Beta)
-apacheDelivery = 0
-
 # cat=filedelivery; type=boolean; label = forcedownload: Force Download of specified filetypes
 forcedownload = 0
 
