@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0]
+### Added
+* Dedicated DTO for extension configuration
+* Support for TYPO3 10
+* Support for PHP 7.3
+
+### Changed
+
+### Deprecated
+* Class `\Bitmotion\SecureDownloads\Configuration\ConfigurationManager` is now deprecated. You can use the newly introduced DTO instead.
+
+### Removed
+* Support for TYPO3 8 LTS
+* Apache delivery
+* Deprecated properties "bytesDownloades" and "typo3Mode" from log model
+* Deprecated hook `$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/class.tx_securedownloads.php']['makeSecure']` was removed. You can use the hook `$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure']` instead.
+
+## [3.0.1]
+TODO: add
+
 ## [3.0.0]
 ### Added
 * Support for TYPO3 v9
