@@ -14,6 +14,7 @@ namespace Bitmotion\SecureDownloads\Resource;
  ***/
 
 use Bitmotion\SecureDownloads\Domain\Model\Log;
+use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -25,9 +26,9 @@ use TYPO3\CMS\Frontend\Utility\EidUtility;
 class FileDelivery
 {
     /**
-     * @var array
+     * @var ExtensionConfiguration
      */
-    protected $extensionConfiguration = [];
+    protected $extensionConfiguration;
 
     /**
      * @var FrontendUserAuthentication
@@ -91,7 +92,7 @@ class FileDelivery
      */
     public function __construct()
     {
-        $this->extensionConfiguration = $this->getExtensionConfiguration();
+        $this->extensionConfiguration = new ExtensionConfiguration();
 
         $this->userId = (int)GeneralUtility::_GP('u') ?: 0;
 
@@ -141,26 +142,11 @@ class FileDelivery
     }
 
     /**
-     * Returns the configuration array
-     */
-    protected function getExtensionConfiguration(): array
-    {
-        static $extensionConfiguration = [];
-
-        if (!$extensionConfiguration) {
-            // TODO: Deprecated since TYPO3 9.0
-            $extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['secure_downloads']);
-        }
-
-        return $extensionConfiguration;
-    }
-
-    /**
      * TODO: Refactor it to a hash service
      */
     protected function getHash(string $resourceUri, int $userId, string $userGroupIds, int $validityPeriod = 0): string
     {
-        if ($this->extensionConfiguration['enableGroupCheck']) {
+        if ($this->extensionConfiguration->isEnableGroupCheck()) {
             $hashString = $userId . $userGroupIds . $resourceUri . $validityPeriod;
         } else {
             $hashString = $userId . $resourceUri . $validityPeriod;
@@ -204,22 +190,20 @@ class FileDelivery
     protected function checkGroupAccess(): bool
     {
         $accessAllowed = false;
-        if (empty($this->extensionConfiguration['enableGroupCheck'])) {
+        if (!$this->extensionConfiguration->isEnableGroupCheck()) {
             return false;
         }
 
-        if (!empty($this->extensionConfiguration['groupCheckDirs']) && !preg_match(
-            '/' . $this->softQuoteExpression($this->extensionConfiguration['groupCheckDirs']) . '/',
-                $this->file
-        )
-        ) {
+        $groupCheckDirs = $this->extensionConfiguration->getGroupCheckDirs();
+
+        if (!empty($groupCheckDirs) && !preg_match('/' . $this->softQuoteExpression($groupCheckDirs) . '/', $this->file)) {
             return false;
         }
 
         $transmittedGroups = GeneralUtility::intExplode(',', $this->userGroups);
         $actualGroups = array_unique(array_map('intval', $this->feUserObj->groupData['uid']));
         sort($actualGroups);
-        $excludedGroups = GeneralUtility::intExplode(',', $this->extensionConfiguration['excludeGroups']);
+        $excludedGroups = GeneralUtility::intExplode(',', $this->extensionConfiguration->getExcludeGroups());
         $checkableGroups = array_diff($actualGroups, $excludedGroups);
 
         if ($actualGroups === $transmittedGroups) {
@@ -276,8 +260,8 @@ class FileDelivery
 
             $forcedownload = false;
 
-            if ((bool)$this->extensionConfiguration['forcedownload'] === true) {
-                $forcetypes = GeneralUtility::trimExplode('|', $this->extensionConfiguration['forcedownloadtype']);
+            if ($this->extensionConfiguration->isForceDownload()) {
+                $forcetypes = GeneralUtility::trimExplode('|', $this->extensionConfiguration->getForceDownloadTypes());
 
                 // Handle the regex
                 foreach ($forcetypes as &$forcetype) {
@@ -327,7 +311,7 @@ class FileDelivery
                 header('Content-Disposition: inline; filename="' . $fileName . '"');
             }
 
-            $strOutputFunction = trim($this->extensionConfiguration['outputFunction']);
+            $strOutputFunction = trim($this->extensionConfiguration->getOutputFunction());
             switch ($strOutputFunction) {
                 case 'readfile_chunked':
                     $this->readFileFactional($file);
@@ -362,7 +346,7 @@ class FileDelivery
      */
     protected function logDownload(int $fileSize = 0): void
     {
-        if ($this->isProcessed === false && $this->isLoggingEnabled()) {
+        if ($this->isProcessed === false && $this->extensionConfiguration->isLog()) {
             $log = new Log();
 
             $log->setFileSize($fileSize ?: $this->fileSize);
@@ -393,14 +377,6 @@ class FileDelivery
 
             $this->isProcessed = true;
         }
-    }
-
-    /**
-     * Checks if logging has been enabled in configuration
-     */
-    protected function isLoggingEnabled(): bool
-    {
-        return (bool)$this->extensionConfiguration['log'];
     }
 
     /**
@@ -473,12 +449,12 @@ class FileDelivery
         ];
 
         // Read all additional MIME types from the EM configuration into the array $strAdditionalMimeTypesArray
-        if ($this->extensionConfiguration['additionalMimeTypes']) {
+        if ($this->extensionConfiguration->getAdditionalMimeTypes()) {
             $strAdditionalFileExtension = '';
             $strAdditionalMimeType = '';
             $arrAdditionalMimeTypeParts = GeneralUtility::trimExplode(
                 ',',
-                $this->extensionConfiguration['additionalMimeTypes'],
+                $this->extensionConfiguration->getAdditionalMimeTypes(),
                 true
             );
 
@@ -531,7 +507,7 @@ class FileDelivery
      */
     protected function readFileFactional(string $strFileName): bool
     {
-        $chunksize = (int)$this->extensionConfiguration['outputChunkSize']; // how many bytes per chunk
+        $chunksize = $this->extensionConfiguration->getOutputChunkSize(); // how many bytes per chunk
         $timeout = ini_get('max_execution_time');
         $bytes_sent = 0;
         $handle = fopen($strFileName, 'rb');

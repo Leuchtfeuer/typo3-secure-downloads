@@ -14,6 +14,7 @@ namespace Bitmotion\SecureDownloads\Service;
  ***/
 
 use Bitmotion\SecureDownloads\Configuration\ConfigurationManager;
+use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Bitmotion\SecureDownloads\Parser\HtmlParserDelegateInterface;
 use Bitmotion\SecureDownloads\Request\RequestContext;
@@ -25,8 +26,6 @@ class SecureDownloadService implements HtmlParserDelegateInterface
 {
     protected $requestContext;
 
-    protected $configurationManager;
-
     /**
      * @var HtmlParser
      */
@@ -37,10 +36,9 @@ class SecureDownloadService implements HtmlParserDelegateInterface
      */
     protected $resourcePublisher;
 
-    public function __construct(RequestContext $requestContext = null, ConfigurationManager $configurationManager = null)
+    public function __construct(RequestContext $requestContext = null)
     {
         $this->requestContext = $requestContext ?? GeneralUtility::makeInstance(RequestContext::class);
-        $this->configurationManager = $configurationManager ?? GeneralUtility::makeInstance(ConfigurationManager::class);
     }
 
     /**
@@ -62,11 +60,13 @@ class SecureDownloadService implements HtmlParserDelegateInterface
     protected function getHtmlParser(): HtmlParser
     {
         if (is_null($this->htmlParser)) {
+            $extensionConfiguration = new ExtensionConfiguration();
+
             $this->htmlParser = new HtmlParser($this, [
-                'domainPattern' => $this->configurationManager->getValue('domain'),
-                'folderPattern' => $this->configurationManager->getValue('securedDirs'),
-                'fileExtensionPattern' => $this->configurationManager->getValue('securedFiletypes'),
-                'logLevel' => (int)$this->configurationManager->getValue('debug'),
+                'domainPattern' => $extensionConfiguration->getDomain(),
+                'folderPattern' => $extensionConfiguration->getSecuredDirs(),
+                'fileExtensionPattern' => $extensionConfiguration->getSecuredFileTypes(),
+                'logLevel' => $extensionConfiguration->getDebug(),
             ]);
         }
 
