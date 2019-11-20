@@ -20,19 +20,10 @@
       "email": "f.wessels@bitmotion.de",
       "role": "Developer",
       "homepage": "https://www.bitmotion.de"
-    },
-    {
-      "name": "Helmut Hummel",
-      "email": "info@helhum.io",
-      "role": "Developer",
-      "homepage": "https://helhum.io/"
     }
   ],
   "require": {
-    "typo3/cms-core": "^8.7 || ^9.5"
-  },
-  "conflict": {
-    "typo3-ter/naw-securedl": "*"
+    "typo3/cms-core": "^9.5 || ^10.1"
   },
   "autoload": {
     "psr-4": {
