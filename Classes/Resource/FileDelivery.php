@@ -19,6 +19,7 @@ use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\HttpUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\CMS\Frontend\Utility\EidUtility;
@@ -161,8 +162,8 @@ class FileDelivery
 
     protected function exitScript(string $message): void
     {
-        header('HTTP/1.1 403 Forbidden');
-        exit($message);
+        // TODO: Log message?
+        HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);
     }
 
     protected function expiryTimeExceeded(): bool
