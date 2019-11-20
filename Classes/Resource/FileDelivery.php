@@ -95,10 +95,9 @@ class FileDelivery
         $this->extensionConfiguration = new ExtensionConfiguration();
 
         $this->userId = (int)GeneralUtility::_GP('u') ?: 0;
-
         $this->pageId = (int)GeneralUtility::_GP('p') ?: 0;
-
         $this->userGroups = GeneralUtility::_GP('g');
+
         if ($this->userGroups === '') {
             $this->userGroups = 0;
         }

@@ -176,7 +176,6 @@ class LogController extends ActionController
         }
 
         $this->view->assign('action', $this->request->getControllerActionName());
-
         $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
     }
 
