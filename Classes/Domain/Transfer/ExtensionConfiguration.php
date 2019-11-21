@@ -58,6 +58,10 @@ class ExtensionConfiguration implements SingletonInterface
      */
     private $legacyDelivery = false;
 
+    private $linkPrefix = 'download';
+
+    private $tokenPrefix = 'sdl-';
+
     /**
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws ExtensionConfigurationPathDoesNotExistException
@@ -164,5 +168,15 @@ class ExtensionConfiguration implements SingletonInterface
     public function isLegacyDelivery(): bool
     {
         return (bool)$this->legacyDelivery;
+    }
+
+    public function getLinkPrefix(): string
+    {
+        return trim($this->linkPrefix, '/');
+    }
+
+    public function getTokenPrefix(): string
+    {
+        return trim($this->tokenPrefix, '/');
     }
 }

@@ -135,7 +135,9 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         ];
 
         return sprintf(
-            'index.php?eID=tx_securedownloads&jwt=%s',
+            '%s/%s%s',
+            $this->extensionConfiguration->getLinkPrefix(),
+            $this->extensionConfiguration->getTokenPrefix(),
             JWT::encode($payload, $this->getRequestContext()->getAdditionalSecret(), 'HS256')
         );
     }

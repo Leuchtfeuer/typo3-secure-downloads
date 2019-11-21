@@ -21,6 +21,12 @@ excludeGroups =
 
 
 # customsubcategory=link=Link Generation;
+# cat=basic/link; type=string; label=Link prefix: Prefix for generated links.
+linkPrefix = download
+
+# cat=basic/link; type=string; label=Token prefix: Prefix for generated token.
+tokenPrefix = sdl-
+
 # cat=basic/link; type=int; label=Additional Link Timeout: The secure link is only valid for a limited time, which is calculated from the cache time that is used for the page that carries the link plus this value (in seconds). Default is 3600 sec (= 1 h).
 cachetimeadd = 3600
 

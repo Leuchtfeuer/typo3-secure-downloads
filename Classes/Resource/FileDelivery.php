@@ -91,12 +91,11 @@ class FileDelivery
      *
      * Check the access rights
      */
-    public function __construct()
+    public function __construct(?string $jwt = null)
     {
         $this->extensionConfiguration = new ExtensionConfiguration();
-        $jwt = GeneralUtility::_GET('jwt');
 
-        if ($jwt) {
+        if ($jwt !== null) {
             try {
                 $requestContext = GeneralUtility::makeInstance(RequestContext::class);
                 $data = JWT::decode($jwt, $requestContext->getAdditionalSecret(), ['HS256']);
