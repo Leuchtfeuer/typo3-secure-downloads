@@ -14,6 +14,8 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
  ***/
 
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
+use Firebase\JWT\JWT;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -88,15 +90,25 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         $userId = $this->getRequestContext()->getUserId();
         $userGroupIds = $this->getRequestContext()->getUserGroupIds();
         $validityPeriod = $this->calculateLinkLifetime();
-        $hash = $this->getHash($resourceUri, $userId, $userGroupIds, $validityPeriod);
+
+        if ($this->extensionConfiguration->isLegacyDelivery()) {
+            return $this->getUrlWithParameters($resourceUri, $userId, $userGroupIds, $validityPeriod);
+        }
+
+        return $this->getUrlWithJWT($userId, $userGroupIds, $resourceUri, $validityPeriod);
+    }
+
+    private function getUrlWithParameters(string $resourceUri, int $user, array $userGroups, int $validityPeriod): string
+    {
+        $hash = $this->getHash($resourceUri, $user, $userGroups, $validityPeriod);
 
         // Parsing the link format, and return this instead (an flexible link format is useful for mod_rewrite tricks ;)
-        $configuredLinkFormat = $this->configurationManager->getValue('linkFormat');
+        $configuredLinkFormat = $this->extensionConfiguration->getLinkFormat();
         $linkFormat = !empty($configuredLinkFormat) ? $configuredLinkFormat : self::DEFAULT_LINK_FORMAT;
 
         $replacements = [
-            $userId,
-            rawurlencode(implode(',', $userGroupIds)),
+            $user,
+            rawurlencode(implode(',', $userGroups)),
             str_replace('%2F', '/', rawurlencode($resourceUri)),
             $validityPeriod,
             $hash,
@@ -104,6 +116,24 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         ];
 
         return str_replace(self::ALLOWED_TOKENS, $replacements, $linkFormat);
+    }
+
+    private function getUrlWithJWT(int $user, array $userGroups, string $resourceUri, int $validityPeriod): string
+    {
+        $payload = [
+            'exp' => $validityPeriod,
+            'iat' => time(),
+            'user' => $user,
+            'groups' => $userGroups,
+            'file' => $resourceUri,
+            'page' => $GLOBALS['TSFE']->id,
+
+        ];
+
+        return sprintf(
+            'index.php?eID=tx_securedownloads&jwt=%s',
+            JWT::encode($payload, $this->getRequestContext()->getAdditionalSecret(), 'HS256')
+        );
     }
 
     protected function calculateLinkLifetime(): int

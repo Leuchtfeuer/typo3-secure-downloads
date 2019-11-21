@@ -16,6 +16,9 @@ namespace Bitmotion\SecureDownloads\Resource;
 use Bitmotion\SecureDownloads\Domain\Model\Log;
 use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
+use Bitmotion\SecureDownloads\Request\RequestContext;
+use Firebase\JWT\JWT;
+use Firebase\JWT\SignatureInvalidException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -94,21 +97,28 @@ class FileDelivery
     public function __construct()
     {
         $this->extensionConfiguration = new ExtensionConfiguration();
+        $jwt = GeneralUtility::_GET('jwt');
 
-        $this->userId = (int)GeneralUtility::_GP('u') ?: 0;
-        $this->pageId = (int)GeneralUtility::_GP('p') ?: 0;
-        $this->userGroups = GeneralUtility::_GP('g');
+        if ($jwt) {
+            try {
+                $requestContext = GeneralUtility::makeInstance(RequestContext::class);
+                $data = JWT::decode($jwt, $requestContext->getAdditionalSecret(), ['HS256']);
+            } catch (SignatureInvalidException $exception) {
+                $this->exitScript('Hash invalid! Access denied!');
+            }
 
-        if ($this->userGroups === '') {
-            $this->userGroups = 0;
+            $this->userGroups = implode($data->groups);
+        } else {
+            $this->userGroups = (!empty(GeneralUtility::_GET('g'))) ? GeneralUtility::_GET('g') : '0';
+            $this->hash = GeneralUtility::_GP('hash');
         }
 
-        $this->hash = GeneralUtility::_GP('hash');
-        $this->expiryTime = (int) GeneralUtility::_GP('t');
-        $this->file = GeneralUtility::_GP('file');
+        $this->userId = $data->user ?? (int)GeneralUtility::_GP('u');
+        $this->pageId = $data->page ?? (int)GeneralUtility::_GP('p');
+        $this->expiryTime = $data->exp ?? (int)GeneralUtility::_GP('t');
+        $this->file = $data->file ?? GeneralUtility::_GP('file');
 
-        $this->data = $this->userId . $this->userGroups . $this->file . $this->expiryTime;
-        $this->calculatedHash = $this->getHash($this->file, $this->userId, $this->userGroups, $this->expiryTime);
+        $this->calculatedHash = isset($data) ? '' : $this->getHash($this->file, $this->userId, $this->userGroups, $this->expiryTime);
 
         // Hook for init:
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init'])) {
@@ -126,12 +136,14 @@ class FileDelivery
             }
         }
 
-        if (!$this->hashValid()) {
-            $this->exitScript('Hash invalid! Access denied!');
-        }
+        if (!$jwt) {
+            if (!$this->hashValid()) {
+                $this->exitScript('Hash invalid! Access denied!');
+            }
 
-        if ($this->expiryTimeExceeded()) {
-            $this->exitScript('Link Expired. Access denied!');
+            if ($this->expiryTimeExceeded()) {
+                $this->exitScript('Link Expired. Access denied!');
+            }
         }
 
         $this->initializeUserAuthentication();
@@ -234,6 +246,7 @@ class FileDelivery
     {
         $file = GeneralUtility::getFileAbsFileName(ltrim($this->file, '/'));
         $fileName = basename($file);
+
         // This is a workaround for a PHP bug on Windows systems:
         // @see http://bugs.php.net/bug.php?id=46990
         // It helps for filenames with special characters that are present in latin1 encoding.

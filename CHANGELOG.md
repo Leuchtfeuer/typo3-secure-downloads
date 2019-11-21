@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0]
 ### Added
 * Dedicated DTO for extension configuration
+* Use JSON Web Tokens for URL generation
 * Support for TYPO3 10
 * Support for PHP 7.3
 
@@ -14,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 * Class `\Bitmotion\SecureDownloads\Configuration\ConfigurationManager` is now deprecated. You can use the newly introduced DTO instead.
+* Generation of secured links via URL get parameters is marked as deprecated. You should use JWTs.
 
 ### Removed
 * Support for TYPO3 8 LTS
