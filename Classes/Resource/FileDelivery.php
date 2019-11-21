@@ -299,7 +299,7 @@ class FileDelivery
                 $forceDownload = $forceDownload || (is_array($forceDownloadTypes) && in_array($fileExtension, $forceDownloadTypes, true));
             }
 
-            $mimeType = extension_loaded('fileinfo') ? mime_content_type($fileName) : $this->getMimeTypeByFileExtension($fileExtension)
+            $mimeType = extension_loaded('fileinfo') ? mime_content_type($fileName) : $this->getMimeTypeByFileExtension($fileExtension);
 
             // Hook for output:
             // TODO: deprecate this hook?
@@ -314,7 +314,6 @@ class FileDelivery
                 }
             }
 
-            //TODO: Check IE compatibility with these headers
             header('Pragma: private');
             header('Expires: 0'); // set expiration time
             header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -392,7 +391,6 @@ class FileDelivery
 
     /**
      * Looks up the mime type for a give file extension
-     * TODO: Use PHP functions instead - if available?
      *
      * @param string $strFileExtension lowercase file extension
      *
