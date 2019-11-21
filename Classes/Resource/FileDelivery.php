@@ -37,7 +37,7 @@ class FileDelivery
     /**
      * @var FrontendUserAuthentication
      */
-    protected $feUserObj;
+    protected $frontendUserAuthentication;
 
     /**
      * @var int
@@ -191,13 +191,13 @@ class FileDelivery
 
     protected function initializeUserAuthentication(): void
     {
-        $this->feUserObj = EidUtility::initFeUser();
-        $this->feUserObj->fetchGroupData();
+        $this->frontendUserAuthentication = EidUtility::initFeUser();
+        $this->frontendUserAuthentication->fetchGroupData();
     }
 
     protected function checkUserAccess(): bool
     {
-        return $this->userId === (int)$this->feUserObj->user['uid'];
+        return $this->userId === (int)$this->frontendUserAuthentication->user['uid'];
     }
 
     /**
@@ -219,7 +219,7 @@ class FileDelivery
         }
 
         $transmittedGroups = GeneralUtility::intExplode(',', $this->userGroups);
-        $actualGroups = array_unique(array_map('intval', $this->feUserObj->groupData['uid']));
+        $actualGroups = array_unique(array_map('intval', $this->frontendUserAuthentication->groupData['uid']));
         sort($actualGroups);
         $excludedGroups = GeneralUtility::intExplode(',', $this->extensionConfiguration->getExcludeGroups());
         $checkableGroups = array_diff($actualGroups, $excludedGroups);
@@ -380,7 +380,7 @@ class FileDelivery
             $log->setMediaType($this->getMimeTypeByFileExtension($pathInfo['extension']));
         }
 
-        $log->setUser((int)$this->feUserObj->user['uid']);
+        $log->setUser((int)$this->frontendUserAuthentication->user['uid']);
         $log->setPage($this->pageId);
 
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
