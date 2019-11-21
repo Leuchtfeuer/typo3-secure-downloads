@@ -66,8 +66,9 @@ class FileDelivery
 
     /**
      * @var string
+     * @deprecated Will be removed in version 5.
      */
-    protected $hash;
+    protected $hash = '';
 
     /**
      * @var string
