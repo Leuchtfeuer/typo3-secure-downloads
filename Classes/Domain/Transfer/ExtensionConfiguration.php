@@ -146,7 +146,19 @@ class ExtensionConfiguration implements SingletonInterface
 
     public function getOutputChunkSize(): int
     {
-        return (int)$this->outputChunkSize;
+        $units = ['', 'K', 'M', 'G'];
+        $memoryLimit = ini_get('memory_limit');
+
+        if (!is_numeric($memoryLimit)) {
+            $suffix = strtoupper(substr($memoryLimit, -1));
+            $exponent = array_flip($units)[$suffix] ?? 1;
+            $memoryLimit = (int)$memoryLimit * (1024 ** $exponent);
+        }
+
+        // Set max. chunk size to php memory limit - 64 kB
+        $maxChunkSize = $memoryLimit - 64 * 1024;
+
+        return (int)(($this->outputChunkSize > $maxChunkSize) ? $maxChunkSize : $this->outputChunkSize);
     }
 
     public function getOutputFunction(): string
