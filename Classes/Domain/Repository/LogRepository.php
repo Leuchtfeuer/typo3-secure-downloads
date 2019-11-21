@@ -13,7 +13,7 @@ namespace Bitmotion\SecureDownloads\Domain\Repository;
  *
  ***/
 
-use Bitmotion\SecureDownloads\Domain\Model\Filter;
+use Bitmotion\SecureDownloads\Domain\Transfer\Filter;
 use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
