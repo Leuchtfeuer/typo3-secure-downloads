@@ -23,14 +23,15 @@ call_user_func(
         );
 
         // Connect to signal slots
-        $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
-        $signalSlotDispatcher->connect(
-            \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-            \TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
-            \Bitmotion\SecureDownloads\Resource\UrlGenerationInterceptor::class,
-            'getPublicUrl'
-        );
-
+        if (TYPO3_MODE === 'FE') {
+            $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
+            $signalSlotDispatcher->connect(
+                \TYPO3\CMS\Core\Resource\ResourceStorage::class,
+                \TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
+                \Bitmotion\SecureDownloads\Resource\UrlGenerationInterceptor::class,
+                'getPublicUrl'
+            );
+        }
     }, 'secure_downloads'
 );
 
