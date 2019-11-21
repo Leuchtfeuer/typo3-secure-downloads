@@ -14,7 +14,9 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
  ***/
 
 use Bitmotion\SecureDownloads\Configuration\ConfigurationManager;
+use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Request\RequestContext;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -43,11 +45,14 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      */
     protected $requestContext;
 
-    protected $configurationManager;
+    /**
+     * @var ExtensionConfiguration
+     */
+    protected $extensionConfiguration;
 
-    public function __construct(ConfigurationManager $configurationManager)
+    public function __construct()
     {
-        $this->configurationManager = $configurationManager;
+        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
     }
 
     /**
@@ -84,7 +89,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 
     protected function getPathSite(): string
     {
-        return \TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/';
+        return Environment::getPublicPath() . '/';
     }
 
     /**
