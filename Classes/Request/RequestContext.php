@@ -42,11 +42,6 @@ class RequestContext
     /**
      * @var string
      */
-    protected $cookieName = 'secure_download_token';
-
-    /**
-     * @var string
-     */
     protected $additionalSecret = 'secure_download_token';
 
     /**
