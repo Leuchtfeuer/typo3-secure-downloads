@@ -19,6 +19,7 @@ use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Bitmotion\SecureDownloads\Request\RequestContext;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -265,7 +266,7 @@ class FileDelivery
         // It helps for filenames with special characters that are present in latin1 encoding.
         // If you have real UTF-8 filenames, use a nix based OS.
         // FIXME: needs to be checked, if the website encoding really is UTF-8 and if UTF-8 filesystem is enabled
-        if (TYPO3_OS === 'WIN') {
+        if (Environment::isWindows()) {
             $file = utf8_decode($file);
         }
 
