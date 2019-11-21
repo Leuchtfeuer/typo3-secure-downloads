@@ -27,9 +27,15 @@ class SecureDownloadService implements HtmlParserDelegateInterface
 
     protected $resourcePublisher;
 
+    protected $extensionConfiguration;
+
+    protected $securedFileTypesPattern;
+
     public function __construct(ResourcePublisher $resourcePublisher = null)
     {
         $this->resourcePublisher = $resourcePublisher ?? GeneralUtility::makeInstance(ObjectManager::class)->get(ResourcePublisher::class);
+        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+        $this->securedFileTypesPattern = sprintf('/^(%s)$/i', $this->extensionConfiguration->getSecuredFileTypes());
     }
 
     /**
@@ -83,5 +89,22 @@ class SecureDownloadService implements HtmlParserDelegateInterface
         }
 
         return $transformedUri;
+    }
+
+    /**
+     * Check whether file is located underneath a secured folder and file extension should matches file types pattern.
+     */
+    public function pathShouldBeSecured(string $publicUrl): bool
+    {
+        foreach (explode('|', $this->extensionConfiguration->getSecuredDirs()) as $securedDir) {
+            if (strpos($publicUrl, $securedDir) === 0) {
+                $fileExtension = pathinfo($publicUrl, PATHINFO_EXTENSION);
+                if (preg_match($this->securedFileTypesPattern, $fileExtension)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
