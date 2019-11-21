@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 * Class `\Bitmotion\SecureDownloads\Configuration\ConfigurationManager` is now deprecated. You can use the newly introduced DTO instead.
-* Generation of secured links via URL get parameters is marked as deprecated. You should use JWTs.
+* Generation of secured links via URL get parameters is marked as deprecated. You should use JWTs instead.
+* Parameters `hash` and `calculatedHash` of `$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init']` hook.
 
 ### Removed
 * Support for TYPO3 8 LTS
