@@ -26,6 +26,9 @@
     "typo3/cms-core": "^9.5 || ^10.1",
     "firebase/php-jwt": "^5.0"
   },
+  "suggest": {
+    "ext-fileinfo": "For getting mime types from file path."
+  },
   "autoload": {
     "psr-4": {
       "Bitmotion\\SecureDownloads\\": "Classes"
