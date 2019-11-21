@@ -277,8 +277,7 @@ class FileDelivery
                 $this->logDownload();
             }
 
-            $fileExtension = $this->getFileExtensionByFilename($file);
-
+            $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
             $forceDownload = false;
 
             if ($this->extensionConfiguration->isForceDownload()) {
