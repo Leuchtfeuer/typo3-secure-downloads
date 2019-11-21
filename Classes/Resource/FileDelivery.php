@@ -146,7 +146,11 @@ class FileDelivery
             }
         }
 
-        $this->initializeUserAuthentication();
+        if ($GLOBALS['TSFE']->fe_user instanceof FrontendUserAuthentication) {
+            $this->frontendUserAuthentication = $GLOBALS['TSFE']->fe_user;
+        } else {
+            $this->initializeUserAuthentication();
+        }
 
         if (($this->userId !== 0) && !$this->checkUserAccess() && !$this->checkGroupAccess()) {
             $this->exitScript('Access denied for User!');
@@ -189,6 +193,9 @@ class FileDelivery
         return $this->expiryTime < time();
     }
 
+    /**
+     * @deprecated Will be removed in version 5 as frontendUserAuthentication is injected by PSR-15 middleware
+     */
     protected function initializeUserAuthentication(): void
     {
         $this->frontendUserAuthentication = EidUtility::initFeUser();
