@@ -16,7 +16,6 @@ namespace Bitmotion\SecureDownloads\Service;
 use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Bitmotion\SecureDownloads\Parser\HtmlParserDelegateInterface;
-use Bitmotion\SecureDownloads\Request\RequestContext;
 use Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublisher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -24,18 +23,13 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class SecureDownloadService implements HtmlParserDelegateInterface
 {
-    protected $requestContext;
-
     protected $htmlParser;
 
     protected $resourcePublisher;
 
-    public function __construct(RequestContext $requestContext = null, ResourcePublisher $resourcePublisher = null)
+    public function __construct(ResourcePublisher $resourcePublisher = null)
     {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-
-        $this->requestContext = $requestContext ?? $objectManager->get(RequestContext::class);
-        $this->resourcePublisher = $resourcePublisher ?? $objectManager->get(ResourcePublisher::class);
+        $this->resourcePublisher = $resourcePublisher ?? GeneralUtility::makeInstance(ObjectManager::class)->get(ResourcePublisher::class);
     }
 
     /**
@@ -43,11 +37,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
      */
     public function parseFE(array &$parameters, TypoScriptFrontendController $typoScriptFrontendController)
     {
-        // Parsing the content if not explicitly disabled
-        if ($this->requestContext->isUrlRewritingEnabled()) {
-            // TODO: $typoScriptFrontendController->content is deprecated since TYPO3 9.0
-            $typoScriptFrontendController->content = $this->getHtmlParser()->parse($typoScriptFrontendController->content);
-        }
+        $typoScriptFrontendController->content = $this->getHtmlParser()->parse($typoScriptFrontendController->content);
     }
 
     /**
@@ -71,7 +61,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
     }
 
     /**
-     * Method kept for compatibility
+     * @deprecated Will be removed with version 5. Use $this->publishResourceUri instead.
      */
     public function makeSecure(string $originalUri): string
     {

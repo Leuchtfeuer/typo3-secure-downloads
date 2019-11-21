@@ -13,43 +13,64 @@ namespace Bitmotion\SecureDownloads\Resource;
  *
  ***/
 
+use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublisher;
+use Bitmotion\SecureDownloads\Service\SecureDownloadService;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource\Driver\AbstractDriver;
 use TYPO3\CMS\Core\Resource\Driver\LocalDriver;
+use TYPO3\CMS\Core\Resource\Exception;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
+use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
-class UrlGenerationInterceptor
+class UrlGenerationInterceptor implements SingletonInterface
 {
-    protected $resourcePublisher;
+    protected $sdlService;
+
+    protected $extensionConfiguration;
+
+    protected $securedFileTypesPattern;
 
     public function __construct(ResourcePublisher $resourcePublisher)
     {
-        $this->resourcePublisher = $resourcePublisher;
+        $this->sdlService = GeneralUtility::makeInstance(SecureDownloadService::class, $resourcePublisher);
+        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+        $this->securedFileTypesPattern = sprintf('/^(%s)$/i', $this->extensionConfiguration->getSecuredFileTypes());
     }
 
-    public function getPublicUrl(
-        ResourceStorage $storage,
-        AbstractDriver $driver,
-        ResourceInterface $resource,
-        bool $relativeToCurrentScript,
-        array $urlData
-    ): void {
-        if (!$driver instanceof LocalDriver) {
-            // We cannot handle other files than local files yet
-            return;
-        }
-        $publicUrl = $this->resourcePublisher->getResourceWebUri($resource);
-        if ($publicUrl !== false) {
-            // If requested, make the path relative to the current script in order to make it possible
-            // to use the relative file
-            if ($relativeToCurrentScript) {
-                $publicUrl = PathUtility::getRelativePathTo(PathUtility::dirname((Environment::getPublicPath() . '/' . $publicUrl))) . PathUtility::basename($publicUrl);
+    public function getPublicUrl(ResourceStorage $storage, AbstractDriver $driver, ResourceInterface $resourceObject, bool $relativeToCurrentScript, array $urlData): void
+    {
+        if ($driver instanceof LocalDriver) {
+            try {
+                $publicUrl = $driver->getPublicUrl($resourceObject->getIdentifier());
+
+                if ($this->shouldBeSecured($publicUrl)) {
+                    $urlData['publicUrl'] = $this->sdlService->publishResourceUri($publicUrl);
+                }
+            } catch (Exception $exception) {
+                // Do nothing.
             }
-            // $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
-            $urlData['publicUrl'] = $publicUrl;
         }
+    }
+
+    /**
+     * Check whether file is located underneath a secured folder and file extension should matches file types pattern.
+     */
+    protected function shouldBeSecured(string $publicUrl): bool
+    {
+        foreach (explode('|', $this->extensionConfiguration->getSecuredDirs()) as $securedDir) {
+            if (strpos($publicUrl, $securedDir) === 0) {
+                $fileExtension = pathinfo($publicUrl, PATHINFO_EXTENSION);
+                if (preg_match($this->securedFileTypesPattern, $fileExtension)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
