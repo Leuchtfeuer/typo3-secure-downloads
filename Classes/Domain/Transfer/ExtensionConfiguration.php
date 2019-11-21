@@ -50,6 +50,8 @@ class ExtensionConfiguration implements SingletonInterface
 
     private $securedFiletypes = 'pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz';
 
+    private $legacyDelivery = false;
+
     /**
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws ExtensionConfigurationPathDoesNotExistException
@@ -145,5 +147,10 @@ class ExtensionConfiguration implements SingletonInterface
     public function getSecuredFileTypes(): string
     {
         return (string)$this->securedFiletypes;
+    }
+
+    public function isLegacyDelivery(): bool
+    {
+        return (bool)$this->legacyDelivery;
     }
 }
