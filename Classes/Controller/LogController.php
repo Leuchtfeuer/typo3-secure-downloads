@@ -61,8 +61,6 @@ class LogController extends ActionController
     }
 
     /**
-     * @param Filter|null $filter
-     *
      * @throws InvalidQueryException
      */
     public function listAction(Filter $filter = null): void
@@ -106,8 +104,6 @@ class LogController extends ActionController
     }
 
     /**
-     * @param Filter|null $filter
-     *
      * @throws StopActionException
      * @throws UnsupportedRequestTypeException
      * @throws InvalidQueryException

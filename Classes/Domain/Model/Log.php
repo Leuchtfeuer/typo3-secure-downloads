@@ -212,7 +212,6 @@ class Log extends AbstractEntity
         $this->host = $host;
     }
 
-
     public function getUser(): int
     {
         return (int)$this->user;

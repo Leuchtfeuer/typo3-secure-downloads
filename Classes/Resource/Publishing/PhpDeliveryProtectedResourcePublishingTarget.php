@@ -143,7 +143,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 
     private function getUrlWithJWT(int $user, array $userGroups, string $resourceUri): string
     {
-        $hash = md5($user. $userGroups . $resourceUri . $GLOBALS['TSFE']->id);
+        $hash = md5($user . $userGroups . $resourceUri . $GLOBALS['TSFE']->id);
 
         // Retrive URL from JWT cache
         if (isset($this->cache[$hash])) {
