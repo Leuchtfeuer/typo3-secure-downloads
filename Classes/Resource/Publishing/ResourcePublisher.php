@@ -40,6 +40,8 @@ class ResourcePublisher implements SingletonInterface
      */
     public function getResourceWebUri(ResourceInterface $resource)
     {
+        trigger_error('Method getResourceWebUri() will be removed in version 5.', E_USER_DEPRECATED);
+
         return $this->publishingTarget->getResourceWebUri($resource);
     }
 
@@ -55,6 +57,8 @@ class ResourcePublisher implements SingletonInterface
      */
     public function publishResource(ResourceInterface $resource)
     {
+        trigger_error('Method publishResource() will be removed in version 5.', E_USER_DEPRECATED);
+
         return $this->publishingTarget->publishResource($resource);
     }
 

@@ -134,6 +134,8 @@ class ExtensionConfiguration implements SingletonInterface
      */
     public function getLinkFormat(): string
     {
+        trigger_error('Method getLinkFormat() will be removed in version 5.', E_USER_DEPRECATED);
+
         return (string)$this->linkFormat;
     }
 
@@ -167,6 +169,8 @@ class ExtensionConfiguration implements SingletonInterface
      */
     public function isLegacyDelivery(): bool
     {
+        trigger_error('Method isLegacyDelivery() will be removed in version 5.', E_USER_DEPRECATED);
+
         return (bool)$this->legacyDelivery;
     }
 

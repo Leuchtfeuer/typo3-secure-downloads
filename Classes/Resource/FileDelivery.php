@@ -163,6 +163,8 @@ class FileDelivery
      */
     protected function getHash(string $resourceUri, int $userId, string $userGroupIds, int $validityPeriod = 0): string
     {
+        trigger_error('Method getHash() will be removed in version 5.', E_USER_DEPRECATED);
+
         if ($this->extensionConfiguration->isEnableGroupCheck()) {
             $hashString = $userId . $userGroupIds . $resourceUri . $validityPeriod;
         } else {
@@ -177,6 +179,8 @@ class FileDelivery
      */
     protected function hashValid(): bool
     {
+        trigger_error('Method hashValid() will be removed in version 5.', E_USER_DEPRECATED);
+
         return $this->calculatedHash === $this->hash;
     }
 
@@ -191,6 +195,8 @@ class FileDelivery
      */
     protected function expiryTimeExceeded(): bool
     {
+        trigger_error('Method expiryTimeExceeded() will be removed in version 5.', E_USER_DEPRECATED);
+
         return $this->expiryTime < time();
     }
 
@@ -199,6 +205,8 @@ class FileDelivery
      */
     protected function initializeUserAuthentication(): void
     {
+        trigger_error('Method initializeUserAuthentication() will be removed in version 5.', E_USER_DEPRECATED);
+
         $this->frontendUserAuthentication = EidUtility::initFeUser();
         $this->frontendUserAuthentication->fetchGroupData();
     }
@@ -516,6 +524,8 @@ class FileDelivery
      */
     protected function getFileExtensionByFilename(string $strFileName): string
     {
+        trigger_error('Method getFileExtensionByFilename() will be removed in version 5. Use pathinfo() instead.', E_USER_DEPRECATED);
+
         return mb_strtolower(ltrim(mb_strrchr($strFileName, '.'), '.'));
     }
 

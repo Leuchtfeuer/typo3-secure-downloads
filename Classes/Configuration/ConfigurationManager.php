@@ -29,8 +29,9 @@ class ConfigurationManager implements SingletonInterface
      */
     public function __construct(?string $extensionKey = null)
     {
+        trigger_error('Class ConfigurationManager will be removed in version 5. Use ExtensionConfiguration instead.', E_USER_DEPRECATED);
+
         $this->extensionKey = $extensionKey ?: $this->extensionKey;
-        // TODO: Deprecated since TYPO3 9.0
         if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extensionKey])) {
             $this->configuration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extensionKey]);
         }
@@ -41,6 +42,8 @@ class ConfigurationManager implements SingletonInterface
      */
     public function getValue(string $key): ?string
     {
+        trigger_error('Method getValue() will be removed in version 5.', E_USER_DEPRECATED);
+
         if (is_array($this->configuration) && isset($this->configuration[$key])) {
             return $this->configuration[$key];
         }

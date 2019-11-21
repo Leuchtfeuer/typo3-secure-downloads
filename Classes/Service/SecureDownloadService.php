@@ -72,6 +72,8 @@ class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInt
      */
     public function makeSecure(string $originalUri): string
     {
+        trigger_error('Method makeSecure() will be removed in version 5. Use publishResourceUri() instead.', E_USER_DEPRECATED);
+
         return $this->publishResourceUri($originalUri);
     }
 

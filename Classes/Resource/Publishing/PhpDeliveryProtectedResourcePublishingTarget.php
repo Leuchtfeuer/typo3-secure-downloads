@@ -54,6 +54,8 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      */
     public function publishResource(ResourceInterface $resource)
     {
+        trigger_error('Method publishResource() will be removed in version 5.', E_USER_DEPRECATED);
+
         $publicUrl = false;
         // We only manipulate the URL if we are in the backend or in FAL mode in FE (otherwise we parse the HTML)
         if (!$this->getRequestContext()->isFrontendRequest()) {
@@ -77,6 +79,8 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      */
     protected function isPubliclyAvailable(ResourceInterface $resource): bool
     {
+        trigger_error('Method isPubliclyAvailable() will be removed in version 5.', E_USER_DEPRECATED);
+
         $resourceUri = $this->getResourceUri($resource);
         $securedFoldersExpression = $this->extensionConfiguration->getSecuredDirs();
         $securedFileTypes = $this->extensionConfiguration->getSecuredFileTypes();
@@ -116,6 +120,8 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      */
     private function getUrlWithParameters(string $resourceUri, int $user, array $userGroups): string
     {
+        trigger_error('Method getUrlWithParameters() will be removed in version 5.', E_USER_DEPRECATED);
+
         $validityPeriod = $this->calculateLinkLifetime();
         $hash = $this->getHash($resourceUri, $user, $userGroups, $validityPeriod);
 
@@ -180,6 +186,8 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      */
     protected function getHash(string $resourceUri, int $userId, array $userGroupIds, int $validityPeriod): string
     {
+        trigger_error('Method getHash() will be removed in version 5.', E_USER_DEPRECATED);
+
         if ($this->extensionConfiguration->isEnableGroupCheck()) {
             $hashString = $userId . implode(',', $userGroupIds) . $resourceUri . $validityPeriod;
         } else {

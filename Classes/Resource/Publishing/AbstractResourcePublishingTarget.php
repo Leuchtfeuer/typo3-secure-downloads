@@ -13,7 +13,6 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
  *
  ***/
 
-use Bitmotion\SecureDownloads\Configuration\ConfigurationManager;
 use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Request\RequestContext;
 use TYPO3\CMS\Core\Core\Environment;
@@ -69,6 +68,8 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      */
     public function getResourceWebUri(ResourceInterface $resource)
     {
+        trigger_error('Method getResourceWebUri() will be removed in version 5.', E_USER_DEPRECATED);
+
         return $this->publishResource($resource);
     }
 
@@ -77,6 +78,8 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      */
     protected function getResourceUri(ResourceInterface $resource): string
     {
+        trigger_error('Method getResourceUri() will be removed in version 5.', E_USER_DEPRECATED);
+
         return PathUtility::getCanonicalPath($this->getResourcesBaseUri() . '/' . $resource->getIdentifier());
     }
 
@@ -89,6 +92,8 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      */
     public function getResourcesBaseUri(): string
     {
+        trigger_error('Method getResourcesBaseUri() will be removed in version 5.', E_USER_DEPRECATED);
+
         if ($this->resourcesBaseUri === null) {
             $this->detectResourcesBaseUri();
         }
@@ -108,6 +113,8 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      */
     protected function detectResourcesBaseUri(): void
     {
+        trigger_error('Method detectResourcesBaseUri() will be removed in version 5.', E_USER_DEPRECATED);
+
         $this->resourcesBaseUri = substr($this->resourcesPublishingPath, strlen($this->getPathSite()));
     }
 
@@ -116,6 +123,8 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      */
     protected function getResourcesSourcePathByResourceStorage(ResourceStorage $storage): string
     {
+        trigger_error('Method getResourcesSourcePathByResourceStorage() will be removed in version 5.', E_USER_DEPRECATED);
+
         $storageConfiguration = $storage->getConfiguration();
         if ($storageConfiguration['pathType'] === 'absolute') {
             $sourcePath = PathUtility::getCanonicalPath($storageConfiguration['basePath']) . '/';
