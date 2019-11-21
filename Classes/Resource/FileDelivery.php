@@ -77,11 +77,6 @@ class FileDelivery
     /**
      * @var string
      */
-    protected $data;
-
-    /**
-     * @var string
-     */
     protected $calculatedHash;
 
     /**
@@ -267,39 +262,41 @@ class FileDelivery
         if (file_exists($file)) {
             $this->fileSize = filesize($file);
 
-            $this->logDownload();
-
-            $strFileExtension = $this->getFileExtensionByFilename($file);
-
-            $forcedownload = false;
-
-            if ($this->extensionConfiguration->isForceDownload()) {
-                $forcetypes = GeneralUtility::trimExplode('|', $this->extensionConfiguration->getForceDownloadTypes());
-
-                // Handle the regex
-                foreach ($forcetypes as &$forcetype) {
-                    if (strpos($forcetype, '?') !== false) {
-                        $position = strpos($forcetype, '?');
-                        $start = $position - 1;
-                        $end = $position + 1;
-                        $forcetypes[] = substr($forcetype, 0, $start) . substr($forcetype, $end);
-                        $forcetype = str_replace('?', '', $forcetype);
-                    }
-                }
-                unset($forcetype);
-
-                $forcedownload = $forcedownload || (is_array($forcetypes) && in_array($strFileExtension, $forcetypes, true));
+            if ($this->isProcessed === false && $this->extensionConfiguration->isLog()) {
+                $this->logDownload();
             }
 
-            $strMimeType = $this->getMimeTypeByFileExtension($strFileExtension);
+            $fileExtension = $this->getFileExtensionByFilename($file);
+
+            $forceDownload = false;
+
+            if ($this->extensionConfiguration->isForceDownload()) {
+                $forceDownloadTypes = GeneralUtility::trimExplode('|', $this->extensionConfiguration->getForceDownloadTypes());
+
+                // Handle the regex
+                foreach ($forceDownloadTypes as &$forceDownloadType) {
+                    if (strpos($forceDownloadType, '?') !== false) {
+                        $position = strpos($forceDownloadType, '?');
+                        $start = $position - 1;
+                        $end = $position + 1;
+                        $forceDownloadTypes[] = substr($forceDownloadType, 0, $start) . substr($forceDownloadType, $end);
+                        $forceDownloadType = str_replace('?', '', $forceDownloadType);
+                    }
+                }
+                unset($forceDownloadType);
+
+                $forceDownload = $forceDownload || (is_array($forceDownloadTypes) && in_array($fileExtension, $forceDownloadTypes, true));
+            }
+
+            $mimeType = $this->getMimeTypeByFileExtension($fileExtension);
 
             // Hook for output:
             // TODO: deprecate this hook?
             if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['output'])) {
                 $_params = [
                     'pObj' => &$this,
-                    'fileExtension' => '.' . $strFileExtension, // Add leading dot for compatibility in this hook
-                    'mimeType' => &$strMimeType,
+                    'fileExtension' => '.' . $fileExtension, // Add leading dot for compatibility in this hook
+                    'mimeType' => &$mimeType,
                 ];
                 foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['output'] as $_funcRef) {
                     GeneralUtility::callUserFunction($_funcRef, $_params, $this);
@@ -310,7 +307,7 @@ class FileDelivery
             header('Pragma: private');
             header('Expires: 0'); // set expiration time
             header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-            header('Content-Type: ' . $strMimeType);
+            header('Content-Type: ' . $mimeType);
 
             $zlib_oc = @ini_get('zlib.output_compression');
 
@@ -318,14 +315,14 @@ class FileDelivery
                 header('Content-Length: ' . $this->fileSize);
             }
 
-            if ($forcedownload === true) {
+            if ($forceDownload === true) {
                 header('Content-Disposition: attachment; filename="' . $fileName . '"');
             } else {
                 header('Content-Disposition: inline; filename="' . $fileName . '"');
             }
 
-            $strOutputFunction = trim($this->extensionConfiguration->getOutputFunction());
-            switch ($strOutputFunction) {
+            $outputFunction = trim($this->extensionConfiguration->getOutputFunction());
+            switch ($outputFunction) {
                 case 'readfile_chunked':
                     $this->readFileFactional($file);
                     break;
@@ -346,9 +343,6 @@ class FileDelivery
             // make sure we can detect an aborted connection, call flush
             ob_flush();
             flush();
-            if ($strOutputFunction !== 'readfile_chunked' && !connection_aborted()) {
-                $this->logDownload();
-            }
         } else {
             print 'File does not exist!';
         }
@@ -359,37 +353,30 @@ class FileDelivery
      */
     protected function logDownload(int $fileSize = 0): void
     {
-        if ($this->isProcessed === false && $this->extensionConfiguration->isLog()) {
-            $log = new Log();
+        $log = new Log();
+        $log->setFileSize($fileSize ?: $this->fileSize);
 
-            $log->setFileSize($fileSize ?: $this->fileSize);
-
-            if ($fileObject = ResourceFactory::getInstance()->retrieveFileOrFolderObject($this->file)) {
-                $log->setFilePath($fileObject->getPublicUrl());
-                $log->setFileType($fileObject->getExtension());
-                $log->setFileName($fileObject->getNameWithoutExtension());
-                $log->setMediaType($fileObject->getMimeType());
-                $log->setFileId((string)$fileObject->getUid());
-            } else {
-                $pathinfo = pathinfo($this->file);
-
-                $log->setFilePath($pathinfo['dirname'] . '/' . $pathinfo['filename']);
-                $log->setFileType($pathinfo['extension']);
-                $log->setFileName($pathinfo['filename']);
-                $log->setMediaType($this->getMimeTypeByFileExtension($pathinfo['extension']));
-            }
-
-            $log->setUser((int)$this->feUserObj->user['uid']);
-            $log->setPage($this->pageId);
-
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
-            $queryBuilder
-                ->insert('tx_securedownloads_domain_model_log')
-                ->values($log->toArray())
-                ->execute();
-
-            $this->isProcessed = true;
+        if ($fileObject = ResourceFactory::getInstance()->retrieveFileOrFolderObject($this->file)) {
+            $log->setFilePath($fileObject->getPublicUrl());
+            $log->setFileType($fileObject->getExtension());
+            $log->setFileName($fileObject->getNameWithoutExtension());
+            $log->setMediaType($fileObject->getMimeType());
+            $log->setFileId((string)$fileObject->getUid());
+        } else {
+            $pathInfo = pathinfo($this->file);
+            $log->setFilePath($pathInfo['dirname'] . '/' . $pathInfo['filename']);
+            $log->setFileType($pathInfo['extension']);
+            $log->setFileName($pathInfo['filename']);
+            $log->setMediaType($this->getMimeTypeByFileExtension($pathInfo['extension']));
         }
+
+        $log->setUser((int)$this->feUserObj->user['uid']);
+        $log->setPage($this->pageId);
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+        $queryBuilder->insert('tx_securedownloads_domain_model_log')->values($log->toArray())->execute();
+
+        $this->isProcessed = true;
     }
 
     /**
