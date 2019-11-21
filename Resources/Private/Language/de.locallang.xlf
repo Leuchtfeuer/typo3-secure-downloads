@@ -44,10 +44,6 @@
                 <source>Host</source>
                 <target>Host</target>
             </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.typo3_mode">
-                <source>TYPO3 Mode</source>
-                <target>TYPO3 Modus</target>
-            </trans-unit>
             <trans-unit id="tx_securedownloads_domain_model_log.user">
                 <source>User</source>
                 <target>Benutzer</target>

@@ -22,7 +22,6 @@
 				<th><f:translate key="tx_securedownloads_domain_model_log.filesize" /></th>
 				<th><f:translate key="tx_securedownloads_domain_model_log.filetype" /></th>
 				<th><f:translate key="tx_securedownloads_domain_model_log.media_type" /></th>
-				<th><f:translate key="tx_securedownloads_domain_model_log.typo3_mode" /></th>
 				<th><f:translate key="tx_securedownloads_domain_model_log.user" /></th>
 			</tr>
 			</thead>
@@ -35,7 +34,6 @@
 					<td><f:format.bytes>{log.fileSize}</f:format.bytes></td>
 					<td>{log.fileType}</td>
 					<td>{log.mediaType}</td>
-					<td>{log.typo3Mode}</td>
 					<td>
 						<f:if condition="{log.user}">
 							<f:then>
