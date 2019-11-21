@@ -17,11 +17,12 @@ use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Bitmotion\SecureDownloads\Parser\HtmlParserDelegateInterface;
 use Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublisher;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
-class SecureDownloadService implements HtmlParserDelegateInterface
+class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInterface
 {
     protected $htmlParser;
 
