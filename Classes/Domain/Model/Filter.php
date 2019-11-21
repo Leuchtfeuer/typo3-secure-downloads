@@ -19,16 +19,34 @@ class Filter
     const USER_TYPE_LOGGED_ON = -1;
     const USER_TYPE_LOGGED_OFF = -2;
 
+    /**
+     * @var string The file type.
+     */
     protected $fileType = '';
 
+    /**
+     * @var string From
+     */
     protected $from = '';
 
+    /**
+     * @var string Till
+     */
     protected $till = '';
 
+    /**
+     * @var int The frontend user ID
+     */
     protected $feUserId = 0;
 
+    /**
+     * @var int The user type
+     */
     protected $userType = 0;
 
+    /**
+     * @var int The page ID
+     */
     protected $pageId = 0;
 
     public function getPageId(): int
