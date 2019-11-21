@@ -35,6 +35,8 @@ class ResourcePublisher implements SingletonInterface
      *
      * @return mixed Either the web URI of the published resource or FALSE if the resource source file doesn't exist or
      *     the resource could not be published for other reasons
+     *
+     * @deprecated Will be removed in version 5.
      */
     public function getResourceWebUri(ResourceInterface $resource)
     {
@@ -48,6 +50,8 @@ class ResourcePublisher implements SingletonInterface
      *
      * @return string Either the web URI of the published resource or FALSE if the resource source file doesn't exist
      *     or the resource could not be published for other reasons
+     *
+     * @deprecated Will be removed in version 5.
      */
     public function publishResource(ResourceInterface $resource)
     {

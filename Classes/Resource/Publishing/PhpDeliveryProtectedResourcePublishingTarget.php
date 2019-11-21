@@ -40,6 +40,8 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         '###PAGE###',
     ];
 
+    protected $cache = [];
+
     /**
      * Publishes a persistent resource to the web accessible resources directory
      *
@@ -47,6 +49,8 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      *
      * @return mixed Either the web URI of the published resource or FALSE if the resource source file doesn't exist or
      *     the resource could not be published for other reasons
+     *
+     * @deprecated Will be removed in version 5.
      */
     public function publishResource(ResourceInterface $resource)
     {
@@ -68,6 +72,8 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
     /**
      * Checks if a resource which lies in document root is really publicly available
      * This is currently only done by checking configured secure paths, not by requesting the resources
+     *
+     * @deprecated Will be removed in version 5.
      */
     protected function isPubliclyAvailable(ResourceInterface $resource): bool
     {

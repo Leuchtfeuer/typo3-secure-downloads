@@ -27,6 +27,8 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 {
     /**
      * @var string
+     *
+     * @deprecated Will be removed in version 5.
      */
     protected $resourcesBaseUri;
 
@@ -62,12 +64,17 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      *
      * @return mixed Either the web URI of the published resource or FALSE if the resource source file doesn't exist or
      *     the resource could not be published for other reasons
+     *
+     * @deprecated Will be removed in version 5.
      */
     public function getResourceWebUri(ResourceInterface $resource)
     {
         return $this->publishResource($resource);
     }
 
+    /**
+     * @deprecated Will be removed in version 5.
+     */
     protected function getResourceUri(ResourceInterface $resource): string
     {
         return PathUtility::getCanonicalPath($this->getResourcesBaseUri() . '/' . $resource->getIdentifier());
@@ -77,6 +84,8 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
      * Returns the base URI where persistent resources are published an accessible from the outside.
      *
      * @return string The base URI
+     *
+     * @deprecated Will be removed in version 5.
      */
     public function getResourcesBaseUri(): string
     {
@@ -94,12 +103,17 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 
     /**
      * Sets the URI of resources by removing the absolute path to the document root from the absolute publishing path
+     *
+     * @deprecated Will be removed in version 5.
      */
     protected function detectResourcesBaseUri(): void
     {
         $this->resourcesBaseUri = substr($this->resourcesPublishingPath, strlen($this->getPathSite()));
     }
 
+    /**
+     * @deprecated Will be removed in version 5.
+     */
     protected function getResourcesSourcePathByResourceStorage(ResourceStorage $storage): string
     {
         $storageConfiguration = $storage->getConfiguration();
