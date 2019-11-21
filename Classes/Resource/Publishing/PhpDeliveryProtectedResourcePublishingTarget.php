@@ -66,11 +66,13 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
     protected function isPubliclyAvailable(ResourceInterface $resource): bool
     {
         $resourceUri = $this->getResourceUri($resource);
-        $securedFoldersExpression = $this->configurationManager->getValue('securedDirs');
-        if (substr($this->configurationManager->getValue('securedFiletypes'), 0, 1) === '\\') {
-            $fileExtensionExpression = $this->configurationManager->getValue('securedFiletypes');
+        $securedFoldersExpression = $this->extensionConfiguration->getSecuredDirs();
+        $securedFileTypes = $this->extensionConfiguration->getSecuredFileTypes();
+
+        if (substr($securedFileTypes, 0, 1) === '\\') {
+            $fileExtensionExpression = $securedFileTypes;
         } else {
-            $fileExtensionExpression = '\\.(' . $this->configurationManager->getValue('securedFiletypes') . ')';
+            $fileExtensionExpression = '\\.(' . $securedFileTypes . ')';
         }
 
         // TODO: maybe check if the resource is available without authentication by doing a head request
@@ -138,7 +140,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 
     protected function calculateLinkLifetime(): int
     {
-        $lifeTimeToAdd = $this->configurationManager->getValue('cachetimeadd');
+        $lifeTimeToAdd = $this->extensionConfiguration->getCacheTimeAdd();
         $requestCacheLifetime = $this->getRequestContext()->getCacheLifetime();
         $cacheLifetime = $requestCacheLifetime > 0 ? $requestCacheLifetime : self::DEFAULT_CACHE_LIFETIME;
 
@@ -147,7 +149,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
 
     protected function getHash(string $resourceUri, int $userId, array $userGroupIds, int $validityPeriod): string
     {
-        if ($this->configurationManager->getValue('enableGroupCheck')) {
+        if ($this->extensionConfiguration->isEnableGroupCheck()) {
             $hashString = $userId . implode(',', $userGroupIds) . $resourceUri . $validityPeriod;
         } else {
             $hashString = $userId . $resourceUri . $validityPeriod;
@@ -161,7 +163,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      */
     public function publishResourceUri(string $resourceUri): string
     {
-        $this->setResourcesSourcePath(\TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/');
+        $this->setResourcesSourcePath(Environment::getPublicPath() . '/');
 
         return $this->buildUri($resourceUri);
     }

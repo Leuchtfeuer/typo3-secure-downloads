@@ -13,32 +13,29 @@ namespace Bitmotion\SecureDownloads\Service;
  *
  ***/
 
-use Bitmotion\SecureDownloads\Configuration\ConfigurationManager;
 use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Bitmotion\SecureDownloads\Parser\HtmlParserDelegateInterface;
 use Bitmotion\SecureDownloads\Request\RequestContext;
 use Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublisher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class SecureDownloadService implements HtmlParserDelegateInterface
 {
     protected $requestContext;
 
-    /**
-     * @var HtmlParser
-     */
     protected $htmlParser;
 
-    /**
-     * @var ResourcePublisher
-     */
     protected $resourcePublisher;
 
-    public function __construct(RequestContext $requestContext = null)
+    public function __construct(RequestContext $requestContext = null, ResourcePublisher $resourcePublisher = null)
     {
-        $this->requestContext = $requestContext ?? GeneralUtility::makeInstance(RequestContext::class);
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+
+        $this->requestContext = $requestContext ?? $objectManager->get(RequestContext::class);
+        $this->resourcePublisher = $resourcePublisher ?? $objectManager->get(ResourcePublisher::class);
     }
 
     /**
@@ -57,7 +54,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
      * Lazily instantiates the HTML parser
      * Must be called AFTER the configuration manager has been initialized
      */
-    protected function getHtmlParser(): HtmlParser
+    public function getHtmlParser(): HtmlParser
     {
         if (is_null($this->htmlParser)) {
             $extensionConfiguration = new ExtensionConfiguration();
@@ -76,14 +73,6 @@ class SecureDownloadService implements HtmlParserDelegateInterface
     /**
      * Method kept for compatibility
      */
-    public function parseContent(string $html): string
-    {
-        return $this->getHtmlParser()->parse($html);
-    }
-
-    /**
-     * Method kept for compatibility
-     */
     public function makeSecure(string $originalUri): string
     {
         return $this->publishResourceUri($originalUri);
@@ -94,7 +83,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface
      */
     public function publishResourceUri(string $originalUri): string
     {
-        $transformedUri = $this->getResourcePublisher()->publishResourceUri(rawurldecode($originalUri));
+        $transformedUri = $this->resourcePublisher->publishResourceUri(rawurldecode($originalUri));
 
         // Hook for makeSecure:
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'])) {
@@ -104,17 +93,5 @@ class SecureDownloadService implements HtmlParserDelegateInterface
         }
 
         return $transformedUri;
-    }
-
-    /**
-     * Lazily intatiates the resource publisher
-     */
-    protected function getResourcePublisher(): ResourcePublisher
-    {
-        if (is_null($this->resourcePublisher)) {
-            $this->resourcePublisher = GeneralUtility::makeInstance(ResourcePublisher::class);
-        }
-
-        return $this->resourcePublisher;
     }
 }

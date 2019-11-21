@@ -13,12 +13,8 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
  *
  ***/
 
-use Bitmotion\SecureDownloads\Configuration\ConfigurationManager;
-use Bitmotion\SecureDownloads\Security\Authorization\Resource\Apache2AccessRestrictionPublisher;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ResourcePublisher implements SingletonInterface
 {
@@ -27,7 +23,7 @@ class ResourcePublisher implements SingletonInterface
      */
     protected $publishingTarget;
 
-    public function injectPublishingTarget(ResourcePublishingTargetInterface $publishingTarget): void
+    public function __construct(PhpDeliveryProtectedResourcePublishingTarget $publishingTarget)
     {
         $this->publishingTarget = $publishingTarget;
     }
@@ -42,23 +38,7 @@ class ResourcePublisher implements SingletonInterface
      */
     public function getResourceWebUri(ResourceInterface $resource)
     {
-        return $this->getPublishingTarget()->getResourceWebUri($resource);
-    }
-
-    protected function getPublishingTarget(): ResourcePublishingTargetInterface
-    {
-        // Check if we have DI, if not, lazily instatiate the publishing target
-        if (is_null($this->publishingTarget)) {
-            $this->publishingTarget = GeneralUtility::makeInstance(ObjectManager::class)->get(ResourcePublishingTargetInterface::class);
-            if (method_exists($this->publishingTarget, 'injectConfigurationManager')) {
-                $this->publishingTarget->injectConfigurationManager(GeneralUtility::makeInstance(ConfigurationManager::class));
-            }
-            if (method_exists($this->publishingTarget, 'injectAccessRestrictionPublisher')) {
-                $this->publishingTarget->injectAccessRestrictionPublisher(GeneralUtility::makeInstance(Apache2AccessRestrictionPublisher::class));
-            }
-        }
-
-        return $this->publishingTarget;
+        return $this->publishingTarget->getResourceWebUri($resource);
     }
 
     /**
@@ -69,9 +49,9 @@ class ResourcePublisher implements SingletonInterface
      * @return string Either the web URI of the published resource or FALSE if the resource source file doesn't exist
      *     or the resource could not be published for other reasons
      */
-    public function publishResource(ResourceInterface $resource): void
+    public function publishResource(ResourceInterface $resource)
     {
-        return $this->getPublishingTarget()->publishResource($resource);
+        return $this->publishingTarget->publishResource($resource);
     }
 
     /**
@@ -79,6 +59,6 @@ class ResourcePublisher implements SingletonInterface
      */
     public function publishResourceUri(string $resourceUri): string
     {
-        return $this->getPublishingTarget()->publishResourceUri($resourceUri);
+        return $this->publishingTarget->publishResourceUri($resourceUri);
     }
 }

@@ -28,6 +28,7 @@ namespace Bitmotion\SecureDownloads\TYPO3\CMS\Controller;
 
 use Bitmotion\SecureDownloads\Service\SecureDownloadService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Fixes the image controller until the bug itself is fixed in TYPO3
@@ -41,9 +42,8 @@ class ShowImageController extends \TYPO3\CMS\Frontend\Controller\ShowImageContro
      */
     public function printContent(): void
     {
-        $secureDownloadService = GeneralUtility::makeInstance(SecureDownloadService::class);
+        $secureDownloadService = GeneralUtility::makeInstance(ObjectManager::class)->get(SecureDownloadService::class);
 
-        // TODO: Deprecated since TYPO3 9.0
-        echo $secureDownloadService->parseContent($this->content);
+        echo $secureDownloadService->getHtmlParser()->parse($this->content);
     }
 }
