@@ -38,6 +38,9 @@ class ExtensionConfiguration implements SingletonInterface
 
     private $groupCheckDirs = '';
 
+    /**
+     * @deprecated Will be removed with version 5
+     */
     private $linkFormat = 'index.php?eID=tx_securedownloads&p=###PAGE###&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
 
     private $log = false;
@@ -50,6 +53,9 @@ class ExtensionConfiguration implements SingletonInterface
 
     private $securedFiletypes = 'pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz';
 
+    /**
+     * @deprecated Will be removed with version 5
+     */
     private $legacyDelivery = false;
 
     /**
@@ -119,6 +125,9 @@ class ExtensionConfiguration implements SingletonInterface
         return (string)$this->groupCheckDirs;
     }
 
+    /**
+     * @deprecated Will be removed with version 5
+     */
     public function getLinkFormat(): string
     {
         return (string)$this->linkFormat;
@@ -149,6 +158,9 @@ class ExtensionConfiguration implements SingletonInterface
         return (string)$this->securedFiletypes;
     }
 
+    /**
+     * @deprecated Will be removed with version 5
+     */
     public function isLegacyDelivery(): bool
     {
         return (bool)$this->legacyDelivery;

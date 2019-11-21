@@ -100,6 +100,9 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         return $this->getUrlWithJWT($userId, $userGroupIds, $resourceUri, $validityPeriod);
     }
 
+    /**
+     * @deprecated Will be removed in version 5. You should consider to use Json Web Tokens for URL generation
+     */
     private function getUrlWithParameters(string $resourceUri, int $user, array $userGroups, int $validityPeriod): string
     {
         $hash = $this->getHash($resourceUri, $user, $userGroups, $validityPeriod);
@@ -129,7 +132,6 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
             'groups' => $userGroups,
             'file' => $resourceUri,
             'page' => $GLOBALS['TSFE']->id,
-
         ];
 
         return sprintf(
@@ -147,6 +149,9 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         return $cacheLifetime + $GLOBALS['EXEC_TIME'] + $lifeTimeToAdd;
     }
 
+    /**
+     * @deprecated Will be removed in version 5.
+     */
     protected function getHash(string $resourceUri, int $userId, array $userGroupIds, int $validityPeriod): string
     {
         if ($this->extensionConfiguration->isEnableGroupCheck()) {

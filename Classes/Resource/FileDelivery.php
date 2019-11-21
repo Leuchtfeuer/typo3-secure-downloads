@@ -76,8 +76,9 @@ class FileDelivery
 
     /**
      * @var string
+     * @deprecated Will be removed in version 5.
      */
-    protected $calculatedHash;
+    protected $calculatedHash = '';
 
     /**
      * @var bool
@@ -103,17 +104,20 @@ class FileDelivery
             }
 
             $this->userGroups = implode($data->groups);
+            $this->userId = $data->user;
+            $this->pageId = $data->page;
+            $this->expiryTime = $data->exp;
+            $this->file = $data->file;
         } else {
+            // TODO: This part is deprecated and will be removed with version 5
             $this->userGroups = (!empty(GeneralUtility::_GET('g'))) ? GeneralUtility::_GET('g') : '0';
             $this->hash = GeneralUtility::_GP('hash');
+            $this->userId = (int)GeneralUtility::_GP('u');
+            $this->pageId = (int)GeneralUtility::_GP('p');
+            $this->expiryTime = (int)GeneralUtility::_GP('t');
+            $this->file = GeneralUtility::_GP('file');
+            $this->calculatedHash = isset($data) ? '' : $this->getHash($this->file, $this->userId, $this->userGroups, $this->expiryTime);
         }
-
-        $this->userId = $data->user ?? (int)GeneralUtility::_GP('u');
-        $this->pageId = $data->page ?? (int)GeneralUtility::_GP('p');
-        $this->expiryTime = $data->exp ?? (int)GeneralUtility::_GP('t');
-        $this->file = $data->file ?? GeneralUtility::_GP('file');
-
-        $this->calculatedHash = isset($data) ? '' : $this->getHash($this->file, $this->userId, $this->userGroups, $this->expiryTime);
 
         // Hook for init:
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init'])) {
@@ -132,6 +136,7 @@ class FileDelivery
         }
 
         if (!$jwt) {
+            // TODO: This part is deprecated and will be removed with version 5
             if (!$this->hashValid()) {
                 $this->exitScript('Hash invalid! Access denied!');
             }
@@ -149,7 +154,7 @@ class FileDelivery
     }
 
     /**
-     * TODO: Refactor it to a hash service
+     * @deprecated Will be removed with version 5.
      */
     protected function getHash(string $resourceUri, int $userId, string $userGroupIds, int $validityPeriod = 0): string
     {
@@ -162,6 +167,9 @@ class FileDelivery
         return GeneralUtility::hmac($hashString, 'bitmotion_securedownload');
     }
 
+    /**
+     * @deprecated Will be removed in version 5.
+     */
     protected function hashValid(): bool
     {
         return $this->calculatedHash === $this->hash;
@@ -173,6 +181,9 @@ class FileDelivery
         HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);
     }
 
+    /**
+     * @deprecated Will be removed in version 5.
+     */
     protected function expiryTimeExceeded(): bool
     {
         return $this->expiryTime < time();
@@ -495,6 +506,8 @@ class FileDelivery
 
     /**
      * Extracts the file extension out of a complete file name.
+     *
+     * @deprecated Will be removed in version 5. Use pathinfo() instead.
      */
     protected function getFileExtensionByFilename(string $strFileName): string
     {
@@ -516,9 +529,9 @@ class FileDelivery
         }
         while (!feof($handle) && (!connection_aborted())) {
             set_time_limit($timeout);
-            $buffer = fread($handle, $chunksize);
+            $buffer = fread($handle, $outputChunkSize);
             print $buffer;
-            $bytes_sent += $chunksize;
+            $bytes_sent += $outputChunkSize;
             ob_flush();
             flush();
             $this->logDownload(MathUtility::forceIntegerInRange($bytes_sent, 0, $this->fileSize));
