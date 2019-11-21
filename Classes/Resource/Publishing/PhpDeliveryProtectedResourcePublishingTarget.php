@@ -21,10 +21,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePublishingTarget
 {
+    /**
+     * @deprecated Will be removed in version 5.
+     */
     const DEFAULT_LINK_FORMAT = 'index.php?eID=tx_securedownloads&p=###PAGE###&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
 
     const DEFAULT_CACHE_LIFETIME = 86400;
 
+    /**
+     * @deprecated Will be removed in version 5.
+     */
     const ALLOWED_TOKENS = [
         '###FEUSER###',
         '###FEGROUPS###',
