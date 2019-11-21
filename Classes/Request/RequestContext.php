@@ -58,8 +58,6 @@ class RequestContext
     {
         if ($this->isFrontendRequest()) {
             $this->initializeFrontendContext();
-        } elseif ($this->isBackendRequest()) {
-            // TODO: Reintroduce this feature?
         } else {
             throw new \LogicException('Unknown Context.', 1377180593);
         }
@@ -79,17 +77,8 @@ class RequestContext
      */
     protected function initializeFrontendContext(): void
     {
-        $typoScriptFrontendController = $GLOBALS['TSFE'];
-
-        if (isset($typoScriptFrontendController->page['cache_timeout']) && $typoScriptFrontendController->page['cache_timeout'] > 0) {
-            $this->cacheLifetime = (int)$typoScriptFrontendController->page['cache_timeout'];
-        } elseif (isset($typoScriptFrontendController->config['config']['cache_period'])) {
-            $this->cacheLifetime = (int)$typoScriptFrontendController->config['config']['cache_period'];
-        } else {
-            $this->cacheLifetime = 0;
-        }
-
-        $this->currentUser = $typoScriptFrontendController->fe_user;
+        $this->setCacheLifetime();
+        $this->currentUser = $GLOBALS['TSFE']->fe_user;
 
         if ($this->isUserLoggedIn()) {
             $this->userId = (int)$this->currentUser->user['uid'];
@@ -97,30 +86,26 @@ class RequestContext
             sort($this->userGroupIds);
 
             // TODO: $typoScriptFrontendController->config is deprecated since TYPO3 9.0
-            if (isset($typoScriptFrontendController->config['tx_securedownloads']['additionalSecret'])) {
-                $this->additionalSecret = $typoScriptFrontendController->config['tx_securedownloads']['additionalSecret'];
+            if (isset($GLOBALS['TSFE']->config['tx_securedownloads']['additionalSecret'])) {
+                $this->additionalSecret = $GLOBALS['TSFE']->config['tx_securedownloads']['additionalSecret'];
             } else {
                 $this->setAdditionalSecret();
-                $typoScriptFrontendController->config['tx_securedownloads']['additionalSecret'] = $this->additionalSecret;
+                $GLOBALS['TSFE']->config['tx_securedownloads']['additionalSecret'] = $this->additionalSecret;
             }
         } else {
             $this->setAdditionalSecret();
         }
 
-        if (isset($typoScriptFrontendController->config['config']['tx_securedownloads_enable']) && $typoScriptFrontendController->config['config']['tx_securedownloads_enable'] === '0') {
+        if (isset($GLOBALS['TSFE']->config['config']['tx_securedownloads_enable']) && $GLOBALS['TSFE']->config['config']['tx_securedownloads_enable'] === '0') {
             $this->urlRewritingEnabled = false;
         }
 
-        $this->locationId = (string)$typoScriptFrontendController->id;
+        $this->locationId = (string)$GLOBALS['TSFE']->id;
     }
 
     public function isUserLoggedIn(): bool
     {
-        if (empty($this->currentUser->user['uid'])) {
-            return false;
-        }
-
-        return true;
+        return !empty($this->currentUser->user['uid']);
     }
 
     /**
@@ -128,20 +113,7 @@ class RequestContext
      */
     private function setAdditionalSecret(): void
     {
-        if (!empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'])) {
-            $this->additionalSecret = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
-        } else {
-            $this->additionalSecret = GeneralUtility::makeInstance(Random::class)->generateRandomHexString(64);
-        }
-    }
-
-    protected function isBackendRequest(): bool
-    {
-        if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
-            return true;
-        }
-
-        return false;
+        $this->additionalSecret = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] ?? GeneralUtility::makeInstance(Random::class)->generateRandomHexString(64);
     }
 
     public function getAdditionalSecret(): string
@@ -159,14 +131,20 @@ class RequestContext
         return $this->cacheLifetime;
     }
 
+    public function setCacheLifetime(): void
+    {
+        if (isset($GLOBALS['TSFE']->page['cache_timeout']) && $GLOBALS['TSFE']->page['cache_timeout'] > 0) {
+            $this->cacheLifetime = (int)$GLOBALS['TSFE']->page['cache_timeout'];
+        } elseif (isset($GLOBALS['TSFE']->config['config']['cache_period'])) {
+            $this->cacheLifetime = (int)$GLOBALS['TSFE']->config['config']['cache_period'];
+        } else {
+            $this->cacheLifetime = 0;
+        }
+    }
+
     public function isUrlRewritingEnabled(): bool
     {
         return $this->urlRewritingEnabled;
-    }
-
-    public function getCookieName(): string
-    {
-        return $this->cookieName;
     }
 
     public function getAccessToken(): string
