@@ -13,12 +13,18 @@ namespace Bitmotion\SecureDownloads\Parser;
  *
  ***/
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
-class HtmlParser
+class HtmlParser implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var int
+     *
+     * @deprecated Will be removed in version 5. Use PSR-3 logger instead.
      */
     protected $logLevel = 0;
 
@@ -108,7 +114,7 @@ class HtmlParser
     public function parse(string $html): string
     {
         if ($this->logLevel >= 1) {
-            $time_start = $this->microtime_float();
+            $parseStartTime = $this->microtime_float();
         }
 
         $result = '';
@@ -118,6 +124,7 @@ class HtmlParser
             $htmlContent = explode($match[0], $html, 2);
 
             if ($this->logLevel === 3) {
+                $this->logger->debug(sprintf('Found matching tag: %s', $match[0]));
                 DebuggerUtility::var_dump($match[0], 'Tag:');
             }
 
@@ -132,9 +139,10 @@ class HtmlParser
         }
 
         if ($this->logLevel >= 1) {
-            $time_end = $this->microtime_float();
-            $time = $time_end - $time_start;
-            DebuggerUtility::var_dump($time, 'Scriptlaufzeit');
+            $parseFinishTime = $this->microtime_float();
+            $executionTime = $parseFinishTime - $parseStartTime;
+            $this->logger->notice(sprintf('Script runtime: %s', $executionTime));
+            DebuggerUtility::var_dump($executionTime, 'Scriptlaufzeit');
         }
 
         return $result . $html;
@@ -160,11 +168,18 @@ class HtmlParser
 
             // Some output for debugging
             if ($this->logLevel === 1) {
+                $this->logger->notice(sprintf('New output: %s', $tag));
                 DebuggerUtility::var_dump($tag, 'New output:');
             } elseif ($this->logLevel >= 2) {
+                $this->logger->info(sprintf('Regular expression: %s', $this->tagPattern));
                 DebuggerUtility::var_dump($this->tagPattern, 'Regular Expression:');
+                $this->logger->info(sprintf('Matching URLs: %s', implode(',', $matchedUrls)));
                 DebuggerUtility::var_dump($matchedUrls, 'Match:');
+                $this->logger->notice(sprintf('Build tag (part 1): %s', $tagParts[0]));
+                $this->logger->notice(sprintf('Build tag (replace): %s', $replace));
+                $this->logger->notice(sprintf('Build tag (part 1): %s', $tagParts[0]));
                 DebuggerUtility::var_dump([$tagParts[0], $replace, $tagParts[1]], 'Build Tag:');
+                $this->logger->notice(sprintf('New output: %s', $tag));
                 DebuggerUtility::var_dump($tag, 'New output:');
             }
         }
@@ -182,6 +197,9 @@ class HtmlParser
             $tagexp = explode($matchedUrls[1], $tmp, 2);
 
             if ($this->logLevel >= 2) {
+                $this->logger->info(sprintf('Futher matches (part 1): %s', $tagexp[0]));
+                $this->logger->info(sprintf('Futher matches (replace): %s', $replace));
+                $this->logger->info(sprintf('Futher matches (part 2): %s', $tagexp[1]));
                 DebuggerUtility::var_dump([$tagexp[0], $replace, $tagexp[1]], 'Further Match:');
             }
 

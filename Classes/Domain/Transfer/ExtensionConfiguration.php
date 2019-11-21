@@ -24,6 +24,9 @@ class ExtensionConfiguration implements SingletonInterface
 
     private $cachetimeadd = 3600;
 
+    /**
+     * @deprecated Will be removed in version 5. Use PSR-3 Logger instead.
+     */
     private $debug = 0;
 
     private $domain = 'http://mydomain.com/|http://my.other.domain.org/';
@@ -94,8 +97,13 @@ class ExtensionConfiguration implements SingletonInterface
         return (int)$this->cachetimeadd;
     }
 
+    /**
+     * @deprecated Will be removed in version 5. Use PSR-3 Logger instead.
+     */
     public function getDebug(): int
     {
+        trigger_error('Method getDebug() will be removed in version 5..', E_USER_DEPRECATED);
+
         return (int)$this->debug;
     }
 
