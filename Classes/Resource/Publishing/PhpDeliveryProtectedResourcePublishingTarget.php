@@ -97,20 +97,20 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
     {
         $userId = $this->getRequestContext()->getUserId();
         $userGroupIds = $this->getRequestContext()->getUserGroupIds();
-        $validityPeriod = $this->calculateLinkLifetime();
 
         if ($this->extensionConfiguration->isLegacyDelivery()) {
-            return $this->getUrlWithParameters($resourceUri, $userId, $userGroupIds, $validityPeriod);
+            return $this->getUrlWithParameters($resourceUri, $userId, $userGroupIds);
         }
 
-        return $this->getUrlWithJWT($userId, $userGroupIds, $resourceUri, $validityPeriod);
+        return $this->getUrlWithJWT($userId, $userGroupIds, $resourceUri);
     }
 
     /**
      * @deprecated Will be removed in version 5. You should consider to use Json Web Tokens for URL generation
      */
-    private function getUrlWithParameters(string $resourceUri, int $user, array $userGroups, int $validityPeriod): string
+    private function getUrlWithParameters(string $resourceUri, int $user, array $userGroups): string
     {
+        $validityPeriod = $this->calculateLinkLifetime();
         $hash = $this->getHash($resourceUri, $user, $userGroups, $validityPeriod);
 
         // Parsing the link format, and return this instead (an flexible link format is useful for mod_rewrite tricks ;)
@@ -129,23 +129,35 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         return str_replace(self::ALLOWED_TOKENS, $replacements, $linkFormat);
     }
 
-    private function getUrlWithJWT(int $user, array $userGroups, string $resourceUri, int $validityPeriod): string
+    private function getUrlWithJWT(int $user, array $userGroups, string $resourceUri): string
     {
+        $hash = md5($user. $userGroups . $resourceUri . $GLOBALS['TSFE']->id);
+
+        // Retrive URL from JWT cache
+        if (isset($this->cache[$hash])) {
+            return $this->cache[$hash];
+        }
+
         $payload = [
-            'exp' => $validityPeriod,
             'iat' => time(),
+            'exp' => $this->calculateLinkLifetime(),
             'user' => $user,
             'groups' => $userGroups,
             'file' => $resourceUri,
             'page' => $GLOBALS['TSFE']->id,
         ];
 
-        return sprintf(
+        $url = sprintf(
             '%s/%s%s',
             $this->extensionConfiguration->getLinkPrefix(),
             $this->extensionConfiguration->getTokenPrefix(),
             JWT::encode($payload, $this->getRequestContext()->getAdditionalSecret(), 'HS256')
         );
+
+        // Store URL in JWT cache
+        $this->cache[$hash] = $url;
+
+        return $url;
     }
 
     protected function calculateLinkLifetime(): int
