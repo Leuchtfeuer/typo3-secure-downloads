@@ -3,6 +3,11 @@ defined('TYPO3_MODE') || die('Access denied.');
 
 call_user_func(
     function ($extensionKey) {
+        // Load libraries when TYPO3 is not in composer mode
+        if (!defined('TYPO3_COMPOSER_MODE') || !TYPO3_COMPOSER_MODE) {
+            require \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extensionKey) . 'Libraries/vendor/autoload.php';
+        }
+
         // Register eID script
         $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['tx_securedownloads'] = 'EXT:secure_downloads/Resources/Private/Scripts/FileDeliveryEidDispatcher.php';
 
