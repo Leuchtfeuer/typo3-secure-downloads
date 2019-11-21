@@ -298,7 +298,7 @@ class FileDelivery
                 $forceDownload = $forceDownload || (is_array($forceDownloadTypes) && in_array($fileExtension, $forceDownloadTypes, true));
             }
 
-            $mimeType = extension_loaded('fileinfo') ? mime_content_type($fileName) : $this->getMimeTypeByFileExtension($fileExtension);
+            $mimeType = extension_loaded('fileinfo') ? mime_content_type($file) : $this->getMimeTypeByFileExtension($fileExtension);
 
             // Hook for output:
             // TODO: deprecate this hook?
