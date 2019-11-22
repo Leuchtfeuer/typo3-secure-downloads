@@ -33,11 +33,14 @@ class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInt
 
     protected $securedFileTypesPattern;
 
+    protected $assetPrefix;
+
     public function __construct(ResourcePublisher $resourcePublisher = null)
     {
         $this->resourcePublisher = $resourcePublisher ?? GeneralUtility::makeInstance(ObjectManager::class)->get(ResourcePublisher::class);
         $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
         $this->securedFileTypesPattern = sprintf('/^(%s)$/i', $this->extensionConfiguration->getSecuredFileTypes());
+        $this->assetPrefix = $this->assetPrefix = sprintf('%s/%s', $this->extensionConfiguration->getLinkPrefix(), $this->extensionConfiguration->getTokenPrefix());
     }
 
     /**
@@ -100,15 +103,34 @@ class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInt
      */
     public function pathShouldBeSecured(string $publicUrl): bool
     {
-        foreach (explode('|', $this->extensionConfiguration->getSecuredDirs()) as $securedDir) {
-            if (strpos($publicUrl, $securedDir) === 0) {
-                $fileExtension = pathinfo($publicUrl, PATHINFO_EXTENSION);
-                if (preg_match($this->securedFileTypesPattern, $fileExtension)) {
-                    return true;
-                }
+        if ($this->folderShouldBeSecured($publicUrl)) {
+            $fileExtension = pathinfo($publicUrl, PATHINFO_EXTENSION);
+            if (preg_match($this->securedFileTypesPattern, $fileExtension)) {
+                return true;
             }
         }
 
         return false;
+    }
+
+    public function folderShouldBeSecured(string $publicUrl): bool
+    {
+        foreach (GeneralUtility::trimExplode('|', $this->extensionConfiguration->getSecuredDirs(), true) as $securedDir) {
+            if ($securedDir && mb_strpos($publicUrl, $securedDir) === 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isSecuredPath(string $publicUrl): bool
+    {
+        return mb_strpos($publicUrl, $this->assetPrefix) === 0;
+    }
+
+    public function getAssetPrefix(): string
+    {
+        return $this->assetPrefix;
     }
 }

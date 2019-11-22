@@ -16,6 +16,15 @@ call_user_func(
             $controllerName = 'Log';
         }
 
+        // Add overlay for file list icons if file or folder is secured
+        $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
+        $signalSlotDispatcher->connect(
+            \TYPO3\CMS\Core\Imaging\IconFactory::class,
+            'buildIconForResourceSignal',
+            \Bitmotion\SecureDownloads\Signal::class,
+            'buildIconForResourceSignal'
+        );
+
         // Register the backend module if the log option is set in extension configuration
         if ($configuration->isLog()) {
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
