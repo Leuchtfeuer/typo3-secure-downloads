@@ -29,16 +29,22 @@ class HtmlParser implements LoggerAwareInterface
 
     /**
      * @var string
+     *
+     * @deprecated Will be removed in version 5. Use ExtensionConfiguration instead.
      */
     protected $domainPattern;
 
     /**
      * @var string
+     *
+     * @deprecated Will be removed in version 5. Use ExtensionConfiguration instead.
      */
     protected $folderPattern;
 
     /**
      * @var string
+     *
+     * @deprecated Will be removed in version 5. Use ExtensionConfiguration instead.
      */
     protected $fileExtensionPattern;
 
@@ -68,6 +74,9 @@ class HtmlParser implements LoggerAwareInterface
         $this->tagPattern = '/["\'](?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']?/i';
     }
 
+    /**
+     * @deprecated Will be removed in version 5. Use ExtensionConfiguration instead.
+     */
     public function setDomainPattern(string $accessProtectedDomain): void
     {
         if (!empty($GLOBALS['TSFE']->absRefPrefix) && $GLOBALS['TSFE']->absRefPrefix !== '/') {
@@ -92,16 +101,25 @@ class HtmlParser implements LoggerAwareInterface
         return $string;
     }
 
+    /**
+     * @deprecated Will be removed in version 5. Use ExtensionConfiguration instead.
+     */
     public function setFileExtensionPattern(string $accessProtectedFileExtensions): void
     {
         $this->fileExtensionPattern = $accessProtectedFileExtensions;
     }
 
+    /**
+     * @deprecated Will be removed in version 5. Use ExtensionConfiguration instead.
+     */
     public function setFolderPattern(string $accessProtectedFolders): void
     {
         $this->folderPattern = $this->softQuoteExpression($accessProtectedFolders);
     }
 
+    /**
+     * @deprecated Will be removed in version 5. Use ExtensionConfiguration instead.
+     */
     public function setLogLevel(int $logLevel): void
     {
         $this->logLevel = $logLevel;
