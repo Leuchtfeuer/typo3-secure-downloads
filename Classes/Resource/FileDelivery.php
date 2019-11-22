@@ -24,7 +24,6 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
-use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\CMS\Frontend\Utility\EidUtility;
 
@@ -547,7 +546,6 @@ class FileDelivery
             $bytes_sent += $outputChunkSize;
             ob_flush();
             flush();
-            $this->logDownload(MathUtility::forceIntegerInRange($bytes_sent, 0, $this->fileSize));
         }
 
         return fclose($handle);
