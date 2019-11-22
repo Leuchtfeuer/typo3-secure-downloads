@@ -304,25 +304,7 @@ class FileDelivery
             }
 
             $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
-            $forceDownload = false;
-
-            if ($this->extensionConfiguration->isForceDownload()) {
-                $forceDownloadTypes = GeneralUtility::trimExplode('|', $this->extensionConfiguration->getForceDownloadTypes());
-
-                // Handle the regex
-                foreach ($forceDownloadTypes as &$forceDownloadType) {
-                    if (strpos($forceDownloadType, '?') !== false) {
-                        $position = strpos($forceDownloadType, '?');
-                        $start = $position - 1;
-                        $end = $position + 1;
-                        $forceDownloadTypes[] = substr($forceDownloadType, 0, $start) . substr($forceDownloadType, $end);
-                        $forceDownloadType = str_replace('?', '', $forceDownloadType);
-                    }
-                }
-                unset($forceDownloadType);
-
-                $forceDownload = $forceDownload || (is_array($forceDownloadTypes) && in_array($fileExtension, $forceDownloadTypes, true));
-            }
+            $forceDownload = $this->shouldForceDownload($fileExtension);
 
             $mimeType = extension_loaded('fileinfo') ? mime_content_type($file) : $this->getMimeTypeByFileExtension($fileExtension);
 
@@ -339,31 +321,32 @@ class FileDelivery
             HookUtility::executeHook('output', 'preReadFile', $params, $this);
 
             $this->sendHeader($header);
-
-            switch ($outputFunction) {
-                case 'readfile_chunked':
-                    $this->readFileFactional($file);
-                    break;
-
-                case 'fpassthru':
-                    $handle = fopen($file, 'rb');
-                    fpassthru($handle);
-                    fclose($handle);
-                    break;
-
-                case 'readfile':
-                    //fallthrough, this is the default case
-                default:
-                    readfile($file);
-                    break;
-            }
-
-            // make sure we can detect an aborted connection, call flush
-            ob_flush();
-            flush();
+            $this->outputFile($outputFunction, $file);
         } else {
             print 'File does not exist!';
         }
+    }
+
+    protected function shouldForceDownload(string $fileExtension, bool $forceDownload = false): bool
+    {
+        if ($this->extensionConfiguration->isForceDownload()) {
+            $forceDownloadTypes = GeneralUtility::trimExplode('|', $this->extensionConfiguration->getForceDownloadTypes());
+
+            // Handle the regex
+            foreach ($forceDownloadTypes as &$forceDownloadType) {
+                if (strpos($forceDownloadType, '?') !== false) {
+                    $position = strpos($forceDownloadType, '?');
+                    $start = $position - 1;
+                    $end = $position + 1;
+                    $forceDownloadTypes[] = substr($forceDownloadType, 0, $start) . substr($forceDownloadType, $end);
+                    $forceDownloadType = str_replace('?', '', $forceDownloadType);
+                }
+            }
+            unset($forceDownloadType);
+            $forceDownload = $forceDownload || (is_array($forceDownloadTypes) && in_array($fileExtension, $forceDownloadTypes, true));
+        }
+
+        return $forceDownload;
     }
 
     protected function getHeader(string $mimeType, string $fileName, bool $forceDownload): array
@@ -391,6 +374,31 @@ class FileDelivery
         foreach ($header as $name => $value) {
             header(sprintf('%s: %s', $name, $value));
         }
+    }
+
+    protected function outputFile(string $outputFunction, string $file): void
+    {
+        switch ($outputFunction) {
+            case 'readfile_chunked':
+                $this->readFileFactional($file);
+                break;
+
+            case 'fpassthru':
+                $handle = fopen($file, 'rb');
+                fpassthru($handle);
+                fclose($handle);
+                break;
+
+            case 'readfile':
+                //fallthrough, this is the default case
+            default:
+                readfile($file);
+                break;
+        }
+
+        // make sure we can detect an aborted connection, call flush
+        ob_flush();
+        flush();
     }
 
     /**
