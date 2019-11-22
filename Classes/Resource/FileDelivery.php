@@ -86,6 +86,8 @@ class FileDelivery
      */
     protected $isProcessed = false;
 
+    protected $decodeCache = [];
+
     /**
      * FileDelivery constructor.
      *
@@ -96,18 +98,7 @@ class FileDelivery
         $this->extensionConfiguration = new ExtensionConfiguration();
 
         if ($jwt !== null) {
-            try {
-                $requestContext = GeneralUtility::makeInstance(RequestContext::class);
-                $data = JWT::decode($jwt, $requestContext->getAdditionalSecret(), ['HS256']);
-            } catch (SignatureInvalidException $exception) {
-                $this->exitScript('Hash invalid! Access denied!');
-            }
-
-            $this->userGroups = implode($data->groups);
-            $this->userId = $data->user;
-            $this->pageId = $data->page;
-            $this->expiryTime = $data->exp;
-            $this->file = $data->file;
+            $this->getDataFromJsonWebToken($jwt);
         } else {
             // TODO: This part is deprecated and will be removed with version 5
             $this->userGroups = (!empty(GeneralUtility::_GET('g'))) ? GeneralUtility::_GET('g') : '0';
@@ -155,6 +146,30 @@ class FileDelivery
         if (($this->userId !== 0) && !$this->checkUserAccess() && !$this->checkGroupAccess()) {
             $this->exitScript('Access denied for User!');
         }
+    }
+
+    /**
+     * Get data from cache if JWT was decoded before. If not, decode given JWT.
+     */
+    protected function getDataFromJsonWebToken(string $jwt): void
+    {
+        if (isset($this->decodeCache[$jwt])) {
+            $data = $this->decodeCache[$jwt];
+        } else {
+            try {
+                $requestContext = GeneralUtility::makeInstance(RequestContext::class);
+                $data = JWT::decode($jwt, $requestContext->getAdditionalSecret(), ['HS256']);
+                $this->decodeCache[$jwt] = $data;
+            } catch (SignatureInvalidException $exception) {
+                $this->exitScript('Hash invalid! Access denied!');
+            }
+        }
+
+        $this->userGroups = implode($data->groups);
+        $this->userId = $data->user;
+        $this->pageId = $data->page;
+        $this->expiryTime = $data->exp;
+        $this->file = $data->file;
     }
 
     /**
