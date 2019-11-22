@@ -446,9 +446,6 @@ class FileDelivery
      */
     protected function getMimeTypeByFileExtension(string $fileExtension): string
     {
-        // Check files with unknown file extensions, if they are image files (currently disabled)
-        $checkForImageFiles = false;
-
         // Array with key/value pairs consisting of file extension (without dot in front) and mime type
         $mimeTypes = [
             // MS-Office filetypes
@@ -529,20 +526,7 @@ class FileDelivery
             unset($additionalFileExtension, $additionalMimeType);
         }
 
-        //TODO: Add hook to be able to manipulate and/or add mime types
-        // Check if an specific MIME type is configured for this file extension
-        if (array_key_exists($fileExtension, $mimeTypes)) {
-            $mimeType = $mimeTypes[$fileExtension];
-        // files bigger than 32MB are now 'application/octet-stream' by default (getimagesize memory_limit problem)
-        } elseif ($checkForImageFiles && ($this->fileSize < 1024 * 1024 * 32)) {
-            $imageInfo = @getimagesize($this->file);
-            $imageType = (int)$imageInfo[2];
-            $mimeType = $imageType === 0 ? 'application/octet-stream' : image_type_to_mime_type($imageType);
-        } else {
-            $mimeType = 'application/octet-stream';
-        }
-
-        return $mimeType;
+        return $mimeTypes[$fileExtension] ?? 'application/octet-stream';
     }
 
     /*
