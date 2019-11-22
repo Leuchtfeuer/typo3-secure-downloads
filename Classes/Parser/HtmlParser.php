@@ -15,7 +15,6 @@ namespace Bitmotion\SecureDownloads\Parser;
 
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class HtmlParser implements LoggerAwareInterface
 {
@@ -125,7 +124,6 @@ class HtmlParser implements LoggerAwareInterface
 
             if ($this->logLevel === 3) {
                 $this->logger->debug(sprintf('Found matching tag: %s', $match[0]));
-                DebuggerUtility::var_dump($match[0], 'Tag:');
             }
 
             // Parse tag
@@ -142,7 +140,6 @@ class HtmlParser implements LoggerAwareInterface
             $parseFinishTime = $this->microtime_float();
             $executionTime = $parseFinishTime - $parseStartTime;
             $this->logger->notice(sprintf('Script runtime: %s', $executionTime));
-            DebuggerUtility::var_dump($executionTime, 'Scriptlaufzeit');
         }
 
         return $result . $html;
@@ -169,18 +166,13 @@ class HtmlParser implements LoggerAwareInterface
             // Some output for debugging
             if ($this->logLevel === 1) {
                 $this->logger->notice(sprintf('New output: %s', $tag));
-                DebuggerUtility::var_dump($tag, 'New output:');
             } elseif ($this->logLevel >= 2) {
                 $this->logger->info(sprintf('Regular expression: %s', $this->tagPattern));
-                DebuggerUtility::var_dump($this->tagPattern, 'Regular Expression:');
                 $this->logger->info(sprintf('Matching URLs: %s', implode(',', $matchedUrls)));
-                DebuggerUtility::var_dump($matchedUrls, 'Match:');
                 $this->logger->notice(sprintf('Build tag (part 1): %s', $tagParts[0]));
                 $this->logger->notice(sprintf('Build tag (replace): %s', $replace));
                 $this->logger->notice(sprintf('Build tag (part 1): %s', $tagParts[0]));
-                DebuggerUtility::var_dump([$tagParts[0], $replace, $tagParts[1]], 'Build Tag:');
                 $this->logger->notice(sprintf('New output: %s', $tag));
-                DebuggerUtility::var_dump($tag, 'New output:');
             }
         }
 
@@ -200,7 +192,6 @@ class HtmlParser implements LoggerAwareInterface
                 $this->logger->info(sprintf('Futher matches (part 1): %s', $tagexp[0]));
                 $this->logger->info(sprintf('Futher matches (replace): %s', $replace));
                 $this->logger->info(sprintf('Futher matches (part 2): %s', $tagexp[1]));
-                DebuggerUtility::var_dump([$tagexp[0], $replace, $tagexp[1]], 'Further Match:');
             }
 
             $tag .= $tagexp[0] . '/' . $replace;
