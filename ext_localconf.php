@@ -23,15 +23,18 @@ call_user_func(
         );
 
         // Connect to signal slots
-        if (TYPO3_MODE === 'FE') {
-            $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
-            $signalSlotDispatcher->connect(
-                \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-                \TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
-                \Bitmotion\SecureDownloads\Resource\UrlGenerationInterceptor::class,
-                'getPublicUrl'
-            );
-        }
+        $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
+        $signalSlotDispatcher->connect(
+            \TYPO3\CMS\Core\Resource\ResourceStorage::class,
+            \TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
+            \Bitmotion\SecureDownloads\Signal::class,
+            'getPublicUrl'
+        );
+
+        // Add link prefix to additionalAbsRefPrefixDirectories
+        $configuration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration::class);
+        $GLOBALS['TYPO3_CONF_VARS']['FE']['additionalAbsRefPrefixDirectories'] .= sprintf(',%s', $configuration->getLinkPrefix());
+
     }, 'secure_downloads'
 );
 
