@@ -245,7 +245,7 @@ class FileDelivery
 
         $groupCheckDirs = $this->extensionConfiguration->getGroupCheckDirs();
 
-        if (!empty($groupCheckDirs) && !preg_match('/' . $this->softQuoteExpression($groupCheckDirs) . '/', $this->file)) {
+        if (!empty($groupCheckDirs) && !preg_match('/' . HtmlParser::softQuoteExpression($groupCheckDirs) . '/', $this->file)) {
             return false;
         }
 
@@ -271,6 +271,9 @@ class FileDelivery
         return $accessAllowed;
     }
 
+    /**
+     * @deprecated Will be removed in version 5. Use HtmlParser::softQuoteExpression instead.
+     */
     protected function softQuoteExpression(string $string): string
     {
         return HtmlParser::softQuoteExpression($string);
