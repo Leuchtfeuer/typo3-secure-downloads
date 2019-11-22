@@ -427,17 +427,17 @@ class FileDelivery
     /**
      * Looks up the mime type for a give file extension
      *
-     * @param string $strFileExtension lowercase file extension
+     * @param string $fileExtension lowercase file extension
      *
      * @return string mime type
      */
-    protected function getMimeTypeByFileExtension(string $strFileExtension): string
+    protected function getMimeTypeByFileExtension(string $fileExtension): string
     {
         // Check files with unknown file extensions, if they are image files (currently disabled)
         $checkForImageFiles = false;
 
         // Array with key/value pairs consisting of file extension (without dot in front) and mime type
-        $arrMimeTypes = [
+        $mimeTypes = [
             // MS-Office filetypes
             'pps' => 'application/vnd.ms-powerpoint',
             'doc' => 'application/msword',
@@ -494,42 +494,42 @@ class FileDelivery
 
         // Read all additional MIME types from the EM configuration into the array $strAdditionalMimeTypesArray
         if ($this->extensionConfiguration->getAdditionalMimeTypes()) {
-            $strAdditionalFileExtension = '';
-            $strAdditionalMimeType = '';
+            $additionalFileExtension = '';
+            $additionalMimeType = '';
             $arrAdditionalMimeTypeParts = GeneralUtility::trimExplode(
                 ',',
                 $this->extensionConfiguration->getAdditionalMimeTypes(),
                 true
             );
 
-            foreach ($arrAdditionalMimeTypeParts as $strAdditionalMimeTypeItem) {
-                list($strAdditionalFileExtension, $strAdditionalMimeType) = GeneralUtility::trimExplode(
+            foreach ($arrAdditionalMimeTypeParts as $additionalMimeTypeItem) {
+                list($additionalFileExtension, $additionalMimeType) = GeneralUtility::trimExplode(
                     '|',
-                    $strAdditionalMimeTypeItem
+                    $additionalMimeTypeItem
                 );
-                if (!empty($strAdditionalFileExtension) && !empty($strAdditionalMimeType)) {
-                    $strAdditionalFileExtension = mb_strtolower($strAdditionalFileExtension);
-                    $arrMimeTypes[$strAdditionalFileExtension] = $strAdditionalMimeType;
+                if (!empty($additionalFileExtension) && !empty($additionalMimeType)) {
+                    $additionalFileExtension = mb_strtolower($additionalFileExtension);
+                    $mimeTypes[$additionalFileExtension] = $additionalMimeType;
                 }
             }
 
-            unset($strAdditionalFileExtension, $strAdditionalMimeType);
+            unset($additionalFileExtension, $additionalMimeType);
         }
 
         //TODO: Add hook to be able to manipulate and/or add mime types
         // Check if an specific MIME type is configured for this file extension
-        if (array_key_exists($strFileExtension, $arrMimeTypes)) {
-            $strMimeType = $arrMimeTypes[$strFileExtension];
+        if (array_key_exists($fileExtension, $mimeTypes)) {
+            $mimeType = $mimeTypes[$fileExtension];
         // files bigger than 32MB are now 'application/octet-stream' by default (getimagesize memory_limit problem)
         } elseif ($checkForImageFiles && ($this->fileSize < 1024 * 1024 * 32)) {
-            $arrImageInfos = @getimagesize($this->file);
-            $intImageType = (int)$arrImageInfos[2];
-            $strMimeType = $intImageType === 0 ? 'application/octet-stream' : image_type_to_mime_type($intImageType);
+            $imageInfo = @getimagesize($this->file);
+            $imageType = (int)$imageInfo[2];
+            $mimeType = $imageType === 0 ? 'application/octet-stream' : image_type_to_mime_type($imageType);
         } else {
-            $strMimeType = 'application/octet-stream';
+            $mimeType = 'application/octet-stream';
         }
 
-        return $strMimeType;
+        return $mimeType;
     }
 
     /*
@@ -542,23 +542,22 @@ class FileDelivery
      *
      * @deprecated Will be removed in version 5. Use pathinfo() instead.
      */
-    protected function getFileExtensionByFilename(string $strFileName): string
+    protected function getFileExtensionByFilename(string $fileName): string
     {
         trigger_error('Method getFileExtensionByFilename() will be removed in version 5. Use pathinfo() instead.', E_USER_DEPRECATED);
 
-        return mb_strtolower(ltrim(mb_strrchr($strFileName, '.'), '.'));
+        return mb_strtolower(ltrim(mb_strrchr($fileName, '.'), '.'));
     }
 
     /**
      * In some cases php needs the filesize as php_memory, so big files cannot
      * be transferred. This function mitigates this problem.
      */
-    protected function readFileFactional(string $strFileName): bool
+    protected function readFileFactional(string $fileName): bool
     {
         $outputChunkSize = $this->extensionConfiguration->getOutputChunkSize(); // how many bytes per chunk
         $timeout = ini_get('max_execution_time');
-        $bytes_sent = 0;
-        $handle = fopen($strFileName, 'rb');
+        $handle = fopen($fileName, 'rb');
 
         if ($handle === false) {
             return false;
@@ -568,7 +567,6 @@ class FileDelivery
             set_time_limit($timeout);
             $buffer = fread($handle, $outputChunkSize);
             print $buffer;
-            $bytes_sent += $outputChunkSize;
             ob_flush();
             flush();
         }
