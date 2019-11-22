@@ -15,6 +15,7 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
 
 use Bitmotion\SecureDownloads\Cache\EncodeCache;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
+use Bitmotion\SecureDownloads\Utility\HookUtility;
 use Firebase\JWT\JWT;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
@@ -159,6 +160,9 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
             'file' => $resourceUri,
             'page' => $GLOBALS['TSFE']->id,
         ];
+
+        // Execute hook for manipulating payload
+        HookUtility::executeHook('publishing', 'payload', $payload, $this);
 
         $url = sprintf(
             '%s/%s%s/%s',
