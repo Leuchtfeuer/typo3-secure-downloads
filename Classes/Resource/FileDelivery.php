@@ -343,22 +343,18 @@ class FileDelivery
                 }
             }
 
-            header('Pragma: private');
-            header('Expires: 0'); // set expiration time
-            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-            header('Content-Type: ' . $mimeType);
+            $header = $this->getHeader($mimeType, $fileName, $forceDownload);
+            $outputFunction = $this->extensionConfiguration->getOutputFunction();
 
-            $zlib_oc = @ini_get('zlib.output_compression');
-
-            if (!$zlib_oc) {
-                header('Content-Length: ' . $this->fileSize);
+            $params = ['outputFunction' => &$outputFunction, 'header' => &$header, 'fileName' => $fileName, 'mimeType' => $mimeType, 'forceDownload' => $forceDownload];
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['preReadFile'] ?? [] as $_funcRef) {
+                if ($_funcRef) {
+                    GeneralUtility::callUserFunction($_funcRef, $params, $this);
+                }
             }
 
-            if ($forceDownload === true) {
-                header('Content-Disposition: attachment; filename="' . $fileName . '"');
-            }
+            $this->sendHeader($header);
 
-            $outputFunction = trim($this->extensionConfiguration->getOutputFunction());
             switch ($outputFunction) {
                 case 'readfile_chunked':
                     $this->readFileFactional($file);
@@ -382,6 +378,33 @@ class FileDelivery
             flush();
         } else {
             print 'File does not exist!';
+        }
+    }
+
+    protected function getHeader(string $mimeType, string $fileName, bool $forceDownload): array
+    {
+        $header = [
+            'Pragma' => 'private',
+            'Expires' => '0', // set expiration time
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Content-Type' => $mimeType,
+        ];
+
+        if (!@ini_get('zlib.output_compression')) {
+            $header['Content-Length'] = $this->fileSize;
+        }
+
+        if ($forceDownload === true) {
+            $header['Content-Disposition'] = sprintf('attachment; filename="%s"', $fileName);
+        }
+
+        return $header;
+    }
+
+    protected function sendHeader(array $header): void
+    {
+        foreach ($header as $name => $value) {
+            header(sprintf('%s: %s', $name, $value));
         }
     }
 
