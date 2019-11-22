@@ -89,7 +89,7 @@ class ExtensionConfiguration implements SingletonInterface
 
     public function getAdditionalMimeTypes(): string
     {
-        return (string)$this->additionalMimeTypes;
+        return trim($this->additionalMimeTypes);
     }
 
     public function getCacheTimeAdd(): int
@@ -109,7 +109,7 @@ class ExtensionConfiguration implements SingletonInterface
 
     public function getDomain(): string
     {
-        return (string)$this->domain;
+        return trim($this->domain);
     }
 
     public function isEnableGroupCheck(): bool
@@ -119,7 +119,7 @@ class ExtensionConfiguration implements SingletonInterface
 
     public function getExcludeGroups(): string
     {
-        return (string)$this->excludeGroups;
+        return trim($this->excludeGroups);
     }
 
     public function isForceDownload(): bool
@@ -129,12 +129,12 @@ class ExtensionConfiguration implements SingletonInterface
 
     public function getForceDownloadTypes(): string
     {
-        return (string)$this->forcedownloadtype;
+        return trim($this->forcedownloadtype);
     }
 
     public function getGroupCheckDirs(): string
     {
-        return (string)$this->groupCheckDirs;
+        return trim($this->groupCheckDirs);
     }
 
     /**
@@ -144,7 +144,7 @@ class ExtensionConfiguration implements SingletonInterface
     {
         trigger_error('Method getLinkFormat() will be removed in version 5.', E_USER_DEPRECATED);
 
-        return (string)$this->linkFormat;
+        return trim($this->linkFormat);
     }
 
     public function isLog(): bool
@@ -171,17 +171,17 @@ class ExtensionConfiguration implements SingletonInterface
 
     public function getOutputFunction(): string
     {
-        return (string)$this->outputFunction;
+        return trim($this->outputFunction);
     }
 
     public function getSecuredDirs(): string
     {
-        return (string)$this->securedDirs;
+        return trim($this->securedDirs);
     }
 
     public function getSecuredFileTypes(): string
     {
-        return (string)$this->securedFiletypes;
+        return trim($this->securedFiletypes);
     }
 
     /**
