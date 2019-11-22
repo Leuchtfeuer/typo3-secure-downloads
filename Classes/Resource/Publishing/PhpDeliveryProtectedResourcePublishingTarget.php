@@ -160,10 +160,11 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         ];
 
         $url = sprintf(
-            '%s/%s%s',
+            '%s/%s%s/%s',
             $this->extensionConfiguration->getLinkPrefix(),
             $this->extensionConfiguration->getTokenPrefix(),
-            JWT::encode($payload, $this->getRequestContext()->getAdditionalSecret(), 'HS256')
+            JWT::encode($payload, $this->getRequestContext()->getAdditionalSecret(), 'HS256'),
+            pathinfo($resourceUri, PATHINFO_BASENAME)
         );
 
         // Store URL in JWT cache

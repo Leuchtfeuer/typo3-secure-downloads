@@ -34,7 +34,8 @@ class FileDeliveryMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->isResponsible($request)) {
-            $jwt = mb_substr($request->getUri()->getPath(), mb_strlen($this->assetPrefix));
+            $cleanPath = mb_substr($request->getUri()->getPath(), mb_strlen($this->assetPrefix));
+            list($jwt, $basePath) = explode('/', $cleanPath);
             GeneralUtility::makeInstance(FileDelivery::class, $jwt)->deliver();
         }
 

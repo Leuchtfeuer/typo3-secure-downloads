@@ -342,8 +342,6 @@ class FileDelivery
 
             if ($forceDownload === true) {
                 header('Content-Disposition: attachment; filename="' . $fileName . '"');
-            } else {
-                header('Content-Disposition: inline; filename="' . $fileName . '"');
             }
 
             $outputFunction = trim($this->extensionConfiguration->getOutputFunction());
