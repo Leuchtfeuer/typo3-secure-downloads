@@ -13,6 +13,7 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
  *
  ***/
 
+use Bitmotion\SecureDownloads\Cache\EncodeCache;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Firebase\JWT\JWT;
 use TYPO3\CMS\Core\Core\Environment;
@@ -145,9 +146,9 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
     {
         $hash = md5($user . $userGroups . $resourceUri . $GLOBALS['TSFE']->id);
 
-        // Retrive URL from JWT cache
-        if (isset($this->cache[$hash])) {
-            return $this->cache[$hash];
+        // Retrieve URL from JWT cache
+        if (EncodeCache::hasCache($hash)) {
+            return EncodeCache::getCache($hash);
         }
 
         $payload = [
@@ -168,7 +169,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         );
 
         // Store URL in JWT cache
-        $this->cache[$hash] = $url;
+        EncodeCache::addCache($hash, $url);
 
         return $url;
     }

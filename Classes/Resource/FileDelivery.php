@@ -13,6 +13,7 @@ namespace Bitmotion\SecureDownloads\Resource;
  *
  ***/
 
+use Bitmotion\SecureDownloads\Cache\DecodeCache;
 use Bitmotion\SecureDownloads\Domain\Model\Log;
 use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
@@ -87,8 +88,6 @@ class FileDelivery
      */
     protected $isProcessed = false;
 
-    protected $decodeCache = [];
-
     /**
      * FileDelivery constructor.
      *
@@ -152,13 +151,13 @@ class FileDelivery
      */
     protected function getDataFromJsonWebToken(string $jwt): void
     {
-        if (isset($this->decodeCache[$jwt])) {
-            $data = $this->decodeCache[$jwt];
+        if (DecodeCache::hasCache($jwt)) {
+            $data = DecodeCache::getCache($jwt);
         } else {
             try {
                 $requestContext = GeneralUtility::makeInstance(RequestContext::class);
                 $data = JWT::decode($jwt, $requestContext->getAdditionalSecret(), ['HS256']);
-                $this->decodeCache[$jwt] = $data;
+                DecodeCache::addCache($jwt, $data);
             } catch (SignatureInvalidException $exception) {
                 $this->exitScript('Hash invalid! Access denied!');
             }
