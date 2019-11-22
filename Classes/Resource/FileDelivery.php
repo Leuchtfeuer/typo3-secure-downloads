@@ -100,7 +100,7 @@ class FileDelivery
         if ($jwt !== null) {
             $this->getDataFromJsonWebToken($jwt);
         } else {
-            // TODO: This part is deprecated and will be removed with version 5
+            // TODO: This part is deprecated and will be removed with version 5.
             $this->userGroups = (!empty(GeneralUtility::_GET('g'))) ? GeneralUtility::_GET('g') : '0';
             $this->hash = GeneralUtility::_GP('hash');
             $this->userId = (int)GeneralUtility::_GP('u');
@@ -111,18 +111,20 @@ class FileDelivery
         }
 
         // Hook for init:
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init'])) {
-            $_params = [
-                'pObj' => $this,
-                'userId' => &$this->userId,
-                'userGroups' => &$this->userGroups,
-                'file' => &$this->file,
-                'expiryTime' => &$this->expiryTime,
-                'hash' => &$this->hash,
-                'calculatedHash' => &$this->calculatedHash,
-            ];
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init'] as $_funcRef) {
-                GeneralUtility::callUserFunction($_funcRef, $_params, $this);
+        // TODO: The params array is deprecated as all information is given in the ref param of the hook.
+        // TODO: Remove the params with version 5.
+        $params = [
+            'pObj' => $this,
+            'userId' => &$this->userId,
+            'userGroups' => &$this->userGroups,
+            'file' => &$this->file,
+            'expiryTime' => &$this->expiryTime,
+            'hash' => &$this->hash,
+            'calculatedHash' => &$this->calculatedHash,
+        ];
+        foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init'] ?? [] as $_funcRef) {
+            if ($_funcRef) {
+                GeneralUtility::callUserFunction($_funcRef, $params, $this);
             }
         }
 
@@ -292,6 +294,8 @@ class FileDelivery
         }
 
         // Hook for pre-output:
+        // TODO: The pObj property of params array is deprecated as it is the same as the ref argument.
+        // TODO: Remove the pObj property with version 5.
         $params = ['pObj' => &$this, 'file' => &$file, 'downloadName' => &$fileName];
         foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['preOutput'] ?? [] as $_funcRef) {
             if ($_funcRef) {
@@ -330,14 +334,12 @@ class FileDelivery
             $mimeType = extension_loaded('fileinfo') ? mime_content_type($file) : $this->getMimeTypeByFileExtension($fileExtension);
 
             // Hook for output:
-            if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['output'])) {
-                $_params = [
-                    'pObj' => &$this,
-                    'fileExtension' => '.' . $fileExtension, // Add leading dot for compatibility in this hook
-                    'mimeType' => &$mimeType,
-                ];
-                foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['output'] as $_funcRef) {
-                    GeneralUtility::callUserFunction($_funcRef, $_params, $this);
+            // TODO: This hook is deprecated and will be removed with version 5. Use 'preReadFile' hook instead.
+            // TODO: Remove the pObj property with version 5.
+            $params = ['pObj' => &$this, 'fileExtension' => '.' . $fileExtension, 'mimeType' => &$mimeType];
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['output'] ?? [] as $_funcRef) {
+                if ($_funcRef) {
+                    GeneralUtility::callUserFunction($_funcRef, $params, $this);
                 }
             }
 
