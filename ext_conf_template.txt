@@ -27,7 +27,7 @@ linkPrefix = download
 # cat=basic/link; type=string; label=Token prefix: Prefix for generated token.
 tokenPrefix = sdl-
 
-# cat=basic/link; type=int; label=Additional Link Timeout: The secure link is only valid for a limited time, which is calculated from the cache time that is used for the page that carries the link plus this value (in seconds). Default is 3600 sec (= 1 h).
+# cat=basic/link; type=int+; label=Additional Link Timeout: The secure link is only valid for a limited time, which is calculated from the cache time that is used for the page that carries the link plus this value (in seconds). Default is 3600 sec (= 1 h).
 cachetimeadd = 3600
 
 
@@ -43,7 +43,7 @@ additionalMimeTypes = txt|text/plain,html|text/html
 # cat=filedelivery; type=string; label = outputFunction:PHP function which is used to deliver the secured files (one of readfile, readfile_chunked, fpassthru)
 outputFunction = readfile
 
-# cat=filedelivery; type=int; label = outputChunkSize: Size of chunks to be delivered in one go (only relevant if "readfile_chunked" is used) (default: 1048576 Bytes)
+# cat=filedelivery; type=int+; label = outputChunkSize: Size of chunks to be delivered in one go (only relevant if "readfile_chunked" is used) (default: 1048576 Bytes)
 outputChunkSize = 1048576
 
 
