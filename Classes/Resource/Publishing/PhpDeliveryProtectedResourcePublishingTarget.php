@@ -19,30 +19,20 @@ use Bitmotion\SecureDownloads\Utility\HookUtility;
 use Firebase\JWT\JWT;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePublishingTarget
 {
-    /**
-     * @deprecated Will be removed in version 5.
-     */
-    const DEFAULT_LINK_FORMAT = 'index.php?eID=tx_securedownloads&p=###PAGE###&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
-
     const DEFAULT_CACHE_LIFETIME = 86400;
 
     /**
-     * @deprecated Will be removed in version 5.
+     * Builds a URI which uses a PHP Script to access the resource
      */
-    const ALLOWED_TOKENS = [
-        '###FEUSER###',
-        '###FEGROUPS###',
-        '###FILE###',
-        '###TIMEOUT###',
-        '###HASH###',
-        '###PAGE###',
-    ];
+    public function publishResourceUri(string $resourceUri): string
+    {
+        $this->setResourcesSourcePath(Environment::getPublicPath() . '/');
 
-    protected $cache = [];
+        return $this->buildUri($resourceUri);
+    }
 
     /**
      * Publishes a persistent resource to the web accessible resources directory
@@ -107,44 +97,9 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      */
     protected function buildUri(string $resourceUri): string
     {
-        $userId = $this->getRequestContext()->getUserId();
-        $userGroupIds = $this->getRequestContext()->getUserGroupIds();
+        $user = $this->getRequestContext()->getUserId();
+        $userGroups = $this->getRequestContext()->getUserGroupIds();
 
-        if ($this->extensionConfiguration->isLegacyDelivery()) {
-            return $this->getUrlWithParameters($resourceUri, $userId, $userGroupIds);
-        }
-
-        return $this->getUrlWithJWT($userId, $userGroupIds, $resourceUri);
-    }
-
-    /**
-     * @deprecated Will be removed in version 5. You should consider to use Json Web Tokens for URL generation
-     */
-    private function getUrlWithParameters(string $resourceUri, int $user, array $userGroups): string
-    {
-        trigger_error('Method getUrlWithParameters() will be removed in version 5.', E_USER_DEPRECATED);
-
-        $validityPeriod = $this->calculateLinkLifetime();
-        $hash = $this->getHash($resourceUri, $user, $userGroups, $validityPeriod);
-
-        // Parsing the link format, and return this instead (an flexible link format is useful for mod_rewrite tricks ;)
-        $configuredLinkFormat = $this->extensionConfiguration->getLinkFormat();
-        $linkFormat = !empty($configuredLinkFormat) ? $configuredLinkFormat : self::DEFAULT_LINK_FORMAT;
-
-        $replacements = [
-            $user,
-            rawurlencode(implode(',', $userGroups)),
-            str_replace('%2F', '/', rawurlencode($resourceUri)),
-            $validityPeriod,
-            $hash,
-            $GLOBALS['TSFE']->id,
-        ];
-
-        return str_replace(self::ALLOWED_TOKENS, $replacements, $linkFormat);
-    }
-
-    private function getUrlWithJWT(int $user, array $userGroups, string $resourceUri): string
-    {
         $hash = md5($user . $userGroups . $resourceUri . $GLOBALS['TSFE']->id);
 
         // Retrieve URL from JWT cache
@@ -152,6 +107,22 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
             return EncodeCache::getCache($hash);
         }
 
+        $url = sprintf(
+            '%s/%s%s/%s',
+            $this->extensionConfiguration->getLinkPrefix(),
+            $this->extensionConfiguration->getTokenPrefix(),
+            $this->getJsonWebToken($user, $userGroups, $resourceUri),
+            pathinfo($resourceUri, PATHINFO_BASENAME)
+        );
+
+        // Store URL in JWT cache
+        EncodeCache::addCache($hash, $url);
+
+        return $url;
+    }
+
+    private function getJsonWebToken(int $user, array $userGroups, string $resourceUri): string
+    {
         $payload = [
             'iat' => time(),
             'exp' => $this->calculateLinkLifetime(),
@@ -164,18 +135,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         // Execute hook for manipulating payload
         HookUtility::executeHook('publishing', 'payload', $payload, $this);
 
-        $url = sprintf(
-            '%s/%s%s/%s',
-            $this->extensionConfiguration->getLinkPrefix(),
-            $this->extensionConfiguration->getTokenPrefix(),
-            JWT::encode($payload, $this->getRequestContext()->getAdditionalSecret(), 'HS256'),
-            pathinfo($resourceUri, PATHINFO_BASENAME)
-        );
-
-        // Store URL in JWT cache
-        EncodeCache::addCache($hash, $url);
-
-        return $url;
+        return JWT::encode($payload, $this->getRequestContext()->getAdditionalSecret(), 'HS256');
     }
 
     protected function calculateLinkLifetime(): int
@@ -185,31 +145,5 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         $cacheLifetime = $requestCacheLifetime > 0 ? $requestCacheLifetime : self::DEFAULT_CACHE_LIFETIME;
 
         return $cacheLifetime + $GLOBALS['EXEC_TIME'] + $lifeTimeToAdd;
-    }
-
-    /**
-     * @deprecated Will be removed in version 5.
-     */
-    protected function getHash(string $resourceUri, int $userId, array $userGroupIds, int $validityPeriod): string
-    {
-        trigger_error('Method getHash() will be removed in version 5.', E_USER_DEPRECATED);
-
-        if ($this->extensionConfiguration->isEnableGroupCheck()) {
-            $hashString = $userId . implode(',', $userGroupIds) . $resourceUri . $validityPeriod;
-        } else {
-            $hashString = $userId . $resourceUri . $validityPeriod;
-        }
-
-        return GeneralUtility::hmac($hashString, 'bitmotion_securedownload');
-    }
-
-    /**
-     * Builds a URI which uses a PHP Script to access the resource
-     */
-    public function publishResourceUri(string $resourceUri): string
-    {
-        $this->setResourcesSourcePath(Environment::getPublicPath() . '/');
-
-        return $this->buildUri($resourceUri);
     }
 }

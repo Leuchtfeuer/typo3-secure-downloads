@@ -41,11 +41,6 @@ class ExtensionConfiguration implements SingletonInterface
 
     private $groupCheckDirs = '';
 
-    /**
-     * @deprecated Will be removed with version 5
-     */
-    private $linkFormat = 'index.php?eID=tx_securedownloads&p=###PAGE###&u=###FEUSER###&g=###FEGROUPS###&t=###TIMEOUT###&hash=###HASH###&file=###FILE###';
-
     private $log = false;
 
     private $outputChunkSize = 1048576;
@@ -55,11 +50,6 @@ class ExtensionConfiguration implements SingletonInterface
     private $securedDirs = 'typo3temp|fileadmin';
 
     private $securedFiletypes = 'pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz';
-
-    /**
-     * @deprecated Will be removed with version 5
-     */
-    private $legacyDelivery = false;
 
     private $linkPrefix = 'download';
 
@@ -137,16 +127,6 @@ class ExtensionConfiguration implements SingletonInterface
         return trim($this->groupCheckDirs);
     }
 
-    /**
-     * @deprecated Will be removed with version 5
-     */
-    public function getLinkFormat(): string
-    {
-        trigger_error('Method getLinkFormat() will be removed in version 5.', E_USER_DEPRECATED);
-
-        return trim($this->linkFormat);
-    }
-
     public function isLog(): bool
     {
         return (bool)$this->log;
@@ -182,16 +162,6 @@ class ExtensionConfiguration implements SingletonInterface
     public function getSecuredFileTypes(): string
     {
         return trim($this->securedFiletypes);
-    }
-
-    /**
-     * @deprecated Will be removed with version 5
-     */
-    public function isLegacyDelivery(): bool
-    {
-        trigger_error('Method isLegacyDelivery() will be removed in version 5.', E_USER_DEPRECATED);
-
-        return (bool)$this->legacyDelivery;
     }
 
     public function getLinkPrefix(): string
