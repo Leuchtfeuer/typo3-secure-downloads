@@ -17,6 +17,7 @@ use Bitmotion\SecureDownloads\Domain\Model\Log;
 use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Bitmotion\SecureDownloads\Request\RequestContext;
+use Bitmotion\SecureDownloads\Utility\HookUtility;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
 use TYPO3\CMS\Core\Core\Environment;
@@ -122,11 +123,7 @@ class FileDelivery
             'hash' => &$this->hash,
             'calculatedHash' => &$this->calculatedHash,
         ];
-        foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init'] ?? [] as $_funcRef) {
-            if ($_funcRef) {
-                GeneralUtility::callUserFunction($_funcRef, $params, $this);
-            }
-        }
+        HookUtility::executeHook('output', 'init', $params, $this);
 
         if (!$jwt) {
             // TODO: This part is deprecated and will be removed with version 5
@@ -297,11 +294,7 @@ class FileDelivery
         // TODO: The pObj property of params array is deprecated as it is the same as the ref argument.
         // TODO: Remove the pObj property with version 5.
         $params = ['pObj' => &$this, 'file' => &$file, 'downloadName' => &$fileName];
-        foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['preOutput'] ?? [] as $_funcRef) {
-            if ($_funcRef) {
-                GeneralUtility::callUserFunction($_funcRef, $params, $this);
-            }
-        }
+        HookUtility::executeHook('output', 'preOutput', $params, $this);
 
         if (file_exists($file)) {
             $this->fileSize = filesize($file);
@@ -337,21 +330,13 @@ class FileDelivery
             // TODO: This hook is deprecated and will be removed with version 5. Use 'preReadFile' hook instead.
             // TODO: Remove the pObj property with version 5.
             $params = ['pObj' => &$this, 'fileExtension' => '.' . $fileExtension, 'mimeType' => &$mimeType];
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['output'] ?? [] as $_funcRef) {
-                if ($_funcRef) {
-                    GeneralUtility::callUserFunction($_funcRef, $params, $this);
-                }
-            }
+            HookUtility::executeHook('output', 'output', $params, $this);
 
             $header = $this->getHeader($mimeType, $fileName, $forceDownload);
             $outputFunction = $this->extensionConfiguration->getOutputFunction();
 
             $params = ['outputFunction' => &$outputFunction, 'header' => &$header, 'fileName' => $fileName, 'mimeType' => $mimeType, 'forceDownload' => $forceDownload];
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['preReadFile'] ?? [] as $_funcRef) {
-                if ($_funcRef) {
-                    GeneralUtility::callUserFunction($_funcRef, $params, $this);
-                }
-            }
+            HookUtility::executeHook('output', 'preReadFile', $params, $this);
 
             $this->sendHeader($header);
 

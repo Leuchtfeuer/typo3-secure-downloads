@@ -17,6 +17,7 @@ use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Bitmotion\SecureDownloads\Parser\HtmlParserDelegateInterface;
 use Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublisher;
+use Bitmotion\SecureDownloads\Utility\HookUtility;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -86,10 +87,10 @@ class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInt
 
         // Hook for makeSecure:
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'] as $_funcRef) {
-                $transformedUri = GeneralUtility::callUserFunction($_funcRef, $transformedUri, $this);
-            }
+            trigger_error('Hook name ext/secure_downloads/Classes/Service/SecureDownloadService.php is deprecated. Use bitmotion.secure_downloads.downloadService instead.', E_USER_DEPRECATED);
+            $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['downloadService']['makeSecure'] = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'];
         }
+        HookUtility::executeHook('downloadService', 'makeSecure', $transformedUri, $this);
 
         return $transformedUri;
     }
