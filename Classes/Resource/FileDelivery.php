@@ -272,16 +272,15 @@ class FileDelivery
         // @see http://bugs.php.net/bug.php?id=46990
         // It helps for filenames with special characters that are present in latin1 encoding.
         // If you have real UTF-8 filenames, use a nix based OS.
-        // FIXME: needs to be checked, if the website encoding really is UTF-8 and if UTF-8 filesystem is enabled
         if (Environment::isWindows()) {
             $file = utf8_decode($file);
         }
 
         // Hook for pre-output:
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['preOutput'])) {
-            $_params = ['pObj' => &$this, 'file' => &$file, 'downloadName' => &$fileName];
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['preOutput'] as $_funcRef) {
-                GeneralUtility::callUserFunction($_funcRef, $_params, $this);
+        $params = ['pObj' => &$this, 'file' => &$file, 'downloadName' => &$fileName];
+        foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['preOutput'] ?? [] as $_funcRef) {
+            if ($_funcRef) {
+                GeneralUtility::callUserFunction($_funcRef, $params, $this);
             }
         }
 
@@ -316,7 +315,6 @@ class FileDelivery
             $mimeType = extension_loaded('fileinfo') ? mime_content_type($file) : $this->getMimeTypeByFileExtension($fileExtension);
 
             // Hook for output:
-            // TODO: deprecate this hook?
             if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['output'])) {
                 $_params = [
                     'pObj' => &$this,
@@ -536,9 +534,11 @@ class FileDelivery
         $timeout = ini_get('max_execution_time');
         $bytes_sent = 0;
         $handle = fopen($strFileName, 'rb');
+
         if ($handle === false) {
             return false;
         }
+
         while (!feof($handle) && (!connection_aborted())) {
             set_time_limit($timeout);
             $buffer = fread($handle, $outputChunkSize);

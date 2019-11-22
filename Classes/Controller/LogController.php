@@ -13,9 +13,9 @@ namespace Bitmotion\SecureDownloads\Controller;
  *
  ***/
 
+use Bitmotion\SecureDownloads\Domain\Repository\LogRepository;
 use Bitmotion\SecureDownloads\Domain\Transfer\Filter;
 use Bitmotion\SecureDownloads\Domain\Transfer\Statistic;
-use Bitmotion\SecureDownloads\Domain\Repository\LogRepository;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Page\PageRenderer;
