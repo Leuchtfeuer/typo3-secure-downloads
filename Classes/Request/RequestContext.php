@@ -13,9 +13,11 @@ namespace Bitmotion\SecureDownloads\Request;
  *
  ***/
 
-use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Service\EnvironmentService;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 class RequestContext
 {
@@ -45,9 +47,9 @@ class RequestContext
     protected $additionalSecret = 'secure_download_token';
 
     /**
-     * @var AbstractUserAuthentication
+     * @var FrontendUserAuthentication
      */
-    protected $currentUser;
+    protected $frontendUserAuthentication;
 
     /**
      * @var string
@@ -56,20 +58,27 @@ class RequestContext
 
     public function __construct()
     {
-        if ($this->isFrontendRequest()) {
+        $environmentService = GeneralUtility::makeInstance(EnvironmentService::class);
+
+        if ($environmentService->isEnvironmentInFrontendMode()) {
             $this->initializeFrontendContext();
+        } elseif ($environmentService->isEnvironmentInBackendMode()) {
+            // Skip
+        } elseif (Environment::isCli()) {
+            // Skip
         } else {
             throw new \LogicException('Unknown Context.', 1377180593);
         }
     }
 
+    /**
+     * @deprecated Will be removed in version 5. Use EnvironmentService instead.
+     */
     public function isFrontendRequest(): bool
     {
-        if (defined('TYPO3_MODE') && TYPO3_MODE === 'FE') {
-            return true;
-        }
+        $environmentService = GeneralUtility::makeInstance(EnvironmentService::class);
 
-        return false;
+        return $environmentService->isEnvironmentInFrontendMode();
     }
 
     /**
@@ -78,11 +87,11 @@ class RequestContext
     protected function initializeFrontendContext(): void
     {
         $this->setCacheLifetime();
-        $this->currentUser = $GLOBALS['TSFE']->fe_user;
+        $this->frontendUserAuthentication = $GLOBALS['TSFE']->fe_user;
 
         if ($this->isUserLoggedIn()) {
-            $this->userId = (int)$this->currentUser->user['uid'];
-            $this->userGroupIds = array_unique(array_map('intval', $this->currentUser->groupData['uid']));
+            $this->userId = (int)$this->frontendUserAuthentication->user['uid'];
+            $this->userGroupIds = array_unique(array_map('intval', $this->frontendUserAuthentication->groupData['uid']));
             sort($this->userGroupIds);
 
             // TODO: $typoScriptFrontendController->config is deprecated since TYPO3 9.0
@@ -105,7 +114,7 @@ class RequestContext
 
     public function isUserLoggedIn(): bool
     {
-        return !empty($this->currentUser->user['uid']);
+        return !empty($this->frontendUserAuthentication->user['uid']);
     }
 
     /**
