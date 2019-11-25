@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" original="messages" date="2019-11-25T15:49:32Z"
+          product-name="secure_downloads">
+        <header/>
+        <body>
+            <trans-unit id="category.parsing">
+                <source>Parsing</source>
+            </trans-unit>
+            <trans-unit id="category.security">
+                <source>Security</source>
+            </trans-unit>
+            <trans-unit id="category.link">
+                <source>Link Generation</source>
+            </trans-unit>
+            <trans-unit id="domain">
+                <source>Domain: A domain prefix before the secured directories part (e.g. https://www.example.com/). Not needed for internal (relative) links.</source>
+            </trans-unit>
+            <trans-unit id="securedDirs">
+                <source>Directory Pattern: What directories shall be protected? Multiple directory patterns can be separated by a pipe (|).</source>
+            </trans-unit>
+            <trans-unit id="securedFileTypes">
+                <source>File Type Pattern: What file types (read: extensions) shall be protected? Multiple file extension patterns can be separated by a pipe (|). You can use an asterisk (*) if you want to protect all files within configured directories.</source>
+            </trans-unit>
+            <trans-unit id="enableGroupCheck">
+                <source>Enable Group Check: Allows forwarding a secure download link to others, who can access that file if they have at least one front-end user group in common. Enabling this makes the checks LESS restrictive!</source>
+            </trans-unit>
+            <trans-unit id="groupCheckDirs">
+                <source>Group Check Directories: A list of directories for the less restrictive group check, separated by a pipe (|). Leave empty if you want to enable the group check for all directories.</source>
+            </trans-unit>
+            <trans-unit id="excludeGroups">
+                <source>Exclude Groups: A comma separated list of groups that are excluded from the group check feature (if enabled).</source>
+            </trans-unit>
+            <trans-unit id="linkPrefix">
+                <source>Link Prefix: Prefix for generated links (the "download" part in "https://example.com/download/sdl-[JWT]/image.png").</source>
+            </trans-unit>
+            <trans-unit id="tokenPrefix">
+                <source>Token Prefix: Prefix for generated token (the "sdl-" part in "https://example.com/download/sdl-[JWT]/image.png").</source>
+            </trans-unit>
+            <trans-unit id="cacheTimeAdd">
+                <source>Additional Link Timeout: The secure link is only valid for a limited time, which is calculated from the cache time that is used for the page that carries the link plus this value (in seconds). Default is 3600 sec (= 1 h).</source>
+            </trans-unit>
+            <trans-unit id="forceDownload">
+                <source>Force Download: Force Download of specified file types.</source>
+            </trans-unit>
+            <trans-unit id="forceDownloadType">
+                <source>Force Download Type: A list of file types that should not be opened inline in a browser, separated by a pipe. Only used if "forcedownload" is true.</source>
+            </trans-unit>
+            <trans-unit id="additionalMimeTypes">
+                <source>Additional Mime Types: Comma separated list of additional MIME types (file extension / mime type pairs, in which file extension and MIME type is separated by a pipe symbol). Can be used to override existing MIME type settings of the extension as well.</source>
+            </trans-unit>
+            <trans-unit id="outputFunction">
+                <source>Output Function: PHP function which is used to deliver the secured files.</source>
+            </trans-unit>
+            <trans-unit id="outputChunkSize">
+                <source>Output Chunk Size: Size of chunks to be delivered in one go (only relevant if "readfile_chunked" is used) (default: 1048576 Bytes = 1 MB).</source>
+            </trans-unit>
+            <trans-unit id="log">
+                <source>Log: Log each file access. This option will enable a backend module.</source>
+            </trans-unit>
+            <trans-unit id="debug">
+                <source>Debug Level: Debug level (output each tag that matches the regex and will be replaced). Please note: This configuration is deprecated. Please consider to use PSR-3 Logger.</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
