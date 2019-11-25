@@ -1,55 +1,55 @@
-# customsubcategory=parsing=Parsing;
-# cat=basic/parsing; type=string; label=Domain: A domain prefix before the secured directories part (e.g. http://www.host.com/). Not needed for internal (relative) links.
+# customsubcategory=parsing=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:category.parsing;
+# cat=basic/parsing; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:domain
 domain = http://mydomain.com/|http://my.other.domain.org/
 
-# cat=basic/parsing; type=string; label=Directory Pattern: What directories shall be protected? Multiple directory patterns can be separated by a pipe (|).
+# cat=basic/parsing; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:securedDirs
 securedDirs = typo3temp|fileadmin
 
-# cat=basic/parsing; type=string; label=File Type Pattern: What file types (read: extensions) shall be protected? Multiple file extension patterns can be separated by a pipe (|).
+# cat=basic/parsing; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:securedFileTypes
 securedFiletypes = pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
 
 
-# customsubcategory=security=Security;
-# cat=basic/security; type=boolean; label = Enable Group Check: Allows forwarding a secure download link to others, who can access that file if they have at least one front-end user group in common. Enabling this makes the checks LESS restrictive!
+# customsubcategory=security=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:category.security;
+# cat=basic/security; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:enableGroupCheck
 enableGroupCheck = 0
 
-# cat=basic/security; type=string; label=Group Check enabled Directories: A list of directories for the less restrictive group check, separated by a pipe (|). Leave empty if you want to enable the group check for all directories.
+# cat=basic/security; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:groupCheckDirs
 groupCheckDirs =
 
-# cat=basic/security; type=string; label=Exclude Groups from Group Check: A comma separated list of groups that are excluded from the group check feature (if enabled).
+# cat=basic/security; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:excludeGroups
 excludeGroups =
 
 
-# customsubcategory=link=Link Generation;
-# cat=basic/link; type=string; label=Link prefix: Prefix for generated links.
+# customsubcategory=link=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:category.link;
+# cat=basic/link; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:linkPrefix
 linkPrefix = download
 
-# cat=basic/link; type=string; label=Token prefix: Prefix for generated token.
+# cat=basic/link; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:tokenPrefix
 tokenPrefix = sdl-
 
-# cat=basic/link; type=int+; label=Additional Link Timeout: The secure link is only valid for a limited time, which is calculated from the cache time that is used for the page that carries the link plus this value (in seconds). Default is 3600 sec (= 1 h).
+# cat=basic/link; type=int+; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:cacheTimeAdd
 cachetimeadd = 3600
 
 
-# cat=filedelivery; type=boolean; label = forcedownload: Force Download of specified filetypes
+# cat=filedelivery; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownload
 forcedownload = 0
 
-# cat=filedelivery; type=string; label=forcedownloadtype:a list of filetypes that should not be opened inline in a browser, seperated by a pipe. Only used if forcedownload is true
+# cat=filedelivery; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownloadType
 forcedownloadtype = odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
 
-# cat=filedelivery; type=string; label=additionalMimeTypes: Comma separated list of additional MIME types (file extension / mime type pairs, in which file extension and MIME type is separated by a pipe symbol). Can be used to override existing MIME type settings of the extension as well.
+# cat=filedelivery; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:additionalMimeTypes
 additionalMimeTypes = txt|text/plain,html|text/html
 
-# cat=filedelivery; type=string; label = outputFunction:PHP function which is used to deliver the secured files (one of readfile, readfile_chunked, fpassthru)
+# cat=filedelivery; type=options[readfile,redfile_chnunked,fpassthru]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
 outputFunction = readfile
 
-# cat=filedelivery; type=int+; label = outputChunkSize: Size of chunks to be delivered in one go (only relevant if "readfile_chunked" is used) (default: 1048576 Bytes)
+# cat=filedelivery; type=int+; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputChunkSize
 outputChunkSize = 1048576
 
 
-# cat=module; type=boolean; label = log:Log each file access
+# cat=module; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:log
 log = 0
 
 
-# cat=debug; type=int[0-3]; label = debug level (output each tag that maches the regex and will be replaced). Please note: This configuration is deprecated. Please consider to use PSR-3 Logger.
+# cat=debug; type=options[0,1,2,3]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:debug
 debug = 0
