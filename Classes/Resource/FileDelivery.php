@@ -312,6 +312,7 @@ class FileDelivery
 
             $this->sendHeader($header);
             $this->outputFile($outputFunction, $file);
+            exit;
         } else {
             print 'File does not exist!';
         }
