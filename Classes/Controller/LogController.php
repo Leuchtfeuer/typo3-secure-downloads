@@ -40,12 +40,17 @@ class LogController extends ActionController
 
     protected $pageRepository = null;
 
+    /**
+     * @todo Use class \TYPO3\CMS\Core\Domain\Repository\PageRepository when dropping TYPO3 9 support.
+     */
     public function __construct(LogRepository $logRepository, PageRepository $pageRepository)
     {
         $this->logRepository = $logRepository;
         $this->pageRepository = $pageRepository;
 
-        parent::__construct();
+        if (version_compare(TYPO3_version, '10.0.0', '<')) {
+            parent::__construct();
+        }
     }
 
     /**
