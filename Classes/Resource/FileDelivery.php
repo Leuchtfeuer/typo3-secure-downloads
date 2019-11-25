@@ -21,13 +21,13 @@ use Bitmotion\SecureDownloads\Request\RequestContext;
 use Bitmotion\SecureDownloads\Utility\HookUtility;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
-use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
-use TYPO3\CMS\Frontend\Utility\EidUtility;
 
 class FileDelivery
 {
@@ -37,9 +37,9 @@ class FileDelivery
     protected $extensionConfiguration;
 
     /**
-     * @var FrontendUserAuthentication
+     * @var UserAspect
      */
-    protected $frontendUserAuthentication;
+    protected $userAspect;
 
     /**
      * @var int
@@ -135,11 +135,7 @@ class FileDelivery
             }
         }
 
-        if ($GLOBALS['TSFE']->fe_user instanceof FrontendUserAuthentication) {
-            $this->frontendUserAuthentication = $GLOBALS['TSFE']->fe_user;
-        } else {
-            $this->initializeUserAuthentication();
-        }
+        $this->userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
 
         if (($this->userId !== 0) && !$this->checkUserAccess() && !$this->checkGroupAccess()) {
             $this->exitScript('Access denied for User!');
@@ -215,20 +211,9 @@ class FileDelivery
         return $this->expiryTime < time();
     }
 
-    /**
-     * @deprecated Will be removed in version 5 as frontendUserAuthentication is injected by PSR-15 middleware
-     */
-    protected function initializeUserAuthentication(): void
-    {
-        trigger_error('Method initializeUserAuthentication() will be removed in version 5.', E_USER_DEPRECATED);
-
-        $this->frontendUserAuthentication = EidUtility::initFeUser();
-        $this->frontendUserAuthentication->fetchGroupData();
-    }
-
     protected function checkUserAccess(): bool
     {
-        return $this->userId === (int)$this->frontendUserAuthentication->user['uid'];
+        return $this->userId === $this->userAspect->get('id');
     }
 
     /**
@@ -250,7 +235,7 @@ class FileDelivery
         }
 
         $transmittedGroups = GeneralUtility::intExplode(',', $this->userGroups);
-        $actualGroups = array_unique(array_map('intval', $this->frontendUserAuthentication->groupData['uid']));
+        $actualGroups = $this->userAspect->get('groupIds');
         sort($actualGroups);
         $excludedGroups = GeneralUtility::intExplode(',', $this->extensionConfiguration->getExcludeGroups());
         $checkableGroups = array_diff($actualGroups, $excludedGroups);
@@ -428,7 +413,7 @@ class FileDelivery
             $log->setMediaType($this->getMimeTypeByFileExtension($pathInfo['extension']));
         }
 
-        $log->setUser((int)$this->frontendUserAuthentication->user['uid']);
+        $log->setUser($this->userAspect->get('id'));
         $log->setPage($this->pageId);
 
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
