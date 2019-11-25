@@ -104,6 +104,10 @@ class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInt
     public function pathShouldBeSecured(string $publicUrl): bool
     {
         if ($this->folderShouldBeSecured($publicUrl)) {
+            if ($this->extensionConfiguration->getSecuredFileTypes() === ExtensionConfiguration::SECURED_FILE_TYPES_WILDCARD) {
+                return true;
+            }
+
             $fileExtension = pathinfo($publicUrl, PATHINFO_EXTENSION);
             if (preg_match($this->securedFileTypesPattern, $fileExtension)) {
                 return true;

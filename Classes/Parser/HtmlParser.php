@@ -13,6 +13,7 @@ namespace Bitmotion\SecureDownloads\Parser;
  *
  ***/
 
+use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -68,7 +69,11 @@ class HtmlParser implements LoggerAwareInterface
             }
         }
         if (substr($this->fileExtensionPattern, 0, 1) !== '\\') {
-            $this->fileExtensionPattern = '\\.(' . $this->fileExtensionPattern . ')';
+            $fileExtensionPattern = $this->fileExtensionPattern;
+            if (trim($fileExtensionPattern) === ExtensionConfiguration::SECURED_FILE_TYPES_WILDCARD) {
+                $fileExtensionPattern = '\\w+';
+            }
+            $this->fileExtensionPattern = '\\.(' . $fileExtensionPattern . ')';
         }
 
         $this->tagPattern = '/["\'](?:' . $this->domainPattern . ')?(\/?(?:' . $this->folderPattern . ')+?.*?(?:(?i)' . $this->fileExtensionPattern . '))["\']?/i';

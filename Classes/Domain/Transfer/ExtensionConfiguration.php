@@ -20,6 +20,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ExtensionConfiguration implements SingletonInterface
 {
+    const SECURED_FILE_TYPES_WILDCARD = '*';
+
     private $additionalMimeTypes = 'txt|text/plain,html|text/html';
 
     private $cachetimeadd = 3600;
