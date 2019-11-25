@@ -15,7 +15,7 @@ $EM_CONF['secure_downloads'] = [
     'constraints' => [
         'depends' => [
             'php' => '7.2.0-7.4.99',
-            'typo3' => '9.5.0-10.1.99',
+            'typo3' => '9.5.0-10.2.99',
         ],
         'conflicts' => [
             'naw_securedl' => '',
