@@ -288,15 +288,13 @@ class FileDelivery
 
         if (file_exists($file)) {
             $this->fileSize = filesize($file);
-
-            if ($this->isProcessed === false && $this->extensionConfiguration->isLog()) {
-                $this->logDownload();
-            }
-
             $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
             $forceDownload = $this->shouldForceDownload($fileExtension);
+            $mimeType = $this->getMimeTypeByFileExtension($fileExtension) ?? $this->getMimeTypeByFileInfo($file) ?? 'application/octet-stream';
 
-            $mimeType = extension_loaded('fileinfo') ? mime_content_type($file) : $this->getMimeTypeByFileExtension($fileExtension);
+            if ($this->isProcessed === false && $this->extensionConfiguration->isLog()) {
+                $this->logDownload($this->fileSize, $mimeType);
+            }
 
             // Hook for output:
             // TODO: This hook is deprecated and will be removed with version 5. Use 'preReadFile' hook instead.
@@ -395,10 +393,10 @@ class FileDelivery
     /**
      * Log the access of the file
      */
-    protected function logDownload(int $fileSize = 0): void
+    protected function logDownload(int $fileSize = 0, string $mimeType = ''): void
     {
         $log = new Log();
-        $log->setFileSize($fileSize ?: $this->fileSize);
+        $log->setFileSize($this->fileSize ?? $fileSize);
 
         if ($fileObject = ResourceFactory::getInstance()->retrieveFileOrFolderObject($this->file)) {
             $log->setFilePath($fileObject->getPublicUrl());
@@ -411,7 +409,7 @@ class FileDelivery
             $log->setFilePath($pathInfo['dirname'] . '/' . $pathInfo['filename']);
             $log->setFileType($pathInfo['extension']);
             $log->setFileName($pathInfo['filename']);
-            $log->setMediaType($this->getMimeTypeByFileExtension($pathInfo['extension']));
+            $log->setMediaType($mimeType);
         }
 
         $log->setUser($this->userAspect->get('id'));
@@ -430,14 +428,14 @@ class FileDelivery
      *
      * @return string mime type
      */
-    protected function getMimeTypeByFileExtension(string $fileExtension): string
+    protected function getMimeTypeByFileExtension(string $fileExtension): ?string
     {
-        // Array with key/value pairs consisting of file extension (without dot in front) and mime type
         $mimeTypes = [
             // MS-Office filetypes
             'pps' => 'application/vnd.ms-powerpoint',
             'doc' => 'application/msword',
             'xls' => 'application/vnd.ms-excel',
+            'ppt' => 'application/vnd.ms-powerpoint',
             'docm' => 'application/vnd.ms-word.document.macroEnabled.12',
             'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'dotm' => 'application/vnd.ms-word.template.macroEnabled.12',
@@ -486,6 +484,29 @@ class FileDelivery
             'swf' => 'application/x-shockwave-flash',
             'htm' => 'text/html',
             'html' => 'text/html',
+            'txt' => 'text/plain',
+            'php' => 'text/html',
+            'css' => 'text/css',
+            'js' => 'application/javascript',
+            'json' => 'application/json',
+            'xml' => 'application/xml',
+            'bmp' => 'image/bmp',
+            'ico' => 'image/vnd.microsoft.icon',
+            'tiff' => 'image/tiff',
+            'tif' => 'image/tiff',
+            'svgz' => 'image/svg+xml',
+            'zip' => 'application/zip',
+            'rar' => 'application/x-rar-compressed',
+            'exe' => 'application/x-msdownload',
+            'msi' => 'application/x-msdownload',
+            'cab' => 'application/vnd.ms-cab-compressed',
+            'mp3' => 'audio/mpeg',
+            'qt' => 'video/quicktime',
+            'psd' => 'image/vnd.adobe.photoshop',
+            'ai' => 'application/postscript',
+            'eps' => 'application/postscript',
+            'ps' => 'application/postscript',
+            'rtf' => 'application/rtf',
         ];
 
         // Read all additional MIME types from the EM configuration into the array $strAdditionalMimeTypesArray
@@ -512,7 +533,12 @@ class FileDelivery
             unset($additionalFileExtension, $additionalMimeType);
         }
 
-        return $mimeTypes[$fileExtension] ?? 'application/octet-stream';
+        return $mimeTypes[$fileExtension] ?? null;
+    }
+
+    protected function getMimeTypeByFileInfo(string $file): ?string
+    {
+        return extension_loaded('fileinfo') ? mime_content_type($file) : null;
     }
 
     /*
