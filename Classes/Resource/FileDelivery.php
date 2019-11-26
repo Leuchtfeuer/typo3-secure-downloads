@@ -313,7 +313,8 @@ class FileDelivery
             $this->outputFile($outputFunction, $file);
             exit;
         }
-        print 'File does not exist!';
+
+        exit('File does not exist!');
     }
 
     protected function shouldForceDownload(string $fileExtension): bool
@@ -325,7 +326,7 @@ class FileDelivery
                 return true;
             }
 
-            $forceDownloadPattern =  sprintf('/^(%s)$/i', $this->extensionConfiguration->getForceDownloadTypes());
+            $forceDownloadPattern = sprintf('/^(%s)$/i', $this->extensionConfiguration->getForceDownloadTypes());
 
             return (bool)preg_match($forceDownloadPattern, $fileExtension);
         }
