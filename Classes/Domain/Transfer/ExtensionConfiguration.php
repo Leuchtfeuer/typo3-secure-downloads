@@ -22,6 +22,15 @@ class ExtensionConfiguration implements SingletonInterface
 {
     const SECURED_FILE_TYPES_WILDCARD = '*';
 
+    const OUTPUT_READ_FILE = 'readfile';
+
+    const OUTPUT_READ_FILE_CHUNKED = 'readfile_chunked';
+
+    const OUTPUT_PASS_THRU = 'fpassthru';
+
+    /**
+     * @deprecated Will be removed in version 5.
+     */
     private $additionalMimeTypes = 'txt|text/plain,html|text/html';
 
     private $cachetimeadd = 3600;
@@ -79,6 +88,9 @@ class ExtensionConfiguration implements SingletonInterface
         }
     }
 
+    /**
+     * @deprecated Will be removed in version 5.
+     */
     public function getAdditionalMimeTypes(): string
     {
         return trim($this->additionalMimeTypes);

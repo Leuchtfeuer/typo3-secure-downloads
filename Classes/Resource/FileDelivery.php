@@ -368,17 +368,17 @@ class FileDelivery
     protected function outputFile(string $outputFunction, string $file): void
     {
         switch ($outputFunction) {
-            case 'readfile_chunked':
+            case ExtensionConfiguration::OUTPUT_READ_FILE_CHUNKED:
                 $this->readFileFactional($file);
                 break;
 
-            case 'fpassthru':
+            case ExtensionConfiguration::OUTPUT_PASS_THRU:
                 $handle = fopen($file, 'rb');
                 fpassthru($handle);
                 fclose($handle);
                 break;
 
-            case 'readfile':
+            case ExtensionConfiguration::OUTPUT_READ_FILE:
                 //fallthrough, this is the default case
             default:
                 readfile($file);
