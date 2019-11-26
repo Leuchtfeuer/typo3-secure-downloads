@@ -19,6 +19,7 @@ use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Bitmotion\SecureDownloads\Request\RequestContext;
 use Bitmotion\SecureDownloads\Utility\HookUtility;
+use Bitmotion\SecureDownloads\Utility\MimeTypeUtility;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
 use TYPO3\CMS\Core\Context\Context;
@@ -290,11 +291,7 @@ class FileDelivery
             $this->fileSize = filesize($file);
             $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
             $forceDownload = $this->shouldForceDownload($fileExtension);
-            $mimeType = $this->getMimeTypeByFileExtension($fileExtension) ?? $this->getMimeTypeByFileInfo($file) ?? 'application/octet-stream';
-
-            if ($this->isProcessed === false && $this->extensionConfiguration->isLog()) {
-                $this->logDownload($this->fileSize, $mimeType);
-            }
+            $mimeType = MimeTypeUtility::getMimeType($file) ?? 'application/octet-stream';
 
             // Hook for output:
             // TODO: This hook is deprecated and will be removed with version 5. Use 'preReadFile' hook instead.
@@ -308,12 +305,15 @@ class FileDelivery
             $params = ['outputFunction' => &$outputFunction, 'header' => &$header, 'fileName' => $fileName, 'mimeType' => $mimeType, 'forceDownload' => $forceDownload];
             HookUtility::executeHook('output', 'preReadFile', $params, $this);
 
+            if ($this->isProcessed === false && $this->extensionConfiguration->isLog()) {
+                $this->logDownload($this->fileSize, $mimeType);
+            }
+
             $this->sendHeader($header);
             $this->outputFile($outputFunction, $file);
             exit;
-        } else {
-            print 'File does not exist!';
         }
+        print 'File does not exist!';
     }
 
     protected function shouldForceDownload(string $fileExtension, bool $forceDownload = false): bool
@@ -419,143 +419,6 @@ class FileDelivery
         $queryBuilder->insert('tx_securedownloads_domain_model_log')->values($log->toArray())->execute();
 
         $this->isProcessed = true;
-    }
-
-    /**
-     * Looks up the mime type for a give file extension
-     *
-     * @param string $fileExtension lowercase file extension
-     *
-     * @return string mime type
-     */
-    protected function getMimeTypeByFileExtension(string $fileExtension): ?string
-    {
-        $mimeTypes = [
-            // MS-Office filetypes
-            'pps' => 'application/vnd.ms-powerpoint',
-            'doc' => 'application/msword',
-            'xls' => 'application/vnd.ms-excel',
-            'ppt' => 'application/vnd.ms-powerpoint',
-            'docm' => 'application/vnd.ms-word.document.macroEnabled.12',
-            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'dotm' => 'application/vnd.ms-word.template.macroEnabled.12',
-            'dotx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
-            'ppsm' => 'application/vnd.ms-powerpoint.slideshow.macroEnabled.12',
-            'ppsx' => 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
-            'pptm' => 'application/vnd.ms-powerpoint.presentation.macroEnabled.12',
-            'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-            'xlsb' => 'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
-            'xlsm' => 'application/vnd.ms-excel.sheet.macroEnabled.12',
-            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'xps' => 'application/vnd.ms-xpsdocument',
-
-            // Open-Office filetypes
-            'odt' => 'application/vnd.oasis.opendocument.text',
-            'ott' => 'application/vnd.oasis.opendocument.text-template',
-            'odg' => 'application/vnd.oasis.opendocument.graphics',
-            'otg' => 'application/vnd.oasis.opendocument.graphics-template',
-            'odp' => 'application/vnd.oasis.opendocument.presentation',
-            'otp' => 'application/vnd.oasis.opendocument.presentation-template',
-            'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
-            'ots' => 'application/vnd.oasis.opendocument.spreadsheet-template',
-            'odc' => 'application/vnd.oasis.opendocument.chart',
-            'otc' => 'application/vnd.oasis.opendocument.chart-template',
-            'odi' => 'application/vnd.oasis.opendocument.image',
-            'oti' => 'application/vnd.oasis.opendocument.image-template',
-            'odf' => 'application/vnd.oasis.opendocument.formula',
-            'otf' => 'application/vnd.oasis.opendocument.formula-template',
-            'odm' => 'application/vnd.oasis.opendocument.text-master',
-            'oth' => 'application/vnd.oasis.opendocument.text-web',
-
-            // Media file types
-            'jpeg' => 'image/jpeg',
-            'jpg' => 'image/jpeg',
-            'jpe' => 'image/jpeg',
-            'gif' => 'image/gif',
-            'png' => 'image/png',
-            'mpeg' => 'video/mpeg',
-            'mpg' => 'video/mpeg',
-            'mpe' => 'video/mpeg',
-            'mov' => 'video/quicktime',
-            'avi' => 'video/x-msvideo',
-            'pdf' => 'application/pdf',
-            'svg' => 'image/svg+xml',
-            'flv' => 'video/x-flv',
-            'swf' => 'application/x-shockwave-flash',
-            'htm' => 'text/html',
-            'html' => 'text/html',
-            'txt' => 'text/plain',
-            'php' => 'text/html',
-            'css' => 'text/css',
-            'js' => 'application/javascript',
-            'json' => 'application/json',
-            'xml' => 'application/xml',
-            'bmp' => 'image/bmp',
-            'ico' => 'image/vnd.microsoft.icon',
-            'tiff' => 'image/tiff',
-            'tif' => 'image/tiff',
-            'svgz' => 'image/svg+xml',
-            'zip' => 'application/zip',
-            'rar' => 'application/x-rar-compressed',
-            'exe' => 'application/x-msdownload',
-            'msi' => 'application/x-msdownload',
-            'cab' => 'application/vnd.ms-cab-compressed',
-            'mp3' => 'audio/mpeg',
-            'qt' => 'video/quicktime',
-            'psd' => 'image/vnd.adobe.photoshop',
-            'ai' => 'application/postscript',
-            'eps' => 'application/postscript',
-            'ps' => 'application/postscript',
-            'rtf' => 'application/rtf',
-        ];
-
-        // Read all additional MIME types from the EM configuration into the array $strAdditionalMimeTypesArray
-        if ($this->extensionConfiguration->getAdditionalMimeTypes()) {
-            $additionalFileExtension = '';
-            $additionalMimeType = '';
-            $arrAdditionalMimeTypeParts = GeneralUtility::trimExplode(
-                ',',
-                $this->extensionConfiguration->getAdditionalMimeTypes(),
-                true
-            );
-
-            foreach ($arrAdditionalMimeTypeParts as $additionalMimeTypeItem) {
-                list($additionalFileExtension, $additionalMimeType) = GeneralUtility::trimExplode(
-                    '|',
-                    $additionalMimeTypeItem
-                );
-                if (!empty($additionalFileExtension) && !empty($additionalMimeType)) {
-                    $additionalFileExtension = mb_strtolower($additionalFileExtension);
-                    $mimeTypes[$additionalFileExtension] = $additionalMimeType;
-                }
-            }
-
-            unset($additionalFileExtension, $additionalMimeType);
-        }
-
-        return $mimeTypes[$fileExtension] ?? null;
-    }
-
-    protected function getMimeTypeByFileInfo(string $file): ?string
-    {
-        return extension_loaded('fileinfo') ? mime_content_type($file) : null;
-    }
-
-    /*
-     * HELPER METHODS
-     *
-     */
-
-    /**
-     * Extracts the file extension out of a complete file name.
-     *
-     * @deprecated Will be removed in version 5. Use pathinfo() instead.
-     */
-    protected function getFileExtensionByFilename(string $fileName): string
-    {
-        trigger_error('Method getFileExtensionByFilename() will be removed in version 5. Use pathinfo() instead.', E_USER_DEPRECATED);
-
-        return mb_strtolower(ltrim(mb_strrchr($fileName, '.'), '.'));
     }
 
     /**
