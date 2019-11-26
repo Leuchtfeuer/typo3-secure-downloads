@@ -70,7 +70,7 @@ class HtmlParser implements LoggerAwareInterface
         }
         if (substr($this->fileExtensionPattern, 0, 1) !== '\\') {
             $fileExtensionPattern = $this->fileExtensionPattern;
-            if (trim($fileExtensionPattern) === ExtensionConfiguration::SECURED_FILE_TYPES_WILDCARD) {
+            if (trim($fileExtensionPattern) === ExtensionConfiguration::FILE_TYPES_WILDCARD) {
                 $fileExtensionPattern = '\\w+';
             }
             $this->fileExtensionPattern = '\\.(' . $fileExtensionPattern . ')';

@@ -44,7 +44,7 @@
                 <source>Force Download: Force Download of specified file types.</source>
             </trans-unit>
             <trans-unit id="forceDownloadType">
-                <source>Force Download Type: A list of file types that should not be opened inline in a browser, separated by a pipe. Only used if "forcedownload" is true.</source>
+                <source>Force Download Type: A list of file types that should not be opened inline in a browser, separated by a pipe. Only used if "forcedownload" is true. You can use an asterisk (*) if you want to force download for all file types.</source>
             </trans-unit>
             <trans-unit id="additionalMimeTypes">
                 <source>Additional Mime Types: Comma separated list of additional MIME types (file extension / mime type pairs, in which file extension and MIME type is separated by a pipe symbol). Can be used to override existing MIME type settings of the extension as well.</source>

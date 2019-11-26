@@ -316,26 +316,21 @@ class FileDelivery
         print 'File does not exist!';
     }
 
-    protected function shouldForceDownload(string $fileExtension, bool $forceDownload = false): bool
+    protected function shouldForceDownload(string $fileExtension): bool
     {
         if ($this->extensionConfiguration->isForceDownload()) {
-            $forceDownloadTypes = GeneralUtility::trimExplode('|', $this->extensionConfiguration->getForceDownloadTypes());
+            $forceDownloadTypes = $this->extensionConfiguration->getForceDownloadTypes();
 
-            // Handle the regex
-            foreach ($forceDownloadTypes as &$forceDownloadType) {
-                if (strpos($forceDownloadType, '?') !== false) {
-                    $position = strpos($forceDownloadType, '?');
-                    $start = $position - 1;
-                    $end = $position + 1;
-                    $forceDownloadTypes[] = substr($forceDownloadType, 0, $start) . substr($forceDownloadType, $end);
-                    $forceDownloadType = str_replace('?', '', $forceDownloadType);
-                }
+            if ($forceDownloadTypes === ExtensionConfiguration::FILE_TYPES_WILDCARD) {
+                return true;
             }
-            unset($forceDownloadType);
-            $forceDownload = $forceDownload || (is_array($forceDownloadTypes) && in_array($fileExtension, $forceDownloadTypes, true));
+
+            $forceDownloadPattern =  sprintf('/^(%s)$/i', $this->extensionConfiguration->getForceDownloadTypes());
+
+            return (bool)preg_match($forceDownloadPattern, $fileExtension);
         }
 
-        return $forceDownload;
+        return false;
     }
 
     protected function getHeader(string $mimeType, string $fileName, bool $forceDownload): array

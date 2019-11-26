@@ -20,7 +20,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ExtensionConfiguration implements SingletonInterface
 {
-    const SECURED_FILE_TYPES_WILDCARD = '*';
+    const FILE_TYPES_WILDCARD = '*';
 
     const OUTPUT_READ_FILE = 'readfile';
 
