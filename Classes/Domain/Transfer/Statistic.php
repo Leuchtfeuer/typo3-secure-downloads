@@ -12,6 +12,7 @@ namespace Bitmotion\SecureDownloads\Domain\Transfer;
  *  (c) 2019 Florian Wessels <f.wessels@bitmotion.de>, Bitmotion GmbH
  *
  ***/
+
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 class Statistic
