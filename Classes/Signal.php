@@ -27,7 +27,6 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Service\EnvironmentService;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class Signal implements SingletonInterface
 {
@@ -47,17 +46,12 @@ class Signal implements SingletonInterface
 
     public function getPublicUrl(ResourceStorage $storage, AbstractDriver $driver, ResourceInterface $resourceObject, bool $relativeToCurrentScript, array $urlData): void
     {
-        if ($driver instanceof LocalDriver) {
+        if ($driver instanceof LocalDriver && $resourceObject instanceof File) {
             try {
                 $publicUrl = $driver->getPublicUrl($resourceObject->getIdentifier());
                 if ($this->sdlService->pathShouldBeSecured($publicUrl)) {
                     if ($this->environmentService->isEnvironmentInFrontendMode()) {
                         $urlData['publicUrl'] = $this->sdlService->publishResourceUri($publicUrl);
-//                        DebuggerUtility::var_dump([
-//                            'relative' => $relativeToCurrentScript,
-//                            'url' => $urlData['publicUrl'],
-//                            'orig' => $publicUrl,
-//                        ]);
                     } elseif ($this->environmentService->isEnvironmentInBackendMode()) {
                         $urlData['publicUrl'] = '';
                     }
