@@ -4,14 +4,8 @@
           product-name="secure_downloads">
         <header/>
         <body>
-            <trans-unit id="category.parsing">
-                <source>Parsing</source>
-            </trans-unit>
-            <trans-unit id="category.security">
-                <source>Security</source>
-            </trans-unit>
-            <trans-unit id="category.link">
-                <source>Link Generation</source>
+            <trans-unit id="checkAccess">
+                <source>Check Direct File Access</source>
             </trans-unit>
             <trans-unit id="domain">
                 <source>Domain: A domain prefix before the secured directories part (e.g. https://www.example.com/). Not needed for internal (relative) links.</source>
@@ -56,7 +50,7 @@
                 <source>Output Chunk Size: Size of chunks to be delivered in one go (only relevant if "readfile_chunked" is used) (default: 1048576 Bytes = 1 MB).</source>
             </trans-unit>
             <trans-unit id="log">
-                <source>Log: Log each file access. This option will enable a backend module.</source>
+                <source>Log Module: Log each file access. This option will enable a backend module.</source>
             </trans-unit>
             <trans-unit id="debug">
                 <source>Debug Level: Debug level (output each tag that matches the regex and will be replaced). Please note: This configuration is deprecated. Please consider to use PSR-3 Logger.</source>

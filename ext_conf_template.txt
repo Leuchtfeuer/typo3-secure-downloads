@@ -1,50 +1,50 @@
-# customsubcategory=parsing=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:category.parsing;
-# cat=basic/parsing; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:domain
-domain = http://mydomain.com/|http://my.other.domain.org/
+# cat=Parsing/010; type=user[Bitmotion\SecureDownloads\UserFunctions\CheckConfiguration->render]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:checkAccess
+checkAccess = 0
 
-# cat=basic/parsing; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:securedDirs
+# cat=Parsing/020; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:securedDirs
 securedDirs = typo3temp|fileadmin
 
-# cat=basic/parsing; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:securedFileTypes
+# cat=Parsing/030; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:securedFileTypes
 securedFiletypes = pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
 
-
-# customsubcategory=security=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:category.security;
-# cat=basic/security; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:enableGroupCheck
-enableGroupCheck = 0
-
-# cat=basic/security; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:groupCheckDirs
-groupCheckDirs =
-
-# cat=basic/security; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:excludeGroups
-excludeGroups =
+# cat=Parsing/040; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:domain
+domain = http://mydomain.com/|http://my.other.domain.org/
 
 
-# customsubcategory=link=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:category.link;
-# cat=basic/link; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:linkPrefix
+# cat=Ling Generation/010; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:linkPrefix
 linkPrefix = download
 
-# cat=basic/link; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:tokenPrefix
+# cat=Ling Generation/020; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:tokenPrefix
 tokenPrefix = sdl-
 
-# cat=basic/link; type=int+; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:cacheTimeAdd
+# cat=Ling Generation/030; type=int+; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:cacheTimeAdd
 cachetimeadd = 3600
 
 
-# cat=filedelivery; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownload
-forcedownload = 0
+# cat=Group Check/010; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:enableGroupCheck
+enableGroupCheck = 0
 
-# cat=filedelivery; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownloadType
-forcedownloadtype = odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
+# cat=Group Check/020; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:groupCheckDirs
+groupCheckDirs =
 
-# cat=filedelivery; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:additionalMimeTypes
-additionalMimeTypes = txt|text/plain,html|text/html
+# cat=Group Check/030; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:excludeGroups
+excludeGroups =
 
-# cat=filedelivery; type=options[readfile,redfile_chnunked,fpassthru]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
+
+# cat=File Delivery/010; type=options[readfile,redfile_chnunked,fpassthru]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
 outputFunction = readfile
 
-# cat=filedelivery; type=int+; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputChunkSize
+# cat=File Delivery/050; type=int+; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputChunkSize
 outputChunkSize = 1048576
+
+# cat=File Delivery/030; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownload
+forcedownload = 0
+
+# cat=File Delivery/040; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownloadType
+forcedownloadtype = odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
+
+# cat=File Delivery/050; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:additionalMimeTypes
+additionalMimeTypes = txt|text/plain,html|text/html
 
 
 # cat=module; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:log
