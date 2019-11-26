@@ -17,13 +17,16 @@ call_user_func(
         }
 
         // Add overlay for file list icons if file or folder is secured
-        $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
-        $signalSlotDispatcher->connect(
-            \TYPO3\CMS\Core\Imaging\IconFactory::class,
-            'buildIconForResourceSignal',
-            \Bitmotion\SecureDownloads\Signal::class,
-            'buildIconForResourceSignal'
-        );
+        // TODO: Remove this when dropping TYPO3 9 LTS support.
+        if (version_compare(TYPO3_version, '10.0.0', '<')) {
+            $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
+            $signalSlotDispatcher->connect(
+                \TYPO3\CMS\Core\Imaging\IconFactory::class,
+                'buildIconForResourceSignal',
+                \Bitmotion\SecureDownloads\Signal::class,
+                'buildIconForResourceSignal'
+            );
+        }
 
         // Register the backend module if the log option is set in extension configuration
         if ($configuration->isLog()) {

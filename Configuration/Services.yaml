@@ -1,0 +1,11 @@
+services:
+  Bitmotion\SecureDownloads\EventListener\SecureDownloadsEventListener:
+    tags:
+      - name: event.listener
+        identifier: sdl.generatePublicUrlForResource
+        method: onResourceStorageEmitPreGeneratePublicUrlSignal
+        event: TYPO3\CMS\Core\Resource\Event\GeneratePublicUrlForResourceEvent
+      - name: event.listener
+        identifier: sdl.onIconFactoryEmitBuilderIconForResource
+        method: onIconFactoryEmitBuildIconForResourceSignal
+        event: TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent

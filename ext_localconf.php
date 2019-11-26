@@ -23,13 +23,16 @@ call_user_func(
         );
 
         // Connect to signal slots
-        $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
-        $signalSlotDispatcher->connect(
-            \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-            \TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
-            \Bitmotion\SecureDownloads\Signal::class,
-            'getPublicUrl'
-        );
+        // TODO: Remove this when dropping TYPO3 9 LTS support.
+        if (version_compare(TYPO3_version, '10.0.0', '<')) {
+            $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
+            $signalSlotDispatcher->connect(
+                \TYPO3\CMS\Core\Resource\ResourceStorage::class,
+                \TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
+                \Bitmotion\SecureDownloads\Signal::class,
+                'getPublicUrl'
+            );
+        }
 
         // Add link prefix to additionalAbsRefPrefixDirectories
         $configuration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration::class);
