@@ -94,7 +94,7 @@ class ExtensionConfiguration implements SingletonInterface
      */
     public function getDebug(): int
     {
-        trigger_error('Method getDebug() will be removed in version 5..', E_USER_DEPRECATED);
+        trigger_error('Method getDebug() will be removed in version 5.', E_USER_DEPRECATED);
 
         return (int)$this->debug;
     }
