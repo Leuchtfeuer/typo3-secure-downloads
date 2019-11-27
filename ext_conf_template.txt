@@ -11,13 +11,13 @@ securedFiletypes = pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
 domain = http://mydomain.com/|http://my.other.domain.org/
 
 
-# cat=Ling Generation/010; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:linkPrefix
+# cat=Link Generation/010; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:linkPrefix
 linkPrefix = download
 
-# cat=Ling Generation/020; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:tokenPrefix
+# cat=Link Generation/020; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:tokenPrefix
 tokenPrefix = sdl-
 
-# cat=Ling Generation/030; type=int+; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:cacheTimeAdd
+# cat=Link Generation/030; type=int+; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:cacheTimeAdd
 cachetimeadd = 3600
 
 
