@@ -43,6 +43,7 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 
     /**
      * @var RequestContext
+     * @deprecated Will be removed in version 5.
      */
     protected $requestContext;
 
@@ -165,6 +166,9 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
         return GeneralUtility::isFirstPartOfStr($this->resourcesSourcePath, $this->getPathSite());
     }
 
+    /**
+     * @deprecated Will be removed in version 5.
+     */
     protected function getRequestContext(): RequestContext
     {
         if ($this->requestContext === null) {
@@ -176,6 +180,8 @@ abstract class AbstractResourcePublishingTarget implements ResourcePublishingTar
 
     /**
      * Creates the request context
+     *
+     * @deprecated Will be removed in version 5.
      */
     protected function buildRequestContext(): void
     {

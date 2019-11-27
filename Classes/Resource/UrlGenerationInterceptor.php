@@ -16,7 +16,7 @@ namespace Bitmotion\SecureDownloads\Resource;
 use Bitmotion\SecureDownloads\Signal;
 
 /**
- * @deprecated
+ * @deprecated Will be removed in version 5.
  */
 class UrlGenerationInterceptor extends Signal
 {

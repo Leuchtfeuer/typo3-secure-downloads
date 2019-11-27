@@ -19,6 +19,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Service\EnvironmentService;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
+/**
+ * @deprecated Will be removed in version 5.
+ */
 class RequestContext
 {
     /**

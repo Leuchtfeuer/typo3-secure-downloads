@@ -17,8 +17,13 @@ use Bitmotion\SecureDownloads\Cache\EncodeCache;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Bitmotion\SecureDownloads\Utility\HookUtility;
 use Firebase\JWT\JWT;
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Service\EnvironmentService;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePublishingTarget
 {
@@ -49,8 +54,10 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         trigger_error('Method publishResource() will be removed in version 5.', E_USER_DEPRECATED);
 
         $publicUrl = false;
+        $environmentService = GeneralUtility::makeInstance(EnvironmentService::class);
+
         // We only manipulate the URL if we are in the backend or in FAL mode in FE (otherwise we parse the HTML)
-        if (!$this->getRequestContext()->isFrontendRequest()) {
+        if (!$environmentService->isEnvironmentInFrontendMode()) {
             $this->setResourcesSourcePath($this->getResourcesSourcePathByResourceStorage($resource->getStorage()));
             if ($this->isSourcePathInDocumentRoot()) {
                 // We need to use absolute paths then or copy the files around, or...
@@ -67,7 +74,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      * Checks if a resource which lies in document root is really publicly available
      * This is currently only done by checking configured secure paths, not by requesting the resources
      *
-     * @deprecated Will be removed in version 5.
+     * @deprecated Will be removed in version 5. Use the SecureDownloadService instead.
      */
     protected function isPubliclyAvailable(ResourceInterface $resource): bool
     {
@@ -97,8 +104,10 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
      */
     protected function buildUri(string $resourceUri): string
     {
-        $user = $this->getRequestContext()->getUserId();
-        $userGroups = $this->getRequestContext()->getUserGroupIds();
+        /** @var UserAspect $userAspect */
+        $userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
+        $user = $userAspect->get('id');
+        $userGroups = $userAspect->getGroupIds();
 
         $hash = md5($user . $userGroups . $resourceUri . $GLOBALS['TSFE']->id);
 
@@ -135,15 +144,14 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         // Execute hook for manipulating payload
         HookUtility::executeHook('publishing', 'payload', $payload, $this);
 
-        return JWT::encode($payload, $this->getRequestContext()->getAdditionalSecret(), 'HS256');
+        return JWT::encode($payload, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], 'HS256');
     }
 
     protected function calculateLinkLifetime(): int
     {
-        $lifeTimeToAdd = $this->extensionConfiguration->getCacheTimeAdd();
-        $requestCacheLifetime = $this->getRequestContext()->getCacheLifetime();
-        $cacheLifetime = $requestCacheLifetime > 0 ? $requestCacheLifetime : self::DEFAULT_CACHE_LIFETIME;
+        // TODO: TSFE should always be available when dropping HTML parsing.
+        $cacheTimeout = ($GLOBALS['TSFE'] instanceof TypoScriptFrontendController && is_array($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->get_cache_timeout() : self::DEFAULT_CACHE_LIFETIME;
 
-        return $cacheLifetime + $GLOBALS['EXEC_TIME'] + $lifeTimeToAdd;
+        return $cacheTimeout + $GLOBALS['EXEC_TIME'] + $this->extensionConfiguration->getCacheTimeAdd();
     }
 }

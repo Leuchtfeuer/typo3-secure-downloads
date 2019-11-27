@@ -17,7 +17,6 @@ use Bitmotion\SecureDownloads\Cache\DecodeCache;
 use Bitmotion\SecureDownloads\Domain\Model\Log;
 use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
-use Bitmotion\SecureDownloads\Request\RequestContext;
 use Bitmotion\SecureDownloads\Utility\HookUtility;
 use Bitmotion\SecureDownloads\Utility\MimeTypeUtility;
 use Firebase\JWT\JWT;
@@ -152,8 +151,7 @@ class FileDelivery
             $data = DecodeCache::getCache($jwt);
         } else {
             try {
-                $requestContext = GeneralUtility::makeInstance(RequestContext::class);
-                $data = JWT::decode($jwt, $requestContext->getAdditionalSecret(), ['HS256']);
+                $data = JWT::decode($jwt, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], ['HS256']);
                 DecodeCache::addCache($jwt, $data);
             } catch (SignatureInvalidException $exception) {
                 $this->exitScript('Hash invalid! Access denied!');
@@ -196,10 +194,10 @@ class FileDelivery
         return $this->calculatedHash === $this->hash;
     }
 
-    protected function exitScript(string $message): void
+    protected function exitScript(string $message, $httpStatus = HttpUtility::HTTP_STATUS_403): void
     {
         // TODO: Log message?
-        HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);
+        HttpUtility::setResponseCodeAndExit($httpStatus);
     }
 
     /**
@@ -311,17 +309,17 @@ class FileDelivery
 
             $this->sendHeader($header);
             $this->outputFile($outputFunction, $file);
-            exit;
+            $this->exitScript('Okay', HttpUtility::HTTP_STATUS_200);
         }
 
-        exit('File does not exist!');
+        $this->exitScript('File does not exist!', HttpUtility::HTTP_STATUS_404);
     }
 
     protected function shouldForceDownload(string $fileExtension): bool
     {
-        if ($this->extensionConfiguration->isForceDownload()) {
-            $forceDownloadTypes = $this->extensionConfiguration->getForceDownloadTypes();
+        $forceDownloadTypes = $this->extensionConfiguration->getForceDownloadTypes();
 
+        if ($this->extensionConfiguration->isForceDownload() && !empty($forceDownloadTypes)) {
             if ($forceDownloadTypes === ExtensionConfiguration::FILE_TYPES_WILDCARD) {
                 return true;
             }
