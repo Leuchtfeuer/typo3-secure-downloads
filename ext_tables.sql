@@ -11,5 +11,5 @@ CREATE TABLE tx_securedownloads_domain_model_log (
 	protected varchar(255) DEFAULT '' NOT NULL,
 	host varchar(255) DEFAULT '' NOT NULL,
 	user int(11) unsigned DEFAULT '0',
-	page int(11) DEFAULT NULL,
+	page int(11) DEFAULT NULL
 );
