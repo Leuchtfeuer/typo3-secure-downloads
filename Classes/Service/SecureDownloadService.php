@@ -45,6 +45,8 @@ class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInt
 
     /**
      * This method is called by the frontend rendering hook contentPostProc->output
+     *
+     * @deprecated Parsing the generated HTML is deprecated. All public URLs to files should be retrieved by TYPO3 API.
      */
     public function parseFE(array &$parameters, TypoScriptFrontendController $typoScriptFrontendController)
     {
@@ -54,6 +56,8 @@ class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInt
     /**
      * Lazily instantiates the HTML parser
      * Must be called AFTER the configuration manager has been initialized
+     *
+     * @deprecated Parsing the generated HTML is deprecated. All public URLs to files should be retrieved by TYPO3 API.
      */
     public function getHtmlParser(): HtmlParser
     {

@@ -40,6 +40,9 @@ class ExtensionConfiguration implements SingletonInterface
      */
     private $debug = 0;
 
+    /**
+     * @deprecated Will be removed in version 5. You should consider to user the TYPO3 API.
+     */
     private $domain = 'http://mydomain.com/|http://my.other.domain.org/';
 
     private $enableGroupCheck = false;
@@ -111,8 +114,13 @@ class ExtensionConfiguration implements SingletonInterface
         return (int)$this->debug;
     }
 
+    /**
+     * @deprecated Will be removed in version 5. You should consider to user the TYPO3 API.
+     */
     public function getDomain(): string
     {
+        trigger_error('Method getDomain() will be removed in version 5.', E_USER_DEPRECATED);
+
         return trim($this->domain);
     }
 
