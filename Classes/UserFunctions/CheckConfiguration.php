@@ -19,10 +19,19 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class CheckConfiguration
 {
+    /**
+     * @var ExtensionConfiguration
+     */
     protected $extensionConfiguration;
 
+    /**
+     * @var array
+     */
     protected $directories = [];
 
+    /**
+     * @var array
+     */
     protected $missingDirectories = [];
 
     public function __construct()
@@ -49,7 +58,7 @@ class CheckConfiguration
         return $this->getNotSupportedInfo();
     }
 
-    protected function setDirectories()
+    protected function setDirectories(): void
     {
         $securedDirectories = GeneralUtility::trimExplode('|', $this->extensionConfiguration->getSecuredDirs(), true);
         $rootDirectory = Environment::getPublicPath() . '/';

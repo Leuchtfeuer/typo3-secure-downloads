@@ -17,9 +17,21 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class HookUtility
 {
-    public static function executeHook(string $category, string $name, &$params, object &$ref)
+    const VENDOR_NAME = 'bitmotion';
+
+    const EXTENSION_NAME = 'secure_downloads';
+
+    /**
+     * Executes hooks.
+     *
+     * @param string $category The category of the hook.
+     * @param string $name     The name of the hook within the category namespace.
+     * @param mixed  $params   Various parameters handled by the hook.
+     * @param object $ref      Reference to parent object.
+     */
+    public static function executeHook(string $category, string $name, &$params, object &$ref): void
     {
-        foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads'][$category][$name] ?? [] as $_funcRef) {
+        foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][self::VENDOR_NAME][self::EXTENSION_NAME][$category][$name] ?? [] as $_funcRef) {
             if ($_funcRef) {
                 GeneralUtility::callUserFunction($_funcRef, $params, $ref);
             }

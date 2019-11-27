@@ -26,10 +26,19 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Service\EnvironmentService;
 
+/**
+ * This event listener listens to PSR-14 events given in TYPO3 10 and above.
+ */
 class SecureDownloadsEventListener implements SingletonInterface
 {
+    /**
+     * @var SecureDownloadService
+     */
     protected $sdlService;
 
+    /**
+     * @var EnvironmentService
+     */
     protected $environmentService;
 
     public function __construct()
@@ -39,6 +48,12 @@ class SecureDownloadsEventListener implements SingletonInterface
         $this->environmentService = GeneralUtility::makeInstance(EnvironmentService::class);
     }
 
+    /**
+     * This will secure a link when given file is underneath a protected directory and the file type matches the configured
+     * file types. It will blank the URL of files when we are in backend context so that no thumbnails will be shown.
+     *
+     * @param GeneratePublicUrlForResourceEvent $event The event.
+     */
     public function onResourceStorageEmitPreGeneratePublicUrlSignal(GeneratePublicUrlForResourceEvent $event): void
     {
         $driver = $event->getDriver();
@@ -60,6 +75,11 @@ class SecureDownloadsEventListener implements SingletonInterface
         }
     }
 
+    /**
+     * Will ad an overlay icon to secured directories and files when browsing the file list module.
+     *
+     * @param ModifyIconForResourcePropertiesEvent $event The event.
+     */
     public function onIconFactoryEmitBuildIconForResourceSignal(ModifyIconForResourcePropertiesEvent $event): void
     {
         $resource = $event->getResource();

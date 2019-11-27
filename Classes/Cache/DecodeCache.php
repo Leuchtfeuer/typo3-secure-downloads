@@ -13,6 +13,9 @@ namespace Bitmotion\SecureDownloads\Cache;
  *
  ***/
 
+/**
+ * Stores decoded JSON web token data.
+ */
 class DecodeCache extends AbstractCache
 {
 }

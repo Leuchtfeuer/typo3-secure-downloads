@@ -18,6 +18,9 @@ use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExis
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * Transfer object for getting extension configuration.
+ */
 class ExtensionConfiguration implements SingletonInterface
 {
     const FILE_TYPES_WILDCARD = '*';
@@ -33,6 +36,12 @@ class ExtensionConfiguration implements SingletonInterface
      */
     private $additionalMimeTypes = 'txt|text/plain,html|text/html';
 
+    /**
+     * The value will be added to configured cache lifetime of the page, where the resource is embedded in.
+     * If there is no page, a default link timeout will be added.
+     *
+     * @var int The additional timeout for generated tokens in seconds.
+     */
     private $cachetimeadd = 3600;
 
     /**
@@ -45,28 +54,99 @@ class ExtensionConfiguration implements SingletonInterface
      */
     private $domain = 'http://mydomain.com/|http://my.other.domain.org/';
 
+    /**
+     * If enabled, given groups in token data will used to match groups of actual user.
+     * Group check is disabled be default.
+     *
+     * @var bool True if a group check is to take place.
+     */
     private $enableGroupCheck = false;
 
+    /**
+     * Identifier of groups, which should not be respected in group check.
+     * Will only be used, when group check is enabled.
+     *
+     * @var string Comma separated list of groups, which should be excluded from group check.
+     */
     private $excludeGroups = '';
 
-    private $forcedownload = false;
-
-    private $forcedownloadtype = 'odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz';
-
+    /**
+     * The group check can be limited to certain directories. This will only be used if group check is enabled.
+     * If group check is enabled and group check dirs is empty, all secured directories will be handled by group check.
+     *
+     * @var string The directories which should be included in group check.
+     */
     private $groupCheckDirs = '';
 
+    /**
+     * Download of specific file types can be forced.
+     *
+     * @var bool True if the download of configured file types should be forced.
+     */
+    private $forcedownload = false;
+
+    /**
+     * This pipe separated list will be used to figure out, whether a file should be forced to download or not.
+     * The force download type is only be used if force download is set to true.
+     *
+     * @var string File types that should be forced to download.
+     */
+    private $forcedownloadtype = 'odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz';
+
+    /**
+     * Secured files downloaded can be tracked. If you want so, you can enable this option. In addition, a dedicated backend
+     * module will be enabled where you can find the data.
+     *
+     * @var bool If true, the log module will be enabled.
+     */
     private $log = false;
 
+    /**
+     * If files should be delivered chunked, this size will be used to denominate the file.
+     *
+     * @var int Chunk size in byte.
+     */
     private $outputChunkSize = 1048576;
 
+    /**
+     * The output function, which should be used to deliver secured files from the server to the web browser of the user.
+     *
+     * @var string One of "readfile", "readfile_chunked" or "fpassthru"
+     */
     private $outputFunction = 'readfile';
 
+    /**
+     * Only files located in these folders are secured. Folders are separated by a pipe. Also, all subdirectories are included.
+     *
+     * @var string Directories which should be secured.
+     */
     private $securedDirs = 'typo3temp|fileadmin';
 
+    /**
+     * A pipe separated list of file types, that should be secured. Files will only be secured when they are located underneath
+     * one of the configured secured directories. Optional characters can be marked with a question mark. For example: The file
+     * type "jpe?g" will match both, "jpg" and "jpeg".
+     *
+     * @var string File types that should be secured.
+     */
     private $securedFiletypes = 'pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz';
 
+    /**
+     * This prefix will be appended to your domain. All secured links are structured as follows:
+     * https://www.mydomain.com/[$linkPrefix]/[$tokenPrefix][JWT]/my_secured_file.jpg
+     * https://www.bitmotion.de/download/sdl-[JSON Web Token]/bitmotion_whirl.svg
+     *
+     * @var string Prefix of secured links will be appended to the domain.
+     */
     private $linkPrefix = 'download';
 
+    /**
+     * Prefix before the Json web token. This value might be empty. All secured links are structured as follows:
+     * https://www.mydomain.com/[$linkPrefix]/[$tokenPrefix][JWT]/my_secured_file.jpg
+     * https://www.bitmotion.de/download/sdl-[JSON Web Token]/bitmotion_whirl.svg
+     *
+     * @var string Prefix of tokens.
+     */
     private $tokenPrefix = 'sdl-';
 
     /**
@@ -82,6 +162,11 @@ class ExtensionConfiguration implements SingletonInterface
         }
     }
 
+    /**
+     * Remove invalid configuration from the extension configuration array and map values to properties of this class.
+     *
+     * @param array $configuration The extension configuration.
+     */
     protected function setPropertiesFromConfiguration(array $configuration): void
     {
         foreach ($configuration as $key => $value) {

@@ -15,21 +15,48 @@ namespace Bitmotion\SecureDownloads\Cache;
 
 use TYPO3\CMS\Core\SingletonInterface;
 
+/**
+ * Abstract class for caching data.
+ * Mainly used for storing token data.
+ */
 abstract class AbstractCache implements SingletonInterface
 {
+    /**
+     * @var array Contains the cache entries for given cache.
+     */
     protected static $_cache = [];
 
+    /**
+     * Retrieves data from the cache.
+     *
+     * @param string $key The cache key.
+     *
+     * @return mixed The cache data or null if cache entry does not exist.
+     */
     public static function getCache(string $key)
     {
         return self::$_cache[$key] ?? null;
     }
 
+    /**
+     * Checks whether a cache entry for given key exists.
+     *
+     * @param string $key The cache key
+     *
+     * @return bool Returns true, if cache with given key exists; false otherwise.
+     */
     public static function hasCache(string $key): bool
     {
         return isset(self::$_cache[$key]);
     }
 
-    public static function addCache(string $key, $value)
+    /**
+     * Adds data to the cache. Existing entries will be overwritten.
+     *
+     * @param string $key The cache key.
+     * @param mixed  $value The cache data.
+     */
+    public static function addCache(string $key, $value): void
     {
         self::$_cache[$key] = $value;
     }

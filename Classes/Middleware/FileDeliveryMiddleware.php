@@ -21,8 +21,14 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * PSR-15 middleware for delivering secured files to the browser.
+ */
 class FileDeliveryMiddleware implements MiddlewareInterface
 {
+    /**
+     * @var string The URL schema before JWT
+     */
     protected $assetPrefix;
 
     public function __construct()

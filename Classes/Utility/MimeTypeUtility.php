@@ -98,7 +98,14 @@ class MimeTypeUtility
         'rtf' => 'application/rtf',
     ];
 
-    public static function getMimeType(string $file): string
+    /**
+     * Gets the mime type of a file.
+     *
+     * @param string $file Path to the file.
+     *
+     * @return string The mime type.
+     */
+    public static function getMimeType(string $file): ?string
     {
         $mimeTypes = self::$mimeTypes;
 
@@ -128,7 +135,12 @@ class MimeTypeUtility
         return $mimeType ? $mimeType : null;
     }
 
-    protected static function addMimeTypesToGlobalsArray(array $mimeTypes)
+    /**
+     * Add configured mime types to global TYPO3 mime types, so that the FileInfo class can handle them.
+     *
+     * @param array $mimeTypes The mime types to add.
+     */
+    protected static function addMimeTypesToGlobalsArray(array $mimeTypes): void
     {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['FileInfo']['fileExtensionToMimeType'] += $mimeTypes;
     }

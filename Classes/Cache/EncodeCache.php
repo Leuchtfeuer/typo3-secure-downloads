@@ -13,8 +13,18 @@ namespace Bitmotion\SecureDownloads\Cache;
  *
  ***/
 
+/**
+ * Stores encoded JSON web token data.
+ */
 class EncodeCache extends AbstractCache
 {
+    /**
+     * Retrieves data from the cache.
+     *
+     * @param string $key The cache key.
+     *
+     * @return string The cache data or an empty string if cache entry does not exist.
+     */
     public static function getCache(string $key): string
     {
         return self::$_cache[$key] ?? '';

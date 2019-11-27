@@ -29,8 +29,9 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Service\EnvironmentService;
 
 /**
- * @todo: Remove this class when dropping TYPO3 9 LTS support
- * @deprecated Use PSR-14 event instead.
+ * @deprecated Will be removed in version 5. Use PSR-14 event instead.
+ *
+ * @see \Bitmotion\SecureDownloads\EventListener\SecureDownloadsEventListener
  */
 class Signal implements SingletonInterface
 {
