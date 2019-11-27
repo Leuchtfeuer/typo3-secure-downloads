@@ -241,17 +241,7 @@ class ExtensionConfiguration implements SingletonInterface
 
     public function getOutputChunkSize(): int
     {
-        $units = ['', 'K', 'M', 'G'];
-        $memoryLimit = ini_get('memory_limit');
-
-        if (!is_numeric($memoryLimit)) {
-            $suffix = strtoupper(substr($memoryLimit, -1));
-            $exponent = array_flip($units)[$suffix] ?? 1;
-            $memoryLimit = (int)$memoryLimit * (1024 ** $exponent);
-        }
-
-        // Set max. chunk size to php memory limit - 64 kB
-        $maxChunkSize = $memoryLimit - 64 * 1024;
+        $maxChunkSize = $this->getMaxChunkSize();
 
         return (int)(($this->outputChunkSize > $maxChunkSize) ? $maxChunkSize : $this->outputChunkSize);
     }
@@ -279,5 +269,25 @@ class ExtensionConfiguration implements SingletonInterface
     public function getTokenPrefix(): string
     {
         return trim($this->tokenPrefix, '/');
+    }
+
+    /**
+     * Prevents chunk size to be greater than allowed PHP memory limit.
+     *
+     * @return int The maximum chunk size.
+     */
+    protected function getMaxChunkSize(): int
+    {
+        $units = ['', 'K', 'M', 'G'];
+        $memoryLimit = ini_get('memory_limit');
+
+        if (!is_numeric($memoryLimit)) {
+            $suffix = strtoupper(substr($memoryLimit, -1));
+            $exponent = array_flip($units)[$suffix] ?? 1;
+            $memoryLimit = (int)$memoryLimit * (1024 ** $exponent);
+        }
+
+        // Set max. chunk size to php memory limit - 64 kB
+        return $memoryLimit - 64 * 1024;
     }
 }
