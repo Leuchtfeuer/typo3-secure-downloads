@@ -21,6 +21,7 @@ use TYPO3\CMS\Core\Resource\Event\GeneratePublicUrlForResourceEvent;
 use TYPO3\CMS\Core\Resource\Exception;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -59,7 +60,7 @@ class SecureDownloadsEventListener implements SingletonInterface
         $driver = $event->getDriver();
         $resource = $event->getResource();
 
-        if ($driver instanceof LocalDriver && $resource instanceof File) {
+        if ($driver instanceof LocalDriver && ($resource instanceof File || $resource instanceof ProcessedFile)) {
             try {
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier());
                 if ($this->sdlService->pathShouldBeSecured($publicUrl)) {

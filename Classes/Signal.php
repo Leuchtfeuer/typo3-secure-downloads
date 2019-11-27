@@ -21,6 +21,7 @@ use TYPO3\CMS\Core\Resource\Driver\LocalDriver;
 use TYPO3\CMS\Core\Resource\Exception;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -50,11 +51,11 @@ class Signal implements SingletonInterface
     }
 
     /**
-     * @deprecated Use PSR-14 event instead.
+     * @deprecated Will be removed in version 5. Use PSR-14 event instead.
      */
     public function getPublicUrl(ResourceStorage $storage, AbstractDriver $driver, ResourceInterface $resourceObject, bool $relativeToCurrentScript, array $urlData): void
     {
-        if ($driver instanceof LocalDriver && $resourceObject instanceof File) {
+        if ($driver instanceof LocalDriver && ($resourceObject instanceof File || $resourceObject instanceof ProcessedFile)) {
             try {
                 $publicUrl = $driver->getPublicUrl($resourceObject->getIdentifier());
                 if ($this->sdlService->pathShouldBeSecured($publicUrl)) {
@@ -71,7 +72,7 @@ class Signal implements SingletonInterface
     }
 
     /**
-     * @deprecated Use PSR-14 event instead.
+     * @deprecated Will be removed in version 5. Use PSR-14 event instead.
      */
     public function buildIconForResourceSignal(ResourceInterface $resource, string $size, array $options, string $iconIdentifier, ?string $overlayIdentifier): array
     {
