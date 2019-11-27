@@ -5,7 +5,7 @@
         <header/>
         <body>
             <trans-unit id="checkAccess">
-                <source>Check Direct File Access</source>
+                <source>Check Direct File Access: This is only a vestigial, basic check and its result may be wrong.</source>
             </trans-unit>
             <trans-unit id="domain">
                 <source>Domain: A domain prefix before the secured directories part (e.g. https://www.example.com/). Not needed for internal (relative) links.</source>
