@@ -1,61 +1,66 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: Includes.txt
-
+﻿.. include:: Includes.txt
 
 .. _start:
 
-=============================================================
+================
 Secure Downloads
-=============================================================
+================
 
-.. only:: html
+:Extension key:
+   secure_downloads
 
-	:Classification:
-		Frontend
+:Classification:
+    Frontend
 
-	:Version:
-		|release|
+:Version:
+   |release|
 
-	:Language:
-		en
+:Language:
+   en
 
-	:Description:
-		"Secure Downloads": Apply TYPO3 access rights to ALL file assets (PDFs, TGZs or JPGs etc. - configurable) - protect them from direct access
+:Copyright:
+   2006-2019
 
-	:Keywords:
-		Secure Downloads
+:Author:
+   Florian Wessels, Bitmotion GmbH
 
-	:Copyright:
-		2008-2016
+:Email:
+   typo3-ext@bitmotion.de
 
-	:Author:
-		Florian Wessels, Helmut Hummel, Alexander Schaper
+:License:
+   This document is published under the Open Content License
+   available from http://www.opencontent.org/opl.shtml
 
-	:Email:
-		typo3-ext(at)bitmotion.de
+**TYPO3**
 
-	:License:
-		This document is published under the Open Publication License
-		available from http://www.opencontent.org/openpub/
+   The content of this document is related to TYPO3, a GNU/GPL CMS/Framework available from `www.typo3.org <http://www.typo3.org/>`_.
 
-	:Rendered:
-		|today|
+**Community documentation:**
 
-	The content of this document is related to TYPO3,
-	a GNU/GPL CMS/Framework available from `www.typo3.org <https://typo3.org/>`__.
+   This document is *not* official TYPO3 documentation.
 
+   It is maintained as part of a third party extension.
 
-	**Table of Contents**
+   If you find an error or something is missing, please:
+   `Report a Problem <https://github.com/bitmotion/typo3-secure-downloads/issues/new>`__
+
+**Extension Manual**
+
+   This documentation is for the TYPO3 extension secure_downloads.
+
+**For Contributors**
+
+   You are welcome to help improve this guide. Just click on "Edit me on GitHub" on the top right to submit your
+   change request.
+
+**Table of Contents**
 
 .. toctree::
-	:maxdepth: 3
-	:titlesonly:
+    :maxdepth: 3
+    :titlesonly:
+    :glob:
 
-	Introduction/Index
-	AdministratorManual/Index
-	BackendModule/Index
-	Miscellaneous/Index
+    Introduction/Index
+    AdministratorManual/Index
+    BackendModule/Index
+    Miscellaneous/Index
