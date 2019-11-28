@@ -1,0 +1,21 @@
+﻿.. include:: Includes.txt
+
+==================
+2.0.6 - 2018/11/20
+==================
+
+Bugfix Release
+==============
+
+Release of version 2.0.6. Contains bug fixes only.
+
+All Changes
+===========
+
+This is a list of all changes in this release: ::
+
+        2018-11-20 [RELEASE] Release of Version 2.0.6 (Commit 51d2f8a by Florian Wessels)
+        2018-11-19 [TASK] Add more information to preOutput hook (Commit 3569aec by Benni Mack)
+        2018-08-20 [TASK] Update issue templates (Commit aa762f9 by Florian Wessels)
+        2018-07-07 [TASK] Adapt to CMS 8 deprecations (Commit 9cc29b1 by Cedric Ziel)
+        2018-04-20 [REVERT] for now: Allow selection of secured subfolders by name (Commit 00b8456 by Florian Wessels)

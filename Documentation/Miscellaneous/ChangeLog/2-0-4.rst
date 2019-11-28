@@ -1,0 +1,43 @@
+﻿.. include:: Includes.txt
+
+==================
+2.0.4 - 2017/04/05
+==================
+
+Bugfix Release
+==============
+
+Release of version 2.0.4. Contains bug fixes only.
+
+All Changes
+===========
+
+This is a list of all changes in this release: ::
+
+        2017-04-05 [RELEASE] Release of version 2.0.4 (Commit f0ace67 by Florian Wessels)
+        2017-04-05 [TASK] Support TYPO3 8 LTS (Commit 0407b99 by Florian Wessels)
+        2017-02-14 [BUGFIX] use array_key_exists instead of isset (Commit c705516 by Florian Wessels)
+        2017-02-14 [TASK] Get rid of obsolete CSS styles (Commit 7d35a6b by Florian Wessels)
+        2017-02-14 [TASK] Reformat HTML files (Commit 7d4d331 by Florian Wessels)
+        2017-02-14 [TASK] Reformat language files (Commit 70f4e3a by Florian Wessels)
+        2017-02-14 [TASK] Do not use strings for instantiating classes (Commit cce771c by Florian Wessels)
+        2017-02-14 [TASK] Clean-Up and Reformat PHP Code (Commit 3806dff by Florian Wessels)
+        2017-02-14 [TASK] Add phpdoc header to every class (Commit 64674a3 by Florian Wessels)
+        2017-02-14 [TASK] Deprecate getting and setting IP address in request context (Commit 37b7489 by Florian Wessels)
+        2017-02-14 Get rid of TYPO3 6 and PHP 5.3 support (Commit f2691a1 by Florian Wessels)
+        2017-02-13 [TASK] Do not use deprecated TCA - Resolves #5 (Commit f0df015 by Florian Wessels)
+        2017-02-13 [BUGFIX] Do not instantiate interface - Resolves #8 (Commit 9dbfbfa by Florian Wessels)
+        2017-02-13 [FOLLOW-UP] Raise dependencies in composer.json (Commit 158a9e8 by Florian Wessels)
+        2017-02-13 [TASK] Refactor BE-Module (Commit 0a7015b by Florian Wessels)
+        2017-02-13 Raise dependencies (Commit 65e1b40 by Florian Wessels)
+        2017-02-13 Respect page id in ext_configuration (Commit e15fb0e by Florian Wessels)
+        2017-02-13 Fix CSS issue in module pagination (Commit 2ca93be by Florian Wessels)
+        2017-02-13 Remove obsolete code (Commit 4e961a8 by Florian Wessels)
+        2016-11-18 [TASK] Add naw_securedl to conflicts in composer.json (Commit 6809d13 by Florian Wessels)
+        2016-11-18 [TASK] Add german translations for log module (Commit 5d9a3db by Florian Wessels)
+        2016-11-18 [TASK] Modify PHPDoc file header (Commit 996bbbc by Florian Wessels)
+        2016-11-18 [TASK] Restore PHP 5.3 compatibility (Commit f31a05f by Florian Wessels)
+        2016-09-05 [TASK] Hide Log Table on pages (Commit 1bea9d9 by Florian Wessels)
+        2016-09-05 [TASK] Remove deprecated properties from ext_emconf.php and use lowerCamelCase (Commit d2d3422 by Florian Wessels)
+        2016-09-05 [TASK] Update author_mail and add author_company in ext_emconf.php (Commit ae049aa by Florian Wessels)
+        2016-08-30 [TASK] Raise version to 2.0.4-dev (Commit 0a4fea5 by Florian Wessels)

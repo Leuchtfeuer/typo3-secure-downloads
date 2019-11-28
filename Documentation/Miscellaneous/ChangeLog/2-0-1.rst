@@ -1,20 +1,17 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
+﻿.. include:: Includes.txt
 
-.. include:: ../../Includes.txt
-
+==================
 2.0.1 - 2016/07/22
 ==================
 
-Bugfix release
----------------
+Bugfix Release
+==============
 
 Fix bug in composer.json and move documentation.
 
 All Changes
------------
+===========
+
 This is a list of all changes in this release: ::
 
         2016-07-22 [RELEASE] Release version 2.0.1 (Commit b4a8ba4 by Florian Wessels)

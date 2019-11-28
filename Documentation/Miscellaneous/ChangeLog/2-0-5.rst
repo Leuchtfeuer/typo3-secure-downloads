@@ -1,0 +1,19 @@
+﻿.. include:: Includes.txt
+
+==================
+2.0.5 - 2017/04/20
+==================
+
+Bugfix Release
+==============
+
+Release of version 2.0.5. Contains bug fixes only.
+
+All Changes
+===========
+
+This is a list of all changes in this release: ::
+
+        2017-04-20 [RELEASE] Release of Version 2.0.5 (Commit 5e67f0d by Florian Wessels)
+        2017-04-20 [BUGFIX] Recursive call to ResourcePublisher::publishResourceUri in cached Requests (Commit 9a45993 by Florian Wessels)
+        2017-04-14 [FEATURE] Allow selection of secured subfolders by name - implements #6 (Commit 5e38189 by Florian Wessels)

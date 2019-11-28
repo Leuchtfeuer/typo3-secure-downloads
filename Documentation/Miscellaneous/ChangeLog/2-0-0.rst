@@ -1,20 +1,16 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
+﻿.. include:: Includes.txt
 
-.. include:: ../../Includes.txt
-
+==================
 2.0.0 - 2016/07/21
 ==================
 
-Initial release
----------------
+Initial Release
+===============
 
 Initial release of version 2.0.0
 
 All Changes
------------
+===========
 This is a list of all changes in this release: ::
 
         2016-07-21 [RELEASE] Initial release of version 2.0.0 (Commit d9366e6 by Florian Wessels)

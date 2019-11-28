@@ -1,20 +1,17 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
+﻿.. include:: Includes.txt
 
-.. include:: ../../Includes.txt
-
+==================
 2.0.2 - 2016/07/22
 ==================
 
-Bugfix release
----------------
+Bugfix Release
+==============
 
-Release of version 2.0.2. Contains bugfixes only.
+Release of version 2.0.2. Contains bug fixes only.
 
 All Changes
------------
+===========
+
 This is a list of all changes in this release: ::
 
         2016-07-22 [RELEASE] Release 2.0.2 (Commit 397bacf by Florian Wessels)

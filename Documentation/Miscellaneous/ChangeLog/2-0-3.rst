@@ -1,20 +1,17 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
+﻿.. include:: Includes.txt
 
-.. include:: ../../Includes.txt
-
-2.0.3 - 2016/08/??
+==================
+2.0.3 - 2016/08/30
 ==================
 
-??? release
----------------
+Bugfix Release
+==============
 
-2.0.3
+Release of version 2.0.3. Contains bug fixes only.
 
 All Changes
------------
+===========
+
 This is a list of all changes in this release: ::
 
         2016-07-26 [TYPO] Fix typo (Commit f8d0578 by Florian Wessels)
