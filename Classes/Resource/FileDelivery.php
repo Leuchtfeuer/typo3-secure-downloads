@@ -551,14 +551,16 @@ class FileDelivery
     protected function readFileFactional(string $strFileName): bool
     {
         $chunksize = (int)$this->extensionConfiguration['outputChunkSize']; // how many bytes per chunk
-        $timeout = ini_get('max_execution_time');
+        $timeout = (int)ini_get('max_execution_time');
         $bytes_sent = 0;
         $handle = fopen($strFileName, 'rb');
         if ($handle === false) {
             return false;
         }
         while (!feof($handle) && (!connection_aborted())) {
-            set_time_limit($timeout);
+            if ($timeout > 0) {
+                set_time_limit($timeout);
+            }
             $buffer = fread($handle, $chunksize);
             print $buffer;
             $bytes_sent += $chunksize;
