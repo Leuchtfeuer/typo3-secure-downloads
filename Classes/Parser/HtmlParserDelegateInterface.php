@@ -13,6 +13,9 @@ namespace Bitmotion\SecureDownloads\Parser;
  *
  ***/
 
+/**
+ * @deprecated Parsing the generated HTML is deprecated. All public URLs to files should be retrieved by TYPO3 API.
+ */
 interface HtmlParserDelegateInterface
 {
     public function publishResourceUri(string $resourceUri): string;
