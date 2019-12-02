@@ -69,6 +69,10 @@ class LogController extends ActionController
         if ($this->arguments->hasArgument('filter')) {
             $this->arguments->getArgument('filter')->getPropertyMappingConfiguration()->allowAllProperties();
         }
+
+        if ($this->request->hasArgument('reset') && (bool)$this->request->getArgument('reset') === true) {
+            $GLOBALS['BE_USER']->setSessionData('filter', null);
+        }
     }
 
     /**
@@ -76,7 +80,11 @@ class LogController extends ActionController
      */
     public function listAction(Filter $filter = null)
     {
+        $filter = $filter ?? $GLOBALS['BE_USER']->getSessionData('filter') ?? (new Filter());
         $logEntries = $this->logRepository->findByFilter($filter);
+
+        // Store filter data in session of backend user (used for pagination)
+        $GLOBALS['BE_USER']->setSessionData('filter', $filter);
 
         $this->view->assignMultiple([
             'logs' => $logEntries,
@@ -127,13 +135,13 @@ class LogController extends ActionController
             $this->redirect('list');
         }
 
-        if ($filter === null) {
-            $filter = new Filter();
-        }
-
+        $filter = $filter ?? $GLOBALS['BE_USER']->getSessionData('filter') ?? (new Filter());
         $filter->setPageId($pageId);
 
         $logEntries = $this->logRepository->findByFilter($filter);
+
+        // Store filter data in session of backend user (used for pagination)
+        $GLOBALS['BE_USER']->setSessionData('filter', $filter);
 
         $this->view->assignMultiple([
             'logs' => $logEntries,

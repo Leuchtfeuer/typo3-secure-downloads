@@ -33,7 +33,7 @@ class Filter
     const USER_TYPE_LOGGED_ON = -1;
     const USER_TYPE_LOGGED_OFF = -2;
 
-    protected $fileType = '';
+    protected $fileType = '0';
 
     protected $from = '';
 
