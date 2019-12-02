@@ -422,7 +422,7 @@ class FileDelivery
     protected function readFileFactional(string $fileName): bool
     {
         $outputChunkSize = $this->extensionConfiguration->getOutputChunkSize(); // how many bytes per chunk
-        $timeout = ini_get('max_execution_time');
+        $timeout = (int)ini_get('max_execution_time');
         $handle = fopen($fileName, 'rb');
 
         if ($handle === false) {
