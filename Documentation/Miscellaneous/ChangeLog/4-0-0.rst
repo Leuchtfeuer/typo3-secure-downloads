@@ -13,7 +13,7 @@ Added
 * Use `JSON Web Tokens <https://jwt.io>`__ for URL generation
 * PSR-15 middleware for delivering files
 * Support file delivery via nginx `x-accel-redirect`
-* Wildcards for :ref:`admin-configuration-forcedownloadtype:forceDownloadType` and :ref:`admin-configuration-securedFileTypes:securedFileTypes`
+* Wildcards for `forcedownloadtype` and `securedFileTypes` configuration
 * Check whether configured chunk size is larger than php memory limit
 * Secured files and directories can now be identified within the `filelist` module
 * URIs can now include umlauts
@@ -43,7 +43,7 @@ Deprecated
 * Class :php:`\Bitmotion\SecureDownloads\Request\RequestContext` is now deprecated. You can use TYPO3 core functions instead.
 * The eID Script is deprecated. For compatibility reasons, old links are still working.
 * Adding additional MIME types via extension configuration is deprecated. You should add your additional MIME types by extending the :php:`$GLOBALS['TYPO3_CONF_VARS']['SYS']['FileInfo']['fileExtensionToMimeType']` array.
-* Following properties of the extension configuration are deprecated: :ref:`admin-configuration-debug:debug`, :ref:`admin-configuration-additionalMimeTypes:additionalMimeTypes` and :ref:`admin-configuration-domain:domain`
+* Following properties of the extension configuration are deprecated: `debug`, `additionalMimeTypes` and `domain`
 * Class :php:`\Bitmotion\SecureDownloads\Resource\UrlGenerationInterceptor` is now deprecated. You can use the service classes instead.
 * Hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure']` is deprecated. You can use the hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['downloadService']['makeSecure']` instead.
 * The `pObj` property of the `output` hook is deprecated.

@@ -84,7 +84,7 @@ domain
    Default
          :code:`http://mydomain.com/|http://my.other.domain.org/`
    Description
-         This is only required for absolute file links to your local server, e.g. :code:`http://my.server.com/fileadmin/image.jpg`.
+         This is only required for absolute file links to your local server, e.g. :code:`https://example.com//fileadmin/image.jpg`.
          Not needed for internal (relative) links. Please note, that this configuration property is deprecated. Parsing the HTML
          output will no longer work with version 5. You should consider to use the TYPO3 API instead.
 
@@ -95,12 +95,30 @@ linkPrefix
 ----------
 .. container:: table-row
 
+   Property
+         linkPrefix
+   Data type
+         string
+   Default
+         :code:`downloads`
+   Description
+         Prefix for generated links (the `"download"` part in "https://example.com/download/sdl-[JWT]/image.png").
+
 
 .. _admin-configuration-tokenPrefix:
 
 tokenPrefix
 -----------
 .. container:: table-row
+
+   Property
+         linkPrefix
+   Data type
+         string
+   Default
+         :code:`sdl-`
+   Description
+         Prefix for generated token (the `"sdl-"` part in "https://example.com/download/sdl-[JWT]/image.png").
 
 
 .. _admin-configuration-cacheTimeAdd:

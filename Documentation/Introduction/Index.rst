@@ -15,7 +15,7 @@ In TYPO3, assets like PDFs, TGZs or JPGs etc. are normally just referenced by a 
 delivered directly by the web server, and is therefore not part of the TYPO3 access control scheme – files remain unprotected,
 since URLs can be re-used, emailed, Search engine included or even guessed.
 
-The "Secure Download" extension (`EXT:secure_downloads`) changes this behavior: Files will now be accessed through a script that
+The "Secure Downloads" extension (`EXT:secure_downloads`) changes this behavior: Files will now be accessed through a script that
 honors TYPO3 access rights. The converted URL's will then look like this:
 
 ::
@@ -25,7 +25,7 @@ honors TYPO3 access rights. The converted URL's will then look like this:
 This works regardless of where the files come from and is not limited to special plugins, etc.
 
 Since in most cases you will not want to protect everything (which means that everything undergoes rather performance-consuming
-access right checking), Secure Download is highly configurable. You may choose:
+access right checking), Secure Downloads is highly configurable. You may choose:
 
 * what directories to protect (e.g. you can include typo3temp or not)
 * what file types to protect (do you want to protect JPGs or not? etc.)
