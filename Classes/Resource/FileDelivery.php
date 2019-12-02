@@ -25,10 +25,14 @@ use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
 
+/**
+ * ToDo: Consider to use PSR-7 HTTP message instead.
+ */
 class FileDelivery
 {
     /**
@@ -366,6 +370,10 @@ class FileDelivery
                 $this->readFileFactional($file);
                 break;
 
+            case ExtensionConfiguration::OUTPUT_STREAM:
+                $this->streamFile($file);
+                break;
+
             case ExtensionConfiguration::OUTPUT_PASS_THRU:
                 $handle = fopen($file, 'rb');
                 fpassthru($handle);
@@ -427,27 +435,31 @@ class FileDelivery
     /**
      * In some cases php needs the filesize as php_memory, so big files cannot
      * be transferred. This function mitigates this problem.
+     *
+     * @deprecated Will be removed in version 5. Use streamFile() instead.
      */
     protected function readFileFactional(string $fileName): bool
     {
-        $outputChunkSize = $this->extensionConfiguration->getOutputChunkSize(); // how many bytes per chunk
-        $timeout = (int)ini_get('max_execution_time');
-        $handle = fopen($fileName, 'rb');
+        trigger_error('Method "readFileFactional" will be removed in version 5. Use "streamFile" instead.', E_USER_DEPRECATED);
 
-        if ($handle === false) {
-            return false;
-        }
+        $this->streamFile($fileName);
 
-        while (!feof($handle) && (!connection_aborted())) {
-            if ($timeout > 0) {
-                set_time_limit($timeout);
-            }
-            $buffer = fread($handle, $outputChunkSize);
-            print $buffer;
+        return true;
+    }
+
+    protected function streamFile(string $fileName): void
+    {
+        $outputChunkSize = $this->extensionConfiguration->getOutputChunkSize();
+
+        $stream = new Stream($fileName);
+        $stream->rewind();
+
+        while (!$stream->eof()) {
+            echo $stream->read($outputChunkSize);
             ob_flush();
             flush();
         }
 
-        return fclose($handle);
+        $stream->close();
     }
 }

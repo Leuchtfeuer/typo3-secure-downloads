@@ -27,7 +27,12 @@ class ExtensionConfiguration implements SingletonInterface
 
     const OUTPUT_READ_FILE = 'readfile';
 
+    /**
+     * @deprecated Will be removed in version 5. Use "stream" instead.
+     */
     const OUTPUT_READ_FILE_CHUNKED = 'readfile_chunked';
+
+    const OUTPUT_STREAM = 'stream';
 
     const OUTPUT_PASS_THRU = 'fpassthru';
 
@@ -107,6 +112,7 @@ class ExtensionConfiguration implements SingletonInterface
      * If files should be delivered chunked, this size will be used to denominate the file.
      *
      * @var int Chunk size in byte.
+     * @deprecated Will be removed in version 5. A recommended default value of 4096 bytes will be set for streams.
      */
     private $outputChunkSize = 1048576;
 
@@ -248,6 +254,9 @@ class ExtensionConfiguration implements SingletonInterface
         return (bool)$this->log;
     }
 
+    /**
+     * @deprecated Will be removed in version 5.
+     */
     public function getOutputChunkSize(): int
     {
         $maxChunkSize = $this->getMaxChunkSize();
@@ -289,6 +298,7 @@ class ExtensionConfiguration implements SingletonInterface
      * Prevents chunk size to be greater than allowed PHP memory limit.
      *
      * @return int The maximum chunk size.
+     * @deprecated Will be removed in version 5.
      */
     protected function getMaxChunkSize(): int
     {

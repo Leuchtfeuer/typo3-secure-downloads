@@ -26,7 +26,7 @@ Properties
 	groupCheckDirs_                      Group Check                          string
 	excludeGroups_                       Group Check                          string
 	outputFunction_                      File Delivery                        options
-	outputChunkSize_                     File Delivery                        positive integer
+	outputChunkSize_ (legacy)            File Delivery                        positive integer
 	forcedownload_                       File Delivery                        boolean
 	forcedownloadtype_                   File Delivery                        string
 	additionalMimeTypes_ (legacy)        File Delivery                        string
@@ -198,9 +198,9 @@ outputFunction
          readfile
    Description
          Due to possible restrictions in php and php settings, you probably need to adjust this value. By default "readfile" is
-         used to deliver the file. If this function is disabled in your php settings, you can try "fpasstrugh". If you have
-         problems with php `memory_limit` and big files to download, you need to set this to "readfile_chunked", which delivers
-         the files in small portions.
+         used to deliver the file. If this function is disabled in your php settings, you can try "fpassthru". If you have
+         problems with php `memory_limit` and big files to download, you need to set this to "stream", which delivers
+         the files in small portions. The option "readfile_chunked" is deprecated, but does the same as "stream" for now.
          For nginx web servers, there is also the possibility to deliver the file directly from the server by setting this
          property to "x-accel-redirect".
 
@@ -218,8 +218,9 @@ outputChunkSize
    Default
          1048576
    Description
-         Only applicable if you use "readfile_chunked" as output function (see: outputFunction_). Specify the number of bytes,
-         served as one chunk when delivering the file. Choosing this value too low is a performance killer.
+         Only applicable if you use "readfile_chunked" or "stream" as output function (see: outputFunction_). Specify the number
+         of bytes, served as one chunk when delivering the file. Choosing this value too low is a performance killer. Please note,
+         that this property is deprecated and will be removed in version 5.
 
 
 .. _admin-configuration-forcedownload:

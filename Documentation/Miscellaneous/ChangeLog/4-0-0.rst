@@ -19,6 +19,7 @@ Added
 * URIs can now include umlauts
 * Hook for manipulating response header and output function
 * The file name is now present in the URL
+* "Stream" option for outputting files
 * Support for TYPO3 10.2
 * Support for PHP 7.3
 
@@ -43,7 +44,8 @@ Deprecated
 * Class :php:`\Bitmotion\SecureDownloads\Request\RequestContext` is now deprecated. You can use TYPO3 core functions instead.
 * The eID Script is deprecated. For compatibility reasons, old links are still working.
 * Adding additional MIME types via extension configuration is deprecated. You should add your additional MIME types by extending the :php:`$GLOBALS['TYPO3_CONF_VARS']['SYS']['FileInfo']['fileExtensionToMimeType']` array.
-* Following properties of the extension configuration are deprecated: `debug`, `additionalMimeTypes` and `domain`
+* Following properties of the extension configuration are deprecated: `debug`, `additionalMimeTypes`, `outputChunkSize` and `domain`
+* Output function "readfile_chunked" is deprecated. You should use "stream" instead.
 * Class :php:`\Bitmotion\SecureDownloads\Resource\UrlGenerationInterceptor` is now deprecated. You can use the service classes instead.
 * Hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure']` is deprecated. You can use the hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['downloadService']['makeSecure']` instead.
 * The `pObj` property of the `output` hook is deprecated.

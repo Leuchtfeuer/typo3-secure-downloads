@@ -31,8 +31,8 @@ groupCheckDirs =
 excludeGroups =
 
 
-# cat=File Delivery/010; type=options[readfile,redfile_chnunked,fpassthru,x-accel-redirect]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
-outputFunction = readfile
+# cat=File Delivery/010; type=options[readfile,stream,readfile_chunked,fpassthru,x-accel-redirect]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
+outputFunction = stream
 
 # cat=File Delivery/020; type=int+; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputChunkSize
 outputChunkSize = 1048576
