@@ -1,24 +1,31 @@
 ﻿.. include:: Includes.txt
 
-==================
-2.0.3 - 2016/08/30
-==================
+==========================
+Version 2.0.3 - 2016/08/30
+==========================
 
-Bugfix Release
-==============
+This release is a bug fix release. It contains bug fixes and some improvements in documentation and code quality.
 
-Release of version 2.0.3. Contains bug fixes only.
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/bitmotion/typo3-secure-downloads/releases/tag/2.0.3>`__.
 
 All Changes
 ===========
 
-This is a list of all changes in this release: ::
+This is a list of all changes in this release::
 
-        2016-07-26 [TYPO] Fix typo (Commit f8d0578 by Florian Wessels)
-        2016-07-26 [TASK] Modify ordering of extension configuration (Commit 3ec522b by Florian Wessels)
-        2016-07-26 [TASK] Do not exclude fields from log model (Commit fdb44b5 by Florian Wessels)
-        2016-07-26 [TASK] Add language file for log model (Commit f4459dd by Florian Wessels)
-        2016-07-26 [FOLLOW-UP] Add icon file for log model (Commit f06ce55 by Florian Wessels)
-        2016-07-26 [BUGFIX] Use proper icon file for log model (Commit 797a4c1 by Florian Wessels)
-        2016-07-26 [CLEANUP] Remove unused language file (Commit df75a53 by Florian Wessels)
-        2016-07-26 [TASK] Set version to 2.0.3-dev (Commit e1ebd28 by Florian Wessels)
+   2016-08-30 [RELEASE] 2.0.3 (Commit a748ba8 by Florian Wessels)
+   2016-08-30 [TASK] Add raw documentation (Commit 50afcd4 by Florian Wessels)
+   2016-08-30 [TASK] Update dependency (Commit efff636 by Florian Wessels)
+   2016-08-22 [TASK] Extend regex of tag parser (Commit 8573ab3 by Florian Wessels)
+   2016-07-26 [TYPO] Fix typo (Commit f8d0578 by Florian Wessels)
+   2016-07-26 [TASK] Modify ordering of extension configuration (Commit 3ec522b by Florian Wessels)
+   2016-07-26 [TASK] Do not exclude fields from log model (Commit fdb44b5 by Florian Wessels)
+   2016-07-26 [TASK] Add language file for log model (Commit f4459dd by Florian Wessels)
+   2016-07-26 [FOLLOW-UP] Add icon file for log model (Commit f06ce55 by Florian Wessels)
+   2016-07-26 [BUGFIX] Use proper icon file for log model (Commit 797a4c1 by Florian Wessels)
+   2016-07-26 [CLEANUP] Remove unused language file (Commit df75a53 by Florian Wessels)
+   2016-07-26 [TASK] Set version to 2.0.3-dev (Commit e1ebd28 by Florian Wessels)

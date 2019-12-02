@@ -1,20 +1,32 @@
 ﻿.. include:: Includes.txt
 
-==================
-2.0.1 - 2016/07/22
-==================
+==========================
+Version 2.0.1 - 2016/07/22
+==========================
 
-Bugfix Release
-==============
+This release is a bug fix release. It contains bug fixes only.
 
-Fix bug in composer.json and move documentation.
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/bitmotion/typo3-secure-downloads/releases/tag/2.0.1>`__.
 
 All Changes
 ===========
 
-This is a list of all changes in this release: ::
+This is a list of all changes in this release::
 
-        2016-07-22 [RELEASE] Release version 2.0.1 (Commit b4a8ba4 by Florian Wessels)
-        2016-07-22 [TASK] Convert documentation to odt (Commit 5eab1ac by Florian Wessels)
-        2016-07-21 Merge pull request #2 from helhum/patch-1 (Commit 4e9fe1b by Florian Wessels)
-        2016-07-21 [!!!][TASK] Fix and streamline composer.json (Commit 5f433cf by Helmut Hummel)
+   2016-07-22 [RELEASE] Release version 2.0.1 (Commit b4a8ba4 by Florian Wessels)
+   2016-07-22 [TASK] Convert documentation to odt (Commit 5eab1ac by Florian Wessels)
+   2016-07-21 Merge pull request #2 from helhum/patch-1 (Commit 4e9fe1b by Florian Wessels)
+   2016-07-21 [!!!][TASK] Fix and streamline composer.json (Commit 5f433cf by Helmut Hummel)
+
+Contributors
+============
+Following people have contributed to this release:
+
+* Helmut Hummel
+* Florian Wessels
+
+Thank you very much for your support. The next beer is on us! 🍻

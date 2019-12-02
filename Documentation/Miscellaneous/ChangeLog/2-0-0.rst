@@ -1,16 +1,15 @@
 ﻿.. include:: Includes.txt
 
-==================
-2.0.0 - 2016/07/21
-==================
+==========================
+Version 2.0.0 - 2016/07/21
+==========================
 
-Initial Release
-===============
-
-Initial release of version 2.0.0
+This is the initial release of this extension. It is a major refactoring of the former `secure downloads` extension `EXT:naw_securedl`.
+It contains all features of that extension and introduces support for TYPO3 6.2 and TYPO3 7 LTS. For further changes, please take
+a look at `EXT:naw_securedl`.
 
 All Changes
 ===========
-This is a list of all changes in this release: ::
+This is a list of all changes in this release::
 
-        2016-07-21 [RELEASE] Initial release of version 2.0.0 (Commit d9366e6 by Florian Wessels)
+   2016-07-21 [RELEASE] Initial release of version 2.0.0 (Commit d9366e6 by Florian Wessels)

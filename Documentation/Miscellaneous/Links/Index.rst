@@ -2,14 +2,15 @@
 
 .. _links:
 
+=====
 Links
 =====
 
-:TER:
-	https://typo3.org/extensions/repository/view/secure_downloads
+:TYPO3 Extension Repository:
+   https://extensions.typo3.org/extension/secure_downloads/
 
-:Git-Repository:
-	https://github.com/bitmotion/typo3-secure-downloads
+:Source Code and Git Repository:
+   https://github.com/bitmotion/typo3-secure-downloads
 
 :Contact:
-	typo3-ext(at)bitmotion.de
+   typo3-ext@bitmotion.de

@@ -2,7 +2,8 @@
 
 .. _limitations:
 
-Known limitations
+=================
+Known Limitations
 =================
 
-* Images in Direct Mail newsletters, doesn't work correct with secure_downloads :(
+* Files inside Direct Mail newsletters do not work correctly with this extension :(

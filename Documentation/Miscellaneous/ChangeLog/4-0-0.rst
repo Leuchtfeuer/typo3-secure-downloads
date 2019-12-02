@@ -1,11 +1,8 @@
 ﻿.. include:: Includes.txt
 
-===============================
-Release Notes for Version 4.0.0
-===============================
-----------------------
-Released on 2019/12/xx
-----------------------
+==========================
+Version 4.0.0 - 2019/12/03
+==========================
 
 This version is a future release and is estimated for the 3rd December 2019.
 
@@ -22,21 +19,21 @@ Changed
 Deprecated
 ==========
 
-* Class `\Bitmotion\SecureDownloads\Configuration\ConfigurationManager` is now deprecated. You can use the newly introduced DTO instead.
+* Class :php:`\Bitmotion\SecureDownloads\Configuration\ConfigurationManager` is now deprecated. You can use the newly introduced DTO instead.
 * Generation of secured links via URL get parameters is marked as deprecated. You should use JWTs and PSR-15 middleware instead.
-* Parameters `hash` and `calculatedHash` of `$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init']` hook.
+* Parameters :php:`hash` and :php:`calculatedHash` of :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init']` hook.
 
 Removed
 =======
 
 * Support for TYPO3 8 LTS
 * Apache delivery
-* Deprecated properties "bytesDownloades" and "typo3Mode" from log model
-* Deprecated hook `$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/class.tx_securedownloads.php']['makeSecure']` was removed. You can use the hook `$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure']` instead.
+* Deprecated member properties `bytesDownloaded` and `typo3Mode` of log model
+* Deprecated hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/class.tx_securedownloads.php']['makeSecure']`. You can use the hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure']` instead.
 
 All Changes
 ===========
-This is a list of all changes in this release: ::
+This is a list of all changes in this release::
 
    2019-11-27 [WIP] Update documentation (Commit 8c1dbc6 by Florian Wessels)
    2019-11-27 [TASK] Remove colon (Commit 3fbf302 by Florian Wessels)

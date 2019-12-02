@@ -2,14 +2,14 @@
 
 .. _miscellaneous:
 
+=============
 Miscellaneous
 =============
 
 .. toctree::
-	:maxdepth: 3
-	:titlesonly:
+    :maxdepth: 3
+    :titlesonly:
 
-	KnownLimitations/Index
-	ToDo/Index
-	ChangeLog/Index
-	Links/Index
+    KnownLimitations/Index
+    ChangeLog/Index
+    Links/Index

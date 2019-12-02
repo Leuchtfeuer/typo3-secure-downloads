@@ -1,21 +1,40 @@
 ﻿.. include:: Includes.txt
 
-==================
-2.0.6 - 2018/11/20
-==================
+==========================
+Version 2.0.6 - 2018/11/20
+==========================
 
-Bugfix Release
-==============
+This release is a bug fix release. It contains bug fixes and some improvements.
 
-Release of version 2.0.6. Contains bug fixes only.
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/bitmotion/typo3-secure-downloads/releases/tag/2.0.6>`__.
+
+Changed
+=======
+
+* `file` and `downloadName` properties were added to :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['preOutput']` hook.
 
 All Changes
 ===========
 
-This is a list of all changes in this release: ::
+This is a list of all changes in this release::
 
-        2018-11-20 [RELEASE] Release of Version 2.0.6 (Commit 51d2f8a by Florian Wessels)
-        2018-11-19 [TASK] Add more information to preOutput hook (Commit 3569aec by Benni Mack)
-        2018-08-20 [TASK] Update issue templates (Commit aa762f9 by Florian Wessels)
-        2018-07-07 [TASK] Adapt to CMS 8 deprecations (Commit 9cc29b1 by Cedric Ziel)
-        2018-04-20 [REVERT] for now: Allow selection of secured subfolders by name (Commit 00b8456 by Florian Wessels)
+   2018-11-20 [RELEASE] Release of Version 2.0.6 (Commit 51d2f8a by Florian Wessels)
+   2018-11-20 Merge branch 'bmack-preoutput' (Commit f2e1aa0 by Florian Wessels)
+   2018-11-19 [TASK] Add more information to preOutput hook (Commit 3569aec by Benni Mack)
+   2018-08-20 Update issue templates (Commit aa762f9 by Florian Wessels)
+   2018-06-08 Merge pull request #22 from cedricziel/tca-deprecations (Commit 014924d by Florian Wessels)
+   2018-06-07 Adapt to CMS 8 deprecations (Commit 9cc29b1 by Cedric Ziel)
+
+Contributors
+============
+Following people have contributed to this release:
+
+* Benni Mack
+* Cedric Ziel
+* Florian Wessels
+
+Thank you very much for your support. The next beer is on us! 🍻

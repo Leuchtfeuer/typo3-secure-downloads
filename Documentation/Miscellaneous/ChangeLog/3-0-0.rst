@@ -1,17 +1,15 @@
 ﻿.. include:: Includes.txt
 
-===============================
-Release Notes for Version 3.0.0
-===============================
-----------------------
-Released on 2018/11/20
-----------------------
+==========================
+Version 3.0.0 - 2018/11/20
+==========================
 
 This release is a new major release, it was published almost three years after the migration from former EXT:naw_securedl to this
 extension. It introduces support for TYPO3 9 LTS as well as for PHP 7.2. TYPO3 7 LTS and PHP 5.x are not supported anymore.
 
 Download
 ========
+
 Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
 `GitHub <https://github.com/bitmotion/typo3-secure-downloads/releases/tag/3.0.0>`__.
 
@@ -24,76 +22,73 @@ Added
 Changed
 =======
 
-* Respect `$GLOBALS['TSFE']->absRefPrefix` when parsing HTML output
-* Renamed protected method `\Bitmotion\SecureDownloads\Resource\FileDelivery::readfile_chunked` to `readFileFactional`
+* Respect :php:`$GLOBALS['TSFE']->absRefPrefix` when parsing HTML output
+* Renamed protected method :php:`\Bitmotion\SecureDownloads\Resource\FileDelivery::readfile_chunked` to :php:`readFileFactional`
 
 Deprecated
 ==========
 
-* Member properties of `\Bitmotion\SecureDownloads\Domain\Model\Log`:
+* Member properties of :php:`\Bitmotion\SecureDownloads\Domain\Model\Log`:
 
-   * `$bytesDownloaded`
-   * `$typo3Mode`
+   * :php:`$bytesDownloaded`
+   * :php:`$typo3Mode`
 
 Removed
 =======
 
 * Support for TYPO3 v7
 * Support for PHP 5
-* Protected method `\Bitmotion\SecureDownloads\Request\RequestContext::initializeBackendContext`
-* Protected member property `\Bitmotion\SecureDownloads\Resource\FileDelivery::$logRowUid`
+* Protected method :php:`\Bitmotion\SecureDownloads\Request\RequestContext::initializeBackendContext`
+* Protected member property :php:`\Bitmotion\SecureDownloads\Resource\FileDelivery::$logRowUid`
 
 All Changes
 ===========
 
 This is a list of all changes in this release::
 
-        2018-11-20 [RELEASE] Release of Version 3.0.0 (Commit 389d6a5 by Florian Wessels)
-        2018-11-20 [TASK] Raise compatibility to TYPO3 9.5 (Commit 12d99ce by Florian Wessels)
-        2018-11-20 [TASK] Force int (Commit e0cebf1 by Florian Wessels)
-        2018-11-19 [TASK] Add more information to preOutput hook (Commit 3569aec by Benni Mack)
-        2018-08-20 [TASK] Update issue templates (Commit aa762f9 by Florian Wessels)
-        2018-08-20 Merge branch 'DFAU-absRefPrefix' into dev-3.0.0 (Commit bc3d5e4 by Florian Wessels)
-        2018-08-20 [TASK] Reformat code (Commit ea0116e by Florian Wessels)
-        2018-08-20 Merge branch 'absRefPrefix' (Commit d91b794 by Florian Wessels)
-        2018-08-20 [TASK] Update HTML parser to respect inline matches like url(...) (Commit 0686ef6 by Florian Wessels)
-        2018-08-20 [FEATURE] Respect angular and vue.js HTML attributes (Commit 6bdff9e by Florian Wessels)
-        2018-08-20 [TASK] Mark deprecated TYPO3 methods in code (Commit 7a14a93 by Florian Wessels)
-        2018-08-20 [BUGFIX] Remove doubled type (Commit 4af1927 by Florian Wessels)
-        2018-08-20 [TASK] Enrich composer.json file (Commit 1c048f5 by Florian Wessels)
-        2018-08-20 [TASK] Add return types (Commit 24268f6 by Florian Wessels)
-        2018-08-20 [TASK] Define time only if set (Commit ba89570 by Florian Wessels)
-        2018-08-20 [TASK] Outsource unit tests (Commit 3c44fc4 by Florian Wessels)
-        2018-08-20 [TASK] Remove deprecated ipAddress stuff from RequestContext (Commit 4123ee9 by Florian Wessels)
-        2018-08-20 [TASK] Add missing @throws annotations (Commit 4394b52 by Florian Wessels)
-        2018-08-20 [TASK] Remove redundant closing tags (Commit 71e498c by Florian Wessels)
-        2018-08-20 [TASK] Use proper contentPostProc-output method (Commit 83f7b7f by Florian Wessels)
-        2018-08-20 [TASK] Get rid of f:be.container (Commit f80445b by Florian Wessels)
-        2018-08-20 [TASK] Do not log entities twice (Commit 676476a by Florian Wessels)
-        2018-08-20 [TASK] Add thrown exceptions to php annotations (Commit 2f95b4e by Florian Wessels)
-        2018-08-20 [BUGFIX] Fix SQL queries (Commit 69223c3 by Florian Wessels)
-        2018-08-20 [TASK] Use QueryBuilder in FileDelivery.php file (Commit 96a00cc by Florian Wessels)
-        2018-08-20 [TASK] Mark typo3mode property of log model as deprecated (Commit 87635e4 by Florian Wessels)
-        2018-08-20 [TASK] Get rid of extRelPath method of ExtensionManagementUtility (Commit 7770aa4 by Florian Wessels)
-        2018-08-20 [TASK] Use QueryBuilder for SQL queries in LogController.php (Commit 3e0ba6d by Florian Wessels)
-        2018-08-20 [TASK] Update php annotations in LogControler.php file (Commit 28afbe0 by Florian Wessels)
-        2018-08-20 [TASK] Get rid of @Inject annotation (Commit a8ab6da by Florian Wessels)
-        2018-08-20 [TASK] Do not use obsolete rawUrlEncodeFP method of GeneralUtility (Commit 3824844 by Florian Wessels)
-        2018-08-20 [TASK] Use random class for generating random string (Commit 81de69b by Florian Wessels)
-        2018-08-20 [TASK] Use queryBuilder for SQL stuff in log model (Commit c969c00 by Florian Wessels)
-        2018-08-19 [WIP] Drop TYPO3 7 LTS and PHP 5.5 support (Commit 9da66e0 by Florian Wessels)
-        2018-08-20 [BUGFIX] Use proper language label for TCA definitions (Commit 3365cf3 by Florian Wessels)
-        2018-08-07 [TASK] Remove enablecolumns from TCA (Commit 612524a by Florian Wessels)
-        2018-08-20 [TASK] Set version to 3.0.0-dev and mark extension as stable (Commit 41b9115 by Florian Wessels)
-        2018-07-07 [TASK] Adapt to CMS 8 deprecations (Commit 9cc29b1 by Cedric Ziel)
-        2018-04-20 [REVERT] for now: Allow selection of secured subfolders by name (Commit 00b8456 by Florian Wessels)
+   2018-11-20 [RELEASE] Release of Version 3.0.0 (Commit 389d6a5 by Florian Wessels)
+   2018-11-20 [TASK] Raise compatibility to TYPO3 9.5 (Commit 12d99ce by Florian Wessels)
+   2018-11-20 Merge branch 'dev-3.0.0' (Commit 4aefae5 by Florian Wessels)
+   2018-11-20 [TASK] Force int (Commit e0cebf1 by Florian Wessels)
+   2018-08-20 Merge branch 'DFAU-absRefPrefix' into dev-3.0.0 (Commit bc3d5e4 by Florian Wessels)
+   2018-08-20 [TASK] Reformat code (Commit ea0116e by Florian Wessels)
+   2018-08-20 Merge branch 'absRefPrefix' of git://github.com/DFAU/typo3-secure-downloads into DFAU-absRefPrefix (Commit d91b794 by Florian Wessels)
+   2018-08-20 [TASK] Update HTML parser to respect inline matches like url(...) (Commit 0686ef6 by Florian Wessels)
+   2018-08-20 [FEATURE] Respect angular and vue.js HTML attributes (Commit 6bdff9e by Florian Wessels)
+   2018-08-20 [TASK] Mark deprecated TYPO3 methods in code (Commit 7a14a93 by Florian Wessels)
+   2018-08-20 [BUGFIX] Remove doubled type (Commit 4af1927 by Florian Wessels)
+   2018-08-20 [TASK] Enrich composer.json file (Commit 1c048f5 by Florian Wessels)
+   2018-08-20 [TASK] Add return types (Commit 24268f6 by Florian Wessels)
+   2018-08-20 [TASK] Define time only if set (Commit ba89570 by Florian Wessels)
+   2018-08-20 [TASK] Outsource unit tests (Commit 3c44fc4 by Florian Wessels)
+   2018-08-20 [TASK] Remove deprecated ipAddress stuff from RequestContext (Commit 4123ee9 by Florian Wessels)
+   2018-08-20 [TASK] Add missing @throws annotations (Commit 4394b52 by Florian Wessels)
+   2018-08-20 [TASK] Remove redundant closing tags (Commit 71e498c by Florian Wessels)
+   2018-08-20 [TASK] Use proper contentPostProc-output method (Commit 83f7b7f by Florian Wessels)
+   2018-08-20 [TASK] Get rid of f:be.container (Commit f80445b by Florian Wessels)
+   2018-08-20 [TASK] Do not log entities twice (Commit 676476a by Florian Wessels)
+   2018-08-20 [TASK] Add thrown exceptions to php annotations (Commit 2f95b4e by Florian Wessels)
+   2018-08-20 [BUGFIX] Fix SQL queries (Commit 69223c3 by Florian Wessels)
+   2018-08-20 [TASK] Use QueryBuilder in FileDelivery.php file (Commit 96a00cc by Florian Wessels)
+   2018-08-20 [TASK] Mark typo3mode property of log model as deprecated (Commit 87635e4 by Florian Wessels)
+   2018-08-20 [TASK] Get rid of extRelPath method of ExtensionManagementUtility (Commit 7770aa4 by Florian Wessels)
+   2018-08-20 [TASK] Use QueryBuilder for SQL queries in LogController.php (Commit 3e0ba6d by Florian Wessels)
+   2018-08-20 [TASK] Update php annotations in LogControler.php file (Commit 28afbe0 by Florian Wessels)
+   2018-08-20 [TASK] Get rid of @inject annotation (Commit a8ab6da by Florian Wessels)
+   2018-08-20 [TASK] Do not use obsolete rawUrlEncodeFP method of GeneralUtility (Commit 3824844 by Florian Wessels)
+   2018-08-20 [TASK] Use random class for generating random string (Commit 81de69b by Florian Wessels)
+   2018-08-20 [TASK] Use queryBuilder for SQL stuff in log model (Commit c969c00 by Florian Wessels)
+   2018-08-20 [WIP] Drop TYPO3 7 LTS and PHP 5.5 support (Commit 9da66e0 by Florian Wessels)
+   2018-08-20 [BUGFIX] Use proper language label for TCA definitions (Commit 3365cf3 by Florian Wessels)
+   2018-08-20 [TASK] Remove enablecolumns from TCA (Commit 612524a by Florian Wessels)
+   2018-08-20 [TASK] Set version to 3.0.0-dev and mark extension as stable (Commit 41b9115 by Florian Wessels)
+   2017-04-04 [BUGFIX] HtmlParser ist not absRefPrefix aware (Commit 802ede1 by Thomas Maroschik)
 
 Contributors
 ============
 Following people have contributed to this release:
 
-* Benni Mack
-* Cedric Ziel
+* Thomas Maroschik
 * Florian Wessels
 
 Thank you very much for your support. The next beer is on us! 🍻

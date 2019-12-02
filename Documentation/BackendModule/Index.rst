@@ -2,7 +2,17 @@
 
 .. _backendmodule:
 
+==============
 Backend Module
 ==============
 
-Since version 1.0.0 this extensions contains a backend module. With this module you can show the summerized download traffic by a given timeframe for all users or by a frontend user. Since version 1.2.0 you will see all files and filesizes downloaded by specified users.
+With the backend module you can show the summarized download traffic by a given time frame for all users or by a specific
+frontend user. You can get an overview of all downloaded files or of downloaded files per page only.
+
+The module must be enabled in the extension configuration.
+
+   .. figure:: BackendModule.png
+      :class: with-shadow
+      :alt: Example view of the backend module.
+
+
