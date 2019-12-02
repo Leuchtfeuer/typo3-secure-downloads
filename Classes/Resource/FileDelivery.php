@@ -439,7 +439,7 @@ class FileDelivery
         }
 
         while (!feof($handle) && (!connection_aborted())) {
-            if ($timeout > 0 ) {
+            if ($timeout > 0) {
                 set_time_limit($timeout);
             }
             $buffer = fread($handle, $outputChunkSize);
