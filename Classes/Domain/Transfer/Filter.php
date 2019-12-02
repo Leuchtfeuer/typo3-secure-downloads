@@ -22,7 +22,7 @@ class Filter
     /**
      * @var string The file type.
      */
-    protected $fileType = '';
+    protected $fileType = '0';
 
     /**
      * @var string From
