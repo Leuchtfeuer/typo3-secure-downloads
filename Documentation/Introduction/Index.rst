@@ -43,3 +43,5 @@ icon:
    .. figure:: Filelist.png
       :class: with-shadow
       :alt: Identify protected files within the "Filelist" module.
+
+      Identify protected files within the "Filelist" module.

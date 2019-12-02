@@ -11,6 +11,3 @@ Links
 
 :Source Code and Git Repository:
    https://github.com/bitmotion/typo3-secure-downloads
-
-:Contact:
-   typo3-ext@bitmotion.de

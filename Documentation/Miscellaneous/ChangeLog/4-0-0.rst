@@ -8,33 +8,71 @@ This version is a future release and is estimated for the 3rd December 2019.
 
 Added
 =====
-* Dedicated DTO for extension configuration
-* Use JSON Web Tokens for URL generation
+* Dedicated Domain Transfer Object for extension configuration
+* Check if `.htaccess` files are present.
+* Use `JSON Web Tokens <https://jwt.io>`__ for URL generation
+* PSR-15 middleware for delivering files
+* Support file delivery via nginx `x-accel-redirect`
+* Wildcards for :ref:`admin-configuration-forcedownloadtype:forceDownloadType` and :ref:`admin-configuration-securedFileTypes:securedFileTypes`
+* Check whether configured chunk size is larger than php memory limit
+* Secured files and directories can now be identified within the `filelist` module
+* URIs can now include umlauts
+* Hook for manipulating response header and output function
+* The file name is now present in the URL
 * Support for TYPO3 10.2
 * Support for PHP 7.3
 
 Changed
 =======
 
+* Removed dedicated ChangeLog file. All changes are documented within this extension documentation.
+* Screenshots in documentation.
+* Signals are migrated to PSR-14 event listeners. Old signals are still present (for compatibility reasons), but will be removed in further releases.
+* Labels for extension configuration were moved into dedicated language file.
+* Use TYPO3 API for manipulating links instead of HTML parsing.
+* Further properties were added to the Additional MIME type array.
+* The `EnvironmentService` class is used instead of `TYPO3_MODE` named constant.
+* The `Filter` and the `Statistic` class were moved into `Transfer` directory as the are Domain Transfer Objects.
+
 Deprecated
 ==========
 
 * Class :php:`\Bitmotion\SecureDownloads\Configuration\ConfigurationManager` is now deprecated. You can use the newly introduced DTO instead.
-* Generation of secured links via URL get parameters is marked as deprecated. You should use JWTs and PSR-15 middleware instead.
 * Parameters :php:`hash` and :php:`calculatedHash` of :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init']` hook.
+* Parsing HTML output for non secured links.
+* Class :php:`\Bitmotion\SecureDownloads\Request\RequestContext` is now deprecated. You can use TYPO3 core functions instead.
+* The eID Script is deprecated. For compatibility reasons, old links are still working.
+* Adding additional MIME types via extension configuration is deprecated. You should add your additional MIME types by extending the :php:`$GLOBALS['TYPO3_CONF_VARS']['SYS']['FileInfo']['fileExtensionToMimeType']` array.
+* Following properties of the extension configuration are deprecated: :ref:`admin-configuration-debug:debug`, :ref:`admin-configuration-additionalMimeTypes:additionalMimeTypes` and :ref:`admin-configuration-domain:domain`
+* Class :php:`\Bitmotion\SecureDownloads\Resource\UrlGenerationInterceptor` is now deprecated. You can use the service classes instead.
+* Hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure']` is deprecated. You can use the hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['downloadService']['makeSecure']` instead.
+* The `pObj` property of the `output` hook is deprecated.
+* Several properties fo the `init` hook are deprecated, as they are present in the object reference and accessible via getters.
+* The `Filter` and `Statistic` models are deprecated. You should use the eponymous Domain Transfer Objects instead.
+* Several methods of the `AbstractResourcePublishingTarget` are now deprecated.
+
 
 Removed
 =======
 
 * Support for TYPO3 8 LTS
 * Apache delivery
-* Deprecated member properties `bytesDownloaded` and `typo3Mode` of log model
-* Deprecated hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/class.tx_securedownloads.php']['makeSecure']`. You can use the hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure']` instead.
+* Obsolete `ShowImageController` was removed
+* Generation of secured links with URL parameters (`?eID=secure_downloads&...`)
+* Deprecated properties `bytesDownloaded` and `typo3Mode` of log model
+* Deprecated hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/class.tx_securedownloads.php']['makeSecure']`. You can use the hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['downloadService']['makeSecure']` instead.
 
 All Changes
 ===========
 This is a list of all changes in this release::
 
+   2019-12-02 [TASK] Apply CS (Commit a8f8600 by Florian Wessels)
+   2019-12-02 [FEATURE] Add nginx x-accel-redirect fileDelivery mode (Commit b0db813 by Florian Wessels)
+   2019-12-02 [TASK] Check whether timeout is greater than null (Commit cc42607 by Florian Wessels)
+   2019-12-02 [BUGFIX] Force value to be integer. (Commit b16da62 by Florian Wessels)
+   2019-12-02 [TASK] Mark HTML parser as deprecated (Commit d634a68 by Florian Wessels)
+   2019-12-02 [DOC] Update documentation (Commit 5f21885 by Florian Wessels)
+   2019-11-28 [TASK] Move changelog to documentation (Commit 04cc31a by Florian Wessels)
    2019-11-27 [WIP] Update documentation (Commit 8c1dbc6 by Florian Wessels)
    2019-11-27 [TASK] Remove colon (Commit 3fbf302 by Florian Wessels)
    2019-11-27 [TASK] Spelling (Commit 7a696ec by Florian Wessels)
@@ -73,7 +111,7 @@ This is a list of all changes in this release::
    2019-11-22 [TASK] Introduce dedicated caching classes (Commit 526dc6f by Florian Wessels)
    2019-11-22 [TASK] Clean up code (Commit 40ecdce by Florian Wessels)
    2019-11-22 [TASK] Rename some variables (Commit b82f3b8 by Florian Wessels)
-   2019-11-22 [TASK] Introduce utility for handling hooks (Commit ba905ab by Florian Wessels)
+   2019-11-22 [TASK] Introduce utility for handling hooks (Commit 8b9dfdc by Florian Wessels)
    2019-11-22 [FEATURE] Introduce hook for manipulating output function and headers (Commit ba905ab by Florian Wessels)
    2019-11-22 [TASK] Improve implementation of hooks (Commit ef8a25b by Florian Wessels)
    2019-11-22 [TASK] Trim strings in getters (Commit cccd809 by Florian Wessels)
@@ -114,14 +152,14 @@ This is a list of all changes in this release::
    2019-11-21 [TASK] Add some deprecation notices (Commit 2f416fb by Florian Wessels)
    2019-11-21 [FOLLOW-UP] Rename some variables and remove obsolte code (Commit 57bd7c8 by Florian Wessels)
    2019-11-21 [TASK] Use configuration DTO (Commit e28cea5 by Florian Wessels)
-   2019-11-21 [FOLLOW-UP] Rename some variables and remove obsolte code (Commit 57bd7c8 by Florian Wessels)
+   2019-11-21 [FOLLOW-UP] Rename some variables and remove obsolte code (Commit 33aded6 by Florian Wessels)
    2019-11-21 [CLEAN-UP] Rename some variables and remove obsolte code (Commit 3772384 by Florian Wessels)
    2019-11-21 [TASK] Provide JWT library for non composer setups (Commit f3d9f49 by Florian Wessels)
    2019-11-21 [FEATURE] Introduce link generation with JWTs (Commit affa6fa by Florian Wessels)
    2019-11-21 [TASK] Remove cookieName as it is not used (Commit 42ee458 by Florian Wessels)
    2019-11-21 [TASK] Mark actual link generation as deprecated (Commit 6cde671 by Florian Wessels)
    2019-11-20 [TASK] Update changelog (Commit f05cde5 by Florian Wessels)
-   2019-11-20 [TASK] Remove upload from default secured directories (Commit 5d7b325 by Florian Wessels)
+   2019-11-20 [TASK] Remove upload from default secured dirextories (Commit 5d7b325 by Florian Wessels)
    2019-11-20 [TASK] Use stronger operator (Commit 85f8887 by Florian Wessels)
    2019-11-20 [TASK] Remove deprecated hook (Commit 5af4be5 by Florian Wessels)
    2019-11-20 [TASK] Get rid of PATH_site constant (Commit d783af0 by Florian Wessels)
@@ -142,6 +180,7 @@ Contributors
 Following people have contributed to this release:
 
 * Sebastian Afeldt
+* Jan-Michael Loew
 * Florian Wessels
 
 Thank you very much for your support. The next beer is on us! 🍻

@@ -200,7 +200,7 @@ outputChunkSize
    Default
          1048576
    Description
-         Only applicable if you use "readfile_chunked" as output function (see outputFunction_). Specify the number of bytes,
+         Only applicable if you use "readfile_chunked" as output function (see: outputFunction_). Specify the number of bytes,
          served as one chunk when delivering the file. Choosing this value too low is a performance killer.
 
 
@@ -268,7 +268,7 @@ protectedPath
    Data type
          string
    Description
-         Only applicable if you use x-accel-redirect (see outputFunction). Specify the protected path used in your nginx
+         Only applicable if you use x-accel-redirect (see: outputFunction_). Specify the protected path used in your nginx
          location directive. A matching nginx `location` directive needs to be added.
    Example
          ::
