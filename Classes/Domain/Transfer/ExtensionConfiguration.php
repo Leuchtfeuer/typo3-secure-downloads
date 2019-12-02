@@ -31,6 +31,8 @@ class ExtensionConfiguration implements SingletonInterface
 
     const OUTPUT_PASS_THRU = 'fpassthru';
 
+    const OUTPUT_NGINX = 'x-accel-redirect';
+
     /**
      * @deprecated Will be removed in version 5.
      */
@@ -148,6 +150,13 @@ class ExtensionConfiguration implements SingletonInterface
      * @var string Prefix of tokens.
      */
     private $tokenPrefix = 'sdl-';
+
+    /**
+     * Path to protected storage for nginx x-accel-redirect delivery method
+     *
+     * @var string The path to the protected Storage.
+     */
+    private $protectedPath = '';
 
     /**
      * @throws ExtensionConfigurationExtensionNotConfiguredException
@@ -269,6 +278,11 @@ class ExtensionConfiguration implements SingletonInterface
     public function getTokenPrefix(): string
     {
         return trim($this->tokenPrefix, '/');
+    }
+
+    public function getProtectedPath(): string
+    {
+        return $this->protectedPath;
     }
 
     /**

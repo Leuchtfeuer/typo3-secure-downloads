@@ -31,19 +31,22 @@ groupCheckDirs =
 excludeGroups =
 
 
-# cat=File Delivery/010; type=options[readfile,redfile_chnunked,fpassthru]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
+# cat=File Delivery/010; type=options[readfile,redfile_chnunked,fpassthru,x-accel-redirect]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
 outputFunction = readfile
 
-# cat=File Delivery/050; type=int+; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputChunkSize
+# cat=File Delivery/020; type=int+; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputChunkSize
 outputChunkSize = 1048576
 
-# cat=File Delivery/030; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownload
+# cat=File Delivery/030; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:protectedPath
+protectedPath =
+
+# cat=File Delivery/040; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownload
 forcedownload = 0
 
-# cat=File Delivery/040; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownloadType
+# cat=File Delivery/050; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownloadType
 forcedownloadtype = odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
 
-# cat=File Delivery/050; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:additionalMimeTypes
+# cat=File Delivery/060; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:additionalMimeTypes
 additionalMimeTypes = txt|text/plain,html|text/html
 
 

@@ -30,6 +30,7 @@ Properties
 	forcedownload_                       File Delivery                        boolean
 	forcedownloadtype_                   File Delivery                        string
 	additionalMimeTypes_ (legacy)        File Delivery                        string
+	protectedPath_                       File Delivery                        string
 	log_                                 Module                               boolean
 	debug_ (legacy)                      Debug                                options
 	==================================== ==================================== ==================
@@ -182,6 +183,8 @@ outputFunction
          used to deliver the file. If this function is disabled in your php settings, you can try "fpasstrugh". If you have
          problems with php `memory_limit` and big files to download, you need to set this to "readfile_chunked", which delivers
          the files in small portions.
+         For nginx web servers, there is also the possibility to deliver the file directly from the server by setting this
+         property to "x-accel-redirect".
 
 
 .. _admin-configuration-outputChunkSize:
@@ -252,6 +255,28 @@ additionalMimeTypes
          is separated by a pipe symbol). Can be used to override existing MIME type settings of the extension as well. Please
          note, that this property is deprecated and will be removed in version 5. You should use the TYPO3 API for adding
          additional MIME types.
+
+
+.. _admin-configuration-protectedPath:
+
+protectedPath
+-------------
+.. container:: table-row
+
+   Property
+         protectedPath
+   Data type
+         string
+   Description
+         Only applicable if you use x-accel-redirect (see outputFunction). Specify the protected path used in your nginx
+         location directive. A matching nginx `location` directive needs to be added.
+   Example
+         ::
+
+            location /internal {
+                internal;
+                alias /path/to/your/protected/storage;
+            }
 
 
 .. _admin-configuration-log:

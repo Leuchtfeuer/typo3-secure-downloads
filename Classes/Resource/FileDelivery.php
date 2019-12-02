@@ -372,6 +372,15 @@ class FileDelivery
                 fclose($handle);
                 break;
 
+            case ExtensionConfiguration::OUTPUT_NGINX:
+                if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') === 0) {
+                    $this->sendHeader([
+                        'X-Accel-Redirect' => $this->extensionConfiguration->getProtectedPath() . $this->file,
+                    ]);
+                    break;
+                }
+                // no break as web server is not a nginx
+
             case ExtensionConfiguration::OUTPUT_READ_FILE:
                 //fallthrough, this is the default case
             default:

@@ -49,6 +49,9 @@
             <trans-unit id="outputChunkSize">
                 <source>Output Chunk Size: Size of chunks to be delivered in one go (only relevant if "readfile_chunked" is used) (default: 1048576 Bytes = 1 MB).</source>
             </trans-unit>
+            <trans-unit id="protectedPath">
+                <source>Protected Path: Path to protected storage for nginx x-accel-redirect delivery method.</source>
+            </trans-unit>
             <trans-unit id="log">
                 <source>Log Module: Log each file access. This option will enable a backend module.</source>
             </trans-unit>
