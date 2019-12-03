@@ -52,8 +52,6 @@ securedDirs
    Description
          List of directories of your TYPO3 Server in that files should be secured, separated by pipe (|). Files in subdirectories
          will also be secured.
-         .. hint::
-             You can use :ref:`regex:Regular Expressions` for this option.
 
 
 .. _admin-configuration-securedFileTypes:
@@ -71,8 +69,6 @@ securedFiletypes
    Description
          List of file types (file extensions) that should be protected. Multiple file extension patterns can be separated by a
          pipe (|). You can use an asterisk (*) if you want to protect all files within configured directories.
-         .. hint::
-             You can use :ref:`regex:Regular Expressions` for this option.
 
 
 .. _admin-configuration-domain:
@@ -91,8 +87,6 @@ domain
          This is only required for absolute file links to your local server, e.g. :code:`https://example.com//fileadmin/image.jpg`.
          Not needed for internal (relative) links. Please note, that this configuration property is deprecated. Parsing the HTML
          output will no longer work with version 5. You should consider to use the TYPO3 API instead.
-         .. hint::
-             You can use :ref:`regex:Regular Expressions` for this option.
 
 
 .. _admin-configuration-linkPrefix:
@@ -261,8 +255,6 @@ forcedownloadtype
    Description
          A list of file types that should not be opened inline in a browser, separated by a pipe. Only used if "forcedownload"
          (see: forcedownload_) is enabled. You can use an asterisk (*) if you want to force download for all file types.
-         .. hint::
-             You can use :ref:`regex:Regular Expressions` for this option.
 
 
 .. _admin-configuration-additionalMimeTypes:
