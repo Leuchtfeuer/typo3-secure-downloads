@@ -150,7 +150,7 @@ class HtmlParser implements LoggerAwareInterface
 
     protected function microtime_float(): float
     {
-        list($usec, $sec) = explode(' ', microtime());
+        [$usec, $sec] = explode(' ', microtime());
 
         return $usec + $sec;
     }

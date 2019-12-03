@@ -74,7 +74,7 @@ class SecureDownloadsEventListener implements SingletonInterface
     }
 
     /**
-     * Will ad an overlay icon to secured directories and files when browsing the file list module.
+     * Will add an overlay icon to secured directories and files when browsing the file list module.
      *
      * @param ModifyIconForResourcePropertiesEvent $event The event.
      */

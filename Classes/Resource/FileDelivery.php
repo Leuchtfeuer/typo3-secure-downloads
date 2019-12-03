@@ -31,7 +31,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
 
 /**
- * ToDo: Consider to use PSR-7 HTTP message instead.
+ * ToDo: Use PSR-7 HTTP message instead.
  */
 class FileDelivery
 {
@@ -390,7 +390,7 @@ class FileDelivery
                 // no break as web server is not a nginx
 
             case ExtensionConfiguration::OUTPUT_READ_FILE:
-                //fallthrough, this is the default case
+                // fallthrough, this is the default case
             default:
                 readfile($file);
                 break;
