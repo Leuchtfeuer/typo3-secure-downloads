@@ -4,24 +4,59 @@
 Version 4.0.0 - 2019/12/03
 ==========================
 
-This version is a future release and is estimated for the 3rd December 2019.
+This version is a major refactoring of former release, version `3.0.1`. It contains a lot of deprecations, but also adds a brand
+new API for retrieving secured links. Beside of that, several bugs were fixed and the documentation is finally up to date.
+The old, parameter-based, link generation (`?eID=secure_downloads&...`) has been removed and all links are now secured with a
+`JSON Web Token <https://jwt.io>`__. However, old links are still callable when upgrading to this version.
 
 Added
 =====
 * Dedicated Domain Transfer Object for extension configuration
 * Check if `.htaccess` files are present.
 * Use `JSON Web Tokens <https://jwt.io>`__ for URL generation
-* PSR-15 middleware for delivering files
+* PSR-15 Middleware for delivering files
 * Support file delivery via nginx `x-accel-redirect`
-* Wildcards for `forcedownloadtype` and `securedFileTypes` configuration
+* Wildcards for :ref:`admin-configuration-forcedownloadtype` and :ref:`admin-configuration-securedFileTypes` configuration
 * Check whether configured chunk size is larger than php memory limit
-* Secured files and directories can now be identified within the `filelist` module
+* Secured files and directories can now be identified within the `filelist` module (see: :ref:`introduction-filelist`)
 * URIs can now include umlauts
 * Hook for manipulating response header and output function
 * The file name is now present in the URL
-* "Stream" option for outputting files
+* `Stream` option for outputting files
+* Public API for getting secured URLs added (class `SecureLinkFactory`, see: Section below)
 * Support for TYPO3 10.2
 * Support for PHP 7.3
+
+Getting Secured Links
+---------------------
+Following examples clarifies how to retrieve secured links from different data type sources.
+
+**Example 1:** Instance of :php:`\TYPO3\CMS\Core\Resource\File` given:
+.. code-block:: php
+
+   /** @var \TYPO3\CMS\Core\Resource\File $file */
+   $securedUrl = $file->getPublicUrl();
+
+**Example 2:** Instance of :php:`\TYPO3\CMS\Core\Resource\FileReference` given:
+.. code-block:: php
+
+   /** @var \TYPO3\CMS\Core\Resource\FileReference $fileReference */
+   $securedUrl = $fileReference->getPublicUrl();
+
+**Example 3:** Get a link that is only valid for user `19`, with user group `89`, is generated on page `12` and expires on `2022/05/08`:
+.. code-block:: php
+
+   $publicUrl = '/fileadmin/secured/invoice.pdf';
+   $secureDownloadService = GeneralUtility::makeInstance(SecureDownloadService::class);
+   if ($secureDownloadService->pathShouldBeSecured($publicUrl)) {
+       $secureLinkFactory = GeneralUtility::makeInstance(SecureLinkFactory::class, rawurlencode($publicUrl));
+       $secureLinkFactory->setUserId(29);
+       $secureLinkFactory->setPageId(12);
+       $secureLinkFactory->setUserGroups([89]);
+       $secureLinkFactory->setLinkTimeout(1659650400);
+       $securedUrl = $secureLinkFactory->getUrl();
+   }
+
 
 Changed
 =======
@@ -38,20 +73,41 @@ Changed
 Deprecated
 ==========
 
-* Class :php:`\Bitmotion\SecureDownloads\Configuration\ConfigurationManager` is now deprecated. You can use the newly introduced DTO instead.
-* Parameters :php:`hash` and :php:`calculatedHash` of :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init']` hook.
-* Parsing HTML output for non secured links.
-* Class :php:`\Bitmotion\SecureDownloads\Request\RequestContext` is now deprecated. You can use TYPO3 core functions instead.
+* Following classes are now deprecated:
+
+   * :php:`\Bitmotion\SecureDownloads\Configuration\ConfigurationManager` - You can use the newly introduced DTO instead.
+   * :php:`\Bitmotion\SecureDownloads\Core\ObjectManager` - This class is obsolete.
+   * :php:`\Bitmotion\SecureDownloads\Domain\Model\Filter` - You can use the Domain Transfer Object instead.
+   * :php:`\Bitmotion\SecureDownloads\Domain\Model\Statistic` - You can use the Domain Transfer Object instead.
+   * :php:`\Bitmotion\SecureDownloads\Parser\HtmlParser` - You should use the TYPO3 API for retrieving secured links.
+   * :php:`\Bitmotion\SecureDownloads\Parser\HtmlParserDelegateInterface` - This interface is obsolete.
+   * :php:`\Bitmotion\SecureDownloads\Request\RequestContext` -  You can use TYPO3 core methods instead.
+   * :php:`\Bitmotion\SecureDownloads\Resource\Publishing\AbstractResourcePublishingTarget` - You can use the SecureLinkFactory instead.
+   * :php:`\Bitmotion\SecureDownloads\Resource\Publishing\PhpDeliveryProtectedResourcePublishingTarget` - You can use the SecureLinkFactory and the SecureDownloadService instead.
+   * :php:`\Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublisher` - This class is obsolete.
+   * :php:`\Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublishingTargetInterface` - This interface is obsolete.
+   * :php:`\Bitmotion\SecureDownloads\Resource\UrlGenerationInterceptor` - You can use the SecureDownloadService instead.
+   * :php:`\Bitmotion\SecureDownloads\Signal` - This class is obsolete.
+
+
+* Following parameters of :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['output']['init']` hook:
+
+   * :php:`$hash`
+   * :php:`$calculatedHash`
+
 * The eID Script is deprecated. For compatibility reasons, old links are still working.
 * Adding additional MIME types via extension configuration is deprecated. You should add your additional MIME types by extending the :php:`$GLOBALS['TYPO3_CONF_VARS']['SYS']['FileInfo']['fileExtensionToMimeType']` array.
-* Following properties of the extension configuration are deprecated: `debug`, `additionalMimeTypes`, `outputChunkSize` and `domain`
-* Output function "readfile_chunked" is deprecated. You should use "stream" instead.
-* Class :php:`\Bitmotion\SecureDownloads\Resource\UrlGenerationInterceptor` is now deprecated. You can use the service classes instead.
+* Following configurations are now deprecated:
+
+   * :ref:`admin-configuration-debug`
+   * :ref:`admin-configuration-additionalMimeTypes`
+   * :ref:`admin-configuration-outputChunkSize`
+   * :ref:`admin-configuration-domain`
+
+* Output function `readfile_chunked` is deprecated. You should use `stream` instead.
 * Hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure']` is deprecated. You can use the hook :php:`$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['downloadService']['makeSecure']` instead.
-* The `pObj` property of the `output` hook is deprecated.
+* The :php:`$pObj` property of the `output` hook is deprecated.
 * Several properties fo the `init` hook are deprecated, as they are present in the object reference and accessible via getters.
-* The `Filter` and `Statistic` models are deprecated. You should use the eponymous Domain Transfer Objects instead.
-* Several methods of the `AbstractResourcePublishingTarget` are now deprecated.
 
 
 Removed
@@ -68,6 +124,23 @@ All Changes
 ===========
 This is a list of all changes in this release::
 
+   2019-12-03 [TASK] Allow to set additional link timeout (Commit 4f79adc by Florian Wessels)
+   2019-12-03 [FOLLOW-UP] Add hints for regex (Commit db7427c by Florian Wessels)
+   2019-12-03 [DOC] Add hints for regex (Commit b25e694 by Florian Wessels)
+   2019-12-03 [BUGFIX] Update include path (Commit 3d95426 by Florian Wessels)
+   2019-12-03 [WIP] Update documentation (Commit e61abd3 by Florian Wessels)
+   2019-12-03 [TASK] Remove obsolete replace entry (Commit a7be6cf by Florian Wessels)
+   2019-12-03 [TASK] Force slash in x-accel-redirect header (Commit 44c3850 by Florian Wessels)
+   2019-12-03 [TASK] Apply CS and fix some spelling mistakes (Commit 2b8dea1 by Florian Wessels)
+   2019-12-03 [TASK] Use newly introduced API (Commit bbf9d53 by Florian Wessels)
+   2019-12-03 [FEATURE] Introduce API for getting secured URLs (Commit 620e637 by Florian Wessels)
+   2019-12-03 [TASK] Mark ObjectManager as deprecated (Commit 50607d1 by Florian Wessels)
+   2019-12-03 [TASK] Support regular expressions, again (Commit faa9b9f by Florian Wessels)
+   2019-12-02 [FEATURE] Introduce stream as output function (Commit 9371cc0 by Florian Wessels)
+   2019-12-02 [BUGFIX] Store filter data in backend user session (Commit 8585d05 by Florian Wessels)
+   2019-12-02 [TASK] Add README file (Commit ebebdc7 by Florian Wessels)
+   2019-12-02 [DOC] Update documentation (Commit 24ee36e by Florian Wessels)
+   2019-12-02 [DOC] Update documentation (Commit 560436f by Florian Wessels)
    2019-12-02 [TASK] Apply CS (Commit a8f8600 by Florian Wessels)
    2019-12-02 [FEATURE] Add nginx x-accel-redirect fileDelivery mode (Commit b0db813 by Florian Wessels)
    2019-12-02 [TASK] Check whether timeout is greater than null (Commit cc42607 by Florian Wessels)

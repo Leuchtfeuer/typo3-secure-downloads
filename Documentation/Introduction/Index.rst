@@ -34,6 +34,8 @@ As a complementary measure, you will of course need to configure your web server
 .htaccess settings).
 
 
+.. _introduction-filelist:
+
 Identify protected files
 ========================
 
