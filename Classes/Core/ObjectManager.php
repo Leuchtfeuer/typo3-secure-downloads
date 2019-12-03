@@ -15,6 +15,9 @@ namespace Bitmotion\SecureDownloads\Core;
 
 use TYPO3\CMS\Core\SingletonInterface;
 
+/**
+ * @deprecated Will be removed in version 5.
+ */
 class ObjectManager implements SingletonInterface
 {
     /**

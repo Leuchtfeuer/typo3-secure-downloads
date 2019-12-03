@@ -21,13 +21,6 @@ call_user_func(
             $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'][] = \Bitmotion\SecureDownloads\Service\SecureDownloadService::class . '->parseFE';
         }
 
-        // Default publishing target is PHP delivery (we might possibly make that configurable somehow)
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Bitmotion\SecureDownloads\Core\ObjectManager::class);
-        $objectManager->registerImplementation(
-            'Bitmotion\\SecureDownloads\\Resource\\Publishing\\ResourcePublishingTarget',
-            \Bitmotion\SecureDownloads\Resource\Publishing\PhpDeliveryProtectedResourcePublishingTarget::class
-        );
-
         // Connect to signal slots
         // TODO: Remove this when dropping TYPO3 9 LTS support.
         if (version_compare(TYPO3_version, '10.0.0', '<')) {
