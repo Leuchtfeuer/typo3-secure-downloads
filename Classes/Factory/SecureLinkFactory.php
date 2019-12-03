@@ -36,10 +36,13 @@ class SecureLinkFactory
 
     protected $resourceUri = '';
 
+    protected $linkTimeout = 0;
+
     public function __construct(string $resourceUri)
     {
         $this->extensionConfiguration = new ExtensionConfiguration();
         $this->setResourceUri($resourceUri);
+        $this->setLinkTimeout($this->calculateLinkLifetime());
 
         try {
             /** @var UserAspect $userAspect */
@@ -92,6 +95,16 @@ class SecureLinkFactory
         $this->resourceUri = $resourceUri;
     }
 
+    public function getLinkTimeout(): int
+    {
+        return $this->linkTimeout;
+    }
+
+    public function setLinkTimeout(int $linkTimeout): void
+    {
+        $this->linkTimeout = $linkTimeout;
+    }
+
     /**
      * Builds a URI which uses a PHP Script to access the resource by taking several parameters into account.
      */
@@ -127,7 +140,7 @@ class SecureLinkFactory
     {
         $payload = [
             'iat' => time(),
-            'exp' => $this->calculateLinkLifetime(),
+            'exp' => $this->getLinkTimeout(),
             'user' => $this->getUserId(),
             'groups' => $this->getUserGroups(),
             'file' => $this->getResourceUri(),
