@@ -59,4 +59,5 @@ Apache < 2.4
     :titlesonly:
 
     ExtensionConfiguration/Index
+    RegularExpressions/Index
 

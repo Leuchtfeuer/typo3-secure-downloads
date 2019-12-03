@@ -33,14 +33,14 @@ class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInt
 
     protected $securedFileTypesPattern;
 
-    protected $assetPrefix;
+    protected $securedDirectoriesPattern;
 
     public function __construct(ResourcePublisher $resourcePublisher = null)
     {
         $this->resourcePublisher = $resourcePublisher ?? GeneralUtility::makeInstance(ObjectManager::class)->get(ResourcePublisher::class);
         $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
         $this->securedFileTypesPattern = sprintf('/^(%s)$/i', $this->extensionConfiguration->getSecuredFileTypes());
-        $this->assetPrefix = $this->assetPrefix = sprintf('%s/%s', $this->extensionConfiguration->getLinkPrefix(), $this->extensionConfiguration->getTokenPrefix());
+        $this->securedDirectoriesPattern = sprintf('/^(%s)/i', str_replace('/', '\/', $this->extensionConfiguration->getSecuredDirs()));
     }
 
     /**
@@ -123,13 +123,7 @@ class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInt
 
     public function folderShouldBeSecured(string $publicUrl): bool
     {
-        foreach (GeneralUtility::trimExplode('|', $this->extensionConfiguration->getSecuredDirs(), true) as $securedDir) {
-            if ($securedDir && mb_strpos($publicUrl, $securedDir) === 0) {
-                return true;
-            }
-        }
-
-        return false;
+        return (bool)preg_match($this->securedDirectoriesPattern, $publicUrl);
     }
 
     public function isSecuredPath(string $publicUrl): bool
