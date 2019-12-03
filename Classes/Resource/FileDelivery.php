@@ -383,7 +383,11 @@ class FileDelivery
             case ExtensionConfiguration::OUTPUT_NGINX:
                 if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') === 0) {
                     $this->sendHeader([
-                        'X-Accel-Redirect' => $this->extensionConfiguration->getProtectedPath() . $this->file,
+                        'X-Accel-Redirect' => sprintf(
+                            '%s/%s',
+                            rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
+                            $this->file
+                        ),
                     ]);
                     break;
                 }
