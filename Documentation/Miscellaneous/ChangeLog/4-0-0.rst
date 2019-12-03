@@ -127,6 +127,11 @@ All Changes
 ===========
 This is a list of all changes in this release::
 
+   2019-12-03 [TASK] Update references (Commit 917a606 by Florian Wessels)
+   2019-12-03 [TASK] Update dependencies (Commit d923531 by Florian Wessels)
+   2019-12-03 [TASK] Add release notes for version 3.0.2 (Commit fb550e7 by Florian Wessels)
+   2019-12-03 [BUGFIX] Use proper block styles (Commit ee18855 by Florian Wessels)
+   2019-12-03 [TASK] Prepare release notes (Commit a0c759b by Florian Wessels)
    2019-12-03 [TASK] Allow to set additional link timeout (Commit 4f79adc by Florian Wessels)
    2019-12-03 [FOLLOW-UP] Add hints for regex (Commit db7427c by Florian Wessels)
    2019-12-03 [DOC] Add hints for regex (Commit b25e694 by Florian Wessels)
