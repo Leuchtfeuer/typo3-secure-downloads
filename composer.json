@@ -39,7 +39,6 @@
     }
   },
   "replace": {
-    "bitmotion/secure-downloads": "self.version",
     "typo3-ter/secure-downloads": "self.version"
   },
   "extra": {
