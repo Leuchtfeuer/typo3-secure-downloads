@@ -16,6 +16,9 @@ namespace Bitmotion\SecureDownloads\Resource\Publishing;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 
+/**
+ * @deprecated Will be removed in version 5.
+ */
 class ResourcePublisher implements SingletonInterface
 {
     /**
@@ -64,6 +67,8 @@ class ResourcePublisher implements SingletonInterface
 
     /**
      * Builds a delivery URI from a URI which is in document root but protected through the webserver
+     *
+     * @deprecated Will be removed in version 5. Use SecureLinkFactory->getUrl() instead.
      */
     public function publishResourceUri(string $resourceUri): string
     {

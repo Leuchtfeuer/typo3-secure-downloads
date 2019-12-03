@@ -14,7 +14,6 @@ namespace Bitmotion\SecureDownloads;
  ***/
 
 use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
-use Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublisher;
 use Bitmotion\SecureDownloads\Service\SecureDownloadService;
 use TYPO3\CMS\Core\Resource\Driver\AbstractDriver;
 use TYPO3\CMS\Core\Resource\Driver\LocalDriver;
@@ -26,7 +25,6 @@ use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Service\EnvironmentService;
 
 /**
@@ -44,9 +42,8 @@ class Signal implements SingletonInterface
 
     public function __construct()
     {
-        $resourcePublisher = GeneralUtility::makeInstance(ObjectManager::class)->get(ResourcePublisher::class);
         $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
-        $this->sdlService = GeneralUtility::makeInstance(SecureDownloadService::class, $resourcePublisher);
+        $this->sdlService = GeneralUtility::makeInstance(SecureDownloadService::class);
         $this->environmentService = GeneralUtility::makeInstance(EnvironmentService::class);
     }
 

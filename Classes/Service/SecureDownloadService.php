@@ -14,20 +14,17 @@ namespace Bitmotion\SecureDownloads\Service;
  ***/
 
 use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
+use Bitmotion\SecureDownloads\Factory\SecureLinkFactory;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Bitmotion\SecureDownloads\Parser\HtmlParserDelegateInterface;
-use Bitmotion\SecureDownloads\Resource\Publishing\ResourcePublisher;
 use Bitmotion\SecureDownloads\Utility\HookUtility;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInterface
 {
     protected $htmlParser;
-
-    protected $resourcePublisher;
 
     protected $extensionConfiguration;
 
@@ -35,9 +32,8 @@ class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInt
 
     protected $securedDirectoriesPattern;
 
-    public function __construct(ResourcePublisher $resourcePublisher = null)
+    public function __construct()
     {
-        $this->resourcePublisher = $resourcePublisher ?? GeneralUtility::makeInstance(ObjectManager::class)->get(ResourcePublisher::class);
         $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
         $this->securedFileTypesPattern = sprintf('/^(%s)$/i', $this->extensionConfiguration->getSecuredFileTypes());
         $this->securedDirectoriesPattern = sprintf('/^(%s)/i', str_replace('/', '\/', $this->extensionConfiguration->getSecuredDirs()));
@@ -87,12 +83,16 @@ class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInt
 
     /**
      * Transforms a relative file URL to a secure download protected URL
+     *
+     * @deprecated Will be removed in version 5.
      */
     public function publishResourceUri(string $originalUri): string
     {
-        $transformedUri = $this->resourcePublisher->publishResourceUri(rawurldecode($originalUri));
+        $secureLinkFactory = GeneralUtility::makeInstance(SecureLinkFactory::class, rawurldecode($originalUri));
+        $transformedUri = $secureLinkFactory->getUrl();
 
         // Hook for makeSecure:
+        // TODO: This hook is deprecated and will be removed in version 5.
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'])) {
             trigger_error('Hook name ext/secure_downloads/Classes/Service/SecureDownloadService.php is deprecated. Use bitmotion.secure_downloads.downloadService instead.', E_USER_DEPRECATED);
             $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['downloadService']['makeSecure'] = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'];
@@ -126,13 +126,10 @@ class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInt
         return (bool)preg_match($this->securedDirectoriesPattern, $publicUrl);
     }
 
-    public function isSecuredPath(string $publicUrl): bool
+    public function getResourceUrl(string $publicUrl): string
     {
-        return mb_strpos($publicUrl, $this->assetPrefix) === 0;
-    }
+        $secureLinkFactory = GeneralUtility::makeInstance(SecureLinkFactory::class, rawurldecode($publicUrl));
 
-    public function getAssetPrefix(): string
-    {
-        return $this->assetPrefix;
+        return $secureLinkFactory->getUrl();
     }
 }
