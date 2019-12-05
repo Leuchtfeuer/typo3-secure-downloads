@@ -17,6 +17,9 @@ use Bitmotion\SecureDownloads\Cache\DecodeCache;
 use Bitmotion\SecureDownloads\Domain\Model\Log;
 use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Parser\HtmlParser;
+use Bitmotion\SecureDownloads\Resource\Event\AfterFileRetrievedEvent;
+use Bitmotion\SecureDownloads\Resource\Event\BeforeReadDeliverEvent;
+use Bitmotion\SecureDownloads\Resource\Event\OutputInitializationEvent;
 use Bitmotion\SecureDownloads\Utility\HookUtility;
 use Bitmotion\SecureDownloads\Utility\MimeTypeUtility;
 use Firebase\JWT\JWT;
@@ -93,6 +96,11 @@ class FileDelivery
     protected $isProcessed = false;
 
     /**
+     * @var null|\Psr\EventDispatcher\EventDispatcherInterface
+     */
+    protected $eventDispatcher = null;
+
+    /**
      * FileDelivery constructor.
      *
      * Check the access rights
@@ -114,19 +122,7 @@ class FileDelivery
             $this->calculatedHash = isset($data) ? '' : $this->getHash($this->file, $this->userId, $this->userGroups, $this->expiryTime);
         }
 
-        // Hook for init:
-        // TODO: The params array is deprecated as all information is given in the ref param of the hook.
-        // TODO: Remove the params with version 5.
-        $params = [
-            'pObj' => $this,
-            'userId' => &$this->userId,
-            'userGroups' => &$this->userGroups,
-            'file' => &$this->file,
-            'expiryTime' => &$this->expiryTime,
-            'hash' => &$this->hash,
-            'calculatedHash' => &$this->calculatedHash,
-        ];
-        HookUtility::executeHook('output', 'init', $params, $this);
+        $this->dispatchOutputInitializationEvent();
 
         if (!$jwt) {
             // TODO: This part is deprecated and will be removed with version 5
@@ -163,6 +159,7 @@ class FileDelivery
         }
 
         // Hook for doing stuff with JWT data
+        // This is deprecated as there will be a dedicated class for handling JWTs.
         HookUtility::executeHook('output', 'encode', $data, $this);
 
         $this->userGroups = implode(',', $data->groups);
@@ -283,11 +280,7 @@ class FileDelivery
             $file = utf8_decode($file);
         }
 
-        // Hook for pre-output:
-        // TODO: The pObj property of params array is deprecated as it is the same as the ref argument.
-        // TODO: Remove the pObj property with version 5.
-        $params = ['pObj' => &$this, 'file' => &$file, 'downloadName' => &$fileName];
-        HookUtility::executeHook('output', 'preOutput', $params, $this);
+        $this->dispatchAfterFileRetrievedEvent($file, $fileName);
 
         if (file_exists($file)) {
             $this->fileSize = filesize($file);
@@ -304,8 +297,7 @@ class FileDelivery
             $header = $this->getHeader($mimeType, $fileName, $forceDownload);
             $outputFunction = $this->extensionConfiguration->getOutputFunction();
 
-            $params = ['outputFunction' => &$outputFunction, 'header' => &$header, 'fileName' => $fileName, 'mimeType' => $mimeType, 'forceDownload' => $forceDownload];
-            HookUtility::executeHook('output', 'preReadFile', $params, $this);
+            $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
 
             if ($this->isProcessed === false && $this->extensionConfiguration->isLog()) {
                 $this->logDownload($this->fileSize, $mimeType);
@@ -375,29 +367,16 @@ class FileDelivery
                 break;
 
             case ExtensionConfiguration::OUTPUT_PASS_THRU:
-                $handle = fopen($file, 'rb');
-                fpassthru($handle);
-                fclose($handle);
+                $this->passThruFile($file);
                 break;
 
             case ExtensionConfiguration::OUTPUT_NGINX:
-                if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') === 0) {
-                    $this->sendHeader([
-                        'X-Accel-Redirect' => sprintf(
-                            '%s/%s',
-                            rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
-                            $this->file
-                        ),
-                    ]);
-                    break;
-                }
-                // no break as web server is not a nginx
+                $this->nginxDeliverFile($file);
+                break;
 
             case ExtensionConfiguration::OUTPUT_READ_FILE:
-                // fallthrough, this is the default case
             default:
                 readfile($file);
-                break;
         }
 
         // make sure we can detect an aborted connection, call flush
@@ -436,6 +415,8 @@ class FileDelivery
         $this->isProcessed = true;
     }
 
+    // File delivery methods
+
     /**
      * In some cases php needs the filesize as php_memory, so big files cannot
      * be transferred. This function mitigates this problem.
@@ -465,5 +446,97 @@ class FileDelivery
         }
 
         $stream->close();
+    }
+
+    protected function passThruFile(string $fileName): void
+    {
+        $handle = fopen($fileName, 'rb');
+        fpassthru($handle);
+        fclose($handle);
+    }
+
+    protected function nginxDeliverFile(string $fileName): void
+    {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') === 0) {
+            $this->sendHeader([
+                'X-Accel-Redirect' => sprintf(
+                    '%s/%s',
+                    rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
+                    $this->file
+                ),
+            ]);
+        } else {
+            readfile($fileName);
+        }
+    }
+
+    // Event handling
+
+    /**
+     * @return \Psr\EventDispatcher\EventDispatcherInterface
+     */
+    protected function initializeEventDispatcher()
+    {
+        $this->eventDispatcher = GeneralUtility::getContainer()->get('Psr\\EventDispatcher\\EventDispatcherInterface');
+
+        return $this->eventDispatcher;
+    }
+
+    protected function dispatchOutputInitializationEvent()
+    {
+        if (version_compare(TYPO3_version, '10.2.0', '>=')) {
+            /** @var OutputInitializationEvent $event */
+            $event = new OutputInitializationEvent($this->userId, $this->userGroups, $this->file, $this->expiryTime);
+            $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
+
+            $this->userId = $event->getUserId();
+            $this->userGroups = $event->getUserGroups();
+            $this->file = $event->getFile();
+            $this->expiryTime = $event->getExpiryTime();
+        } else {
+            // Hook for init:
+            // TODO: The params array is deprecated as all information is given in the ref param of the hook.
+            // TODO: This hook is deprecated.
+            $params = [
+                'pObj' => $this,
+                'userId' => &$this->userId,
+                'userGroups' => &$this->userGroups,
+                'file' => &$this->file,
+                'expiryTime' => &$this->expiryTime,
+                'hash' => &$this->hash,
+                'calculatedHash' => &$this->calculatedHash,
+            ];
+            HookUtility::executeHook('output', 'init', $params, $this);
+        }
+    }
+
+    protected function dispatchBeforeFileDeliverEvent(&$outputFunction, &$header, $fileName, $mimeType, $forceDownload)
+    {
+        if (version_compare(TYPO3_version, '10.2.0', '>=')) {
+            /** @var BeforeReadDeliverEvent $event */
+            $event = new BeforeReadDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
+            $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
+
+            $outputFunction = $event->getOutputFunction();
+            $header = $event->getHeader();
+        } else {
+            $params = ['outputFunction' => &$outputFunction, 'header' => &$header, 'fileName' => $fileName, 'mimeType' => $mimeType, 'forceDownload' => $forceDownload];
+            HookUtility::executeHook('output', 'preReadFile', $params, $this);
+        }
+    }
+
+    protected function dispatchAfterFileRetrievedEvent(string &$file, string &$fileName)
+    {
+        if (version_compare(TYPO3_version, '10.2.0', '>=')) {
+            /** @var AfterFileRetrievedEvent $event */
+            $event = new AfterFileRetrievedEvent($file, $fileName);
+            $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
+
+            $file = $event->getFile();
+            $fileName = $event->getFileName();
+        } else {
+            $params = ['pObj' => &$this, 'file' => &$file, 'downloadName' => &$fileName];
+            HookUtility::executeHook('output', 'preOutput', $params, $this);
+        }
     }
 }
