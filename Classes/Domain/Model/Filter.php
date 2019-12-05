@@ -33,16 +33,34 @@ class Filter
     const USER_TYPE_LOGGED_ON = -1;
     const USER_TYPE_LOGGED_OFF = -2;
 
+    /**
+     * @var string
+     */
     protected $fileType = '0';
 
+    /**
+     * @var string
+     */
     protected $from = '';
 
+    /**
+     * @var string
+     */
     protected $till = '';
 
+    /**
+     * @var int
+     */
     protected $feUserId = 0;
 
+    /**
+     * @var int
+     */
     protected $userType = 0;
 
+    /**
+     * @var int
+     */
     protected $pageId = 0;
 
     public function getPageId(): int

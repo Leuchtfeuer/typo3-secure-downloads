@@ -65,6 +65,7 @@ class Log extends AbstractEntity
 
     /**
      * @var int
+     *
      * @deprecated Since 3.0, will be removed in 4.0
      */
     protected $bytesDownloaded = 0;
@@ -80,6 +81,8 @@ class Log extends AbstractEntity
     protected $host = '';
 
     /**
+     * @var string
+     *
      * @deprecated Since 3.0, will be removed in 4.0
      */
     protected $typo3Mode = '';
