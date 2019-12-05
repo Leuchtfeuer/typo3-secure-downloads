@@ -85,23 +85,13 @@ class Filter
             return null;
         }
 
-        list($date, $time) = explode(' ', trim($dateString));
-
-        if ($date == '') {
-            list($year, $month, $day) = explode('-', $dateString);
-        } else {
-            list($year, $month, $day) = explode('-', $date);
-            list($hour, $minute, $second) = explode(':', $time);
+        try {
+            $dateTime = (new \DateTime($dateString))->getTimestamp();
+        } catch (\Exception $exception) {
+            $dateTime = null;
         }
 
-        $dateTime = new \DateTime();
-        $dateTime->setDate($year, (int)$month, (int)$day);
-
-        if (isset($hour) && isset($minute) && isset($second)) {
-            $dateTime->setTime((int)$hour, (int)$minute, (int)$second);
-        }
-
-        return $dateTime->getTimestamp();
+        return $dateTime;
     }
 
     public function getTill(): ?int
