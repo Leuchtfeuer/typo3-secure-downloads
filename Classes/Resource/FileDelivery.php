@@ -165,7 +165,7 @@ class FileDelivery
         // Hook for doing stuff with JWT data
         HookUtility::executeHook('output', 'encode', $data, $this);
 
-        $this->userGroups = implode($data->groups);
+        $this->userGroups = implode(',', $data->groups);
         $this->userId = $data->user;
         $this->pageId = $data->page;
         $this->expiryTime = $data->exp;
