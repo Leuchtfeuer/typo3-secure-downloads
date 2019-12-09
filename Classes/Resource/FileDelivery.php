@@ -154,6 +154,8 @@ class FileDelivery
                 $data = JWT::decode($jwt, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], ['HS256']);
                 DecodeCache::addCache($jwt, $data);
             } catch (SignatureInvalidException $exception) {
+                $this->exitScript('Signature invalid! Access denied!');
+            } catch (\DomainException $exception) {
                 $this->exitScript('Hash invalid! Access denied!');
             }
         }
