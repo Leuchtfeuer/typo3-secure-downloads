@@ -23,7 +23,6 @@ use Bitmotion\SecureDownloads\Resource\Event\OutputInitializationEvent;
 use Bitmotion\SecureDownloads\Utility\HookUtility;
 use Bitmotion\SecureDownloads\Utility\MimeTypeUtility;
 use Firebase\JWT\JWT;
-use Firebase\JWT\SignatureInvalidException;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
@@ -153,10 +152,8 @@ class FileDelivery
             try {
                 $data = JWT::decode($jwt, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], ['HS256']);
                 DecodeCache::addCache($jwt, $data);
-            } catch (SignatureInvalidException $exception) {
-                $this->exitScript('Signature invalid! Access denied!');
-            } catch (\DomainException $exception) {
-                $this->exitScript('Hash invalid! Access denied!');
+            } catch (\Exception $exception) {
+                $this->exitScript($exception->getMessage());
             }
         }
 
