@@ -146,7 +146,7 @@ class ExtensionConfiguration implements SingletonInterface
      *
      * @var string Prefix of secured links will be appended to the domain.
      */
-    private $linkPrefix = 'download';
+    private $linkPrefix = 'securedl';
 
     /**
      * Prefix before the Json web token. This value might be empty. All secured links are structured as follows:

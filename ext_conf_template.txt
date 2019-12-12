@@ -12,7 +12,7 @@ domain = http://mydomain.com/|http://my.other.domain.org/
 
 
 # cat=Link Generation/010; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:linkPrefix
-linkPrefix = download
+linkPrefix = securedl
 
 # cat=Link Generation/020; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:tokenPrefix
 tokenPrefix = sdl-
