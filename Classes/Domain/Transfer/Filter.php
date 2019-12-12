@@ -54,6 +54,9 @@ class Filter
         return $this->pageId;
     }
 
+    /**
+     * @param int $pageId Sets the page ID
+     */
     public function setPageId(int $pageId): void
     {
         $this->pageId = $pageId;
@@ -64,6 +67,9 @@ class Filter
         return $this->fileType;
     }
 
+    /**
+     * @param string $fileType Sets the file type
+     */
     public function setFileType(string $fileType): void
     {
         $this->fileType = $fileType;
@@ -74,6 +80,9 @@ class Filter
         return $this->formatDate($this->from);
     }
 
+    /**
+     * @param string $from Sets the from time
+     */
     public function setFrom(string $from): void
     {
         $this->from = $from;
@@ -99,6 +108,9 @@ class Filter
         return $this->formatDate($this->till);
     }
 
+    /**
+     * @param string $till Sets the till time
+     */
     public function setTill(string $till): void
     {
         $this->till = $till;
@@ -109,6 +121,9 @@ class Filter
         return $this->feUserId;
     }
 
+    /**
+     * @param int $feUserId Sets the website user
+     */
     public function setFeUserId(int $feUserId): void
     {
         switch ($feUserId) {
@@ -132,6 +147,9 @@ class Filter
         return $this->userType;
     }
 
+    /**
+     * @param int $userType Sets the user type
+     */
     public function setUserType(int $userType): void
     {
         $this->userType = $userType;
