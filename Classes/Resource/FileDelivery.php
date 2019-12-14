@@ -391,18 +391,14 @@ class FileDelivery
         $log = new Log();
         $log->setFileSize($this->fileSize ?? $fileSize);
 
+        $pathInfo = pathinfo($this->file);
+        $log->setFilePath($pathInfo['dirname'] . '/' . $pathInfo['filename']);
+        $log->setFileType($pathInfo['extension']);
+        $log->setFileName($pathInfo['filename']);
+        $log->setMediaType($mimeType);
+
         if ($fileObject = ResourceFactory::getInstance()->retrieveFileOrFolderObject($this->file)) {
-            $log->setFilePath($fileObject->getPublicUrl());
-            $log->setFileType($fileObject->getExtension());
-            $log->setFileName($fileObject->getNameWithoutExtension());
-            $log->setMediaType($fileObject->getMimeType());
             $log->setFileId((string)$fileObject->getUid());
-        } else {
-            $pathInfo = pathinfo($this->file);
-            $log->setFilePath($pathInfo['dirname'] . '/' . $pathInfo['filename']);
-            $log->setFileType($pathInfo['extension']);
-            $log->setFileName($pathInfo['filename']);
-            $log->setMediaType($mimeType);
         }
 
         $log->setUser($this->userAspect->get('id'));
