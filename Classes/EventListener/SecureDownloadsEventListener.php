@@ -14,6 +14,7 @@ namespace Bitmotion\SecureDownloads\EventListener;
  ***/
 
 use Bitmotion\SecureDownloads\Service\SecureDownloadService;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent;
 use TYPO3\CMS\Core\Resource\Driver\LocalDriver;
 use TYPO3\CMS\Core\Resource\Event\GeneratePublicUrlForResourceEvent;
@@ -23,6 +24,7 @@ use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Service\EnvironmentService;
 
 /**
@@ -61,11 +63,8 @@ class SecureDownloadsEventListener implements SingletonInterface
             try {
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier());
                 if ($this->sdlService->pathShouldBeSecured($publicUrl)) {
-                    if ($this->environmentService->isEnvironmentInFrontendMode()) {
-                        $event->setPublicUrl($this->sdlService->getResourceUrl($publicUrl));
-                    } elseif ($this->environmentService->isEnvironmentInBackendMode()) {
-                        $event->setPublicUrl('');
-                    }
+                    $securedUrl = $this->getSecuredUrl($event->isRelativeToCurrentScript(), $publicUrl, $driver);
+                    $event->setPublicUrl($securedUrl);
                 }
             } catch (Exception $exception) {
                 // Do nothing.
@@ -92,5 +91,17 @@ class SecureDownloadsEventListener implements SingletonInterface
         }
 
         $event->setOverlayIdentifier($overlayIdentifier ?? $event->getOverlayIdentifier());
+    }
+
+    public function getSecuredUrl(bool $relativeToCurrentScript, string $publicUrl, LocalDriver $driver): string
+    {
+        $pathPart = '';
+
+        if ($relativeToCurrentScript) {
+            $absolutePathToContainingFolder = PathUtility::dirname(Environment::getPublicPath() . '/' . $driver->getDefaultFolder());
+            $pathPart = PathUtility::getRelativePathTo($absolutePathToContainingFolder);
+        }
+
+        return $pathPart . $this->sdlService->getResourceUrl($publicUrl);
     }
 }
