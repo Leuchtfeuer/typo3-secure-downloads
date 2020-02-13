@@ -136,8 +136,12 @@ class FileDelivery
 
         $this->userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
 
-        if (($this->userId !== 0) && !$this->checkUserAccess() && !$this->checkGroupAccess()) {
-            $this->exitScript('Access denied for User!');
+        if ($this->userId === 0) {
+            $this->exitScript('Access denied without login');
+        } else {
+            if (!$this->checkUserAccess() && !$this->checkGroupAccess()) {
+                $this->exitScript('Access denied for User!');
+            }
         }
     }
 
