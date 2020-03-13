@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 if (version_compare(TYPO3_version, '10.0.0', '>=')) {
     $before = [

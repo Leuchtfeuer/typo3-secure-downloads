@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 namespace Bitmotion\SecureDownloads\Resource\Publishing;
 
 /***
@@ -84,7 +84,7 @@ class PhpDeliveryProtectedResourcePublishingTarget extends AbstractResourcePubli
         // TODO: maybe check if the resource is available without authentication by doing a head request
         return !(preg_match(
             '/((' . HtmlParser::softQuoteExpression($securedFoldersExpression) . ')+?\/.*?(?:(?i)' . ($fileExtensionExpression) . '))/i',
-                $resourceUri,
+            $resourceUri,
             $matchedUrls
         ) && is_array($matchedUrls) && $matchedUrls[0] === $resourceUri);
     }

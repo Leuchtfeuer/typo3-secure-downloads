@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 namespace Bitmotion\SecureDownloads\Controller;
 
 /***
@@ -38,7 +38,7 @@ class LogController extends ActionController
 
     protected $logRepository;
 
-    protected $pageRepository = null;
+    protected $pageRepository;
 
     /**
      * @todo Use class \TYPO3\CMS\Core\Domain\Repository\PageRepository when dropping TYPO3 9 support.

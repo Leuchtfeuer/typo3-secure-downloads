@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 namespace Bitmotion\SecureDownloads\Resource;
 
 /***
@@ -95,9 +95,9 @@ class FileDelivery
     protected $isProcessed = false;
 
     /**
-     * @var null|\Psr\EventDispatcher\EventDispatcherInterface
+     * @var \Psr\EventDispatcher\EventDispatcherInterface|null
      */
-    protected $eventDispatcher = null;
+    protected $eventDispatcher;
 
     /**
      * FileDelivery constructor.

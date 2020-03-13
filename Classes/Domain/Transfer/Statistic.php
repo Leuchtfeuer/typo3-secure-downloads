@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 namespace Bitmotion\SecureDownloads\Domain\Transfer;
 
 /***
@@ -25,12 +25,12 @@ class Statistic
     /**
      * @var \DateTime
      */
-    protected $from = null;
+    protected $from;
 
     /**
      * @var \DateTime
      */
-    protected $till = null;
+    protected $till;
 
     public function __construct(QueryResultInterface $logEntries)
     {
