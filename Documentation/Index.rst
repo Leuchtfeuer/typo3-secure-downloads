@@ -22,10 +22,10 @@ Secure Downloads
    2006-2019
 
 :Author:
-   Florian Wessels, Bitmotion GmbH
+   Florian Wessels, Leuchtfeuer Digital Marketing
 
 :Email:
-   typo3-ext@bitmotion.de
+   typo3-ext@Leuchtfeuer.com
 
 :License:
    This document is published under the Open Content License

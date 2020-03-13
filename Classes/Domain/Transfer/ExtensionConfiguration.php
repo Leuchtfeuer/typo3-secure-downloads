@@ -9,7 +9,7 @@ namespace Bitmotion\SecureDownloads\Domain\Transfer;
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- *  (c) 2019 Florian Wessels <f.wessels@bitmotion.de>, Bitmotion GmbH
+ *  (c) 2019 Florian Wessels <f.wessels@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
  *
  ***/
 
@@ -142,7 +142,7 @@ class ExtensionConfiguration implements SingletonInterface
     /**
      * This prefix will be appended to your domain. All secured links are structured as follows:
      * https://www.mydomain.com/[$linkPrefix]/[$tokenPrefix][JWT]/my_secured_file.jpg
-     * https://www.bitmotion.de/download/sdl-[JSON Web Token]/bitmotion_whirl.svg
+     * https://www.Leuchtfeuer.com/download/sdl-[JSON Web Token]/bitmotion_whirl.svg
      *
      * @var string Prefix of secured links will be appended to the domain.
      */
@@ -151,7 +151,7 @@ class ExtensionConfiguration implements SingletonInterface
     /**
      * Prefix before the Json web token. This value might be empty. All secured links are structured as follows:
      * https://www.mydomain.com/[$linkPrefix]/[$tokenPrefix][JWT]/my_secured_file.jpg
-     * https://www.bitmotion.de/download/sdl-[JSON Web Token]/bitmotion_whirl.svg
+     * https://www.Leuchtfeuer.com/download/sdl-[JSON Web Token]/bitmotion_whirl.svg
      *
      * @var string Prefix of tokens.
      */
