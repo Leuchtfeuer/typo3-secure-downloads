@@ -25,7 +25,7 @@ Secure Downloads
    Florian Wessels, Leuchtfeuer Digital Marketing
 
 :Email:
-   typo3-ext@Leuchtfeuer.com
+   dev@Leuchtfeuer.com
 
 :License:
    This document is published under the Open Content License
