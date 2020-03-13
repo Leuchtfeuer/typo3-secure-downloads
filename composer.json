@@ -12,7 +12,8 @@
   "support": {
     "email": "typo3-ext@bitmotion.de",
     "issues": "https://github.com/bitmotion/typo3-secure-downloads/issues",
-    "source": "https://github.com/bitmotion/typo3-secure-downloads/"
+    "source": "https://github.com/bitmotion/typo3-secure-downloads/",
+    "docs": "https://docs.typo3.org/p/bitmotion/secure-downloads/master/en-us/"
   },
   "authors": [
     {
