@@ -156,7 +156,7 @@ class SecureLinkFactory
     protected function calculateLinkLifetime(): int
     {
         // TODO: TSFE should always be available when dropping HTML parsing.
-        $cacheTimeout = ($GLOBALS['TSFE'] instanceof TypoScriptFrontendController && is_array($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->get_cache_timeout() : self::DEFAULT_CACHE_LIFETIME;
+        $cacheTimeout = ($GLOBALS['TSFE'] instanceof TypoScriptFrontendController && isset($GLOBALS['TSFE']->page['uid'])) ? $GLOBALS['TSFE']->get_cache_timeout() : self::DEFAULT_CACHE_LIFETIME;
 
         return $cacheTimeout + $GLOBALS['EXEC_TIME'] + $this->extensionConfiguration->getCacheTimeAdd();
     }
