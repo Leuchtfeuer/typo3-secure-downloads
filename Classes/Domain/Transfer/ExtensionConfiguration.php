@@ -52,6 +52,14 @@ class ExtensionConfiguration implements SingletonInterface
     private $cachetimeadd = 3600;
 
     /**
+     * Do only change this configuration option, if your TYPO3 instance is running in a subfolder or you are using a SSL reverse
+     * proxy to map TYPO3 into a virtual subfolder.
+     *
+     * @var string The document root path.
+     */
+    protected $documentRootPath = '/';
+
+    /**
      * @deprecated Will be removed in version 5. Use PSR-3 Logger instead.
      */
     private $debug = 0;
@@ -304,6 +312,11 @@ class ExtensionConfiguration implements SingletonInterface
     public function isStrictGroupCheck(): bool
     {
         return (bool)$this->strictGroupCheck;
+    }
+
+    public function getDocumentRootPath(): string
+    {
+        return $this->documentRootPath;
     }
 
     /**

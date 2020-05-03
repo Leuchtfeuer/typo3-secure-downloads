@@ -34,7 +34,13 @@ class FileDeliveryMiddleware implements MiddlewareInterface
     public function __construct()
     {
         $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
-        $this->assetPrefix = sprintf('/%s/%s', $extensionConfiguration->getLinkPrefix(), $extensionConfiguration->getTokenPrefix());
+
+        $this->assetPrefix = sprintf(
+            '%s%s/%s',
+            $extensionConfiguration->getDocumentRootPath(),
+            $extensionConfiguration->getLinkPrefix(),
+            $extensionConfiguration->getTokenPrefix()
+        );
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -45,8 +51,8 @@ class FileDeliveryMiddleware implements MiddlewareInterface
             $frontendUserAuthentication->fetchGroupData();
 
             $cleanPath = mb_substr(urldecode($request->getUri()->getPath()), mb_strlen($this->assetPrefix));
-            list($jwt, $basePath) = explode('/', $cleanPath);
-            GeneralUtility::makeInstance(FileDelivery::class, $jwt)->deliver();
+            [$jwt, $basePath] = explode('/', $cleanPath);
+            (new FileDelivery($jwt))->deliver();
         }
 
         return $handler->handle($request);
