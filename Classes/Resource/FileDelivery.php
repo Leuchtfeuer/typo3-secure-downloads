@@ -24,6 +24,7 @@ use Bitmotion\SecureDownloads\Utility\HookUtility;
 use Bitmotion\SecureDownloads\Utility\MimeTypeUtility;
 use Firebase\JWT\JWT;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -136,7 +137,7 @@ class FileDelivery
 
         $this->userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
 
-        if (($this->userId !== 0) && !$this->checkUserAccess() && !$this->checkGroupAccess()) {
+        if (!$this->checkUserAccess() || !$this->checkGroupAccess()) {
             $this->exitScript('Access denied for User!');
         }
     }
@@ -210,9 +211,23 @@ class FileDelivery
         return $this->expiryTime < time();
     }
 
+    /**
+     * Returns TRUE when the user has direct access to the file or group check is enabled
+     * Returns FALSE if the user has noch direct access to the file and group check is disabled
+     *
+     * @return bool
+     */
     protected function checkUserAccess(): bool
     {
-        return $this->userId === $this->userAspect->get('id');
+        if ($this->extensionConfiguration->isEnableGroupCheck() || $this->userId === 0) {
+            return true;
+        }
+
+        try {
+            return $this->userId === $this->userAspect->get('id');
+        } catch (AspectPropertyNotFoundException $exception) {
+            return false;
+        }
     }
 
     /**
@@ -222,9 +237,8 @@ class FileDelivery
      */
     protected function checkGroupAccess(): bool
     {
-        $accessAllowed = false;
         if (!$this->extensionConfiguration->isEnableGroupCheck()) {
-            return false;
+            return true;
         }
 
         $groupCheckDirs = $this->extensionConfiguration->getGroupCheckDirs();
@@ -233,26 +247,28 @@ class FileDelivery
             return false;
         }
 
-        $transmittedGroups = GeneralUtility::intExplode(',', $this->userGroups);
         $actualGroups = $this->userAspect->get('groupIds');
         sort($actualGroups);
-        $excludedGroups = GeneralUtility::intExplode(',', $this->extensionConfiguration->getExcludeGroups());
-        $checkableGroups = array_diff($actualGroups, $excludedGroups);
+        $transmittedGroups = GeneralUtility::intExplode(',', $this->userGroups);
+        sort($transmittedGroups);
 
         if ($actualGroups === $transmittedGroups) {
+            // Actual groups and transmitted groups are identically, so we can ignore the excluded groups
             return true;
         }
+
+        $excludedGroups = GeneralUtility::intExplode(',', $this->extensionConfiguration->getExcludeGroups(), true);
+        $checkableGroups = array_diff($actualGroups, $excludedGroups);
 
         // TODO: This loosens the permission check to an extend which might lead to unexpected file access.
         // We may need to remove it or at least make it configurable
         foreach ($checkableGroups as $actualGroup) {
             if (in_array($actualGroup, $transmittedGroups, true)) {
-                $accessAllowed = true;
-                break;
+                return true;
             }
         }
 
-        return $accessAllowed;
+        return false;
     }
 
     /**
