@@ -16,6 +16,7 @@ namespace Bitmotion\SecureDownloads\Controller;
 use Bitmotion\SecureDownloads\Domain\Repository\LogRepository;
 use Bitmotion\SecureDownloads\Domain\Transfer\Filter;
 use Bitmotion\SecureDownloads\Domain\Transfer\Statistic;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Page\PageRenderer;
@@ -27,7 +28,6 @@ use TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
-use TYPO3\CMS\Frontend\Page\PageRepository;
 
 class LogController extends ActionController
 {
@@ -38,15 +38,9 @@ class LogController extends ActionController
 
     protected $logRepository;
 
-    protected $pageRepository;
-
-    /**
-     * @todo Use class \TYPO3\CMS\Core\Domain\Repository\PageRepository when dropping TYPO3 9 support.
-     */
-    public function __construct(LogRepository $logRepository, PageRepository $pageRepository)
+    public function __construct(LogRepository $logRepository)
     {
         $this->logRepository = $logRepository;
-        $this->pageRepository = $pageRepository;
 
         if (version_compare(TYPO3_version, '10.0.0', '<')) {
             parent::__construct();
@@ -138,7 +132,7 @@ class LogController extends ActionController
 
         $this->view->assignMultiple([
             'logs' => $logEntries,
-            'page' => $this->pageRepository->getPage($pageId),
+            'page' => BackendUtility::getRecord('pages', $pageId),
             'users' => $this->getUsers(),
             'fileTypes' => $this->getFileTypes(),
             'filter' => $filter,
