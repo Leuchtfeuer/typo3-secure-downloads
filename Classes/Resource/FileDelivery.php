@@ -304,7 +304,7 @@ class FileDelivery
 
             $this->sendHeader($header);
             $this->outputFile($outputFunction, $file);
-            $this->exitScript('Okay', HttpUtility::HTTP_STATUS_200);
+            exit;
         }
 
         $this->exitScript('File does not exist!', HttpUtility::HTTP_STATUS_404);
