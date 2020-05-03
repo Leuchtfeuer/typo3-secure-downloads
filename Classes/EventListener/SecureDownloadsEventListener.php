@@ -82,7 +82,7 @@ class SecureDownloadsEventListener implements SingletonInterface
         $resource = $event->getResource();
 
         if ($resource instanceof Folder) {
-            $publicUrl = $resource->getStorage()->getPublicUrl($resource);
+            $publicUrl = $resource->getStorage()->getPublicUrl($resource) ?? $resource->getIdentifier();
             if ($this->sdlService->folderShouldBeSecured($publicUrl)) {
                 $overlayIdentifier = 'overlay-restricted';
             }

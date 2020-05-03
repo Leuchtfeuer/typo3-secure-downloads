@@ -73,7 +73,7 @@ class Signal implements SingletonInterface
     public function buildIconForResourceSignal(ResourceInterface $resource, string $size, array $options, string $iconIdentifier, ?string $overlayIdentifier): array
     {
         if ($resource instanceof Folder) {
-            $publicUrl = $resource->getStorage()->getPublicUrl($resource);
+            $publicUrl = $resource->getStorage()->getPublicUrl($resource) ?? $resource->getIdentifier();
             if ($this->sdlService->folderShouldBeSecured($publicUrl)) {
                 $overlayIdentifier = 'overlay-restricted';
             }
