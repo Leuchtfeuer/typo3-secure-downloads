@@ -25,6 +25,9 @@
             <trans-unit id="excludeGroups">
                 <source>Exclude Groups: A comma separated list of groups that are excluded from the group check feature (if enabled).</source>
             </trans-unit>
+            <trans-unit id="strictGroupCheck">
+                <source>Strict Group Check: If enabled, files are only delivered if the user groups exactly match those of the secured link.</source>
+            </trans-unit>
             <trans-unit id="linkPrefix">
                 <source>Link Prefix: Prefix for generated links (the "download" part in "https://example.com/download/sdl-[JWT]/image.png").</source>
             </trans-unit>

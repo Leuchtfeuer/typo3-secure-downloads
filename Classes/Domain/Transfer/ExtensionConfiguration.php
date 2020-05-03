@@ -86,6 +86,13 @@ class ExtensionConfiguration implements SingletonInterface
     private $groupCheckDirs = '';
 
     /**
+     * If enabled, files are only delivered if the user groups exactly match those of the secured link.
+     *
+     * @var bool Ture if the group check should be strict.
+     */
+    private $strictGroupCheck = false;
+
+    /**
      * Download of specific file types can be forced.
      *
      * @var bool True if the download of configured file types should be forced.
@@ -292,6 +299,11 @@ class ExtensionConfiguration implements SingletonInterface
     public function getProtectedPath(): string
     {
         return $this->protectedPath;
+    }
+
+    public function isStrictGroupCheck(): bool
+    {
+        return (bool)$this->strictGroupCheck;
     }
 
     /**

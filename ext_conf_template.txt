@@ -30,6 +30,9 @@ groupCheckDirs =
 # cat=Group Check/030; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:excludeGroups
 excludeGroups = -1,0
 
+# cat=Group Check/040; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:strictGroupCheck
+strictGroupCheck = 0
+
 
 # cat=File Delivery/010; type=options[readfile,stream,readfile_chunked,fpassthru,x-accel-redirect]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
 outputFunction = stream

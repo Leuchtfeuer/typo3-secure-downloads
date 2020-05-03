@@ -257,12 +257,15 @@ class FileDelivery
             return true;
         }
 
-        $excludedGroups = GeneralUtility::intExplode(',', $this->extensionConfiguration->getExcludeGroups(), true);
-        $checkableGroups = array_diff($actualGroups, $excludedGroups);
+        if ($this->extensionConfiguration->isStrictGroupCheck()) {
+            // Groups are not identically. Deny access when strict group access is enabled.
+            return false;
+        }
 
-        // TODO: This loosens the permission check to an extend which might lead to unexpected file access.
-        // We may need to remove it or at least make it configurable
-        foreach ($checkableGroups as $actualGroup) {
+        $excludedGroups = GeneralUtility::intExplode(',', $this->extensionConfiguration->getExcludeGroups(), true);
+        $verifiableGroups = array_diff($actualGroups, $excludedGroups);
+
+        foreach ($verifiableGroups as $actualGroup) {
             if (in_array($actualGroup, $transmittedGroups, true)) {
                 return true;
             }
