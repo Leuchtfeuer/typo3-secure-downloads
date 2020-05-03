@@ -75,7 +75,7 @@ class ExtensionConfiguration implements SingletonInterface
      *
      * @var string Comma separated list of groups, which should be excluded from group check.
      */
-    private $excludeGroups = '';
+    private $excludeGroups = '-1,0';
 
     /**
      * The group check can be limited to certain directories. This will only be used if group check is enabled.

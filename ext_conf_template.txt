@@ -28,7 +28,7 @@ enableGroupCheck = 0
 groupCheckDirs =
 
 # cat=Group Check/030; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:excludeGroups
-excludeGroups =
+excludeGroups = -1,0
 
 
 # cat=File Delivery/010; type=options[readfile,stream,readfile_chunked,fpassthru,x-accel-redirect]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
