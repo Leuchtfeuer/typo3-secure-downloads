@@ -168,7 +168,7 @@ class FileDelivery
     /**
      * TODO: Refactor it to a hash service
      */
-    protected function getHash(string $resourceUri, int $userId, string $userGroupIds, int $validityPeriod = 0): string
+    protected function getHash($resourceUri, $userId, $userGroupIds, $validityPeriod = 0): string
     {
         if ($this->extensionConfiguration['enableGroupCheck']) {
             $hashString = $userId . $userGroupIds . $resourceUri . $validityPeriod;
