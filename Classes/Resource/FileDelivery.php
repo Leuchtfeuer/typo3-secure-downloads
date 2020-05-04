@@ -105,12 +105,11 @@ class FileDelivery
         $this->extensionConfiguration = $this->getExtensionConfiguration();
 
         $this->userId = (int)GeneralUtility::_GP('u') ?: 0;
-
         $this->pageId = (int)GeneralUtility::_GP('p') ?: 0;
+        $this->userGroups = (string)GeneralUtility::_GP('g');
 
-        $this->userGroups = GeneralUtility::_GP('g');
         if ($this->userGroups === '') {
-            $this->userGroups = 0;
+            $this->userGroups = '0';
         }
 
         $this->hash = GeneralUtility::_GP('hash');
