@@ -1,0 +1,72 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 3.0.1 - 2019/11/20
+==========================
+
+This release is a bug fix release. It contains bug fixes and some improvements in documentation and code quality.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/bitmotion/typo3-secure-downloads/releases/tag/3.0.1>`__.
+
+Added
+=====
+
+* Changelog file added.
+
+Changed
+=======
+
+* :php:`cache_period` from TypoScript settings is now considered.
+
+All Changes
+===========
+
+This is a list of all changes in this release::
+
+   2019-11-20 [RELEASE] Release of version 3.0.1 (Commit 3083578 by Florian Wessels)
+   2019-04-04 [TASK] Remove further deprecations (Commit 5fa68c0 by Florian Wessels)
+   2019-04-04 [TASK] Simplify code and use constants (Commit d425f34 by Florian Wessels)
+   2019-04-04 [TASK] Use Environment class if exists (Commit c3350ba by Florian Wessels)
+   2019-04-03 [TASK] Do not use composer injection in hook object (Commit 74a70ad by Florian Wessels)
+   2019-04-03 [BUGFIX] Handle absRefPrefix in domain pattern (Commit 334aebe by Florian Wessels)
+   2019-04-03 [BUGFIX] Do not break if absRefPrifix is a slash (Commit 1b57470 by Florian Wessels)
+   2019-04-03 [TASK] Apply code styles (Commit 7becd31 by Florian Wessels)
+   2019-04-03 [BUGFIX] Force int (Commit 8fe0128 by Florian Wessels)
+   2019-04-03 [BUGFIX] Do not use composer injection in hook object (Commit e56f46c by Florian Wessels)
+   2019-04-03 [BUGIX] Do not use array as reference (Commit 4a01b23 by Florian Wessels)
+   2019-03-06 [TASK] Add ToDos for deprecated PATH_site constant (Commit e607c41 by Florian Wessels)
+   2019-03-06 [BUGFIX] Use proper argument for isset() (Commit 48021f0 by Florian Wessels)
+   2019-03-06 [TASK] Apply coding guidelines (Commit e129002 by Florian Wessels)
+   2019-03-06 [TASK] Use constructor injections (Commit 1e5a206 by Florian Wessels)
+   2019-03-06 [BUGFIX] Use urlData as reference (Commit 716b65c by Florian Wessels)
+   2019-03-06 [TASK] Update replace section and add extra information (Commit b3dd139 by Florian Wessels)
+   2019-03-06 [TASK] Remove output from debugging (Commit bf82a45 by Florian Wessels)
+   2019-03-06 [TASK] Update php dependency (Commit 665b41a by Florian Wessels)
+   2019-03-06 [TASK] Add php_cs file (Commit d1b52f5 by Florian Wessels)
+   2019-03-06 Merge pull request #37 from bitmotion/issue-36 (Commit 6ec2010 by Florian Wessels)
+   2019-03-06 Refactor class Resource\FileDelivery according to Php Inspections (EA Extended) (Commit d28cdc8 by Oliver Heins)
+   2019-03-06 [BUGFIX] Cast expiry time to int when getting it as GP var [TypeError #36] (Commit a6b6083 by Oliver Heins)
+   2019-03-06 [TASK] Adapt license (Commit b9840a9 by Florian Wessels)
+   2019-03-04 Merge pull request #32 from bitmotion/issue-31 (Commit baeaee1 by Florian Wessels)
+   2019-03-04 Merge pull request #35 from markuspoerschke/keep-a-changelog (Commit 906285a by Florian Wessels)
+   2019-03-04 Merge pull request #34 from mschwemer/use_cache_period (Commit d157c43 by Florian Wessels)
+   2019-02-27 Add CHANGELOG.md (Commit 4305771 by Markus Poerschke)
+   2019-02-27 Add CHANGELOG.md (Commit 8f24ddc by Markus Poerschke)
+   2019-02-01 [BUGFIX] Consider cache_period from TypoScript settings (Commit a52d03d by Marcus Schwemer)
+   2019-01-17 [BUGFIX] Make sure that parsing of a tag won't remove trailing slash (Commit 3ca86fd by majernik)
+
+Contributors
+============
+Following people have contributed to this release:
+
+* Oliver Heins
+* Michal Majernik
+* Markus Pörschke
+* Marcus Schwemer
+* Florian Wessels
+
+Thank you very much for your support. The next beer is on us! 🍻

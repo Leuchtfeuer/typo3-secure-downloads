@@ -1,0 +1,25 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 3.0.2 - 2019/12/03
+==========================
+
+This release is a bug fix release. It contains bug fixes only.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/bitmotion/typo3-secure-downloads/releases/tag/3.0.2>`__.
+
+All Changes
+===========
+
+This is a list of all changes in this release::
+
+    2019-12-03 [RELEASE] Release of verstion 3.0.2 (Commit 655d9c1 by Florian Wessels)
+    2019-12-03 [TASK] Update changelog (Commit df73b65 by Florian Wessels)
+    2019-12-02 [BUGFIX] Store filter data in backend user session (Commit 1aef12d by Florian Wessels)
+    2019-12-02 [TASK] Set version to 3.0.2-dev (Commit 441dfa0 by Florian Wessels)
+    2019-12-02 [BUGFIX] Force value to be integer. (Commit 01dbea6 by Florian Wessels)
+    2019-11-27 [DOC] Add readme file (Commit 5cb22a8 by Florian Wessels)
