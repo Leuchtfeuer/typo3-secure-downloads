@@ -9,6 +9,12 @@ new API for retrieving secured links. Beside of that, several bugs were fixed an
 The old, parameter-based, link generation (`?eID=secure_downloads&...`) has been removed and all links are now secured with a
 `JSON Web Token <https://jwt.io>`__. However, old links are still callable when upgrading to this version.
 
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/bitmotion/typo3-secure-downloads/releases/tag/v4.0.0>`__.
+
 Added
 =====
 * Dedicated Domain Transfer Object for extension configuration
