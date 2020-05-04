@@ -1,0 +1,80 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 4.1.0 - 2020/05/XX
+==========================
+
+This version is a future release. It contains improvements, bugfixes and new features.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/bitmotion/typo3-secure-downloads/releases/tag/v4.1.0>`__.
+
+Added
+=====
+* GitHub funding file
+* Support for TYPO3 v10 LTS
+* Support for PHP 7.4
+* Group check can now be strict
+* Dedicated license file
+* PSR-14 Events for file delivery
+
+Changed
+=======
+
+* Updated firebase/php-jwt library to version 5.2.0
+* User groups `0` and `-1` are excluded from group check by default
+* Company has been changed from "Bitmotion" to "Leuchtfeuer Digital Marketing"
+* The default link prefix has been changed from `downloads` to `securedl`
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+   2020-05-04 [TASK] Add release notes of version 3.0.3 (Commit 86a30b2 by Florian Wessels)
+   2020-05-04 [TASK] Update funding file (Commit 8680576 by Florian Wessels)
+   2020-05-04 [TASK] Update JWT library to version 5.2.0 (Commit 9926b46 by Florian Wessels)
+   2020-05-03 [BUGFIX] Check for empty page property (Commit 8fb6c67 by Florian Wessels)
+   2020-05-03 [FEATURE] Add strict checking of user groups (Commit c4c263e by Florian Wessels)
+   2020-05-03 [BUGFIX] Fix group check (Commit 7ed6dc8 by Florian Wessels)
+   2020-05-03 [BUGFIX] Fetch group ids as the are used for group check (Commit d5484f2 by Florian Wessels)
+   2020-05-03 [TASK] Exclude groups with IDs 0 and -1 from group check (Commit 4322574 by Florian Wessels)
+   2020-05-03 [FEATURE] Add support for TYPO3 v10 LTS (Commit 130f0c8 by Florian Wessels)
+   2020-05-03 [BUGFIX] Retrieve folder path for non-public storages (Commit 6aa10de by Florian Wessels)
+   2020-05-03 [BUGFIX] Do not use page repository (Commit e3a6a84 by Florian Wessels)
+   2020-05-03 [TASK] Set version to 4.1.0-dev (Commit 514e10e by Florian Wessels)
+   2020-05-03 [TASK] Add funding information (Commit 2b296f8 by Florian Wessels)
+   2020-05-03 [BUGFIX] Avoid HTTP header after file transfer (Commit f4fd784 by David Bruchmann)
+   2020-03-13 [TASK] Adapt dependencies for TYPO3 10.3 support (Commit 63196e3 by Florian Wessels)
+   2020-03-13 [TASK] Set version 4.0.1-dev (Commit 38dc3aa by Florian Wessels)
+   2020-03-13 [TASK] Remove unnecessary properties (Commit 238730e by Florian Wessels)
+   2020-03-13 [FOLLOW-UP] Update author and company information (Commit e666934 by Florian Wessels)
+   2020-03-13 [TASK] Add .gitattributes file (Commit 55ccf18 by Florian Wessels)
+   2020-03-13 [TASK] Replace php CS file and apply rules (Commit d994ff9 by Florian Wessels)
+   2020-03-13 [TASK] Update author and company information (Commit e5f0ac4 by Florian Wessels)
+   2020-03-13 [TASK] Add license file (Commit 46fe8bb by Florian Wessels)
+   2020-03-13 [TASK] Add documentation link (Commit b0f012b by Florian Wessels)
+   2019-12-14 [BUGFIX] Do not log secured URL (Commit ccd26ff by Florian Wessels)
+   2019-12-14 [TASK] Generate proper URLs for relative-images (Commit 3d8d709 by Florian Wessels)
+   2019-12-12 [BUGFIX] Add php annotations for setters (Commit bdb3b28 by Florian Wessels)
+   2019-12-12 [BUGFIX] Force initialization of Logger (Commit 845405d by Florian Wessels)
+   2019-12-12 [TASK] Catch all exceptions thrown during JWT decode (Commit 9f79cf1 by Florian Wessels)
+   2019-12-12 [TASK] Change default link prefix (Commit f5ca6f1 by Florian Wessels)
+   2019-12-09 [TASK] Adapt color of extension icon (Commit 829ab85 by Florian Wessels)
+   2019-12-09 [TASK] Deny access if JWT payload is invalid (Commit aa65d87 by Florian Wessels)
+   2019-12-05 [FEATURE] Introduce PSR-14 events for TYPO3 10 (Commit 0f9aa4d by Florian Wessels)
+   2019-12-05 [BUGFIX] Implode groups using comma (Commit 062be6b by Florian Wessels)
+   2019-12-05 [TASK] Update issue template (Commit a69dd5a by Florian Wessels)
+   2019-12-05 [TASK] Improve datetime handling (Commit b7ce410 by Florian Wessels)
+
+
+Contributors
+============
+Following people have contributed to this release:
+
+* David Bruchmann
+* Florian Wessels
+
+Thank you very much for your support. The next beer is on us! 🍻
