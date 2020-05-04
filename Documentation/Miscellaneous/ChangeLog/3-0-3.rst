@@ -17,6 +17,8 @@ All Changes
 
 This is a list of all changes in this release::
 
+   2020-05-04 [TASK] Support php 7.4 (Commit 44ae49c by Florian Wessels)
+   2020-05-04 [TASK] Add changelog for upcoming version (Commit fd4eba6 by Florian Wessels)
    2020-05-04 [BUGFIX] Use proper argument types for setcookie call (Commit 556925f by Florian Wessels)
    2020-05-04 [BUGFIX] Force userGroups to be a string (Commit 7cce635 by Florian Wessels)
    2020-05-04 [TASK] Add changelog for prior versions (Commit b246aaf by Florian Wessels)
