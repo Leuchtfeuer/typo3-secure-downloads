@@ -61,10 +61,10 @@ class AccessTokenCookiePublisher implements SingletonInterface
             setcookie(
                 $this->requestContext->getCookieName(),
                 $token,
-                null,
+                0,
                 '/typo3temp/secure_downloads/' . $contextPath . '/',
-                null,
-                null,
+                '',
+                false,
                 true
             );
         }
