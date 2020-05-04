@@ -1,0 +1,28 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 3.0.3 - 2020/05/04
+==========================
+
+This release is a bug fix release. It contains bug fixes only.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/bitmotion/typo3-secure-downloads/releases/tag/v3.0.3>`__.
+
+All Changes
+===========
+
+This is a list of all changes in this release::
+
+   2020-05-04 [TASK] Support php 7.4 (Commit 44ae49c by Florian Wessels)
+   2020-05-04 [TASK] Add changelog for upcoming version (Commit fd4eba6 by Florian Wessels)
+   2020-05-04 [BUGFIX] Use proper argument types for setcookie call (Commit 556925f by Florian Wessels)
+   2020-05-04 [BUGFIX] Force userGroups to be a string (Commit 7cce635 by Florian Wessels)
+   2020-05-04 [TASK] Add changelog for prior versions (Commit b246aaf by Florian Wessels)
+   2019-12-12 [BUGFIX] Add php annotations for setters (Commit 4482eda by Florian Wessels)
+   2019-12-05 [TASK] Improve datetime handling (Commit a1c017c by Florian Wessels)
+   2019-12-05 [BUGFIX] Add missing annotations (Commit 70b0b87 by Florian Wessels)
+   2019-12-05 [TASK] Set version to 3.0.3-dev (Commit 72dadad by Florian Wessels)
