@@ -29,10 +29,10 @@
                 <source>Strict Group Check: If enabled, files are only delivered if the user groups exactly match those of the secured link.</source>
             </trans-unit>
             <trans-unit id="linkPrefix">
-                <source>Link Prefix: Prefix for generated links (the "download" part in "https://example.com/download/sdl-[JWT]/image.png").</source>
+                <source>Link Prefix: Prefix for generated links (the "securedl" part in "https://example.com/securedl/sdl-[JWT]/image.png").</source>
             </trans-unit>
             <trans-unit id="tokenPrefix">
-                <source>Token Prefix: Prefix for generated token (the "sdl-" part in "https://example.com/download/sdl-[JWT]/image.png").</source>
+                <source>Token Prefix: Prefix for generated token (the "sdl-" part in "https://example.com/securedl/sdl-[JWT]/image.png").</source>
             </trans-unit>
             <trans-unit id="cacheTimeAdd">
                 <source>Additional Link Timeout: The secure link is only valid for a limited time, which is calculated from the cache time that is used for the page that carries the link plus this value (in seconds). Default is 3600 sec (= 1 h).</source>
