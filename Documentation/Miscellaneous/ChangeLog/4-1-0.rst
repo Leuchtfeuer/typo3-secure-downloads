@@ -1,7 +1,7 @@
 ﻿.. include:: ../../Includes.txt
 
 ==========================
-Version 4.1.0 - 2020/05/XX
+Version 4.1.0 - 2020/05/06
 ==========================
 
 This version is a future release. It contains improvements, bugfixes and new features.
@@ -33,6 +33,8 @@ All Changes
 ===========
 This is a list of all changes in this release::
 
+   2020-05-04 [TASK] Add changelog for upcoming version (Commit d837f41 by Florian Wessels)
+   2020-05-04 [TASK] Add download link for v4.0.0 (Commit f9ffed1 by Florian Wessels)
    2020-05-04 [TASK] Add release notes of version 3.0.3 (Commit 86a30b2 by Florian Wessels)
    2020-05-04 [TASK] Update funding file (Commit 8680576 by Florian Wessels)
    2020-05-04 [TASK] Update JWT library to version 5.2.0 (Commit 9926b46 by Florian Wessels)
