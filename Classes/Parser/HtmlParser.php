@@ -17,7 +17,8 @@ use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
-use TYPO3\CMS\Core\Log\Logger;
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * @deprecated Parsing the generated HTML is deprecated. All public URLs to files should be retrieved by TYPO3 API.
@@ -61,7 +62,7 @@ class HtmlParser implements LoggerAwareInterface
         $this->delegate = $delegate;
 
         if (!$this->logger instanceof LoggerInterface) {
-            $this->setLogger(new Logger(__CLASS__));
+            $this->setLogger(GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__));
         }
 
         foreach ($settings as $settingKey => $setting) {
