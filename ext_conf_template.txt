@@ -20,6 +20,9 @@ tokenPrefix = sdl-
 # cat=Link Generation/030; type=int+; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:cacheTimeAdd
 cachetimeadd = 3600
 
+# cat=Link Generation/040; type=string;  label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:documentRootPath
+documentRootPath = /
+
 
 # cat=Group Check/010; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:enableGroupCheck
 enableGroupCheck = 0

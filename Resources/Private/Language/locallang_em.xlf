@@ -37,6 +37,9 @@
             <trans-unit id="cacheTimeAdd">
                 <source>Additional Link Timeout: The secure link is only valid for a limited time, which is calculated from the cache time that is used for the page that carries the link plus this value (in seconds). Default is 3600 sec (= 1 h).</source>
             </trans-unit>
+            <trans-unit id="documentRootPath">
+                <source>Document Root: Do only change this configuration option, if your TYPO3 instance is running in a subfolder or you are using a SSL reverse proxy to map TYPO3 into a virtual subfolder. This configuration must start and end with a slash (e.g. "/proxy-typo3/").</source>
+            </trans-unit>
             <trans-unit id="forceDownload">
                 <source>Force Download: Force Download of specified file types.</source>
             </trans-unit>
