@@ -43,49 +43,54 @@ class LogRepository extends Repository
         $query = $this->createQuery();
 
         if ($filter instanceof Filter) {
-            $constraints = [];
-
-            // FileType
-            if ($filter->getFileType() !== '' && $filter->getFileType() !== '0') {
-                $constraints[] = $query->equals('mediaType', $filter->getFileType());
-            }
-
-            // User Type
-            if ($filter->getUserType() != 0) {
-                $userQuery = $query->equals('user', null);
-
-                if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_ON) {
-                    $constraints[] = $query->logicalNot($userQuery);
-                }
-                if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_OFF) {
-                    $constraints[] = $userQuery;
-                }
-            }
-
-            // User
-            if ($filter->getFeUserId() !== 0) {
-                $constraints[] = $query->equals('user', $filter->getFeUserId());
-            }
-
-            // Timeframe
-            if ($filter->getFrom() !== '' && $filter->getFrom() !== null) {
-                $constraints[] = $query->greaterThanOrEqual('tstamp', $filter->getFrom());
-            }
-
-            if ($filter->getTill() !== '' && $filter->getTill() !== null) {
-                $constraints[] = $query->lessThanOrEqual('tstamp', $filter->getTill());
-            }
-
-            // Page
-            if ($filter->getPageId() !== 0) {
-                $constraints[] = $query->equals('page', $filter->getPageId());
-            }
-
-            if (count($constraints) > 0) {
-                $query->matching($query->logicalAnd($constraints));
-            }
+            $this->applyFilter($query, $filter);
         }
 
         return $query->execute();
+    }
+
+    protected function applyFilter(QueryInterface &$query, Filter $filter)
+    {
+        $constraints = [];
+
+        // FileType
+        if ($filter->getFileType() !== '' && $filter->getFileType() !== '0') {
+            $constraints[] = $query->equals('mediaType', $filter->getFileType());
+        }
+
+        // User Type
+        if ($filter->getUserType() != 0) {
+            $userQuery = $query->equals('user', null);
+
+            if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_ON) {
+                $constraints[] = $query->logicalNot($userQuery);
+            }
+            if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_OFF) {
+                $constraints[] = $userQuery;
+            }
+        }
+
+        // User
+        if ($filter->getFeUserId() !== 0) {
+            $constraints[] = $query->equals('user', $filter->getFeUserId());
+        }
+
+        // Timeframe
+        if ($filter->getFrom() !== '' && $filter->getFrom() !== null) {
+            $constraints[] = $query->greaterThanOrEqual('tstamp', $filter->getFrom());
+        }
+
+        if ($filter->getTill() !== '' && $filter->getTill() !== null) {
+            $constraints[] = $query->lessThanOrEqual('tstamp', $filter->getTill());
+        }
+
+        // Page
+        if ($filter->getPageId() !== 0) {
+            $constraints[] = $query->equals('page', $filter->getPageId());
+        }
+
+        if (count($constraints) > 0) {
+            $query->matching($query->logicalAnd($constraints));
+        }
     }
 }
