@@ -116,7 +116,7 @@ class LogRepository extends Repository
         $log->setUser($user);
         $log->setPage($download->getPage());
 
-        $fileObject = GeneralUtility::makeInstance(ResourceFactory::class)->retrieveFileOrFolderObject($download->getFile())
+        $fileObject = GeneralUtility::makeInstance(ResourceFactory::class)->retrieveFileOrFolderObject($download->getFile());
 
         if ($fileObject) {
             $log->setFileId((string)$fileObject->getUid());
