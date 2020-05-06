@@ -68,22 +68,6 @@ class SecureLinkFactory implements SingletonInterface
         $this->init();
     }
 
-    protected function init()
-    {
-        $this->download->setExp($this->calculateLinkLifetime());
-        $this->download->setPage((int)$GLOBALS['TSFE']->id);
-        $this->download->setIat(time());
-
-        try {
-            /** @var UserAspect $userAspect */
-            $userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
-            $this->download->setUser((int)$userAspect->get('id'));
-            $this->download->setGroups($userAspect->getGroupIds());
-        } catch (\Exception $exception) {
-            // Do nothing.
-        }
-    }
-
     public function setResourceUri(string $resourceUri): void
     {
         $this->download->setFile($resourceUri);
@@ -114,6 +98,22 @@ class SecureLinkFactory implements SingletonInterface
         EncodeCache::addCache($hash, $url);
 
         return $url;
+    }
+
+    protected function init()
+    {
+        $this->download->setExp($this->calculateLinkLifetime());
+        $this->download->setPage((int)$GLOBALS['TSFE']->id);
+        $this->download->setIat(time());
+
+        try {
+            /** @var UserAspect $userAspect */
+            $userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
+            $this->download->setUser($userAspect->get('id'));
+            $this->download->setGroups($userAspect->getGroupIds());
+        } catch (\Exception $exception) {
+            // Do nothing.
+        }
     }
 
     protected function getJsonWebToken(): string
