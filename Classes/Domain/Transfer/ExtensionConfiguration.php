@@ -134,9 +134,9 @@ class ExtensionConfiguration implements SingletonInterface
     /**
      * The output function, which should be used to deliver secured files from the server to the web browser of the user.
      *
-     * @var string One of "readfile", "readfile_chunked" or "fpassthru"
+     * @var string One of "readfile", "readfile_chunked", "fpassthru", "stream" (default) or "x-accel-redirect"
      */
-    private $outputFunction = 'readfile';
+    private $outputFunction = self::OUTPUT_STREAM;
 
     /**
      * Only files located in these folders are secured. Folders are separated by a pipe. Also, all subdirectories are included.
