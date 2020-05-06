@@ -31,6 +31,7 @@ use Psr\Http\Message\StreamInterface;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -106,9 +107,10 @@ class FileDelivery implements SingletonInterface
      */
     protected $isProcessed = false;
 
-    public function __construct(ExtensionConfiguration $extensionConfiguration)
+    public function __construct(ExtensionConfiguration $extensionConfiguration, EventDispatcher $eventDispatcher)
     {
         $this->extensionConfiguration = $extensionConfiguration;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -284,24 +286,17 @@ class FileDelivery implements SingletonInterface
 
     // Event handling
 
-    protected function initializeEventDispatcher(): EventDispatcherInterface
-    {
-        $this->eventDispatcher = GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
-
-        return $this->eventDispatcher;
-    }
-
     protected function dispatchOutputInitializationEvent()
     {
         $event = new OutputInitializationEvent($this->download);
-        $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
+        $event = $this->eventDispatcher->dispatch($event);
         $this->download = $event->getDownload();
     }
 
     protected function dispatchBeforeFileDeliverEvent(&$outputFunction, &$header, $fileName, $mimeType, $forceDownload)
     {
         $event = new BeforeReadDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
-        $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
+        $event = $this->eventDispatcher->dispatch($event);
         $outputFunction = $event->getOutputFunction();
         $header = $event->getHeader();
     }
@@ -309,7 +304,7 @@ class FileDelivery implements SingletonInterface
     protected function dispatchAfterFileRetrievedEvent(string &$file, string &$fileName)
     {
         $event = new AfterFileRetrievedEvent($file, $fileName);
-        $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
+        $event = $this->eventDispatcher->dispatch($event);
         $file = $event->getFile();
         $fileName = $event->getFileName();
     }
@@ -444,5 +439,15 @@ class FileDelivery implements SingletonInterface
             $this->extensionConfiguration,
             $this->download
         )->hasAccess();
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    protected function initializeEventDispatcher(): EventDispatcherInterface
+    {
+        $this->eventDispatcher = GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
+
+        return $this->eventDispatcher;
     }
 }

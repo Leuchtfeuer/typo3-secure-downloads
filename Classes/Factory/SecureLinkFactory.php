@@ -16,15 +16,19 @@ namespace Leuchtfeuer\SecureDownloads\Factory;
 use Firebase\JWT\JWT;
 use Leuchtfeuer\SecureDownloads\Cache\EncodeCache;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
-use Leuchtfeuer\SecureDownloads\Utility\HookUtility;
+use Leuchtfeuer\SecureDownloads\Resource\Event\EnrichPayloadEvent;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
-class SecureLinkFactory
+class SecureLinkFactory implements SingletonInterface
 {
     const DEFAULT_CACHE_LIFETIME = 86400;
+
+    private $eventDispatcher;
 
     private $extensionConfiguration;
 
@@ -38,10 +42,15 @@ class SecureLinkFactory
 
     protected $linkTimeout = 0;
 
-    public function __construct(string $resourceUri)
+    public function __construct(EventDispatcher $eventDispatcher, ExtensionConfiguration $extensionConfiguration)
     {
-        $this->extensionConfiguration = new ExtensionConfiguration();
-        $this->setResourceUri($resourceUri);
+        $this->eventDispatcher = $eventDispatcher;
+        $this->extensionConfiguration = $extensionConfiguration;
+        $this->init();
+    }
+
+    protected function init()
+    {
         $this->setLinkTimeout($this->calculateLinkLifetime());
 
         try {
@@ -147,15 +156,20 @@ class SecureLinkFactory
             'page' => $this->getPageId(),
         ];
 
-        // Execute hook for manipulating payload
-        HookUtility::executeHook('publishing', 'payload', $payload, $this);
+        $this->dispatchEnrichPayloadEvent($payload);
 
         return JWT::encode($payload, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], 'HS256');
     }
 
+    protected function dispatchEnrichPayloadEvent(array &$payload): void
+    {
+        $event = new EnrichPayloadEvent($payload);
+        $event = $this->eventDispatcher->dispatch($event);
+        $payload = $event->getPayload();
+    }
+
     protected function calculateLinkLifetime(): int
     {
-        // TODO: TSFE should always be available when dropping HTML parsing.
         $cacheTimeout = ($GLOBALS['TSFE'] instanceof TypoScriptFrontendController && !empty($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->get_cache_timeout() : self::DEFAULT_CACHE_LIFETIME;
 
         return $cacheTimeout + $GLOBALS['EXEC_TIME'] + $this->extensionConfiguration->getCacheTimeAdd();

@@ -59,7 +59,8 @@ class SecureDownloadService implements SingletonInterface
 
     public function getResourceUrl(string $publicUrl): string
     {
-        $secureLinkFactory = GeneralUtility::makeInstance(SecureLinkFactory::class, rawurldecode($publicUrl));
+        $secureLinkFactory = GeneralUtility::makeInstance(SecureLinkFactory::class);
+        $secureLinkFactory->setResourceUri(rawurldecode($publicUrl));
 
         return $secureLinkFactory->getUrl();
     }
