@@ -25,10 +25,16 @@ class ExtensionConfiguration implements SingletonInterface
 {
     const FILE_TYPES_WILDCARD = '*';
 
+    /**
+     * @deprecated Will be removed with version 6.
+     */
     const OUTPUT_READ_FILE = 'readfile';
 
     const OUTPUT_STREAM = 'stream';
 
+    /**
+     * @deprecated Will be removed with version 6.
+     */
     const OUTPUT_PASS_THRU = 'fpassthru';
 
     const OUTPUT_NGINX = 'x-accel-redirect';
