@@ -104,11 +104,6 @@ class FileDelivery implements SingletonInterface
      */
     protected $header = [];
 
-    /**
-     * FileDelivery constructor.
-     *
-     * Check the access rights
-     */
     public function __construct(ExtensionConfiguration $extensionConfiguration)
     {
         $this->extensionConfiguration = $extensionConfiguration;
@@ -139,21 +134,7 @@ class FileDelivery implements SingletonInterface
         $this->dispatchAfterFileRetrievedEvent($file, $fileName);
 
         if (file_exists($file)) {
-            $this->fileSize = filesize($file);
-            $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
-            $forceDownload = $this->shouldForceDownload($fileExtension);
-            $mimeType = MimeTypeUtility::getMimeType($file) ?? 'application/octet-stream';
-            $this->header = $this->getHeader($mimeType, $fileName, $forceDownload);
-            $outputFunction = $this->extensionConfiguration->getOutputFunction();
-
-            $this->dispatchBeforeFileDeliverEvent($outputFunction, $this->header, $fileName, $mimeType, $forceDownload);
-
-            if ($this->extensionConfiguration->isLog()) {
-                $this->download->log($this->fileSize, $mimeType, $this->userAspect->get('id'));
-            }
-
-            $body = $this->outputFile($outputFunction, $file) ?? 'php://temp';
-            return new Response($body, 200, $this->header, '');
+            return new Response($this->getResponseBody($file, $fileName), 200, $this->header, '');
         }
 
         return new Response((new Stream('File does not exist!', 'rw')), 404);
@@ -261,6 +242,29 @@ class FileDelivery implements SingletonInterface
         $string = str_replace(':', '\:', $string);
 
         return $string;
+    }
+
+    /**
+     * @param string $file
+     * @param string $fileName
+     * @return StreamInterface|string
+     */
+    protected function getResponseBody(string $file, string $fileName)
+    {
+        $this->fileSize = filesize($file);
+        $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
+        $forceDownload = $this->shouldForceDownload($fileExtension);
+        $mimeType = MimeTypeUtility::getMimeType($file) ?? 'application/octet-stream';
+        $this->header = $this->getHeader($mimeType, $fileName, $forceDownload);
+        $outputFunction = $this->extensionConfiguration->getOutputFunction();
+
+        $this->dispatchBeforeFileDeliverEvent($outputFunction, $this->header, $fileName, $mimeType, $forceDownload);
+
+        if ($this->extensionConfiguration->isLog()) {
+            $this->download->log($this->fileSize, $mimeType, $this->userAspect->get('id'));
+        }
+
+        return $this->outputFile($outputFunction, $file) ?? 'php://temp';
     }
 
     protected function shouldForceDownload(string $fileExtension): bool
