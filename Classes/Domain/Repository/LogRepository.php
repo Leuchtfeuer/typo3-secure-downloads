@@ -35,21 +35,25 @@ class LogRepository extends Repository
         $this->setDefaultQuerySettings($querySettings);
     }
 
-    /**
-     * @throws InvalidQueryException
-     */
     public function findByFilter(?Filter $filter): QueryResultInterface
     {
         $query = $this->createQuery();
 
         if ($filter instanceof Filter) {
-            $this->applyFilter($query, $filter);
+            try {
+                $this->applyFilter($query, $filter);
+            } catch (InvalidQueryException $exception) {
+                // Do nothing for now.
+            }
         }
 
         return $query->execute();
     }
 
-    protected function applyFilter(QueryInterface &$query, Filter $filter)
+    /**
+     * @throws InvalidQueryException
+     */
+    protected function applyFilter(QueryInterface &$query, Filter $filter): void
     {
         $constraints = [];
 
