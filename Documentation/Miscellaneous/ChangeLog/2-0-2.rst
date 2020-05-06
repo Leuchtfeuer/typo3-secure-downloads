@@ -10,7 +10,7 @@ Download
 ========
 
 Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
-`GitHub <https://github.com/bitmotion/typo3-secure-downloads/releases/tag/2.0.2>`__.
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/2.0.2>`__.
 
 Added
 =====

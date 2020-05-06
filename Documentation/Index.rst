@@ -42,7 +42,7 @@ Secure Downloads
    It is maintained as part of a third party extension.
 
    If you find an error or something is missing, please:
-   `Report a problem <https://github.com/bitmotion/typo3-secure-downloads/issues/new>`__
+   `Report a problem <https://github.com/Leuchtfeuer/typo3-secure-downloads/issues/new>`__
 
 **Extension Manual**
 

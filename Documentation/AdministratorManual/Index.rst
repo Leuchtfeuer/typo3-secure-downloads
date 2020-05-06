@@ -9,7 +9,7 @@ Administration
 This chapter describes how to configure this extension within the settings module of your TYPO3 instance.
 
 You need to secure all the directories and file types by your server configuration. This can be done with `.htaccess` files.
-You find some example `.htaccess` files below and in the `Resources/Private/Examples <https://github.com/bitmotion/typo3-secure-downloads/tree/master/Resources/Private/Examples>`__
+You find some example `.htaccess` files below and in the `Resources/Private/Examples <https://github.com/Leuchtfeuer/typo3-secure-downloads/tree/master/Resources/Private/Examples>`__
 directory of this extension.
 
 .. important::

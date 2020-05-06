@@ -10,4 +10,4 @@ Links
    https://extensions.typo3.org/extension/secure_downloads/
 
 :Source Code and Git Repository:
-   https://github.com/bitmotion/typo3-secure-downloads
+   https://github.com/Leuchtfeuer/typo3-secure-downloads
