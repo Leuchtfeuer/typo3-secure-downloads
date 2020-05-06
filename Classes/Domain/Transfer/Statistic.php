@@ -13,6 +13,7 @@ namespace Bitmotion\SecureDownloads\Domain\Transfer;
  *
  ***/
 
+use Bitmotion\SecureDownloads\Domain\Model\Log;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 class Statistic
