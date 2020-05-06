@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-namespace Bitmotion\SecureDownloads\Resource;
+namespace Leuchtfeuer\SecureDownloads\Resource;
 
 /***
  *
@@ -13,18 +13,18 @@ namespace Bitmotion\SecureDownloads\Resource;
  *
  ***/
 
-use Bitmotion\SecureDownloads\Cache\DecodeCache;
-use Bitmotion\SecureDownloads\Domain\Model\Log;
-use Bitmotion\SecureDownloads\Domain\Transfer\Download;
-use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
-use Bitmotion\SecureDownloads\Resource\Event\AfterFileRetrievedEvent;
-use Bitmotion\SecureDownloads\Resource\Event\BeforeReadDeliverEvent;
-use Bitmotion\SecureDownloads\Resource\Event\OutputInitializationEvent;
-use Bitmotion\SecureDownloads\Security\AbstractCheck;
-use Bitmotion\SecureDownloads\Security\UserCheck;
-use Bitmotion\SecureDownloads\Security\UserGroupCheck;
-use Bitmotion\SecureDownloads\Utility\MimeTypeUtility;
 use Firebase\JWT\JWT;
+use Leuchtfeuer\SecureDownloads\Cache\DecodeCache;
+use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
+use Leuchtfeuer\SecureDownloads\Resource\Event\AfterFileRetrievedEvent;
+use Leuchtfeuer\SecureDownloads\Resource\Event\BeforeReadDeliverEvent;
+use Leuchtfeuer\SecureDownloads\Resource\Event\OutputInitializationEvent;
+use Leuchtfeuer\SecureDownloads\Security\AbstractCheck;
+use Leuchtfeuer\SecureDownloads\Security\UserCheck;
+use Leuchtfeuer\SecureDownloads\Security\UserGroupCheck;
+use Leuchtfeuer\SecureDownloads\Utility\MimeTypeUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;

@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-namespace Bitmotion\SecureDownloads\Utility;
+namespace Leuchtfeuer\SecureDownloads\Utility;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

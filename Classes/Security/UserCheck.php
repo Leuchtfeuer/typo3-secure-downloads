@@ -1,6 +1,6 @@
 <?php
 
-namespace Bitmotion\SecureDownloads\Security;
+namespace Leuchtfeuer\SecureDownloads\Security;
 
 class UserCheck extends AbstractCheck
 {

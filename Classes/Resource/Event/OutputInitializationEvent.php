@@ -1,8 +1,8 @@
 <?php
 declare(strict_types = 1);
-namespace Bitmotion\SecureDownloads\Resource\Event;
+namespace Leuchtfeuer\SecureDownloads\Resource\Event;
 
-use Bitmotion\SecureDownloads\Domain\Transfer\Download;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
 
 final class OutputInitializationEvent
 {

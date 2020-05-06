@@ -1,9 +1,9 @@
 <?php
 
-namespace Bitmotion\SecureDownloads\Security;
+namespace Leuchtfeuer\SecureDownloads\Security;
 
-use Bitmotion\SecureDownloads\Domain\Transfer\Download;
-use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Utility\GeneralUtility;

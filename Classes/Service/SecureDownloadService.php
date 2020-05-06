@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-namespace Bitmotion\SecureDownloads\Service;
+namespace Leuchtfeuer\SecureDownloads\Service;
 
 /***
  *
@@ -13,8 +13,8 @@ namespace Bitmotion\SecureDownloads\Service;
  *
  ***/
 
-use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
-use Bitmotion\SecureDownloads\Factory\SecureLinkFactory;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
+use Leuchtfeuer\SecureDownloads\Factory\SecureLinkFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

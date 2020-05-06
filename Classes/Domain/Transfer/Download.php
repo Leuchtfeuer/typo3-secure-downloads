@@ -1,10 +1,10 @@
 <?php
 
-namespace Bitmotion\SecureDownloads\Domain\Transfer;
+namespace Leuchtfeuer\SecureDownloads\Domain\Transfer;
 
-use Bitmotion\SecureDownloads\Domain\Model\Log;
-use Bitmotion\SecureDownloads\Domain\Repository\LogRepository;
 use Firebase\JWT\JWT;
+use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
+use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class Download

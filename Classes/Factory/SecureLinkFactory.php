@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-namespace Bitmotion\SecureDownloads\Factory;
+namespace Leuchtfeuer\SecureDownloads\Factory;
 
 /***
  *
@@ -13,10 +13,10 @@ namespace Bitmotion\SecureDownloads\Factory;
  *
  ***/
 
-use Bitmotion\SecureDownloads\Cache\EncodeCache;
-use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
-use Bitmotion\SecureDownloads\Utility\HookUtility;
 use Firebase\JWT\JWT;
+use Leuchtfeuer\SecureDownloads\Cache\EncodeCache;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
+use Leuchtfeuer\SecureDownloads\Utility\HookUtility;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Utility\GeneralUtility;

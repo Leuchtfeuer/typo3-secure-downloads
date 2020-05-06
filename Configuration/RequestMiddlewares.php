@@ -12,7 +12,7 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('redirects')) {
 return [
     'frontend' => [
         'bitmotion/secure-downloads/file-delivery' => [
-            'target' => \Bitmotion\SecureDownloads\Middleware\FileDeliveryMiddleware::class,
+            'target' => \Leuchtfeuer\SecureDownloads\Middleware\FileDeliveryMiddleware::class,
             'after' => [
                 'typo3/cms-frontend/authentication',
             ],

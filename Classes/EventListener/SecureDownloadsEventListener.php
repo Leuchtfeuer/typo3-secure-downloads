@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-namespace Bitmotion\SecureDownloads\EventListener;
+namespace Leuchtfeuer\SecureDownloads\EventListener;
 
 /***
  *
@@ -13,7 +13,7 @@ namespace Bitmotion\SecureDownloads\EventListener;
  *
  ***/
 
-use Bitmotion\SecureDownloads\Service\SecureDownloadService;
+use Leuchtfeuer\SecureDownloads\Service\SecureDownloadService;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent;
 use TYPO3\CMS\Core\Resource\Driver\LocalDriver;

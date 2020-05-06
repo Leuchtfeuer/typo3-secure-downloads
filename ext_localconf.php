@@ -9,7 +9,7 @@ call_user_func(
         }
 
         // Load extension configuration and add link prefix to additionalAbsRefPrefixDirectories
-        $configuration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration::class);
+        $configuration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration::class);
         $GLOBALS['TYPO3_CONF_VARS']['FE']['additionalAbsRefPrefixDirectories'] .= sprintf(',%s', $configuration->getLinkPrefix());
 
         // Register default checks
@@ -19,8 +19,8 @@ call_user_func(
             ];
         }
 
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey]['checks']['user'] = \Bitmotion\SecureDownloads\Security\UserCheck::class;
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey]['checks']['userGroup'] = \Bitmotion\SecureDownloads\Security\UserGroupCheck::class;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey]['checks']['user'] = \Leuchtfeuer\SecureDownloads\Security\UserCheck::class;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey]['checks']['userGroup'] = \Leuchtfeuer\SecureDownloads\Security\UserGroupCheck::class;
 
     }, 'secure_downloads'
 );

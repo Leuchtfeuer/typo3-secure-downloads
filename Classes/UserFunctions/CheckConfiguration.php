@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-namespace Bitmotion\SecureDownloads\UserFunctions;
+namespace Leuchtfeuer\SecureDownloads\UserFunctions;
 
 /***
  *
@@ -13,7 +13,7 @@ namespace Bitmotion\SecureDownloads\UserFunctions;
  *
  ***/
 
-use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

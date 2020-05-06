@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-namespace Bitmotion\SecureDownloads\Middleware;
+namespace Leuchtfeuer\SecureDownloads\Middleware;
 
 /***
  *
@@ -13,8 +13,8 @@ namespace Bitmotion\SecureDownloads\Middleware;
  *
  ***/
 
-use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
-use Bitmotion\SecureDownloads\Resource\FileDelivery;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
+use Leuchtfeuer\SecureDownloads\Resource\FileDelivery;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bitmotion\SecureDownloads\Security;
+namespace Leuchtfeuer\SecureDownloads\Security;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

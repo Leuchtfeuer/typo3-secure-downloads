@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-namespace Bitmotion\SecureDownloads\Controller;
+namespace Leuchtfeuer\SecureDownloads\Controller;
 
 /***
  *
@@ -13,9 +13,9 @@ namespace Bitmotion\SecureDownloads\Controller;
  *
  ***/
 
-use Bitmotion\SecureDownloads\Domain\Repository\LogRepository;
-use Bitmotion\SecureDownloads\Domain\Transfer\Filter;
-use Bitmotion\SecureDownloads\Domain\Transfer\Statistic;
+use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Statistic;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Database\ConnectionPool;
