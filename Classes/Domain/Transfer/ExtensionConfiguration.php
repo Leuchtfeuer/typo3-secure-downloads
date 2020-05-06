@@ -157,7 +157,7 @@ class ExtensionConfiguration implements SingletonInterface
     /**
      * This prefix will be appended to your domain. All secured links are structured as follows:
      * https://www.mydomain.com/[$linkPrefix]/[$tokenPrefix][JWT]/my_secured_file.jpg
-     * https://www.Leuchtfeuer.com/download/sdl-[JSON Web Token]/bitmotion_whirl.svg
+     * https://www.Leuchtfeuer.com/securedl/sdl-[JSON Web Token]/bitmotion_whirl.svg
      *
      * @var string Prefix of secured links will be appended to the domain.
      */
@@ -166,7 +166,7 @@ class ExtensionConfiguration implements SingletonInterface
     /**
      * Prefix before the Json web token. This value might be empty. All secured links are structured as follows:
      * https://www.mydomain.com/[$linkPrefix]/[$tokenPrefix][JWT]/my_secured_file.jpg
-     * https://www.Leuchtfeuer.com/download/sdl-[JSON Web Token]/bitmotion_whirl.svg
+     * https://www.Leuchtfeuer.com/securedl/sdl-[JSON Web Token]/bitmotion_whirl.svg
      *
      * @var string Prefix of tokens.
      */

@@ -31,7 +31,9 @@ use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
 
 class LogController extends ActionController
 {
-    /** @var BackendTemplateView */
+    /**
+     * @var BackendTemplateView
+     */
     protected $view;
 
     protected $defaultViewObjectName = BackendTemplateView::class;
