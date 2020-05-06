@@ -15,6 +15,7 @@ namespace Leuchtfeuer\SecureDownloads\Factory;
 
 use Firebase\JWT\JWT;
 use Leuchtfeuer\SecureDownloads\Cache\EncodeCache;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Resource\Event\EnrichPayloadEvent;
 use TYPO3\CMS\Core\Context\Context;
@@ -32,86 +33,60 @@ class SecureLinkFactory implements SingletonInterface
 
     private $extensionConfiguration;
 
+    private $download;
+
+    /**
+     * @deprecated
+     */
     protected $userId = 0;
 
+    /**
+     * @deprecated
+     */
     protected $userGroups = [];
 
+    /**
+     * @deprecated
+     */
     protected $pageId = 0;
 
+    /**
+     * @deprecated
+     */
     protected $resourceUri = '';
 
+    /**
+     * @deprecated
+     */
     protected $linkTimeout = 0;
 
     public function __construct(EventDispatcher $eventDispatcher, ExtensionConfiguration $extensionConfiguration)
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->extensionConfiguration = $extensionConfiguration;
+        $this->download = new Download();
         $this->init();
     }
 
     protected function init()
     {
-        $this->setLinkTimeout($this->calculateLinkLifetime());
+        $this->download->setExp($this->calculateLinkLifetime());
+        $this->download->setPage((int)$GLOBALS['TSFE']->id);
+        $this->download->setIat(time());
 
         try {
             /** @var UserAspect $userAspect */
             $userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
-            $this->setUserId($userAspect->get('id'));
-            $this->setUserGroups($userAspect->getGroupIds());
-            $this->setPageId((int)$GLOBALS['TSFE']->id);
+            $this->download->setUser((int)$userAspect->get('id'));
+            $this->download->setGroups($userAspect->getGroupIds());
         } catch (\Exception $exception) {
             // Do nothing.
         }
     }
 
-    public function getUserId(): int
-    {
-        return $this->userId;
-    }
-
-    public function setUserId(int $userId): void
-    {
-        $this->userId = $userId;
-    }
-
-    public function getUserGroups(): array
-    {
-        return $this->userGroups;
-    }
-
-    public function setUserGroups(array $userGroups): void
-    {
-        $this->userGroups = $userGroups;
-    }
-
-    public function getPageId(): int
-    {
-        return $this->pageId;
-    }
-
-    public function setPageId(int $pageId): void
-    {
-        $this->pageId = $pageId;
-    }
-
-    public function getResourceUri(): string
-    {
-        return $this->resourceUri;
-    }
-
     public function setResourceUri(string $resourceUri): void
     {
-        $this->resourceUri = $resourceUri;
-    }
-
-    public function getLinkTimeout(): int
-    {
-        return $this->linkTimeout;
-    }
-
-    public function setLinkTimeout(int $linkTimeout): void
-    {
-        $this->linkTimeout = $linkTimeout;
+        $this->download->setFile($resourceUri);
     }
 
     /**
@@ -119,12 +94,8 @@ class SecureLinkFactory implements SingletonInterface
      */
     public function getUrl(): string
     {
-        $userId = $this->getUserId();
-        $userGroups = $this->getUserGroups();
-        $pageId = $this->getPageId();
-        $resourceUri = $this->getResourceUri();
-
-        $hash = md5($userId . $userGroups . $resourceUri . $pageId);
+        $resourceUri = $this->download->getFile();
+        $hash = md5($this->download->getUser() . $this->download->getGroups() . $resourceUri . $this->download->getPage());
 
         // Retrieve URL from JWT cache
         if (EncodeCache::hasCache($hash)) {
@@ -148,12 +119,12 @@ class SecureLinkFactory implements SingletonInterface
     protected function getJsonWebToken(): string
     {
         $payload = [
-            'iat' => time(),
-            'exp' => $this->getLinkTimeout(),
-            'user' => $this->getUserId(),
-            'groups' => $this->getUserGroups(),
-            'file' => $this->getResourceUri(),
-            'page' => $this->getPageId(),
+            'iat' => $this->download->getIat(),
+            'exp' => $this->download->getExp(),
+            'user' => $this->download->getUser(),
+            'groups' => $this->download->getGroups(),
+            'file' => $this->download->getFile(),
+            'page' => $this->download->getPage(),
         ];
 
         $this->dispatchEnrichPayloadEvent($payload);
@@ -163,7 +134,7 @@ class SecureLinkFactory implements SingletonInterface
 
     protected function dispatchEnrichPayloadEvent(array &$payload): void
     {
-        $event = new EnrichPayloadEvent($payload);
+        $event = new EnrichPayloadEvent($payload, $this->download);
         $event = $this->eventDispatcher->dispatch($event);
         $payload = $event->getPayload();
     }
@@ -173,5 +144,77 @@ class SecureLinkFactory implements SingletonInterface
         $cacheTimeout = ($GLOBALS['TSFE'] instanceof TypoScriptFrontendController && !empty($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->get_cache_timeout() : self::DEFAULT_CACHE_LIFETIME;
 
         return $cacheTimeout + $GLOBALS['EXEC_TIME'] + $this->extensionConfiguration->getCacheTimeAdd();
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    public function setUserId(int $userId): void
+    {
+        $this->userId = $userId;
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    public function getUserGroups(): array
+    {
+        return $this->userGroups;
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    public function setUserGroups(array $userGroups): void
+    {
+        $this->userGroups = $userGroups;
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    public function getPageId(): int
+    {
+        return $this->pageId;
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    public function setPageId(int $pageId): void
+    {
+        $this->pageId = $pageId;
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    public function getResourceUri(): string
+    {
+        return $this->resourceUri;
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    public function getLinkTimeout(): int
+    {
+        return $this->linkTimeout;
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    public function setLinkTimeout(int $linkTimeout): void
+    {
+        $this->linkTimeout = $linkTimeout;
     }
 }

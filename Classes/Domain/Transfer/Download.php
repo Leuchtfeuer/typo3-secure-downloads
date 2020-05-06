@@ -34,12 +34,14 @@ class Download
 
     protected $logged = false;
 
-    public function __construct(string $jsonWebToken)
+    public function __construct(?string $jsonWebToken = null)
     {
-        $data = (array)JWT::decode($jsonWebToken, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], ['HS256']);
+        if ($jsonWebToken) {
+            $data = (array)JWT::decode($jsonWebToken, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], ['HS256']);
 
-        foreach ($data as $property => $value) {
-            $this->$property = $value;
+            foreach ($data as $property => $value) {
+                $this->$property = $value;
+            }
         }
     }
 
@@ -48,9 +50,19 @@ class Download
         return $this->iat;
     }
 
+    public function setIat(int $iat): void
+    {
+        $this->iat = $iat;
+    }
+
     public function getExp(): int
     {
         return $this->exp;
+    }
+
+    public function setExp(int $exp): void
+    {
+        $this->exp = $exp;
     }
 
     public function getUser(): int
@@ -58,9 +70,19 @@ class Download
         return $this->user;
     }
 
+    public function setUser(int $user): void
+    {
+        $this->user = $user;
+    }
+
     public function getGroups(): array
     {
         return $this->groups;
+    }
+
+    public function setGroups(array $groups): void
+    {
+        $this->groups = $groups;
     }
 
     public function getFile(): string
@@ -68,14 +90,29 @@ class Download
         return $this->file;
     }
 
+    public function setFile(string $file): void
+    {
+        $this->file = $file;
+    }
+
     public function getPage(): int
     {
         return $this->page;
     }
 
+    public function setPage(int $page): void
+    {
+        $this->page = $page;
+    }
+
     public function isLogged(): bool
     {
         return $this->logged;
+    }
+
+    public function setLogged(bool $logged): void
+    {
+        $this->logged = $logged;
     }
 
     public function log(int $fileSize, string $mimeType, int $user)

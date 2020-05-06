@@ -2,6 +2,8 @@
 declare(strict_types = 1);
 namespace Leuchtfeuer\SecureDownloads\Resource\Event;
 
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
+
 /***
  *
  * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
@@ -17,9 +19,12 @@ final class EnrichPayloadEvent
 {
     private $payload;
 
-    public function __construct(array $payload)
+    private $download;
+
+    public function __construct(array $payload, Download $download)
     {
         $this->payload = $payload;
+        $this->download = $download;
     }
 
     public function getPayload(): array
@@ -30,5 +35,10 @@ final class EnrichPayloadEvent
     public function setPayload(array $payload): void
     {
         $this->payload = $payload;
+    }
+
+    public function getDownload(): Download
+    {
+        return $this->download;
     }
 }
