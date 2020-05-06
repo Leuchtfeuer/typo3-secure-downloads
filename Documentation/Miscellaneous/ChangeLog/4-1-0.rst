@@ -4,22 +4,26 @@
 Version 4.1.0 - 2020/05/06
 ==========================
 
-This version is a future release. It contains improvements, bugfixes and new features.
+This version is a feature release. It introduces support for TYPO3 v10 LTS and PHP 7.4. Besides of that there are two new
+configuration options for doing a :ref:`strict group check <admin-configuration-strictGroupCheck>` and allowing to run this
+extensions behind a SSL reverse proxy. This release also contains several bug fixes.
 
 Download
 ========
 
 Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
-`GitHub <https://github.com/bitmotion/typo3-secure-downloads/releases/tag/v4.1.0>`__.
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v4.1.0>`__.
 
 Added
 =====
 * GitHub funding file
 * Support for TYPO3 v10 LTS
 * Support for PHP 7.4
-* Group check can now be strict
+* :ref:`Group check <admin-configuration-strictGroupCheck>` can now be strict
 * Dedicated license file
 * PSR-14 Events for file delivery
+* An :ref:`additional path prefix <admin-configuration-documentRootPath>` can be configured if you are using a SSL reverse proxy
+  or your TYPO3 instance is located in a subfolder.
 
 Changed
 =======
@@ -28,11 +32,23 @@ Changed
 * User groups `0` and `-1` are excluded from group check by default
 * Company has been changed from "Bitmotion" to "Leuchtfeuer Digital Marketing"
 * The default link prefix has been changed from `downloads` to `securedl`
+* Method :php:`getSecuredUrl` of class :php:`SecureDownloadsEventListener` is now protected
 
 All Changes
 ===========
 This is a list of all changes in this release::
 
+   2020-05-06 [TASK] Adapt path to git repository (Commit 21c6c44 by Florian Wessels)
+   2020-05-06 [TASK] Make public method protected (Commit 424f436 by Florian Wessels)
+   2020-05-06 [BUGFIX] Use proper class for log model (Commit 03036ca by Florian Wessels)
+   2020-05-06 [FOLLOW-UP] Use stream as default output function (Commit 2cacc92 by Florian Wessels)
+   2020-05-06 [TASK] Catch exceptions when applying filter (Commit c563906 by Florian Wessels)
+   2020-05-06 [DOC] Update php docs (Commit df6bc1d by Florian Wessels)
+   2020-05-06 [TASK] Use dedicated method for applying filter (Commit 34417c3 by Florian Wessels)
+   2020-05-05 [DOC] Add new features to documentation (Commit 454a05b by Florian Wessels)
+   2020-05-05 [TASK] Use LogManager to instantiate logger (Commit 63385e9 by Florian Wessels)
+   2020-05-05 [FEATURE] Allow to configure an additional root path prefix (#84) (Commit 392b5e8 by Florian Wessels)
+   2020-05-05 [TASK] Adapt examples (Commit 264bf7c by Florian Wessels)
    2020-05-04 [TASK] Add changelog for upcoming version (Commit d837f41 by Florian Wessels)
    2020-05-04 [TASK] Add download link for v4.0.0 (Commit f9ffed1 by Florian Wessels)
    2020-05-04 [TASK] Add release notes of version 3.0.3 (Commit 86a30b2 by Florian Wessels)
