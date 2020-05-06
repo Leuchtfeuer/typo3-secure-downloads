@@ -13,7 +13,12 @@ namespace Bitmotion\SecureDownloads\Domain\Repository;
  *
  ***/
 
+use Bitmotion\SecureDownloads\Domain\Model\Log;
+use Bitmotion\SecureDownloads\Domain\Transfer\Download;
 use Bitmotion\SecureDownloads\Domain\Transfer\Filter;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
@@ -96,5 +101,28 @@ class LogRepository extends Repository
         if (count($constraints) > 0) {
             $query->matching($query->logicalAnd($constraints));
         }
+    }
+
+    public function logDownload(Download $download, $fileSize, $mimeType, $user)
+    {
+        $pathInfo = pathinfo($download->getFile());
+
+        $log = new Log();
+        $log->setFileSize($fileSize);
+        $log->setFilePath($pathInfo['dirname'] . '/' . $pathInfo['filename']);
+        $log->setFileType($pathInfo['extension']);
+        $log->setFileName($pathInfo['filename']);
+        $log->setMediaType($mimeType);
+        $log->setUser($user);
+        $log->setPage($download->getPage());
+
+        $fileObject = GeneralUtility::makeInstance(ResourceFactory::class)->retrieveFileOrFolderObject($download->getFile())
+
+        if ($fileObject) {
+            $log->setFileId((string)$fileObject->getUid());
+        }
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+        $queryBuilder->insert('tx_securedownloads_domain_model_log')->values($log->toArray())->execute();
     }
 }

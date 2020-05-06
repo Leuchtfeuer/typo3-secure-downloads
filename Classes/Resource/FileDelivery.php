@@ -15,33 +15,39 @@ namespace Bitmotion\SecureDownloads\Resource;
 
 use Bitmotion\SecureDownloads\Cache\DecodeCache;
 use Bitmotion\SecureDownloads\Domain\Model\Log;
+use Bitmotion\SecureDownloads\Domain\Transfer\Download;
 use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Resource\Event\AfterFileRetrievedEvent;
 use Bitmotion\SecureDownloads\Resource\Event\BeforeReadDeliverEvent;
 use Bitmotion\SecureDownloads\Resource\Event\OutputInitializationEvent;
-use Bitmotion\SecureDownloads\Utility\HookUtility;
 use Bitmotion\SecureDownloads\Utility\MimeTypeUtility;
 use Firebase\JWT\JWT;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
 
-/**
- * ToDo: Use PSR-7 HTTP message instead.
- */
-class FileDelivery
+class FileDelivery implements SingletonInterface
 {
     /**
      * @var ExtensionConfiguration
      */
     protected $extensionConfiguration;
+
+    /**
+     * @var Download
+     */
+    protected $download;
 
     /**
      * @var UserAspect
@@ -55,26 +61,31 @@ class FileDelivery
 
     /**
      * @var int
+     * @deprecated Will be removed with version 6.
      */
     protected $userId;
 
     /**
      * @var int
+     * @deprecated Will be removed with version 6.
      */
     protected $pageId;
 
     /**
      * @var string
+     * @deprecated Will be removed with version 6.
      */
     protected $userGroups;
 
     /**
      * @var int
+     * @deprecated Will be removed with version 6.
      */
     protected $expiryTime;
 
     /**
      * @var string
+     * @deprecated Will be removed with version 6.
      */
     protected $file;
 
@@ -89,54 +100,93 @@ class FileDelivery
     protected $eventDispatcher;
 
     /**
+     * @var array
+     */
+    protected $header = [];
+
+    /**
      * FileDelivery constructor.
      *
      * Check the access rights
      */
-    public function __construct(string $jwt)
+    public function __construct(ExtensionConfiguration $extensionConfiguration)
     {
-        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+        $this->extensionConfiguration = $extensionConfiguration;
+    }
 
-        $this->getDataFromJsonWebToken($jwt);
-        $this->dispatchOutputInitializationEvent();
-        $this->userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
-
-        if (!$this->checkUserAccess() || !$this->checkGroupAccess()) {
-            $this->exitScript('Access denied for User!');
+    /**
+     * Output the requested file
+     */
+    public function deliver(string $jwt): ResponseInterface
+    {
+        if (!$this->retrieveDataFromJsonWebToken($jwt)) {
+            return new Response('php://temp', 403);
         }
+
+        $this->dispatchOutputInitializationEvent();
+
+        if (!$this->hasAccess()) {
+            return new Response('php://temp', 403);
+        }
+
+        $file = GeneralUtility::getFileAbsFileName(ltrim($this->download->getFile(), '/'));
+        $fileName = basename($file);
+
+        if (Environment::isWindows()) {
+            $file = utf8_decode($file);
+        }
+
+        $this->dispatchAfterFileRetrievedEvent($file, $fileName);
+
+        if (file_exists($file)) {
+            $this->fileSize = filesize($file);
+            $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
+            $forceDownload = $this->shouldForceDownload($fileExtension);
+            $mimeType = MimeTypeUtility::getMimeType($file) ?? 'application/octet-stream';
+            $this->header = $this->getHeader($mimeType, $fileName, $forceDownload);
+            $outputFunction = $this->extensionConfiguration->getOutputFunction();
+
+            $this->dispatchBeforeFileDeliverEvent($outputFunction, $this->header, $fileName, $mimeType, $forceDownload);
+
+            if ($this->extensionConfiguration->isLog()) {
+                $this->download->log($this->fileSize, $mimeType, $this->userAspect->get('id'));
+            }
+
+            $body = $this->outputFile($outputFunction, $file) ?? 'php://temp';
+            return new Response($body, 200, $this->header, '');
+        }
+
+        return new Response((new Stream('File does not exist!', 'rw')), 404);
     }
 
     /**
      * Get data from cache if JWT was decoded before. If not, decode given JWT.
      */
-    protected function getDataFromJsonWebToken(string $jwt): void
+    protected function retrieveDataFromJsonWebToken(string $jwt): bool
     {
         if (DecodeCache::hasCache($jwt)) {
-            $data = DecodeCache::getCache($jwt);
+            $this->download = DecodeCache::getCache($jwt);
         } else {
             try {
-                $data = JWT::decode($jwt, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], ['HS256']);
-                DecodeCache::addCache($jwt, $data);
+                $this->download = new Download($jwt);
+                DecodeCache::addCache($jwt, $this->dowload);
             } catch (\Exception $exception) {
-                $this->exitScript($exception->getMessage());
+                return false;
             }
         }
 
-        // Hook for doing stuff with JWT data
-        // This is deprecated as there will be a dedicated class for handling JWTs.
-        HookUtility::executeHook('output', 'encode', $data, $this);
-
-        $this->userGroups = implode(',', $data->groups);
-        $this->userId = $data->user;
-        $this->pageId = $data->page;
-        $this->expiryTime = $data->exp;
-        $this->file = $data->file;
+        return true;
     }
 
-    protected function exitScript(string $message, $httpStatus = HttpUtility::HTTP_STATUS_403): void
+    protected function hasAccess(): bool
     {
-        // TODO: Log message?
-        HttpUtility::setResponseCodeAndExit($httpStatus);
+        $this->userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
+
+        if (!$this->checkUserAccess() || !$this->checkGroupAccess()) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -152,7 +202,7 @@ class FileDelivery
         }
 
         try {
-            return $this->userId === $this->userAspect->get('id');
+            return $this->download->getUser() === $this->userAspect->get('id');
         } catch (AspectPropertyNotFoundException $exception) {
             return false;
         }
@@ -171,13 +221,13 @@ class FileDelivery
 
         $groupCheckDirs = $this->extensionConfiguration->getGroupCheckDirs();
 
-        if (!empty($groupCheckDirs) && !preg_match('/' . $this->softQuoteExpression($groupCheckDirs) . '/', $this->file)) {
+        if (!empty($groupCheckDirs) && !preg_match('/' . $this->softQuoteExpression($groupCheckDirs) . '/', $this->download->getFile())) {
             return false;
         }
 
         $actualGroups = $this->userAspect->get('groupIds');
         sort($actualGroups);
-        $transmittedGroups = GeneralUtility::intExplode(',', $this->userGroups);
+        $transmittedGroups = $this->download->getGroups();
         sort($transmittedGroups);
 
         if ($actualGroups === $transmittedGroups) {
@@ -200,46 +250,6 @@ class FileDelivery
         }
 
         return false;
-    }
-
-    /**
-     * Output the requested file
-     */
-    public function deliver(): void
-    {
-        $file = GeneralUtility::getFileAbsFileName(ltrim($this->file, '/'));
-        $fileName = basename($file);
-
-        // This is a workaround for a PHP bug on Windows systems:
-        // @see http://bugs.php.net/bug.php?id=46990
-        // It helps for filenames with special characters that are present in latin1 encoding.
-        // If you have real UTF-8 filenames, use a nix based OS.
-        if (Environment::isWindows()) {
-            $file = utf8_decode($file);
-        }
-
-        $this->dispatchAfterFileRetrievedEvent($file, $fileName);
-
-        if (file_exists($file)) {
-            $this->fileSize = filesize($file);
-            $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
-            $forceDownload = $this->shouldForceDownload($fileExtension);
-            $mimeType = MimeTypeUtility::getMimeType($file) ?? 'application/octet-stream';
-            $header = $this->getHeader($mimeType, $fileName, $forceDownload);
-            $outputFunction = $this->extensionConfiguration->getOutputFunction();
-
-            $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
-
-            if ($this->isProcessed === false && $this->extensionConfiguration->isLog()) {
-                $this->logDownload($this->fileSize, $mimeType);
-            }
-
-            $this->sendHeader($header);
-            $this->outputFile($outputFunction, $file);
-            exit;
-        }
-
-        $this->exitScript('File does not exist!', HttpUtility::HTTP_STATUS_404);
     }
 
     protected function softQuoteExpression(string $string): string
@@ -290,101 +300,21 @@ class FileDelivery
         return $header;
     }
 
-    protected function sendHeader(array $header): void
+    protected function outputFile(string $outputFunction, string $file): ?StreamInterface
     {
-        foreach ($header as $name => $value) {
-            header(sprintf('%s: %s', $name, $value));
-        }
-    }
-
-    protected function outputFile(string $outputFunction, string $file): void
-    {
-        switch ($outputFunction) {
-            case ExtensionConfiguration::OUTPUT_STREAM:
-                $this->streamFile($file);
-                break;
-
-            case ExtensionConfiguration::OUTPUT_PASS_THRU:
-                $this->passThruFile($file);
-                break;
-
-            case ExtensionConfiguration::OUTPUT_NGINX:
-                $this->nginxDeliverFile($file);
-                break;
-
-            case ExtensionConfiguration::OUTPUT_READ_FILE:
-            default:
-                readfile($file);
-        }
-
-        // make sure we can detect an aborted connection, call flush
-        ob_flush();
-        flush();
-    }
-
-    /**
-     * Log the access of the file
-     */
-    protected function logDownload(int $fileSize = 0, string $mimeType = ''): void
-    {
-        $log = new Log();
-        $log->setFileSize($this->fileSize ?? $fileSize);
-
-        $pathInfo = pathinfo($this->file);
-        $log->setFilePath($pathInfo['dirname'] . '/' . $pathInfo['filename']);
-        $log->setFileType($pathInfo['extension']);
-        $log->setFileName($pathInfo['filename']);
-        $log->setMediaType($mimeType);
-
-        if ($fileObject = ResourceFactory::getInstance()->retrieveFileOrFolderObject($this->file)) {
-            $log->setFileId((string)$fileObject->getUid());
-        }
-
-        $log->setUser($this->userAspect->get('id'));
-        $log->setPage($this->pageId);
-
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
-        $queryBuilder->insert('tx_securedownloads_domain_model_log')->values($log->toArray())->execute();
-
-        $this->isProcessed = true;
-    }
-
-    // File delivery methods
-
-    protected function streamFile(string $fileName): void
-    {
-        $stream = new Stream($fileName);
-        $stream->rewind();
-
-        while (!$stream->eof()) {
-            echo $stream->read(4096);
-            ob_flush();
-            flush();
-        }
-
-        $stream->close();
-    }
-
-    protected function passThruFile(string $fileName): void
-    {
-        $handle = fopen($fileName, 'rb');
-        fpassthru($handle);
-        fclose($handle);
-    }
-
-    protected function nginxDeliverFile(string $fileName): void
-    {
-        if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') === 0) {
-            $this->sendHeader([
-                'X-Accel-Redirect' => sprintf(
+        if ($outputFunction === ExtensionConfiguration::OUTPUT_NGINX) {
+            if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') === 0) {
+                $this->header['X-Accel-Redirect'] = sprintf(
                     '%s/%s',
                     rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
-                    $this->file
-                ),
-            ]);
-        } else {
-            readfile($fileName);
+                    $file
+                );
+
+                return null;
+            }
         }
+
+        return new Stream($file);
     }
 
     // Event handling
@@ -398,12 +328,9 @@ class FileDelivery
 
     protected function dispatchOutputInitializationEvent()
     {
-        $event = new OutputInitializationEvent($this->userId, $this->userGroups, $this->file, $this->expiryTime);
+        $event = new OutputInitializationEvent($this->download);
         $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
-        $this->userId = $event->getUserId();
-        $this->userGroups = $event->getUserGroups();
-        $this->file = $event->getFile();
-        $this->expiryTime = $event->getExpiryTime();
+        $this->download = $event->getDownload();
     }
 
     protected function dispatchBeforeFileDeliverEvent(&$outputFunction, &$header, $fileName, $mimeType, $forceDownload)
@@ -420,5 +347,105 @@ class FileDelivery
         $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
         $file = $event->getFile();
         $fileName = $event->getFileName();
+    }
+
+    // Deprecated
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    protected function exitScript(string $message, $httpStatus = HttpUtility::HTTP_STATUS_403): void
+    {
+        // TODO: Log message?
+        HttpUtility::setResponseCodeAndExit($httpStatus);
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    protected function streamFile(string $fileName): void
+    {
+        $stream = new Stream($fileName);
+        $stream->rewind();
+
+        while (!$stream->eof()) {
+            echo $stream->read(4096);
+            ob_flush();
+            flush();
+        }
+
+        $stream->close();
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    protected function passThruFile(string $fileName): void
+    {
+        $handle = fopen($fileName, 'rb');
+        fpassthru($handle);
+        fclose($handle);
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    protected function nginxDeliverFile(string $fileName): void
+    {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') === 0) {
+            $this->header['X-Accel-Redirect'] = sprintf(
+                '%s/%s',
+                rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
+                $this->file
+            );
+        } else {
+            $this->streamFile($fileName);
+        }
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    protected function sendHeader(array $header): void
+    {
+        foreach ($header as $name => $value) {
+            header(sprintf('%s: %s', $name, $value));
+        }
+    }
+
+    /**
+     * @deprecated Will be removed with version 6.
+     */
+    protected function getDataFromJsonWebToken(string $jwt): void
+    {
+        $this->retrieveDataFromJsonWebToken($jwt);
+    }
+
+    /**
+     * Log the access of the file
+     * @deprecated Will be removed with version 6.
+     */
+    protected function logDownload(int $fileSize = 0, string $mimeType = ''): void
+    {
+        $log = new Log();
+        $log->setFileSize($this->fileSize ?? $fileSize);
+
+        $pathInfo = pathinfo($this->download->getFile());
+        $log->setFilePath($pathInfo['dirname'] . '/' . $pathInfo['filename']);
+        $log->setFileType($pathInfo['extension']);
+        $log->setFileName($pathInfo['filename']);
+        $log->setMediaType($mimeType);
+
+        if ($fileObject = ResourceFactory::getInstance()->retrieveFileOrFolderObject($this->download->getFile())) {
+            $log->setFileId((string)$fileObject->getUid());
+        }
+
+        $log->setUser($this->userAspect->get('id'));
+        $log->setPage($this->download->getPage());
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+        $queryBuilder->insert('tx_securedownloads_domain_model_log')->values($log->toArray())->execute();
+
+        $this->isProcessed = true;
     }
 }

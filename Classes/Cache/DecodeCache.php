@@ -2,6 +2,8 @@
 declare(strict_types = 1);
 namespace Bitmotion\SecureDownloads\Cache;
 
+use Bitmotion\SecureDownloads\Domain\Transfer\Download;
+
 /***
  *
  * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
@@ -18,4 +20,8 @@ namespace Bitmotion\SecureDownloads\Cache;
  */
 class DecodeCache extends AbstractCache
 {
+    public static function getCache(string $key): Download
+    {
+        return parent::getCache($key);
+    }
 }
