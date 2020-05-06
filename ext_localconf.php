@@ -12,6 +12,16 @@ call_user_func(
         $configuration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration::class);
         $GLOBALS['TYPO3_CONF_VARS']['FE']['additionalAbsRefPrefixDirectories'] .= sprintf(',%s', $configuration->getLinkPrefix());
 
+        // Register default checks
+        if (!isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey])) {
+            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey] = [
+                'checks' => [],
+            ];
+        }
+
+        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey]['checks']['user'] = \Bitmotion\SecureDownloads\Security\UserCheck::class;
+        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey]['checks']['userGroup'] = \Bitmotion\SecureDownloads\Security\UserGroupCheck::class;
+
     }, 'secure_downloads'
 );
 

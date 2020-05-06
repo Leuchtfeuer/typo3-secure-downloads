@@ -20,13 +20,14 @@ use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Resource\Event\AfterFileRetrievedEvent;
 use Bitmotion\SecureDownloads\Resource\Event\BeforeReadDeliverEvent;
 use Bitmotion\SecureDownloads\Resource\Event\OutputInitializationEvent;
+use Bitmotion\SecureDownloads\Security\AbstractCheck;
+use Bitmotion\SecureDownloads\Security\UserCheck;
+use Bitmotion\SecureDownloads\Security\UserGroupCheck;
 use Bitmotion\SecureDownloads\Utility\MimeTypeUtility;
 use Firebase\JWT\JWT;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use TYPO3\CMS\Core\Context\Context;
-use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -60,6 +61,16 @@ class FileDelivery implements SingletonInterface
     protected $fileSize;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    /**
+     * @var array
+     */
+    protected $header = [];
+
+    /**
      * @var int
      * @deprecated Will be removed with version 6.
      */
@@ -91,18 +102,9 @@ class FileDelivery implements SingletonInterface
 
     /**
      * @var bool
+     * @deprecated Will be removed with version 6.
      */
     protected $isProcessed = false;
-
-    /**
-     * @var \Psr\EventDispatcher\EventDispatcherInterface|null
-     */
-    protected $eventDispatcher;
-
-    /**
-     * @var array
-     */
-    protected $header = [];
 
     public function __construct(ExtensionConfiguration $extensionConfiguration)
     {
@@ -110,7 +112,8 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Output the requested file
+     * @param string $jwt
+     * @return ResponseInterface
      */
     public function deliver(string $jwt): ResponseInterface
     {
@@ -159,89 +162,32 @@ class FileDelivery implements SingletonInterface
         return true;
     }
 
-    protected function hasAccess(): bool
-    {
-        $this->userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
-
-        if (!$this->checkUserAccess() || !$this->checkGroupAccess()) {
-            return false;
-        }
-
-        return true;
-    }
-
     /**
-     * Returns TRUE when the user has direct access to the file or group check is enabled
-     * Returns FALSE if the user has noch direct access to the file and group check is disabled
-     *
      * @return bool
      */
-    protected function checkUserAccess(): bool
+    protected function hasAccess(): bool
     {
-        if ($this->extensionConfiguration->isEnableGroupCheck() || $this->userId === 0) {
-            return true;
-        }
+        foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['secure_downloads']['checks'] ?? [] as $className) {
+            if (!class_exists($className)) {
+                return false;
+            }
 
-        try {
-            return $this->download->getUser() === $this->userAspect->get('id');
-        } catch (AspectPropertyNotFoundException $exception) {
-            return false;
-        }
-    }
+            $check = GeneralUtility::makeInstance(
+                $className,
+                $this->extensionConfiguration,
+                $this->download
+            );
 
-    /**
-     * Returns true if the transmitted group list is identical
-     * to the group list of the current user or both have at least one group
-     * in common.
-     */
-    protected function checkGroupAccess(): bool
-    {
-        if (!$this->extensionConfiguration->isEnableGroupCheck()) {
-            return true;
-        }
+            if (!$check instanceof AbstractCheck) {
+                return false;
+            }
 
-        $groupCheckDirs = $this->extensionConfiguration->getGroupCheckDirs();
-
-        if (!empty($groupCheckDirs) && !preg_match('/' . $this->softQuoteExpression($groupCheckDirs) . '/', $this->download->getFile())) {
-            return false;
-        }
-
-        $actualGroups = $this->userAspect->get('groupIds');
-        sort($actualGroups);
-        $transmittedGroups = $this->download->getGroups();
-        sort($transmittedGroups);
-
-        if ($actualGroups === $transmittedGroups) {
-            // Actual groups and transmitted groups are identically, so we can ignore the excluded groups
-            return true;
-        }
-
-        if ($this->extensionConfiguration->isStrictGroupCheck()) {
-            // Groups are not identically. Deny access when strict group access is enabled.
-            return false;
-        }
-
-        $excludedGroups = GeneralUtility::intExplode(',', $this->extensionConfiguration->getExcludeGroups(), true);
-        $verifiableGroups = array_diff($actualGroups, $excludedGroups);
-
-        foreach ($verifiableGroups as $actualGroup) {
-            if (in_array($actualGroup, $transmittedGroups, true)) {
-                return true;
+            if ($check->hasAccess() === false) {
+                return false;
             }
         }
 
-        return false;
-    }
-
-    protected function softQuoteExpression(string $string): string
-    {
-        $string = str_replace('\\', '\\\\', $string);
-        $string = str_replace(' ', '\ ', $string);
-        $string = str_replace('/', '\/', $string);
-        $string = str_replace('.', '\.', $string);
-        $string = str_replace(':', '\:', $string);
-
-        return $string;
+        return true;
     }
 
     /**
@@ -267,6 +213,10 @@ class FileDelivery implements SingletonInterface
         return $this->outputFile($outputFunction, $file) ?? 'php://temp';
     }
 
+    /**
+     * @param string $fileExtension
+     * @return bool
+     */
     protected function shouldForceDownload(string $fileExtension): bool
     {
         $forceDownloadTypes = $this->extensionConfiguration->getForceDownloadTypes();
@@ -284,6 +234,12 @@ class FileDelivery implements SingletonInterface
         return false;
     }
 
+    /**
+     * @param string $mimeType
+     * @param string $fileName
+     * @param bool $forceDownload
+     * @return string[]
+     */
     protected function getHeader(string $mimeType, string $fileName, bool $forceDownload): array
     {
         $header = [
@@ -304,6 +260,11 @@ class FileDelivery implements SingletonInterface
         return $header;
     }
 
+    /**
+     * @param string $outputFunction
+     * @param string $file
+     * @return StreamInterface|null
+     */
     protected function outputFile(string $outputFunction, string $file): ?StreamInterface
     {
         if ($outputFunction === ExtensionConfiguration::OUTPUT_NGINX) {
@@ -451,5 +412,37 @@ class FileDelivery implements SingletonInterface
         $queryBuilder->insert('tx_securedownloads_domain_model_log')->values($log->toArray())->execute();
 
         $this->isProcessed = true;
+    }
+
+    /**
+     * Returns TRUE when the user has direct access to the file or group check is enabled
+     * Returns FALSE if the user has noch direct access to the file and group check is disabled
+     *
+     * @return bool
+     * @deprecated Will be removed with version 6.
+     */
+    protected function checkUserAccess(): bool
+    {
+        return GeneralUtility::makeInstance(
+            UserCheck::class,
+            $this->extensionConfiguration,
+            $this->download
+        )->hasAccess();
+    }
+
+    /**
+     * Returns true if the transmitted group list is identical
+     * to the group list of the current user or both have at least one group
+     * in common.
+     *
+     * @deprecated Will be removed with version 6.
+     */
+    protected function checkGroupAccess(): bool
+    {
+        return GeneralUtility::makeInstance(
+            UserGroupCheck::class,
+            $this->extensionConfiguration,
+            $this->download
+        )->hasAccess();
     }
 }
