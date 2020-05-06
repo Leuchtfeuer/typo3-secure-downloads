@@ -34,18 +34,17 @@ excludeGroups = -1,0
 strictGroupCheck = 0
 
 
-# cat=File Delivery/010; type=options[stream,x-accel-redirect]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
-outputFunction = stream
-
-# cat=File Delivery/030; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:protectedPath
-protectedPath =
-
-# cat=File Delivery/040; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownload
+# cat=File Delivery/010; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownload
 forcedownload = 0
 
-# cat=File Delivery/050; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownloadType
+# cat=File Delivery/020; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownloadType
 forcedownloadtype = odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
 
+# cat=File Delivery/030; type=options[stream,x-accel-redirect]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
+outputFunction = stream
 
-# cat=module; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:log
+# cat=File Delivery/040; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:protectedPath
+protectedPath =
+
+# cat=Logging; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:log
 log = 0
