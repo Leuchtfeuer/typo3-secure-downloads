@@ -27,21 +27,11 @@ class ExtensionConfiguration implements SingletonInterface
 
     const OUTPUT_READ_FILE = 'readfile';
 
-    /**
-     * @deprecated Will be removed in version 5. Use "stream" instead.
-     */
-    const OUTPUT_READ_FILE_CHUNKED = 'readfile_chunked';
-
     const OUTPUT_STREAM = 'stream';
 
     const OUTPUT_PASS_THRU = 'fpassthru';
 
     const OUTPUT_NGINX = 'x-accel-redirect';
-
-    /**
-     * @deprecated Will be removed in version 5.
-     */
-    private $additionalMimeTypes = 'txt|text/plain,html|text/html';
 
     /**
      * The value will be added to configured cache lifetime of the page, where the resource is embedded in.
@@ -58,16 +48,6 @@ class ExtensionConfiguration implements SingletonInterface
      * @var string The document root path.
      */
     protected $documentRootPath = '/';
-
-    /**
-     * @deprecated Will be removed in version 5. Use PSR-3 Logger instead.
-     */
-    private $debug = 0;
-
-    /**
-     * @deprecated Will be removed in version 5. You should consider to user the TYPO3 API.
-     */
-    private $domain = 'http://mydomain.com/|http://my.other.domain.org/';
 
     /**
      * If enabled, given groups in token data will used to match groups of actual user.
@@ -124,17 +104,9 @@ class ExtensionConfiguration implements SingletonInterface
     private $log = false;
 
     /**
-     * If files should be delivered chunked, this size will be used to denominate the file.
-     *
-     * @var int Chunk size in byte.
-     * @deprecated Will be removed in version 5. A recommended default value of 4096 bytes will be set for streams.
-     */
-    private $outputChunkSize = 1048576;
-
-    /**
      * The output function, which should be used to deliver secured files from the server to the web browser of the user.
      *
-     * @var string One of "readfile", "readfile_chunked", "fpassthru", "stream" (default) or "x-accel-redirect"
+     * @var string One of "readfile", "fpassthru", "stream" (default) or "x-accel-redirect"
      */
     private $outputFunction = self::OUTPUT_STREAM;
 
@@ -206,37 +178,9 @@ class ExtensionConfiguration implements SingletonInterface
         }
     }
 
-    /**
-     * @deprecated Will be removed in version 5.
-     */
-    public function getAdditionalMimeTypes(): string
-    {
-        return trim($this->additionalMimeTypes);
-    }
-
     public function getCacheTimeAdd(): int
     {
         return (int)$this->cachetimeadd;
-    }
-
-    /**
-     * @deprecated Will be removed in version 5. Use PSR-3 Logger instead.
-     */
-    public function getDebug(): int
-    {
-        trigger_error('Method getDebug() will be removed in version 5.', E_USER_DEPRECATED);
-
-        return (int)$this->debug;
-    }
-
-    /**
-     * @deprecated Will be removed in version 5. You should consider to user the TYPO3 API.
-     */
-    public function getDomain(): string
-    {
-        trigger_error('Method getDomain() will be removed in version 5.', E_USER_DEPRECATED);
-
-        return trim($this->domain);
     }
 
     public function isEnableGroupCheck(): bool
@@ -267,16 +211,6 @@ class ExtensionConfiguration implements SingletonInterface
     public function isLog(): bool
     {
         return (bool)$this->log;
-    }
-
-    /**
-     * @deprecated Will be removed in version 5.
-     */
-    public function getOutputChunkSize(): int
-    {
-        $maxChunkSize = $this->getMaxChunkSize();
-
-        return (int)(($this->outputChunkSize > $maxChunkSize) ? $maxChunkSize : $this->outputChunkSize);
     }
 
     public function getOutputFunction(): string
@@ -317,26 +251,5 @@ class ExtensionConfiguration implements SingletonInterface
     public function getDocumentRootPath(): string
     {
         return $this->documentRootPath;
-    }
-
-    /**
-     * Prevents chunk size to be greater than allowed PHP memory limit.
-     *
-     * @return int The maximum chunk size.
-     * @deprecated Will be removed in version 5.
-     */
-    protected function getMaxChunkSize(): int
-    {
-        $units = ['', 'K', 'M', 'G'];
-        $memoryLimit = ini_get('memory_limit');
-
-        if (!is_numeric($memoryLimit)) {
-            $suffix = strtoupper(substr($memoryLimit, -1));
-            $exponent = array_flip($units)[$suffix] ?? 1;
-            $memoryLimit = (int)$memoryLimit * (1024 ** $exponent);
-        }
-
-        // Set max. chunk size to php memory limit - 64 kB
-        return $memoryLimit - 64 * 1024;
     }
 }

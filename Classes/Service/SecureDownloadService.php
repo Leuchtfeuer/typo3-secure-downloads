@@ -15,91 +15,22 @@ namespace Bitmotion\SecureDownloads\Service;
 
 use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Bitmotion\SecureDownloads\Factory\SecureLinkFactory;
-use Bitmotion\SecureDownloads\Parser\HtmlParser;
-use Bitmotion\SecureDownloads\Parser\HtmlParserDelegateInterface;
-use Bitmotion\SecureDownloads\Utility\HookUtility;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
-class SecureDownloadService implements HtmlParserDelegateInterface, SingletonInterface
+class SecureDownloadService implements SingletonInterface
 {
-    protected $htmlParser;
-
     protected $extensionConfiguration;
 
     protected $securedFileTypesPattern;
 
     protected $securedDirectoriesPattern;
 
-    public function __construct()
+    public function __construct(ExtensionConfiguration $extensionConfiguration)
     {
-        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+        $this->extensionConfiguration = $extensionConfiguration;
         $this->securedFileTypesPattern = sprintf('/^(%s)$/i', $this->extensionConfiguration->getSecuredFileTypes());
         $this->securedDirectoriesPattern = sprintf('/^(%s)/i', str_replace('/', '\/', $this->extensionConfiguration->getSecuredDirs()));
-    }
-
-    /**
-     * This method is called by the frontend rendering hook contentPostProc->output
-     *
-     * @deprecated Parsing the generated HTML is deprecated. All public URLs to files should be retrieved by TYPO3 API.
-     */
-    public function parseFE(array &$parameters, TypoScriptFrontendController $typoScriptFrontendController)
-    {
-        $typoScriptFrontendController->content = $this->getHtmlParser()->parse($typoScriptFrontendController->content);
-    }
-
-    /**
-     * Lazily instantiates the HTML parser
-     * Must be called AFTER the configuration manager has been initialized
-     *
-     * @deprecated Parsing the generated HTML is deprecated. All public URLs to files should be retrieved by TYPO3 API.
-     */
-    public function getHtmlParser(): HtmlParser
-    {
-        if (is_null($this->htmlParser)) {
-            $extensionConfiguration = new ExtensionConfiguration();
-
-            $this->htmlParser = new HtmlParser($this, [
-                'domainPattern' => $extensionConfiguration->getDomain(),
-                'folderPattern' => $extensionConfiguration->getSecuredDirs(),
-                'fileExtensionPattern' => $extensionConfiguration->getSecuredFileTypes(),
-                'logLevel' => $extensionConfiguration->getDebug(),
-            ]);
-        }
-
-        return $this->htmlParser;
-    }
-
-    /**
-     * @deprecated Will be removed with version 5. Use $this->publishResourceUri instead.
-     */
-    public function makeSecure(string $originalUri): string
-    {
-        trigger_error('Method makeSecure() will be removed in version 5. Use publishResourceUri() instead.', E_USER_DEPRECATED);
-
-        return $this->publishResourceUri($originalUri);
-    }
-
-    /**
-     * Transforms a relative file URL to a secure download protected URL
-     *
-     * @deprecated Will be removed in version 5.
-     */
-    public function publishResourceUri(string $originalUri): string
-    {
-        $secureLinkFactory = GeneralUtility::makeInstance(SecureLinkFactory::class, rawurldecode($originalUri));
-        $transformedUri = $secureLinkFactory->getUrl();
-
-        // Hook for makeSecure:
-        // TODO: This hook is deprecated and will be removed in version 5.
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'])) {
-            trigger_error('Hook name ext/secure_downloads/Classes/Service/SecureDownloadService.php is deprecated. Use bitmotion.secure_downloads.downloadService instead.', E_USER_DEPRECATED);
-            $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['bitmotion']['secure_downloads']['downloadService']['makeSecure'] = $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/secure_downloads/Classes/Service/SecureDownloadService.php']['makeSecure'];
-        }
-        HookUtility::executeHook('downloadService', 'makeSecure', $transformedUri, $this);
-
-        return $transformedUri;
     }
 
     /**

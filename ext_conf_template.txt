@@ -7,9 +7,6 @@ securedDirs = typo3temp|fileadmin
 # cat=Parsing/030; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:securedFileTypes
 securedFiletypes = pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
 
-# cat=Parsing/040; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:domain
-domain = http://mydomain.com/|http://my.other.domain.org/
-
 
 # cat=Link Generation/010; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:linkPrefix
 linkPrefix = securedl
@@ -37,11 +34,8 @@ excludeGroups = -1,0
 strictGroupCheck = 0
 
 
-# cat=File Delivery/010; type=options[readfile,stream,readfile_chunked,fpassthru,x-accel-redirect]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
+# cat=File Delivery/010; type=options[readfile,stream,fpassthru,x-accel-redirect]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
 outputFunction = stream
-
-# cat=File Delivery/020; type=int+; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputChunkSize
-outputChunkSize = 1048576
 
 # cat=File Delivery/030; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:protectedPath
 protectedPath =
@@ -52,13 +46,6 @@ forcedownload = 0
 # cat=File Delivery/050; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:forceDownloadType
 forcedownloadtype = odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz
 
-# cat=File Delivery/060; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:additionalMimeTypes
-additionalMimeTypes = txt|text/plain,html|text/html
-
 
 # cat=module; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:log
 log = 0
-
-
-# cat=debug; type=options[0,1,2,3]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:debug
-debug = 0

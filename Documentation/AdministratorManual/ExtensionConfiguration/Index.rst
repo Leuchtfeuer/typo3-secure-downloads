@@ -18,7 +18,6 @@ Properties
 	==================================== ==================================== ==================
 	securedDirs_                         Parsing                              string
 	securedFiletypes_                    Parsing                              string
-	domain_ (legacy)                     Parsing                              string
 	linkPrefix_                          Link Generation                      string
 	tokenPrefix_                         Link Generation                      string
 	cachetimeadd_                        Link Generation                      positive integer
@@ -28,13 +27,10 @@ Properties
 	excludeGroups_                       Group Check                          string
 	strictGroupCheck_                    Group Check                          boolean
 	outputFunction_                      File Delivery                        options
-	outputChunkSize_ (legacy)            File Delivery                        positive integer
 	protectedPath_                       File Delivery                        string
 	forcedownload_                       File Delivery                        boolean
 	forcedownloadtype_                   File Delivery                        string
-	additionalMimeTypes_ (legacy)        File Delivery                        string
 	log_                                 Module                               boolean
-	debug_ (legacy)                      Debug                                options
 	==================================== ==================================== ==================
 
 .. ### BEGIN~OF~TABLE ###
@@ -72,25 +68,6 @@ securedFiletypes
    Description
          List of file types (file extensions) that should be protected. Multiple file extension patterns can be separated by a
          pipe (|). You can use an asterisk (*) if you want to protect all files within configured directories.
-         You can use :ref:`regex` for this option.
-
-
-.. _admin-configuration-domain:
-
-domain
-------
-.. container:: table-row
-
-   Property
-         domain
-   Data type
-         string
-   Default
-         :code:`http://mydomain.com/|http://my.other.domain.org/`
-   Description
-         This is only required for absolute file links to your local server, e.g. :code:`https://example.com//fileadmin/image.jpg`.
-         Not needed for internal (relative) links. Please note, that this configuration property is deprecated. Parsing the HTML
-         output will no longer work with version 5. You should consider to use the TYPO3 API instead.
          You can use :ref:`regex` for this option.
 
 
@@ -243,7 +220,7 @@ outputFunction
          Due to possible restrictions in php and php settings, you probably need to adjust this value. By default "readfile" is
          used to deliver the file. If this function is disabled in your php settings, you can try "fpassthru". If you have
          problems with php `memory_limit` and big files to download, you need to set this to "stream", which delivers
-         the files in small portions. The option "readfile_chunked" is deprecated, but does the same as "stream" for now.
+         the files in small portions.
          For nginx web servers, there is also the possibility to deliver the file directly from the server by setting this
          property to "x-accel-redirect".
 
@@ -270,24 +247,6 @@ protectedPath
                 internal;
                 alias /path/to/your/protected/storage;
             }
-
-
-.. _admin-configuration-outputChunkSize:
-
-outputChunkSize
----------------
-.. container:: table-row
-
-   Property
-         outputChunkSize
-   Data type
-         positive integer
-   Default
-         :code:`1048576`
-   Description
-         Only applicable if you use "readfile_chunked" or "stream" as output function (see: outputFunction_). Specify the number
-         of bytes, served as one chunk when delivering the file. Choosing this value too low is a performance killer. Please note,
-         that this property is deprecated and will be removed in version 5.
 
 
 .. _admin-configuration-forcedownload:
@@ -325,25 +284,6 @@ forcedownloadtype
          You can use :ref:`regex` for this option.
 
 
-.. _admin-configuration-additionalMimeTypes:
-
-additionalMimeTypes
--------------------
-.. container:: table-row
-
-   Property
-         additionalMimeTypes
-   Data type
-         string
-   Default
-         :code:`txt|text/plain,html|text/html`
-   Description
-         Comma separated list of additional MIME types (file extension / mime type pairs, in which file extension and MIME type
-         is separated by a pipe symbol). Can be used to override existing MIME type settings of the extension as well. Please
-         note, that this property is deprecated and will be removed in version 5. You should use the TYPO3 API for adding
-         additional MIME types.
-
-
 .. _admin-configuration-log:
 
 log
@@ -359,21 +299,5 @@ log
    Description
          Each file access will be logged to database, this could be a performance issue, if you have a high traffic site. If you
          decide to turn it on, a backend module will be activated to see the traffic caused by user/ file
-
-
-.. _admin-configuration-debug:
-
-debug
------
-.. container:: table-row
-
-   Property
-         debug
-   Data type
-         options
-   Default
-         :code:`0`
-   Description
-         For developing only. This configuration is deprecated. Please consider to use PSR-3 Logger.
 
 .. ### END~OF~TABLE ###

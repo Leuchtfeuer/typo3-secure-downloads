@@ -46,12 +46,12 @@ class FileDeliveryMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->isResponsible($request)) {
-            // TODO: Remove the $GLOBALS array when dropping TYPO3 9 LTS support
-            $frontendUserAuthentication = $request->getAttribute('frontend.user') ?? $GLOBALS['TSFE']->fe_user;
+            $frontendUserAuthentication = $request->getAttribute('frontend.user');
             $frontendUserAuthentication->fetchGroupData();
 
             $cleanPath = mb_substr(urldecode($request->getUri()->getPath()), mb_strlen($this->assetPrefix));
             [$jwt, $basePath] = explode('/', $cleanPath);
+
             (new FileDelivery($jwt))->deliver();
         }
 

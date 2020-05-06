@@ -13,12 +13,13 @@ namespace Bitmotion\SecureDownloads\Utility;
  *
  ***/
 
-use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Type\File\FileInfo;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class MimeTypeUtility
+class MimeTypeUtility implements SingletonInterface
 {
+    protected static $initialized = false;
+
     protected static $mimeTypes = [
         // MS-Office filetypes
         'pps' => 'application/vnd.ms-powerpoint',
@@ -107,28 +108,7 @@ class MimeTypeUtility
      */
     public static function getMimeType(string $file): ?string
     {
-        $mimeTypes = self::$mimeTypes;
-
-        $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
-        // Read all additional MIME types from the EM configuration into the array $strAdditionalMimeTypesArray
-        if ($extensionConfiguration->getAdditionalMimeTypes()) {
-            trigger_error('Setting additional mime types in configuration is deprecated. Use "mimeTypeGuessers" hook instead. This will be removed in version 5.', E_USER_DEPRECATED);
-            $additionalFileExtension = '';
-            $additionalMimeType = '';
-            $additionalMimeTypeParts = GeneralUtility::trimExplode(',', $extensionConfiguration->getAdditionalMimeTypes(), true);
-
-            foreach ($additionalMimeTypeParts ?? [] as $additionalMimeTypeItem) {
-                list($additionalFileExtension, $additionalMimeType) = GeneralUtility::trimExplode('|', $additionalMimeTypeItem);
-                if (!empty($additionalFileExtension) && !empty($additionalMimeType)) {
-                    $additionalFileExtension = mb_strtolower($additionalFileExtension);
-                    $mimeTypes[$additionalFileExtension] = $additionalMimeType;
-                }
-            }
-
-            unset($additionalFileExtension, $additionalMimeType);
-        }
-
-        self::addMimeTypesToGlobalsArray($mimeTypes);
+        self::addMimeTypesToGlobalsArray(self::$mimeTypes);
 
         $mimeType = (new FileInfo($file))->getMimeType();
 
@@ -142,6 +122,9 @@ class MimeTypeUtility
      */
     protected static function addMimeTypesToGlobalsArray(array $mimeTypes): void
     {
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['FileInfo']['fileExtensionToMimeType'] += $mimeTypes;
+        if (self::$initialized === false) {
+            $GLOBALS['TYPO3_CONF_VARS']['SYS']['FileInfo']['fileExtensionToMimeType'] += $mimeTypes;
+            self::$initialized = true;
+        }
     }
 }

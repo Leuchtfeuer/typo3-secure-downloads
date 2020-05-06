@@ -6,9 +6,8 @@
 Regular Expressions
 ===================
 
-The configuration values of :ref:`admin-configuration-securedDirs`, :ref:`admin-configuration-securedFileTypes`,
-:ref:`admin-configuration-domain` and :ref:`admin-configuration-forcedownloadtype` allow regular expressions. All expressions
-will be handled case insensitive.
+The configuration values of :ref:`admin-configuration-securedDirs`, :ref:`admin-configuration-securedFileTypes` and
+:ref:`admin-configuration-forcedownloadtype` allow regular expressions. All expressions will be handled case insensitive.
 
 .. hint::
     The slash character :code:`(/)` is automatically quoted for your convenience.

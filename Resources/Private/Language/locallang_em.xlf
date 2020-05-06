@@ -7,9 +7,6 @@
             <trans-unit id="checkAccess">
                 <source>Check Direct File Access: This is only a vestigial, basic check and its result may be wrong.</source>
             </trans-unit>
-            <trans-unit id="domain">
-                <source>Domain: A domain prefix before the secured directories part (e.g. https://www.example.com/). Not needed for internal (relative) links.</source>
-            </trans-unit>
             <trans-unit id="securedDirs">
                 <source>Directory Pattern: What directories shall be protected? Multiple directory patterns can be separated by a pipe (|).</source>
             </trans-unit>
@@ -46,23 +43,14 @@
             <trans-unit id="forceDownloadType">
                 <source>Force Download Type: A list of file types that should not be opened inline in a browser, separated by a pipe. Only used if "forcedownload" is true. You can use an asterisk (*) if you want to force download for all file types.</source>
             </trans-unit>
-            <trans-unit id="additionalMimeTypes">
-                <source>Additional Mime Types: Comma separated list of additional MIME types (file extension / mime type pairs, in which file extension and MIME type is separated by a pipe symbol). Can be used to override existing MIME type settings of the extension as well.</source>
-            </trans-unit>
             <trans-unit id="outputFunction">
                 <source>Output Function: PHP function which is used to deliver the secured files.</source>
-            </trans-unit>
-            <trans-unit id="outputChunkSize">
-                <source>Output Chunk Size: Size of chunks to be delivered in one go (only relevant if "readfile_chunked" is used) (default: 1048576 Bytes = 1 MB).</source>
             </trans-unit>
             <trans-unit id="protectedPath">
                 <source>Protected Path: Path to protected storage for nginx x-accel-redirect delivery method.</source>
             </trans-unit>
             <trans-unit id="log">
                 <source>Log Module: Log each file access. This option will enable a backend module.</source>
-            </trans-unit>
-            <trans-unit id="debug">
-                <source>Debug Level: Debug level (output each tag that matches the regex and will be replaced). Please note: This configuration is deprecated. Please consider to use PSR-3 Logger.</source>
             </trans-unit>
         </body>
     </file>

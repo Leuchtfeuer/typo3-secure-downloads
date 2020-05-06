@@ -27,7 +27,6 @@ Added
 
 Changed
 =======
-
 * Updated firebase/php-jwt library to version 5.2.0
 * User groups `0` and `-1` are excluded from group check by default
 * Company has been changed from "Bitmotion" to "Leuchtfeuer Digital Marketing"

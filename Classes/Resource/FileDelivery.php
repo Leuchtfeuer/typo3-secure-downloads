@@ -16,13 +16,13 @@ namespace Bitmotion\SecureDownloads\Resource;
 use Bitmotion\SecureDownloads\Cache\DecodeCache;
 use Bitmotion\SecureDownloads\Domain\Model\Log;
 use Bitmotion\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
-use Bitmotion\SecureDownloads\Parser\HtmlParser;
 use Bitmotion\SecureDownloads\Resource\Event\AfterFileRetrievedEvent;
 use Bitmotion\SecureDownloads\Resource\Event\BeforeReadDeliverEvent;
 use Bitmotion\SecureDownloads\Resource\Event\OutputInitializationEvent;
 use Bitmotion\SecureDownloads\Utility\HookUtility;
 use Bitmotion\SecureDownloads\Utility\MimeTypeUtility;
 use Firebase\JWT\JWT;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 use TYPO3\CMS\Core\Context\UserAspect;
@@ -75,20 +75,8 @@ class FileDelivery
 
     /**
      * @var string
-     * @deprecated Will be removed in version 5.
-     */
-    protected $hash = '';
-
-    /**
-     * @var string
      */
     protected $file;
-
-    /**
-     * @var string
-     * @deprecated Will be removed in version 5.
-     */
-    protected $calculatedHash = '';
 
     /**
      * @var bool
@@ -105,36 +93,12 @@ class FileDelivery
      *
      * Check the access rights
      */
-    public function __construct(?string $jwt = null)
+    public function __construct(string $jwt)
     {
-        $this->extensionConfiguration = new ExtensionConfiguration();
+        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
 
-        if ($jwt !== null) {
-            $this->getDataFromJsonWebToken($jwt);
-        } else {
-            // TODO: This part is deprecated and will be removed with version 5.
-            $this->userGroups = (!empty(GeneralUtility::_GET('g'))) ? GeneralUtility::_GET('g') : '0';
-            $this->hash = GeneralUtility::_GP('hash');
-            $this->userId = (int)GeneralUtility::_GP('u');
-            $this->pageId = (int)GeneralUtility::_GP('p');
-            $this->expiryTime = (int)GeneralUtility::_GP('t');
-            $this->file = GeneralUtility::_GP('file');
-            $this->calculatedHash = isset($data) ? '' : $this->getHash($this->file, $this->userId, $this->userGroups, $this->expiryTime);
-        }
-
+        $this->getDataFromJsonWebToken($jwt);
         $this->dispatchOutputInitializationEvent();
-
-        if (!$jwt) {
-            // TODO: This part is deprecated and will be removed with version 5
-            if (!$this->hashValid()) {
-                $this->exitScript('Hash invalid! Access denied!');
-            }
-
-            if ($this->expiryTimeExceeded()) {
-                $this->exitScript('Link Expired. Access denied!');
-            }
-        }
-
         $this->userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
 
         if (!$this->checkUserAccess() || !$this->checkGroupAccess()) {
@@ -169,46 +133,10 @@ class FileDelivery
         $this->file = $data->file;
     }
 
-    /**
-     * @deprecated Will be removed with version 5.
-     */
-    protected function getHash(string $resourceUri, int $userId, string $userGroupIds, int $validityPeriod = 0): string
-    {
-        trigger_error('Method getHash() will be removed in version 5.', E_USER_DEPRECATED);
-
-        if ($this->extensionConfiguration->isEnableGroupCheck()) {
-            $hashString = $userId . $userGroupIds . $resourceUri . $validityPeriod;
-        } else {
-            $hashString = $userId . $resourceUri . $validityPeriod;
-        }
-
-        return GeneralUtility::hmac($hashString, 'bitmotion_securedownload');
-    }
-
-    /**
-     * @deprecated Will be removed in version 5.
-     */
-    protected function hashValid(): bool
-    {
-        trigger_error('Method hashValid() will be removed in version 5.', E_USER_DEPRECATED);
-
-        return $this->calculatedHash === $this->hash;
-    }
-
     protected function exitScript(string $message, $httpStatus = HttpUtility::HTTP_STATUS_403): void
     {
         // TODO: Log message?
         HttpUtility::setResponseCodeAndExit($httpStatus);
-    }
-
-    /**
-     * @deprecated Will be removed in version 5.
-     */
-    protected function expiryTimeExceeded(): bool
-    {
-        trigger_error('Method expiryTimeExceeded() will be removed in version 5.', E_USER_DEPRECATED);
-
-        return $this->expiryTime < time();
     }
 
     /**
@@ -243,7 +171,7 @@ class FileDelivery
 
         $groupCheckDirs = $this->extensionConfiguration->getGroupCheckDirs();
 
-        if (!empty($groupCheckDirs) && !preg_match('/' . HtmlParser::softQuoteExpression($groupCheckDirs) . '/', $this->file)) {
+        if (!empty($groupCheckDirs) && !preg_match('/' . $this->softQuoteExpression($groupCheckDirs) . '/', $this->file)) {
             return false;
         }
 
@@ -275,14 +203,6 @@ class FileDelivery
     }
 
     /**
-     * @deprecated Will be removed in version 5. Use HtmlParser::softQuoteExpression instead.
-     */
-    protected function softQuoteExpression(string $string): string
-    {
-        return HtmlParser::softQuoteExpression($string);
-    }
-
-    /**
      * Output the requested file
      */
     public function deliver(): void
@@ -305,13 +225,6 @@ class FileDelivery
             $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
             $forceDownload = $this->shouldForceDownload($fileExtension);
             $mimeType = MimeTypeUtility::getMimeType($file) ?? 'application/octet-stream';
-
-            // Hook for output:
-            // TODO: This hook is deprecated and will be removed with version 5. Use 'preReadFile' hook instead.
-            // TODO: Remove the pObj property with version 5.
-            $params = ['pObj' => &$this, 'fileExtension' => '.' . $fileExtension, 'mimeType' => &$mimeType];
-            HookUtility::executeHook('output', 'output', $params, $this);
-
             $header = $this->getHeader($mimeType, $fileName, $forceDownload);
             $outputFunction = $this->extensionConfiguration->getOutputFunction();
 
@@ -327,6 +240,17 @@ class FileDelivery
         }
 
         $this->exitScript('File does not exist!', HttpUtility::HTTP_STATUS_404);
+    }
+
+    protected function softQuoteExpression(string $string): string
+    {
+        $string = str_replace('\\', '\\\\', $string);
+        $string = str_replace(' ', '\ ', $string);
+        $string = str_replace('/', '\/', $string);
+        $string = str_replace('.', '\.', $string);
+        $string = str_replace(':', '\:', $string);
+
+        return $string;
     }
 
     protected function shouldForceDownload(string $fileExtension): bool
@@ -376,10 +300,6 @@ class FileDelivery
     protected function outputFile(string $outputFunction, string $file): void
     {
         switch ($outputFunction) {
-            case ExtensionConfiguration::OUTPUT_READ_FILE_CHUNKED:
-                $this->readFileFactional($file);
-                break;
-
             case ExtensionConfiguration::OUTPUT_STREAM:
                 $this->streamFile($file);
                 break;
@@ -431,30 +351,13 @@ class FileDelivery
 
     // File delivery methods
 
-    /**
-     * In some cases php needs the filesize as php_memory, so big files cannot
-     * be transferred. This function mitigates this problem.
-     *
-     * @deprecated Will be removed in version 5. Use streamFile() instead.
-     */
-    protected function readFileFactional(string $fileName): bool
-    {
-        trigger_error('Method "readFileFactional" will be removed in version 5. Use "streamFile" instead.', E_USER_DEPRECATED);
-
-        $this->streamFile($fileName);
-
-        return true;
-    }
-
     protected function streamFile(string $fileName): void
     {
-        $outputChunkSize = $this->extensionConfiguration->getOutputChunkSize();
-
         $stream = new Stream($fileName);
         $stream->rewind();
 
         while (!$stream->eof()) {
-            echo $stream->read($outputChunkSize);
+            echo $stream->read(4096);
             ob_flush();
             flush();
         }
@@ -486,71 +389,36 @@ class FileDelivery
 
     // Event handling
 
-    /**
-     * @return \Psr\EventDispatcher\EventDispatcherInterface
-     */
-    protected function initializeEventDispatcher()
+    protected function initializeEventDispatcher(): EventDispatcherInterface
     {
-        $this->eventDispatcher = GeneralUtility::getContainer()->get('Psr\\EventDispatcher\\EventDispatcherInterface');
+        $this->eventDispatcher = GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
 
         return $this->eventDispatcher;
     }
 
     protected function dispatchOutputInitializationEvent()
     {
-        if (version_compare(TYPO3_version, '10.2.0', '>=')) {
-            /** @var OutputInitializationEvent $event */
-            $event = new OutputInitializationEvent($this->userId, $this->userGroups, $this->file, $this->expiryTime);
-            $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
-
-            $this->userId = $event->getUserId();
-            $this->userGroups = $event->getUserGroups();
-            $this->file = $event->getFile();
-            $this->expiryTime = $event->getExpiryTime();
-        } else {
-            // Hook for init:
-            // TODO: The params array is deprecated as all information is given in the ref param of the hook.
-            // TODO: This hook is deprecated.
-            $params = [
-                'pObj' => $this,
-                'userId' => &$this->userId,
-                'userGroups' => &$this->userGroups,
-                'file' => &$this->file,
-                'expiryTime' => &$this->expiryTime,
-                'hash' => &$this->hash,
-                'calculatedHash' => &$this->calculatedHash,
-            ];
-            HookUtility::executeHook('output', 'init', $params, $this);
-        }
+        $event = new OutputInitializationEvent($this->userId, $this->userGroups, $this->file, $this->expiryTime);
+        $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
+        $this->userId = $event->getUserId();
+        $this->userGroups = $event->getUserGroups();
+        $this->file = $event->getFile();
+        $this->expiryTime = $event->getExpiryTime();
     }
 
     protected function dispatchBeforeFileDeliverEvent(&$outputFunction, &$header, $fileName, $mimeType, $forceDownload)
     {
-        if (version_compare(TYPO3_version, '10.2.0', '>=')) {
-            /** @var BeforeReadDeliverEvent $event */
-            $event = new BeforeReadDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
-            $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
-
-            $outputFunction = $event->getOutputFunction();
-            $header = $event->getHeader();
-        } else {
-            $params = ['outputFunction' => &$outputFunction, 'header' => &$header, 'fileName' => $fileName, 'mimeType' => $mimeType, 'forceDownload' => $forceDownload];
-            HookUtility::executeHook('output', 'preReadFile', $params, $this);
-        }
+        $event = new BeforeReadDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
+        $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
+        $outputFunction = $event->getOutputFunction();
+        $header = $event->getHeader();
     }
 
     protected function dispatchAfterFileRetrievedEvent(string &$file, string &$fileName)
     {
-        if (version_compare(TYPO3_version, '10.2.0', '>=')) {
-            /** @var AfterFileRetrievedEvent $event */
-            $event = new AfterFileRetrievedEvent($file, $fileName);
-            $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
-
-            $file = $event->getFile();
-            $fileName = $event->getFileName();
-        } else {
-            $params = ['pObj' => &$this, 'file' => &$file, 'downloadName' => &$fileName];
-            HookUtility::executeHook('output', 'preOutput', $params, $this);
-        }
+        $event = new AfterFileRetrievedEvent($file, $fileName);
+        $event = ($this->eventDispatcher ?? $this->initializeEventDispatcher())->dispatch($event);
+        $file = $event->getFile();
+        $fileName = $event->getFileName();
     }
 }

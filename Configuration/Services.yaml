@@ -1,4 +1,12 @@
 services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Bitmotion\SecureDownloads\:
+    resource: '../Classes/*'
+
   Bitmotion\SecureDownloads\EventListener\SecureDownloadsEventListener:
     tags:
       - name: event.listener
