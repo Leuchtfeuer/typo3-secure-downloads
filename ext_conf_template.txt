@@ -1,4 +1,4 @@
-# cat=Parsing/010; type=user[Bitmotion\SecureDownloads\UserFunctions\CheckConfiguration->render]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:checkAccess
+# cat=Parsing/010; type=user[Leuchtfeuer\SecureDownloads\UserFunctions\CheckConfiguration->render]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:checkAccess
 checkAccess = 0
 
 # cat=Parsing/020; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:securedDirs
@@ -34,7 +34,7 @@ excludeGroups = -1,0
 strictGroupCheck = 0
 
 
-# cat=File Delivery/010; type=options[readfile,stream,fpassthru,x-accel-redirect]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
+# cat=File Delivery/010; type=options[stream,x-accel-redirect]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:outputFunction
 outputFunction = stream
 
 # cat=File Delivery/030; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:protectedPath

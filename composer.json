@@ -1,5 +1,5 @@
 {
-  "name": "bitmotion/secure-downloads",
+  "name": "leuchtfeuer/secure-downloads",
   "description": "\"Secure Download\": Apply TYPO3 access rights to ALL file assets (PDFs, TGZs or JPGs etc. - configurable) - protect them from direct access.",
   "keywords": [
     "TYPO3",
@@ -13,7 +13,7 @@
     "email": "dev@Leuchtfeuer.com",
     "issues": "https://github.com/Leuchtfeuer/typo3-secure-downloads/issues",
     "source": "https://github.com/Leuchtfeuer/typo3-secure-downloads/",
-    "docs": "https://docs.typo3.org/p/bitmotion/secure-downloads/master/en-us/"
+    "docs": "https://docs.typo3.org/p/leuchtfeuer/secure-downloads/master/en-us/"
   },
   "authors": [
     {

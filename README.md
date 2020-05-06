@@ -1,7 +1,7 @@
-[![Latest Stable Version](https://poser.pugx.org/bitmotion/secure-downloads/v/stable)](https://packagist.org/packages/bitmotion/secure-downloads)
-[![Total Downloads](https://poser.pugx.org/bitmotion/secure-downloads/downloads)](https://packagist.org/packages/bitmotion/secure-downloads)
-[![Latest Unstable Version](https://poser.pugx.org/bitmotion/secure-downloads/v/unstable)](https://packagist.org/packages/bitmotion/secure-downloads)
-[![License](https://poser.pugx.org/bitmotion/secure-downloads/license)](https://packagist.org/packages/bitmotion/secure-downloads)
+[![Latest Stable Version](https://poser.pugx.org/leuchtfeuer/secure-downloads/v/stable)](https://packagist.org/packages/leuchtfeuer/secure-downloads)
+[![Total Downloads](https://poser.pugx.org/leuchtfeuer/secure-downloads/downloads)](https://packagist.org/packages/leuchtfeuer/secure-downloads)
+[![Latest Unstable Version](https://poser.pugx.org/leuchtfeuer/secure-downloads/v/unstable)](https://packagist.org/packages/leuchtfeuer/secure-downloads)
+[![License](https://poser.pugx.org/leuchtfeuer/secure-downloads/license)](https://packagist.org/packages/leuchtfeuer/secure-downloads)
 
 # TYPO3 Extension "Secure Downloads"
 
@@ -35,11 +35,11 @@ settings).
 ## Documentation
 
 A detailed documentation can be found in the 
-[official TYPO3 documentation](https://docs.typo3.org/p/bitmotion/secure-downloads/master/en-us/Index.html)
+[official TYPO3 documentation](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/master/en-us/Index.html)
 of this extension.
 
 ## Changelog
 
 The changelog can be found in the changelog chapter of the
-[official TYPO3 documentation](https://docs.typo3.org/p/bitmotion/secure-downloads/master/en-us/Miscellaneous/ChangeLog/Index.html)
+[official TYPO3 documentation](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/master/en-us/Miscellaneous/ChangeLog/Index.html)
 of this extension.
