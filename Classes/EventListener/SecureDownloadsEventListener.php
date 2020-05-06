@@ -93,7 +93,7 @@ class SecureDownloadsEventListener implements SingletonInterface
         $event->setOverlayIdentifier($overlayIdentifier ?? $event->getOverlayIdentifier());
     }
 
-    public function getSecuredUrl(bool $relativeToCurrentScript, string $publicUrl, LocalDriver $driver): string
+    protected function getSecuredUrl(bool $relativeToCurrentScript, string $publicUrl, LocalDriver $driver): string
     {
         $pathPart = '';
 
