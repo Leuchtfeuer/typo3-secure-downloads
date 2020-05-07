@@ -236,7 +236,7 @@ class ExtensionConfiguration implements SingletonInterface
 
     public function getProtectedPath(): string
     {
-        return $this->protectedPath;
+        return trim($this->protectedPath);
     }
 
     public function isStrictGroupCheck(): bool
@@ -246,6 +246,6 @@ class ExtensionConfiguration implements SingletonInterface
 
     public function getDocumentRootPath(): string
     {
-        return $this->documentRootPath;
+        return trim($this->documentRootPath);
     }
 }
