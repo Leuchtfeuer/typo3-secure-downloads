@@ -18,34 +18,36 @@ abstract class AbstractToken
     /**
      * @var int
      */
-    protected $iat = 0;
+    private $iat = 0;
 
     /**
      * @var int
      */
-    protected $exp = 0;
+    private $exp = 0;
 
     /**
      * @var int
      */
-    protected $user = 0;
+    private $user = 0;
 
     /**
      * @var array
      */
-    protected $groups = [];
+    private $groups = [];
 
     /**
      * @var string
      */
-    protected $file = '';
+    private $file = '';
 
     /**
      * @var int
      */
-    protected $page = 0;
+    private $page = 0;
 
     protected $implementationClassName = __CLASS__;
+
+    protected $logged = false;
 
     public function __construct()
     {
@@ -58,8 +60,6 @@ abstract class AbstractToken
     abstract public function decode(string $jsonWebToken): void;
 
     abstract public function log(array $parameters = []): void;
-
-    abstract public function getPayload(): array;
 
     abstract public function getHash(): string;
 
@@ -116,5 +116,17 @@ abstract class AbstractToken
     public function setPage(int $page): void
     {
         $this->page = $page;
+    }
+
+    public function getPayload(): array
+    {
+        return [
+            'iat' => $this->getIat(),
+            'exp' => $this->getExp(),
+            'user' => $this->getUser(),
+            'groups' => $this->getGroups(),
+            'file' => $this->getFile(),
+            'page' => $this->getPage(),
+        ];
     }
 }

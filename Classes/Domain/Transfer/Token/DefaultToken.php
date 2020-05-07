@@ -14,14 +14,11 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Transfer\Token;
  ***/
 
 use Firebase\JWT\JWT;
-use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
 use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DefaultToken extends AbstractToken
 {
-    protected $logged = false;
-
     protected function getKey(): string
     {
         return $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
@@ -60,17 +57,5 @@ class DefaultToken extends AbstractToken
             $logRepository->logDownload($this, $parameters['fileSize'], $parameters['mimeType'], $parameters['user']);
             $this->logged = true;
         }
-    }
-
-    public function getPayload(): array
-    {
-        return [
-            'iat' => $this->getIat(),
-            'exp' => $this->getExp(),
-            'user' => $this->getUser(),
-            'groups' => $this->getGroups(),
-            'file' => $this->getFile(),
-            'page' => $this->getPage(),
-        ];
     }
 }
