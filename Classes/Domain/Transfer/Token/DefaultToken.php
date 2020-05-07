@@ -45,11 +45,6 @@ class DefaultToken extends AbstractToken
         }
     }
 
-    public function getHash(): string
-    {
-        return md5($this->getUser() . $this->getGroups() . $this->getFile() . $this->getPage());
-    }
-
     public function log(array $parameters = []): void
     {
         if ($this->logged === false) {

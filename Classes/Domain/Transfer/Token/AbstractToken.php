@@ -18,32 +18,32 @@ abstract class AbstractToken
     /**
      * @var int
      */
-    private $iat = 0;
+    protected $iat = 0;
 
     /**
      * @var int
      */
-    private $exp = 0;
+    protected $exp = 0;
 
     /**
      * @var int
      */
-    private $user = 0;
+    protected $user = 0;
 
     /**
      * @var array
      */
-    private $groups = [];
+    protected $groups = [];
 
     /**
      * @var string
      */
-    private $file = '';
+    protected $file = '';
 
     /**
      * @var int
      */
-    private $page = 0;
+    protected $page = 0;
 
     protected $implementationClassName = __CLASS__;
 
@@ -60,8 +60,6 @@ abstract class AbstractToken
     abstract public function decode(string $jsonWebToken): void;
 
     abstract public function log(array $parameters = []): void;
-
-    abstract public function getHash(): string;
 
     public function getIat(): int
     {
@@ -128,5 +126,10 @@ abstract class AbstractToken
             'file' => $this->getFile(),
             'page' => $this->getPage(),
         ];
+    }
+
+    public function getHash(): string
+    {
+        return md5($this->getUser() . $this->getGroups() . $this->getFile() . $this->getPage());
     }
 }
