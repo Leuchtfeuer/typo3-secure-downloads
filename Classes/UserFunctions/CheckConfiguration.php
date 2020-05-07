@@ -15,9 +15,10 @@ namespace Leuchtfeuer\SecureDownloads\UserFunctions;
 
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class CheckConfiguration
+class CheckConfiguration implements SingletonInterface
 {
     /**
      * @var ExtensionConfiguration
@@ -34,9 +35,9 @@ class CheckConfiguration
      */
     protected $missingDirectories = [];
 
-    public function __construct()
+    public function __construct(ExtensionConfiguration $extensionConfiguration)
     {
-        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+        $this->extensionConfiguration = $extensionConfiguration;
     }
 
     public function render(): string

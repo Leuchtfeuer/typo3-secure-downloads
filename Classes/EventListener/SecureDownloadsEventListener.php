@@ -23,7 +23,6 @@ use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Service\EnvironmentService;
 
@@ -35,17 +34,17 @@ class SecureDownloadsEventListener implements SingletonInterface
     /**
      * @var SecureDownloadService
      */
-    protected $sdlService;
+    protected $secureDownloadService;
 
     /**
      * @var EnvironmentService
      */
     protected $environmentService;
 
-    public function __construct()
+    public function __construct(SecureDownloadService $secureDownloadService, EnvironmentService $environmentService)
     {
-        $this->sdlService = GeneralUtility::makeInstance(SecureDownloadService::class);
-        $this->environmentService = GeneralUtility::makeInstance(EnvironmentService::class);
+        $this->secureDownloadService = $secureDownloadService;
+        $this->environmentService = $environmentService;
     }
 
     /**
@@ -62,7 +61,7 @@ class SecureDownloadsEventListener implements SingletonInterface
         if ($driver instanceof LocalDriver && ($resource instanceof File || $resource instanceof ProcessedFile)) {
             try {
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier());
-                if ($this->sdlService->pathShouldBeSecured($publicUrl)) {
+                if ($this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
                     $securedUrl = $this->getSecuredUrl($event->isRelativeToCurrentScript(), $publicUrl, $driver);
                     $event->setPublicUrl($securedUrl);
                 }
@@ -83,7 +82,7 @@ class SecureDownloadsEventListener implements SingletonInterface
 
         if ($resource instanceof Folder) {
             $publicUrl = $resource->getStorage()->getPublicUrl($resource) ?? $resource->getIdentifier();
-            if ($this->sdlService->folderShouldBeSecured($publicUrl)) {
+            if ($this->secureDownloadService->folderShouldBeSecured($publicUrl)) {
                 $overlayIdentifier = 'overlay-restricted';
             }
         } elseif ($resource instanceof File && empty($resource->getPublicUrl())) {
@@ -97,11 +96,11 @@ class SecureDownloadsEventListener implements SingletonInterface
     {
         $pathPart = '';
 
-        if ($relativeToCurrentScript) {
+        if ($relativeToCurrentScript === true) {
             $absolutePathToContainingFolder = PathUtility::dirname(Environment::getPublicPath() . '/' . $driver->getDefaultFolder());
             $pathPart = PathUtility::getRelativePathTo($absolutePathToContainingFolder);
         }
 
-        return $pathPart . $this->sdlService->getResourceUrl($publicUrl);
+        return $pathPart . $this->secureDownloadService->getResourceUrl($publicUrl);
     }
 }

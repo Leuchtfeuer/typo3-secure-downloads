@@ -15,8 +15,6 @@ namespace Leuchtfeuer\SecureDownloads\Resource;
 
 use Firebase\JWT\JWT;
 use Leuchtfeuer\SecureDownloads\Cache\DecodeCache;
-use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
-use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 use Leuchtfeuer\SecureDownloads\Factory\TokenFactory;
