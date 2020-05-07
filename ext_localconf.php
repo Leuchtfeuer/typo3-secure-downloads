@@ -16,6 +16,7 @@ call_user_func(
         if (!isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey])) {
             $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey] = [
                 'checks' => [],
+                'tokenClass' => \Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\DefaultToken::class,
             ];
         }
 

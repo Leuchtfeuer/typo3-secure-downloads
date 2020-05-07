@@ -18,6 +18,8 @@ use Leuchtfeuer\SecureDownloads\Cache\DecodeCache;
 use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
+use Leuchtfeuer\SecureDownloads\Factory\TokenFactory;
 use Leuchtfeuer\SecureDownloads\Resource\Event\AfterFileRetrievedEvent;
 use Leuchtfeuer\SecureDownloads\Resource\Event\BeforeReadDeliverEvent;
 use Leuchtfeuer\SecureDownloads\Resource\Event\OutputInitializationEvent;
@@ -48,9 +50,9 @@ class FileDelivery implements SingletonInterface
     protected $extensionConfiguration;
 
     /**
-     * @var Download
+     * @var AbstractToken
      */
-    protected $download;
+    protected $token;
 
     /**
      * @var UserAspect
@@ -130,7 +132,7 @@ class FileDelivery implements SingletonInterface
             return new Response('php://temp', 403);
         }
 
-        $file = GeneralUtility::getFileAbsFileName(ltrim($this->download->getFile(), '/'));
+        $file = GeneralUtility::getFileAbsFileName(ltrim($this->token->getFile(), '/'));
         $fileName = basename($file);
 
         if (Environment::isWindows()) {
@@ -149,14 +151,14 @@ class FileDelivery implements SingletonInterface
     /**
      * Get data from cache if JWT was decoded before. If not, decode given JWT.
      */
-    protected function retrieveDataFromJsonWebToken(string $jwt): bool
+    protected function retrieveDataFromJsonWebToken(string $jsonWebToken): bool
     {
-        if (DecodeCache::hasCache($jwt)) {
-            $this->download = DecodeCache::getCache($jwt);
+        if (DecodeCache::hasCache($jsonWebToken)) {
+            $this->token = DecodeCache::getCache($jsonWebToken);
         } else {
             try {
-                $this->download = new Download($jwt);
-                DecodeCache::addCache($jwt, $this->dowload);
+                $this->token = (new TokenFactory())->buildToken($jsonWebToken);
+                DecodeCache::addCache($jsonWebToken, $this->token);
             } catch (\Exception $exception) {
                 return false;
             }
@@ -175,17 +177,9 @@ class FileDelivery implements SingletonInterface
                 return false;
             }
 
-            $check = GeneralUtility::makeInstance(
-                $className,
-                $this->extensionConfiguration,
-                $this->download
-            );
+            $check = GeneralUtility::makeInstance($className, $this->extensionConfiguration, $this->token);
 
-            if (!$check instanceof AbstractCheck) {
-                return false;
-            }
-
-            if ($check->hasAccess() === false) {
+            if (!$check instanceof AbstractCheck || $check->hasAccess() === false) {
                 return false;
             }
         }
@@ -210,7 +204,11 @@ class FileDelivery implements SingletonInterface
         $this->dispatchBeforeFileDeliverEvent($outputFunction, $this->header, $fileName, $mimeType, $forceDownload);
 
         if ($this->extensionConfiguration->isLog()) {
-            $this->download->log($this->fileSize, $mimeType, $this->userAspect->get('id'));
+            $this->token->log([
+                'fileSize' => $this->fileSize,
+                'mimeType' => $mimeType,
+                'user' => $this->userAspect->get('id'),
+            ]);
         }
 
         return $this->outputFile($outputFunction, $file) ?? 'php://temp';
@@ -289,9 +287,9 @@ class FileDelivery implements SingletonInterface
 
     protected function dispatchOutputInitializationEvent()
     {
-        $event = new OutputInitializationEvent($this->download);
+        $event = new OutputInitializationEvent($this->token);
         $event = $this->eventDispatcher->dispatch($event);
-        $this->download = $event->getDownload();
+        $this->token = $event->getToken();
     }
 
     protected function dispatchBeforeFileDeliverEvent(&$outputFunction, &$header, $fileName, $mimeType, $forceDownload)

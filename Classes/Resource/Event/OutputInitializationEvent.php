@@ -13,24 +13,27 @@ namespace Leuchtfeuer\SecureDownloads\Resource\Event;
  *
  ***/
 
-use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 
 final class OutputInitializationEvent
 {
-    private $download;
+    /**
+     * @var AbstractToken
+     */
+    private $token;
 
-    public function __construct(Download $download)
+    public function __construct(AbstractToken $token)
     {
-        $this->download = $download;
+        $this->token = $token;
     }
 
-    public function getDownload(): Download
+    public function getToken(): AbstractToken
     {
-        return $this->download;
+        return $this->token;
     }
 
-    public function setDownload(Download $download): void
+    public function setToken(AbstractToken $token): void
     {
-        $this->download = $download;
+        $this->token = $token;
     }
 }

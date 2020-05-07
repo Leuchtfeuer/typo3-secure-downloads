@@ -100,7 +100,7 @@ namespace Bitmotion\SecureDownloads\UserFunctions {
 
 namespace Bitmotion\SecureDownloads\Utility {
 
-    class MimeTypeUtility extends \Leuchtfeuer\SecureDownloads\Utility\MimeTypeUtility
+    class MimeTypes extends \Leuchtfeuer\SecureDownloads\Utility\MimeTypes
     {
     }
 }

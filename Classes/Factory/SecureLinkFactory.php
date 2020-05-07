@@ -15,8 +15,8 @@ namespace Leuchtfeuer\SecureDownloads\Factory;
 
 use Firebase\JWT\JWT;
 use Leuchtfeuer\SecureDownloads\Cache\EncodeCache;
-use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 use Leuchtfeuer\SecureDownloads\Resource\Event\EnrichPayloadEvent;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
@@ -64,13 +64,35 @@ class SecureLinkFactory implements SingletonInterface
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->extensionConfiguration = $extensionConfiguration;
-        $this->download = new Download();
+        $this->token = (new TokenFactory())->buildToken();
         $this->init();
+    }
+
+    protected function init()
+    {
+        $this->token->setExp($this->calculateLinkLifetime());
+        $this->token->setPage((int)$GLOBALS['TSFE']->id);
+
+        try {
+            /** @var UserAspect $userAspect */
+            $userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
+            $this->token->setUser($userAspect->get('id'));
+            $this->token->setGroups($userAspect->getGroupIds());
+        } catch (\Exception $exception) {
+            // Do nothing.
+        }
+    }
+
+    protected function calculateLinkLifetime(): int
+    {
+        $cacheTimeout = ($GLOBALS['TSFE'] instanceof TypoScriptFrontendController && !empty($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->get_cache_timeout() : self::DEFAULT_CACHE_LIFETIME;
+
+        return $cacheTimeout + $GLOBALS['EXEC_TIME'] + $this->extensionConfiguration->getCacheTimeAdd();
     }
 
     public function setResourceUri(string $resourceUri): void
     {
-        $this->download->setFile($resourceUri);
+        $this->token->setFile($resourceUri);
     }
 
     /**
@@ -78,8 +100,7 @@ class SecureLinkFactory implements SingletonInterface
      */
     public function getUrl(): string
     {
-        $resourceUri = $this->download->getFile();
-        $hash = md5($this->download->getUser() . $this->download->getGroups() . $resourceUri . $this->download->getPage());
+        $hash = $this->token->getHash();
 
         // Retrieve URL from JWT cache
         if (EncodeCache::hasCache($hash)) {
@@ -91,7 +112,7 @@ class SecureLinkFactory implements SingletonInterface
             $this->extensionConfiguration->getLinkPrefix(),
             $this->extensionConfiguration->getTokenPrefix(),
             $this->getJsonWebToken(),
-            pathinfo($resourceUri, PATHINFO_BASENAME)
+            pathinfo($this->token->getFile(), PATHINFO_BASENAME)
         );
 
         // Store URL in JWT cache

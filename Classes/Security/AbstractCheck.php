@@ -13,8 +13,8 @@ namespace Leuchtfeuer\SecureDownloads\Security;
  *
  ***/
 
-use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -27,19 +27,19 @@ abstract class AbstractCheck
     protected $extensionConfiguration;
 
     /**
-     * @var Download
+     * @var AbstractToken
      */
-    protected $download;
+    protected $token;
 
     /**
      * @var UserAspect
      */
     protected $userAspect;
 
-    public function __construct(ExtensionConfiguration $extensionConfiguration, Download $download)
+    public function __construct(ExtensionConfiguration $extensionConfiguration, AbstractToken $token)
     {
         $this->extensionConfiguration = $extensionConfiguration;
-        $this->download = $download;
+        $this->token = $token;
         $this->userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
     }
 

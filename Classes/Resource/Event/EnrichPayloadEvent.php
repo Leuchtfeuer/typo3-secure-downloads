@@ -2,7 +2,7 @@
 declare(strict_types = 1);
 namespace Leuchtfeuer\SecureDownloads\Resource\Event;
 
-use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 
 /***
  *
@@ -17,14 +17,20 @@ use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
 
 final class EnrichPayloadEvent
 {
+    /**
+     * @var array
+     */
     private $payload;
 
-    private $download;
+    /**
+     * @var AbstractToken
+     */
+    private $token;
 
-    public function __construct(array $payload, Download $download)
+    public function __construct(array $payload, AbstractToken $token)
     {
         $this->payload = $payload;
-        $this->download = $download;
+        $this->token = $token;
     }
 
     public function getPayload(): array
@@ -37,8 +43,8 @@ final class EnrichPayloadEvent
         $this->payload = $payload;
     }
 
-    public function getDownload(): Download
+    public function getToken(): AbstractToken
     {
-        return $this->download;
+        return $this->token;
     }
 }

@@ -2,7 +2,7 @@
 declare(strict_types = 1);
 namespace Leuchtfeuer\SecureDownloads\Cache;
 
-use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 
 /***
  *
@@ -20,7 +20,7 @@ use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
  */
 class DecodeCache extends AbstractCache
 {
-    public static function getCache(string $key): Download
+    public static function getCache(string $key): AbstractToken
     {
         return parent::getCache($key);
     }

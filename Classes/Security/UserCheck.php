@@ -15,14 +15,12 @@ namespace Leuchtfeuer\SecureDownloads\Security;
 
 class UserCheck extends AbstractCheck
 {
-    protected $user;
-
     public function hasAccess(): bool
     {
-        if ($this->extensionConfiguration->isEnableGroupCheck() || $this->download->getUser() === 0) {
+        if ($this->extensionConfiguration->isEnableGroupCheck() || $this->token->getUser() === 0) {
             return true;
         }
 
-        return $this->user === $this->userAspect->get('id');
+        return $this->token->getUser() === $this->userAspect->get('id');
     }
 }

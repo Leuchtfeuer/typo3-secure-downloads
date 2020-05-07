@@ -25,12 +25,12 @@ class UserGroupCheck extends AbstractCheck
 
         $groupCheckDirs = $this->extensionConfiguration->getGroupCheckDirs();
 
-        if (!empty($groupCheckDirs) && !preg_match('/' . $this->softQuoteExpression($groupCheckDirs) . '/', $this->download->getFile())) {
+        if (!empty($groupCheckDirs) && !preg_match('/' . $this->softQuoteExpression($groupCheckDirs) . '/', $this->token->getFile())) {
             return false;
         }
 
         $actualGroups = $this->userAspect->get('groupIds');
-        $transmittedGroups = $this->download->getGroups();
+        $transmittedGroups = $this->token->getGroups();
         sort($actualGroups);
         sort($transmittedGroups);
 

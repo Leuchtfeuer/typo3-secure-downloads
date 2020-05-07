@@ -14,8 +14,8 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Repository;
  ***/
 
 use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
-use Leuchtfeuer\SecureDownloads\Domain\Transfer\Download;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -103,9 +103,9 @@ class LogRepository extends Repository
         }
     }
 
-    public function logDownload(Download $download, $fileSize, $mimeType, $user)
+    public function logDownload(AbstractToken $token, $fileSize, $mimeType, $user)
     {
-        $pathInfo = pathinfo($download->getFile());
+        $pathInfo = pathinfo($token->getFile());
 
         $log = new Log();
         $log->setFileSize($fileSize);
@@ -114,9 +114,9 @@ class LogRepository extends Repository
         $log->setFileName($pathInfo['filename']);
         $log->setMediaType($mimeType);
         $log->setUser($user);
-        $log->setPage($download->getPage());
+        $log->setPage($token->getPage());
 
-        $fileObject = GeneralUtility::makeInstance(ResourceFactory::class)->retrieveFileOrFolderObject($download->getFile());
+        $fileObject = GeneralUtility::makeInstance(ResourceFactory::class)->retrieveFileOrFolderObject($token->getFile());
 
         if ($fileObject) {
             $log->setFileId((string)$fileObject->getUid());
