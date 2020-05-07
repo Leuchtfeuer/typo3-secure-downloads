@@ -27,6 +27,7 @@ class CheckRegistry implements SingletonInterface
     {
         if (isset(self::$checks[$identifier]) && $overwriteExisting === false) {
             // Do nothing. Maybe log this in future.
+            return;
         }
 
         self::$checks[$identifier] = [
