@@ -25,17 +25,7 @@ class ExtensionConfiguration implements SingletonInterface
 {
     const FILE_TYPES_WILDCARD = '*';
 
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    const OUTPUT_READ_FILE = 'readfile';
-
     const OUTPUT_STREAM = 'stream';
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    const OUTPUT_PASS_THRU = 'fpassthru';
 
     const OUTPUT_NGINX = 'x-accel-redirect';
 
@@ -112,7 +102,7 @@ class ExtensionConfiguration implements SingletonInterface
     /**
      * The output function, which should be used to deliver secured files from the server to the web browser of the user.
      *
-     * @var string One of "readfile", "fpassthru", "stream" (default) or "x-accel-redirect"
+     * @var string One of "stream" (default) or "x-accel-redirect"
      */
     private $outputFunction = self::OUTPUT_STREAM;
 
