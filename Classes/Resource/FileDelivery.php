@@ -73,12 +73,12 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * @param string $jwt
+     * @param string $jsonWebToken
      * @return ResponseInterface
      */
-    public function deliver(string $jwt): ResponseInterface
+    public function deliver(string $jsonWebToken): ResponseInterface
     {
-        if (!$this->retrieveDataFromJsonWebToken($jwt)) {
+        if (!$this->retrieveDataFromJsonWebToken($jsonWebToken)) {
             return new Response('php://temp', 403);
         }
 
