@@ -1,5 +1,17 @@
-<FilesMatch "\.([Pp][Dd][Ff]|[Jj][Pp][Ee]?[Gg]|[Gg][Ii][Ff]|[Pp][Nn][Gg]|[Dd][Oo][Cc]|[Xx][Ll][Ss]|[Rr][Aa][Rr]|[Tt][Gg][Zz]|[Tt][Aa][Rr]|[Gg][Zz])">
-    Order deny,allow
-    Deny from all
-    Allow from none
-</FilesMatch>
+# Please use that example which fits your Apache version and make sure to adapt the file match pattern
+# as configured in "parsing.securedFiletypes"
+
+# Apache 2.4
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.(pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+# Apache 2.2
+<IfModule !mod_authz_core.c>
+    <FilesMatch "\.(pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz)$">
+        Order Allow,Deny
+        Deny from all
+    </FilesMatch>
+</IfModule>

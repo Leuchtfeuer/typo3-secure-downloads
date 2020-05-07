@@ -14,6 +14,7 @@ namespace Leuchtfeuer\SecureDownloads\UserFunctions;
  ***/
 
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
+use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -33,7 +34,12 @@ class CheckConfiguration implements SingletonInterface
     /**
      * @var array
      */
-    protected $missingDirectories = [];
+    protected $unprotectedDirectories = [];
+
+    /**
+     * @var array
+     */
+    protected $protectedDirectories = [];
 
     public function __construct()
     {
@@ -44,16 +50,19 @@ class CheckConfiguration implements SingletonInterface
     {
         if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') === 0) {
             $this->setDirectories();
+            $this->checkDirectories();
 
-            if ($this->hasMissingDirectories()) {
-                return $this->getMissingDirectoriesInfo();
+            if (!empty($this->unprotectedDirectories)) {
+                return $this->getConfigurationErrorInfo();
             }
 
-            if ($this->directoriesAreProtected()) {
-                return $this->getConfigurationOkayInfo();
+            $this->checkProtectedDirectories();
+
+            if (!empty($this->protectedDirectories)) {
+                return $this->getConfigurationWarningInfo();
             }
 
-            return $this->getConfigurationErrorInfo();
+            return $this->getConfigurationOkayInfo();
         }
 
         return $this->getNotSupportedInfo();
@@ -61,34 +70,61 @@ class CheckConfiguration implements SingletonInterface
 
     protected function setDirectories(): void
     {
-        $securedDirectories = GeneralUtility::trimExplode('|', $this->extensionConfiguration->getSecuredDirs(), true);
-        $rootDirectory = Environment::getPublicPath() . '/';
+        $directoryPattern = sprintf('#^(%s)#i', $this->extensionConfiguration->getSecuredDirs());
 
-        foreach ($securedDirectories as $securedDirectory) {
-            $absolutePath = $rootDirectory . trim($securedDirectory, '/');
-            if (@is_dir($absolutePath)) {
-                $this->directories[] = $absolutePath;
-            } else {
-                $this->missingDirectories[] = $absolutePath;
+        foreach ($this->getPublicDirectories() as $publicDirectory) {
+            $path = sprintf('%s/%s', Environment::getPublicPath(), $publicDirectory);
+            $finder = (new Finder())->directories();
+
+            foreach ($finder->in($path) as $directory) {
+                $directoryPath = sprintf('%s/%s', $publicDirectory, $directory->getRelativePathname());
+                if (preg_match($directoryPattern, $directoryPath)) {
+                    $this->directories[] = sprintf('%s/%s', Environment::getPublicPath(), $directoryPath);
+                }
             }
         }
     }
 
-    protected function hasMissingDirectories(): bool
+    protected function getPublicDirectories(): array
     {
-        return !empty($this->missingDirectories);
+        $publicDirectories = scandir(Environment::getPublicPath());
+
+        return array_filter($publicDirectories, function ($directory) {
+            return is_dir(sprintf('%s/%s', Environment::getPublicPath(), $directory)) && !in_array($directory, ['.', '..', 'typo3', 'typo3conf']);
+        });
     }
 
-    protected function directoriesAreProtected(): bool
+    protected function checkDirectories(): void
     {
-        foreach ($this->directories as $securedDirectory) {
-            $filePath = sprintf('%s/.htaccess', $securedDirectory);
-            if (!@file_exists($filePath)) {
-                return false;
+        $lastSecuredDirectory = null;
+
+        foreach ($this->directories as $directory) {
+            if ($lastSecuredDirectory && strpos($directory, $lastSecuredDirectory) === 0) {
+                continue;
+            }
+
+            $finder = (new Finder())->files()->ignoreDotFiles(false)->name('.htaccess')->depth(0);
+
+            foreach ($finder->in($directory) as $file) {
+                $lastSecuredDirectory = $directory;
+                $this->protectedDirectories[] = $directory;
+                continue 2;
+            }
+
+            $this->unprotectedDirectories[] = $directory;
+        }
+    }
+
+    protected function checkProtectedDirectories()
+    {
+        $secureFileTypes = $this->extensionConfiguration->getSecuredFileTypes();
+
+        foreach ($this->protectedDirectories as $key => $directory) {
+            $file = $directory . '/.htaccess';
+            if (strpos(file_get_contents($file), $secureFileTypes) !== false) {
+                unset($this->protectedDirectories[$key]);
             }
         }
-
-        return true;
     }
 
     protected function getConfigurationOkayInfo(): string
@@ -103,11 +139,24 @@ class CheckConfiguration implements SingletonInterface
 
     protected function getConfigurationErrorInfo(): string
     {
-        array_walk($this->directories, function (&$item, $key) {
-            $item = '<li>' . $item . '</li>';
+        $directories = array_slice($this->directories, 0, 10);
+
+        array_walk($directories, function (&$item, $key) {
+            $item = '<li><code>' . $item . '</code></li>';
         });
 
-        $content = sprintf('<p>There is at least one .htaccess file missing. Please add this files to your filesystem.<br/>You can find some Examples in the EXT:secure_downloads/Resources/Private/Examples directory.</p>Please check these directories:<ul>%s</ul>', implode($this->directories));
+        $content = sprintf(
+            '<p>There is at least one .htaccess file missing. Please add this files to your filesystem.<br/>'
+            . 'Here is some example code which can be used depending on your Apache version. In addition, code examples can be '
+            . 'found in this extension underneath the <code>Resources/Private/Examples</code> folder.</p>%s</p>Please check '
+            . 'these directories:<ul>%s</ul>',
+            $this->getHtaccessExamples(),
+            implode($directories)
+        );
+
+        if (count($this->directories) > 10) {
+            $content .= '<p>Only the first ten results are shown.</p>';
+        }
 
         return $this->getOutput(
             'danger',
@@ -127,18 +176,23 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
-    protected function getMissingDirectoriesInfo(): string
+    protected function getConfigurationWarningInfo(): string
     {
-        array_walk($this->missingDirectories, function (&$item, $key) {
-            $item = '<li>' . $item . '</li>';
+        array_walk($this->protectedDirectories, function (&$item, $key) {
+            $item = '<li><code>' . $item . '</code></li>';
         });
 
-        $content = sprintf('Following directories are not present:<ul>%s</ul>', implode($this->missingDirectories));
+        $content = sprintf(
+            '<p>An <code>.htaccess</code> file was found in the following folders, but the file does not contain the '
+            . '<code>parsing.securedFiletypes</code>:<ul>%s</ul><p>You can safely ignore this message if you have checked '
+            . 'contents of the file.</p>',
+            implode($this->protectedDirectories)
+        );
 
         return $this->getOutput(
             'warning',
             'warning',
-            'There are some directories missing 🤕',
+            'Files may be accessible 🤕',
             $content
         );
     }
@@ -161,5 +215,29 @@ class CheckConfiguration implements SingletonInterface
     </div>
 </div>
 HTML;
+    }
+
+    protected function getHtaccessExamples(): string
+    {
+        $fileTypes = $this->extensionConfiguration->getSecuredFileTypes();
+
+        $code = <<<HTACCESS
+# Apache 2.4
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.($fileTypes)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+# Apache 2.2
+<IfModule !mod_authz_core.c>
+    <FilesMatch "\.($fileTypes)$">
+        Order Allow,Deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+HTACCESS;
+
+        return sprintf('<pre>%s</pre>', htmlspecialchars($code));
     }
 }
