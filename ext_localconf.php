@@ -14,25 +14,26 @@ call_user_func(
             (new \Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration())->getLinkPrefix()
         );
 
-        // Register default checks
+        // Register default token
         \Leuchtfeuer\SecureDownloads\Registry\TokenRegistry::register(
             'tx_securedownloads_default',
             \Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\DefaultToken::class,
-            5,
+            0,
             false
         );
 
+        // Register default checks
         \Leuchtfeuer\SecureDownloads\Registry\CheckRegistry::register(
             'tx_securedownloads_group',
             \Leuchtfeuer\SecureDownloads\Security\UserGroupCheck::class,
-            5,
+            10,
             true
         );
 
         \Leuchtfeuer\SecureDownloads\Registry\CheckRegistry::register(
             'tx_securedownloads_user',
             \Leuchtfeuer\SecureDownloads\Security\UserCheck::class,
-            10,
+            20,
             true
         );
 
