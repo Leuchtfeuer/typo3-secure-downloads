@@ -22,6 +22,9 @@ call_user_func(
         $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey]['checks']['user'] = \Leuchtfeuer\SecureDownloads\Security\UserCheck::class;
         $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey]['checks']['userGroup'] = \Leuchtfeuer\SecureDownloads\Security\UserGroupCheck::class;
 
+        // Add MimeTypes
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['FileInfo']['fileExtensionToMimeType'] += \Leuchtfeuer\SecureDownloads\MimeTypes::ADDITIONAL_MIME_TYPES;
+
     }, 'secure_downloads'
 );
 

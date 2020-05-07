@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-namespace Leuchtfeuer\SecureDownloads\Utility;
+namespace Leuchtfeuer\SecureDownloads;
 
 /***
  *
@@ -13,14 +13,9 @@ namespace Leuchtfeuer\SecureDownloads\Utility;
  *
  ***/
 
-use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Type\File\FileInfo;
-
-class MimeTypeUtility implements SingletonInterface
+final class MimeTypes
 {
-    protected static $initialized = false;
-
-    protected static $mimeTypes = [
+    public const ADDITIONAL_MIME_TYPES = [
         // MS-Office filetypes
         'pps' => 'application/vnd.ms-powerpoint',
         'doc' => 'application/msword',
@@ -98,33 +93,4 @@ class MimeTypeUtility implements SingletonInterface
         'ps' => 'application/postscript',
         'rtf' => 'application/rtf',
     ];
-
-    /**
-     * Gets the mime type of a file.
-     *
-     * @param string $file Path to the file.
-     *
-     * @return string The mime type.
-     */
-    public static function getMimeType(string $file): ?string
-    {
-        self::addMimeTypesToGlobalsArray(self::$mimeTypes);
-
-        $mimeType = (new FileInfo($file))->getMimeType();
-
-        return $mimeType ? $mimeType : null;
-    }
-
-    /**
-     * Add configured mime types to global TYPO3 mime types, so that the FileInfo class can handle them.
-     *
-     * @param array $mimeTypes The mime types to add.
-     */
-    protected static function addMimeTypesToGlobalsArray(array $mimeTypes): void
-    {
-        if (self::$initialized === false) {
-            $GLOBALS['TYPO3_CONF_VARS']['SYS']['FileInfo']['fileExtensionToMimeType'] += $mimeTypes;
-            self::$initialized = true;
-        }
-    }
 }

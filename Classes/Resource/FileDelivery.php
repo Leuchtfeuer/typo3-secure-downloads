@@ -36,6 +36,7 @@ use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Type\File\FileInfo;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
 
@@ -202,7 +203,7 @@ class FileDelivery implements SingletonInterface
         $this->fileSize = filesize($file);
         $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
         $forceDownload = $this->shouldForceDownload($fileExtension);
-        $mimeType = MimeTypeUtility::getMimeType($file) ?? 'application/octet-stream';
+        $mimeType = (new FileInfo($file))->getMimeType() ?? 'application/octet-stream';
         $this->header = $this->getHeader($mimeType, $fileName, $forceDownload);
         $outputFunction = $this->extensionConfiguration->getOutputFunction();
 
