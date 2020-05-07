@@ -29,36 +29,20 @@ class SecureLinkFactory implements SingletonInterface
 {
     const DEFAULT_CACHE_LIFETIME = 86400;
 
+    /**
+     * @var EventDispatcher
+     */
     private $eventDispatcher;
 
+    /**
+     * @var ExtensionConfiguration
+     */
     private $extensionConfiguration;
 
-    private $download;
-
     /**
-     * @deprecated
+     * @var AbstractToken
      */
-    protected $userId = 0;
-
-    /**
-     * @deprecated
-     */
-    protected $userGroups = [];
-
-    /**
-     * @deprecated
-     */
-    protected $pageId = 0;
-
-    /**
-     * @deprecated
-     */
-    protected $resourceUri = '';
-
-    /**
-     * @deprecated
-     */
-    protected $linkTimeout = 0;
+    private $token;
 
     public function __construct(EventDispatcher $eventDispatcher, ExtensionConfiguration $extensionConfiguration)
     {
@@ -121,121 +105,18 @@ class SecureLinkFactory implements SingletonInterface
         return $url;
     }
 
-    protected function init()
-    {
-        $this->download->setExp($this->calculateLinkLifetime());
-        $this->download->setPage((int)$GLOBALS['TSFE']->id);
-        $this->download->setIat(time());
-
-        try {
-            /** @var UserAspect $userAspect */
-            $userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
-            $this->download->setUser($userAspect->get('id'));
-            $this->download->setGroups($userAspect->getGroupIds());
-        } catch (\Exception $exception) {
-            // Do nothing.
-        }
-    }
-
     protected function getJsonWebToken(): string
     {
-        $payload = [
-            'iat' => $this->download->getIat(),
-            'exp' => $this->download->getExp(),
-            'user' => $this->download->getUser(),
-            'groups' => $this->download->getGroups(),
-            'file' => $this->download->getFile(),
-            'page' => $this->download->getPage(),
-        ];
-
+        $payload = $this->token->getPayload();
         $this->dispatchEnrichPayloadEvent($payload);
 
-        return JWT::encode($payload, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], 'HS256');
+        return $this->token->encode($payload);
     }
 
     protected function dispatchEnrichPayloadEvent(array &$payload): void
     {
-        $event = new EnrichPayloadEvent($payload, $this->download);
+        $event = new EnrichPayloadEvent($payload, $this->token);
         $event = $this->eventDispatcher->dispatch($event);
         $payload = $event->getPayload();
-    }
-
-    protected function calculateLinkLifetime(): int
-    {
-        $cacheTimeout = ($GLOBALS['TSFE'] instanceof TypoScriptFrontendController && !empty($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->get_cache_timeout() : self::DEFAULT_CACHE_LIFETIME;
-
-        return $cacheTimeout + $GLOBALS['EXEC_TIME'] + $this->extensionConfiguration->getCacheTimeAdd();
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    public function getUserId(): int
-    {
-        return $this->userId;
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    public function setUserId(int $userId): void
-    {
-        $this->userId = $userId;
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    public function getUserGroups(): array
-    {
-        return $this->userGroups;
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    public function setUserGroups(array $userGroups): void
-    {
-        $this->userGroups = $userGroups;
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    public function getPageId(): int
-    {
-        return $this->pageId;
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    public function setPageId(int $pageId): void
-    {
-        $this->pageId = $pageId;
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    public function getResourceUri(): string
-    {
-        return $this->resourceUri;
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    public function getLinkTimeout(): int
-    {
-        return $this->linkTimeout;
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    public function setLinkTimeout(int $linkTimeout): void
-    {
-        $this->linkTimeout = $linkTimeout;
     }
 }

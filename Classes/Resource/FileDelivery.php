@@ -22,23 +22,17 @@ use Leuchtfeuer\SecureDownloads\Resource\Event\AfterFileRetrievedEvent;
 use Leuchtfeuer\SecureDownloads\Resource\Event\BeforeReadDeliverEvent;
 use Leuchtfeuer\SecureDownloads\Resource\Event\OutputInitializationEvent;
 use Leuchtfeuer\SecureDownloads\Security\AbstractCheck;
-use Leuchtfeuer\SecureDownloads\Security\UserCheck;
-use Leuchtfeuer\SecureDownloads\Security\UserGroupCheck;
-use Leuchtfeuer\SecureDownloads\Utility\MimeTypeUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
-use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Type\File\FileInfo;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\HttpUtility;
 
 class FileDelivery implements SingletonInterface
 {
@@ -71,42 +65,6 @@ class FileDelivery implements SingletonInterface
      * @var array
      */
     protected $header = [];
-
-    /**
-     * @var int
-     * @deprecated Will be removed with version 6.
-     */
-    protected $userId;
-
-    /**
-     * @var int
-     * @deprecated Will be removed with version 6.
-     */
-    protected $pageId;
-
-    /**
-     * @var string
-     * @deprecated Will be removed with version 6.
-     */
-    protected $userGroups;
-
-    /**
-     * @var int
-     * @deprecated Will be removed with version 6.
-     */
-    protected $expiryTime;
-
-    /**
-     * @var string
-     * @deprecated Will be removed with version 6.
-     */
-    protected $file;
-
-    /**
-     * @var bool
-     * @deprecated Will be removed with version 6.
-     */
-    protected $isProcessed = false;
 
     public function __construct(ExtensionConfiguration $extensionConfiguration, EventDispatcher $eventDispatcher)
     {
@@ -304,147 +262,5 @@ class FileDelivery implements SingletonInterface
         $event = $this->eventDispatcher->dispatch($event);
         $file = $event->getFile();
         $fileName = $event->getFileName();
-    }
-
-    // Deprecated
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    protected function exitScript(string $message, $httpStatus = HttpUtility::HTTP_STATUS_403): void
-    {
-        // TODO: Log message?
-        HttpUtility::setResponseCodeAndExit($httpStatus);
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    protected function streamFile(string $fileName): void
-    {
-        $stream = new Stream($fileName);
-        $stream->rewind();
-
-        while (!$stream->eof()) {
-            echo $stream->read(4096);
-            ob_flush();
-            flush();
-        }
-
-        $stream->close();
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    protected function passThruFile(string $fileName): void
-    {
-        $handle = fopen($fileName, 'rb');
-        fpassthru($handle);
-        fclose($handle);
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    protected function nginxDeliverFile(string $fileName): void
-    {
-        if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') === 0) {
-            $this->header['X-Accel-Redirect'] = sprintf(
-                '%s/%s',
-                rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
-                $this->file
-            );
-        } else {
-            $this->streamFile($fileName);
-        }
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    protected function sendHeader(array $header): void
-    {
-        foreach ($header as $name => $value) {
-            header(sprintf('%s: %s', $name, $value));
-        }
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    protected function getDataFromJsonWebToken(string $jwt): void
-    {
-        $this->retrieveDataFromJsonWebToken($jwt);
-    }
-
-    /**
-     * Log the access of the file
-     * @deprecated Will be removed with version 6.
-     */
-    protected function logDownload(int $fileSize = 0, string $mimeType = ''): void
-    {
-        $log = new Log();
-        $log->setFileSize($this->fileSize ?? $fileSize);
-
-        $pathInfo = pathinfo($this->download->getFile());
-        $log->setFilePath($pathInfo['dirname'] . '/' . $pathInfo['filename']);
-        $log->setFileType($pathInfo['extension']);
-        $log->setFileName($pathInfo['filename']);
-        $log->setMediaType($mimeType);
-
-        if ($fileObject = ResourceFactory::getInstance()->retrieveFileOrFolderObject($this->download->getFile())) {
-            $log->setFileId((string)$fileObject->getUid());
-        }
-
-        $log->setUser($this->userAspect->get('id'));
-        $log->setPage($this->download->getPage());
-
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
-        $queryBuilder->insert('tx_securedownloads_domain_model_log')->values($log->toArray())->execute();
-
-        $this->isProcessed = true;
-    }
-
-    /**
-     * Returns TRUE when the user has direct access to the file or group check is enabled
-     * Returns FALSE if the user has noch direct access to the file and group check is disabled
-     *
-     * @return bool
-     * @deprecated Will be removed with version 6.
-     */
-    protected function checkUserAccess(): bool
-    {
-        return GeneralUtility::makeInstance(
-            UserCheck::class,
-            $this->extensionConfiguration,
-            $this->download
-        )->hasAccess();
-    }
-
-    /**
-     * Returns true if the transmitted group list is identical
-     * to the group list of the current user or both have at least one group
-     * in common.
-     *
-     * @deprecated Will be removed with version 6.
-     */
-    protected function checkGroupAccess(): bool
-    {
-        return GeneralUtility::makeInstance(
-            UserGroupCheck::class,
-            $this->extensionConfiguration,
-            $this->download
-        )->hasAccess();
-    }
-
-    /**
-     * @deprecated Will be removed with version 6.
-     */
-    protected function initializeEventDispatcher(): EventDispatcherInterface
-    {
-        $this->eventDispatcher = GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
-
-        return $this->eventDispatcher;
     }
 }
