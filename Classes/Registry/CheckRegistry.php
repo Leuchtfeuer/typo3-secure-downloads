@@ -56,7 +56,7 @@ class CheckRegistry implements SingletonInterface
 
         if (!$check instanceof AbstractCheck) {
             throw new InvalidClassException(
-                sprintf('Class "%s" has to extend "%s"', $className, AbstractCheck::class),
+                sprintf('Class "%s" must extend "%s"', $className, AbstractCheck::class),
                 1588837696
             );
         }
