@@ -17,8 +17,8 @@ use Firebase\JWT\JWT;
 use Leuchtfeuer\SecureDownloads\Cache\DecodeCache;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
-use Leuchtfeuer\SecureDownloads\Factory\TokenFactory;
 use Leuchtfeuer\SecureDownloads\Registry\CheckRegistry;
+use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
 use Leuchtfeuer\SecureDownloads\Resource\Event\AfterFileRetrievedEvent;
 use Leuchtfeuer\SecureDownloads\Resource\Event\BeforeReadDeliverEvent;
 use Leuchtfeuer\SecureDownloads\Resource\Event\OutputInitializationEvent;
@@ -128,7 +128,8 @@ class FileDelivery implements SingletonInterface
             $this->token = DecodeCache::getCache($jsonWebToken);
         } else {
             try {
-                $this->token = (new TokenFactory())->buildToken($jsonWebToken);
+                $this->token = TokenRegistry::getToken();
+                $this->token->decode($jsonWebToken);
                 DecodeCache::addCache($jsonWebToken, $this->token);
             } catch (\Exception $exception) {
                 return false;

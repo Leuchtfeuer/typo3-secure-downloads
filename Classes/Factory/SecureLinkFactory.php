@@ -17,6 +17,7 @@ use Firebase\JWT\JWT;
 use Leuchtfeuer\SecureDownloads\Cache\EncodeCache;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
+use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
 use Leuchtfeuer\SecureDownloads\Resource\Event\EnrichPayloadEvent;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
@@ -48,7 +49,7 @@ class SecureLinkFactory implements SingletonInterface
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->extensionConfiguration = $extensionConfiguration;
-        $this->token = (new TokenFactory())->buildToken();
+        $this->token = TokenRegistry::getToken();
         $this->init();
     }
 

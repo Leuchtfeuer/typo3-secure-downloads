@@ -15,20 +15,21 @@ call_user_func(
         );
 
         // Register default checks
-        if (!isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey])) {
-            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey] = [
-                'tokenClass' => \Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\DefaultToken::class,
-            ];
-        }
+        \Leuchtfeuer\SecureDownloads\Registry\TokenRegistry::register(
+            'tx_securedownloads_default',
+            \Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\DefaultToken::class,
+            5,
+            false
+        );
 
-        \Leuchtfeuer\SecureDownloads\Registry\CheckRegistry::addCheck(
+        \Leuchtfeuer\SecureDownloads\Registry\CheckRegistry::register(
             'tx_securedownloads_group',
             \Leuchtfeuer\SecureDownloads\Security\UserGroupCheck::class,
             5,
             true
         );
 
-        \Leuchtfeuer\SecureDownloads\Registry\CheckRegistry::addCheck(
+        \Leuchtfeuer\SecureDownloads\Registry\CheckRegistry::register(
             'tx_securedownloads_user',
             \Leuchtfeuer\SecureDownloads\Security\UserCheck::class,
             10,

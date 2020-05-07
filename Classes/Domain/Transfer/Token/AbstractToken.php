@@ -47,14 +47,10 @@ abstract class AbstractToken
 
     protected $implementationClassName = __CLASS__;
 
-    public function __construct(?string $jsonWebToken = null)
+    public function __construct()
     {
         $this->iat = time();
         $this->implementationClassName = get_called_class();
-
-        if ($jsonWebToken) {
-            $this->decode($jsonWebToken);
-        }
     }
 
     abstract public function encode(?array $payload = null): string;

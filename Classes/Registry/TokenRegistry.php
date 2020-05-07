@@ -13,53 +13,53 @@ namespace Leuchtfeuer\SecureDownloads\Registry;
  *
  ***/
 
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 use Leuchtfeuer\SecureDownloads\Exception\ClassNotFoundException;
 use Leuchtfeuer\SecureDownloads\Exception\InvalidClassException;
-use Leuchtfeuer\SecureDownloads\Security\AbstractCheck;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class CheckRegistry extends AbstractRegistry
+class TokenRegistry extends AbstractRegistry
 {
-    protected static $checks = [];
+    private static $token;
 
     public static function register(string $identifier, string $className, int $priority = 0, bool $overwriteExisting = false): void
     {
-        if (isset(self::$checks[$identifier]) && $overwriteExisting === false) {
+        if (self::$token instanceof AbstractToken && $overwriteExisting === false) {
             // Do nothing. Maybe log this in future.
             return;
         }
 
-        self::$checks[$identifier] = [
-            'class' => self::getCheckFromClassName($className),
+        self::$token[$identifier] = [
+            'class' => self::getTokenFromClassName($className),
             'priority' => $priority
         ];
 
-        self::sortByPriority(self::$checks);
+        self::sortByPriority(self::$token);
     }
 
-    public static function getChecks(): array
+    public static function getToken(): AbstractToken
     {
-        return self::$checks;
+        return reset(self::$token)['class'];
     }
 
-    private static function getCheckFromClassName(string $className): AbstractCheck
+    private static function getTokenFromClassName(string $className): AbstractToken
     {
         if (!class_exists($className)) {
             throw new ClassNotFoundException(
                 sprintf('Class "%s" not found.', $className),
-                1588837466
+                1588840845
             );
         }
 
-        $check = GeneralUtility::makeInstance($className);
+        $token = GeneralUtility::makeInstance($className);
 
-        if (!$check instanceof AbstractCheck) {
+        if (!$token instanceof AbstractToken) {
             throw new InvalidClassException(
-                sprintf('Class "%s" must extend "%s"', $className, AbstractCheck::class),
-                1588837696
+                sprintf('Class "%s" must extend "%s"', $className, AbstractToken::class),
+                1588840850
             );
         }
 
-        return $check;
+        return $token;
     }
 }
