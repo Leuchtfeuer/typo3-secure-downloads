@@ -13,6 +13,7 @@ namespace Leuchtfeuer\SecureDownloads\UserFunctions;
  *
  ***/
 
+use GuzzleHttp\Client;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Core\Environment;
@@ -25,6 +26,26 @@ class CheckConfiguration implements SingletonInterface
      * @var ExtensionConfiguration
      */
     protected $extensionConfiguration;
+
+    /**
+     * @var string
+     */
+    protected $directoryPattern = '';
+
+    /**
+     * @var string
+     */
+    protected $fileTypePattern = '';
+
+    /**
+     * @var string
+     */
+    protected $domain = '';
+
+    /**
+     * @var int
+     */
+    protected $fileCount = 0;
 
     /**
      * @var array
@@ -41,45 +62,74 @@ class CheckConfiguration implements SingletonInterface
      */
     protected $protectedDirectories = [];
 
+    /**
+     * @var array
+     */
+    protected $unprotectedFiles = [];
+
     public function __construct()
     {
         $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+        $this->directoryPattern = sprintf('#^(%s)#i', $this->extensionConfiguration->getSecuredDirs());
+        $this->fileTypePattern = sprintf('#\.(%s)$#i', $this->extensionConfiguration->getSecuredFileTypes());
+        $this->domain = GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST');
     }
 
     public function render(): string
     {
+        $this->setDirectories();
+
+        if (!empty($this->unprotectedFiles)) {
+            return $this->getFileErrorInfo();
+        }
+
+        // .htaccess check is only available for Apache web server
         if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') === 0) {
-            $this->setDirectories();
             $this->checkDirectories();
 
             if (!empty($this->unprotectedDirectories)) {
-                return $this->getConfigurationErrorInfo();
+                return $this->getDirectoryWarningInfo();
             }
-
-            $this->checkProtectedDirectories();
-
-            if (!empty($this->protectedDirectories)) {
-                return $this->getConfigurationWarningInfo();
-            }
-
-            return $this->getConfigurationOkayInfo();
         }
 
-        return $this->getNotSupportedInfo();
+        return $this->getConfigurationOkayInfo();
     }
 
     protected function setDirectories(): void
     {
-        $directoryPattern = sprintf('#^(%s)#i', $this->extensionConfiguration->getSecuredDirs());
-
         foreach ($this->getPublicDirectories() as $publicDirectory) {
             $path = sprintf('%s/%s', Environment::getPublicPath(), $publicDirectory);
             $finder = (new Finder())->directories();
 
             foreach ($finder->in($path) as $directory) {
                 $directoryPath = sprintf('%s/%s', $publicDirectory, $directory->getRelativePathname());
-                if (preg_match($directoryPattern, $directoryPath)) {
-                    $this->directories[] = sprintf('%s/%s', Environment::getPublicPath(), $directoryPath);
+                if (preg_match($this->directoryPattern, $directoryPath)) {
+                    $realDirectoryPath = $directory->getRealPath();
+                    $this->directories[] = $realDirectoryPath;
+                    $this->checkFilesAccessibility($realDirectoryPath, $directoryPath);
+                }
+            }
+        }
+    }
+
+    protected function checkFilesAccessibility(string $realDirectoryPath, string $directoryPath): void
+    {
+        if ($this->fileCount < 20) {
+            $fileFinder = (new Finder())->name($this->fileTypePattern)->in($realDirectoryPath)->depth(0);
+            foreach ($fileFinder->files() as $file) {
+                $publicUrl = sprintf('%s/%s/%s', $this->domain, $directoryPath, $file->getRelativePathname());
+                $statusCode = (new Client())->request('HEAD', $publicUrl, ['http_errors' => false])->getStatusCode();
+
+                if ($statusCode !== 403) {
+                    $this->fileCount++;
+                    $this->unprotectedFiles[] = [
+                        'url' => $publicUrl,
+                        'statusCode' => $statusCode,
+                    ];
+
+                    if ($this->fileCount >= 20) {
+                        break;
+                    }
                 }
             }
         }
@@ -105,25 +155,13 @@ class CheckConfiguration implements SingletonInterface
 
             $finder = (new Finder())->files()->ignoreDotFiles(false)->name('.htaccess')->depth(0);
 
-            foreach ($finder->in($directory) as $file) {
+            foreach ($finder->in($directory)->getIterator() as $file) {
                 $lastSecuredDirectory = $directory;
                 $this->protectedDirectories[] = $directory;
                 continue 2;
             }
 
             $this->unprotectedDirectories[] = $directory;
-        }
-    }
-
-    protected function checkProtectedDirectories()
-    {
-        $secureFileTypes = $this->extensionConfiguration->getSecuredFileTypes();
-
-        foreach ($this->protectedDirectories as $key => $directory) {
-            $file = $directory . '/.htaccess';
-            if (strpos(file_get_contents($file), $secureFileTypes) !== false) {
-                unset($this->protectedDirectories[$key]);
-            }
         }
     }
 
@@ -137,64 +175,79 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
-    protected function getConfigurationErrorInfo(): string
+    protected function getFileErrorInfo(): string
     {
-        $directories = array_slice($this->directories, 0, 10);
+        return $this->getOutput(
+            'danger',
+            'times',
+            'You are not safe 🤯',
+            $this->getFileErrorContent()
+        );
+    }
+
+    protected function getDirectoryWarningInfo(): string
+    {
+        return $this->getOutput(
+            'warning',
+            'times',
+            'Your system might be insecure 🤕',
+            $this->getDirectoryErrorContent()
+        );
+    }
+
+    protected function getFileErrorContent(): string
+    {
+        $files = array_slice($this->unprotectedFiles, 0, 10);
+
+        array_walk($files, function (&$item, $key) {
+            $item = sprintf(
+                '<li><code>%s</code><br/>Returned status code: <strong>%d</strong> (expected: 403).</li>',
+                $item['url'],
+                $item['statusCode']
+            );
+        });
+
+        $content = sprintf(
+            'There are files publicly available which should be secured:<ul>%s</ul>',
+            implode($files)
+        );
+
+        if (count($this->unprotectedFiles) > 10) {
+            $content .= '<p>Only the first ten results are shown.</p>';
+        }
+
+        if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') === 0) {
+            $content .= '<p>Here is some example code which can be used depending on your Apache version:</p>';
+            $content .= $this->getHtaccessExamples();
+        }
+
+        return $content;
+    }
+
+    protected function getDirectoryErrorContent(): string
+    {
+        $directories = array_slice($this->unprotectedDirectories, 0, 10);
 
         array_walk($directories, function (&$item, $key) {
             $item = '<li><code>' . $item . '</code></li>';
         });
 
-        $content = sprintf(
-            '<p>There is at least one .htaccess file missing. Please add this files to your filesystem.<br/>'
-            . 'Here is some example code which can be used depending on your Apache version. In addition, code examples can be '
-            . 'found in this extension underneath the <code>Resources/Private/Examples</code> folder.</p>%s</p>Please check '
-            . 'these directories:<ul>%s</ul>',
+        $content = '<p>There is at least one .htaccess file missing. If there is an .htaccess file in a parent directory, you '
+            . 'can ignore this message.</p>'
+            . '<p>Here is some example code which can be used depending on your Apache version. In addition, code examples can be '
+            . 'found in this extension underneath the <code>Resources/Private/Examples</code> folder.</p>';
+
+        $content .= sprintf(
+            '<p>%s</p>Please check these directories:<ul>%s</ul>',
             $this->getHtaccessExamples(),
             implode($directories)
         );
 
-        if (count($this->directories) > 10) {
+        if (count($this->unprotectedDirectories) > 10) {
             $content .= '<p>Only the first ten results are shown.</p>';
         }
 
-        return $this->getOutput(
-            'danger',
-            'times',
-            'You are not safe 🤯',
-            $content
-        );
-    }
-
-    protected function getNotSupportedInfo(): string
-    {
-        return $this->getOutput(
-            'info',
-            'info',
-            'Not supported web server 😪',
-            'Only Apache web server are supported for now. There is no check for proper access control available.'
-        );
-    }
-
-    protected function getConfigurationWarningInfo(): string
-    {
-        array_walk($this->protectedDirectories, function (&$item, $key) {
-            $item = '<li><code>' . $item . '</code></li>';
-        });
-
-        $content = sprintf(
-            '<p>An <code>.htaccess</code> file was found in the following folders, but the file does not contain the '
-            . '<code>parsing.securedFiletypes</code>:<ul>%s</ul><p>You can safely ignore this message if you have checked '
-            . 'contents of the file.</p>',
-            implode($this->protectedDirectories)
-        );
-
-        return $this->getOutput(
-            'warning',
-            'warning',
-            'Files may be accessible 🤕',
-            $content
-        );
+        return $content;
     }
 
     protected function getOutput(string $type, string $icon, string $title, string $content): string
