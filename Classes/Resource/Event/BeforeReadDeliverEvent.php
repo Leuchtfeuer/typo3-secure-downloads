@@ -15,14 +15,29 @@ namespace Leuchtfeuer\SecureDownloads\Resource\Event;
 
 final class BeforeReadDeliverEvent
 {
+    /**
+     * @var string
+     */
     private $outputFunction;
 
+    /**
+     * @var array
+     */
     private $header;
 
+    /**
+     * @var string
+     */
     private $fileName;
 
+    /**
+     * @var string
+     */
     private $mimeType;
 
+    /**
+     * @var bool
+     */
     private $forceDownload;
 
     public function __construct(string $outputFunction, array $header, string $fileName, string $mimeType, bool $forceDownload)

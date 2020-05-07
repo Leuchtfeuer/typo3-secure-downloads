@@ -15,8 +15,14 @@ namespace Leuchtfeuer\SecureDownloads\Resource\Event;
 
 final class AfterFileRetrievedEvent
 {
+    /**
+     * @var string
+     */
     private $file;
 
+    /**
+     * @var string
+     */
     private $fileName;
 
     public function __construct(string $file, string $fileName)
