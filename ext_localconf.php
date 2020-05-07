@@ -9,19 +9,31 @@ call_user_func(
         }
 
         // Load extension configuration and add link prefix to additionalAbsRefPrefixDirectories
-        $configuration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration::class);
-        $GLOBALS['TYPO3_CONF_VARS']['FE']['additionalAbsRefPrefixDirectories'] .= sprintf(',%s', $configuration->getLinkPrefix());
+        $GLOBALS['TYPO3_CONF_VARS']['FE']['additionalAbsRefPrefixDirectories'] .= sprintf(
+            ',%s',
+            (new \Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration())->getLinkPrefix()
+        );
 
         // Register default checks
         if (!isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey])) {
             $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey] = [
-                'checks' => [],
                 'tokenClass' => \Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\DefaultToken::class,
             ];
         }
 
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey]['checks']['user'] = \Leuchtfeuer\SecureDownloads\Security\UserCheck::class;
-        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$extensionKey]['checks']['userGroup'] = \Leuchtfeuer\SecureDownloads\Security\UserGroupCheck::class;
+        \Leuchtfeuer\SecureDownloads\Registry\CheckRegistry::addCheck(
+            'tx_securedownloads_group',
+            \Leuchtfeuer\SecureDownloads\Security\UserGroupCheck::class,
+            5,
+            true
+        );
+
+        \Leuchtfeuer\SecureDownloads\Registry\CheckRegistry::addCheck(
+            'tx_securedownloads_user',
+            \Leuchtfeuer\SecureDownloads\Security\UserCheck::class,
+            10,
+            true
+        );
 
         // Add MimeTypes
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['FileInfo']['fileExtensionToMimeType'] += \Leuchtfeuer\SecureDownloads\MimeTypes::ADDITIONAL_MIME_TYPES;

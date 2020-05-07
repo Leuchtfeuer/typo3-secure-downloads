@@ -17,9 +17,10 @@ use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-abstract class AbstractCheck
+abstract class AbstractCheck implements SingletonInterface
 {
     /**
      * @var ExtensionConfiguration
@@ -36,9 +37,13 @@ abstract class AbstractCheck
      */
     protected $userAspect;
 
-    public function __construct(ExtensionConfiguration $extensionConfiguration, AbstractToken $token)
+    public function __construct(ExtensionConfiguration $extensionConfiguration)
     {
         $this->extensionConfiguration = $extensionConfiguration;
+    }
+
+    public function setToken(AbstractToken $token)
+    {
         $this->token = $token;
         $this->userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
     }

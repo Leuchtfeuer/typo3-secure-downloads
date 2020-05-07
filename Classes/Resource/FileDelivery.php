@@ -18,10 +18,10 @@ use Leuchtfeuer\SecureDownloads\Cache\DecodeCache;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 use Leuchtfeuer\SecureDownloads\Factory\TokenFactory;
+use Leuchtfeuer\SecureDownloads\Registry\CheckRegistry;
 use Leuchtfeuer\SecureDownloads\Resource\Event\AfterFileRetrievedEvent;
 use Leuchtfeuer\SecureDownloads\Resource\Event\BeforeReadDeliverEvent;
 use Leuchtfeuer\SecureDownloads\Resource\Event\OutputInitializationEvent;
-use Leuchtfeuer\SecureDownloads\Security\AbstractCheck;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -128,14 +128,10 @@ class FileDelivery implements SingletonInterface
      */
     protected function hasAccess(): bool
     {
-        foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['secure_downloads']['checks'] ?? [] as $className) {
-            if (!class_exists($className)) {
-                return false;
-            }
+        foreach (CheckRegistry::getChecks() ?? [] as $check) {
+            $check['class']->setToken($this->token);
 
-            $check = GeneralUtility::makeInstance($className, $this->extensionConfiguration, $this->token);
-
-            if (!$check instanceof AbstractCheck || $check->hasAccess() === false) {
+            if ($check['class']->hasAccess() === false) {
                 return false;
             }
         }
