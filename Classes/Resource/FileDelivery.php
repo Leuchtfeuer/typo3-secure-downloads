@@ -24,6 +24,7 @@ use Leuchtfeuer\SecureDownloads\Resource\Event\BeforeReadDeliverEvent;
 use Leuchtfeuer\SecureDownloads\Resource\Event\OutputInitializationEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
@@ -33,6 +34,8 @@ use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Type\File\FileInfo;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Controller\ErrorController;
+use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
 
 class FileDelivery implements SingletonInterface
 {
@@ -76,16 +79,24 @@ class FileDelivery implements SingletonInterface
      * @param string $jsonWebToken
      * @return ResponseInterface
      */
-    public function deliver(string $jsonWebToken): ResponseInterface
+    public function deliver(string $jsonWebToken, ServerRequestInterface $request): ResponseInterface
     {
         if (!$this->retrieveDataFromJsonWebToken($jsonWebToken)) {
-            return new Response('php://temp', 403);
+            return GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                $request,
+                'Access denied!',
+                ['Could not parse token.']
+            );
         }
 
         $this->dispatchOutputInitializationEvent();
 
         if (!$this->hasAccess()) {
-            return new Response('php://temp', 403);
+            return GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                $request,
+                'Access denied!',
+                ['Access check failed.']
+            );
         }
 
         $file = GeneralUtility::getFileAbsFileName(ltrim($this->token->getFile(), '/'));
@@ -101,7 +112,11 @@ class FileDelivery implements SingletonInterface
             return new Response($this->getResponseBody($file, $fileName), 200, $this->header, '');
         }
 
-        return new Response((new Stream('File does not exist!', 'rw')), 404);
+        return GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
+            $request,
+            'File does not exist!',
+            ['code' => PageAccessFailureReasons::PAGE_NOT_FOUND]
+        );
     }
 
     /**
