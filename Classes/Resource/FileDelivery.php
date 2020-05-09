@@ -49,11 +49,6 @@ class FileDelivery implements SingletonInterface
     protected $token;
 
     /**
-     * @var UserAspect
-     */
-    protected $userAspect;
-
-    /**
      * @var int
      */
     protected $fileSize;
