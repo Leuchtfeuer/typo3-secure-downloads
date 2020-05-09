@@ -219,7 +219,7 @@ class FileDelivery
      */
     protected function checkUserAccess(): bool
     {
-        if ($this->extensionConfiguration->isEnableGroupCheck() || $this->userId === 0) {
+        if ($this->isFileCoveredByGroupCheck() || $this->userId === 0) {
             return true;
         }
 
@@ -228,6 +228,23 @@ class FileDelivery
         } catch (AspectPropertyNotFoundException $exception) {
             return false;
         }
+    }
+
+    protected function isFileCoveredByGroupCheck(): bool
+    {
+        if (!$this->extensionConfiguration->isEnableGroupCheck()) {
+            // Return false because group check is disabled therefore the access is not covered by user groups
+            return false;
+        }
+
+        $groupCheckDirectories = $this->extensionConfiguration->getGroupCheckDirs();
+
+        if (empty($groupCheckDirectories) || $groupCheckDirectories === ExtensionConfiguration::FILE_TYPES_WILDCARD) {
+            // Return true because group check is enabled and all protected directories are covered by the check
+            return true;
+        }
+
+        return (bool)preg_match('/' . $this->softQuoteExpression($groupCheckDirectories) . '/', $this->file);
     }
 
     /**
