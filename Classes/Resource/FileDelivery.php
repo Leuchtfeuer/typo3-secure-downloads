@@ -45,19 +45,14 @@ class FileDelivery implements SingletonInterface
     protected $extensionConfiguration;
 
     /**
-     * @var AbstractToken
-     */
-    protected $token;
-
-    /**
-     * @var int
-     */
-    protected $fileSize;
-
-    /**
      * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
+
+    /**
+     * @var AbstractToken
+     */
+    protected $token;
 
     /**
      * @var array
@@ -163,18 +158,19 @@ class FileDelivery implements SingletonInterface
      */
     protected function getResponseBody(string $file, string $fileName)
     {
-        $this->fileSize = filesize($file);
         $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
         $forceDownload = $this->shouldForceDownload($fileExtension);
-        $mimeType = (new FileInfo($file))->getMimeType() ?? 'application/octet-stream';
-        $this->header = $this->getHeader($mimeType, $fileName, $forceDownload);
+        $fileSize = filesize($file);
+        $mimeType = (new FileInfo($file))->getMimeType() ?? MimeTypes::DEFAULT_MIME_TYPE;
         $outputFunction = $this->extensionConfiguration->getOutputFunction();
+        $header = $this->getHeader($mimeType, $fileName, $forceDownload, $fileSize);
 
-        $this->dispatchBeforeFileDeliverEvent($outputFunction, $this->header, $fileName, $mimeType, $forceDownload);
+        $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
+        $this->header = $header;
 
         if ($this->extensionConfiguration->isLog()) {
             $this->token->log([
-                'fileSize' => $this->fileSize,
+                'fileSize' => $fileSize,
                 'mimeType' => $mimeType,
             ]);
         }
@@ -209,17 +205,17 @@ class FileDelivery implements SingletonInterface
      * @param bool $forceDownload
      * @return string[]
      */
-    protected function getHeader(string $mimeType, string $fileName, bool $forceDownload): array
+    protected function getHeader(string $mimeType, string $fileName, bool $forceDownload, int $fileSize): array
     {
         $header = [
             'Pragma' => 'private',
-            'Expires' => '0', // set expiration time
+            'Expires' => '0',
             'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
             'Content-Type' => $mimeType,
         ];
 
         if (!@ini_get('zlib.output_compression')) {
-            $header['Content-Length'] = $this->fileSize;
+            $header['Content-Length'] = $fileSize;
         }
 
         if ($forceDownload === true) {
