@@ -17,6 +17,7 @@ use Firebase\JWT\JWT;
 use Leuchtfeuer\SecureDownloads\Cache\DecodeCache;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
+use Leuchtfeuer\SecureDownloads\MimeTypes;
 use Leuchtfeuer\SecureDownloads\Registry\CheckRegistry;
 use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
 use Leuchtfeuer\SecureDownloads\Resource\Event\AfterFileRetrievedEvent;

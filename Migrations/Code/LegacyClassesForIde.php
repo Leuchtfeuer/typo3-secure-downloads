@@ -1,7 +1,6 @@
 <?php
 
 namespace {
-
     die('Access denied');
 }
 
@@ -94,13 +93,6 @@ namespace Bitmotion\SecureDownloads\Service {
 namespace Bitmotion\SecureDownloads\UserFunctions {
 
     class CheckConfiguration extends \Leuchtfeuer\SecureDownloads\UserFunctions\CheckConfiguration
-    {
-    }
-}
-
-namespace Bitmotion\SecureDownloads\Utility {
-
-    class MimeTypes extends \Leuchtfeuer\SecureDownloads\Utility\MimeTypes
     {
     }
 }

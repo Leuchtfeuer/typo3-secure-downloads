@@ -19,5 +19,4 @@ return [
     '\Bitmotion\SecureDownloads\Resource\Event\OutputInitializationEvent' => \Leuchtfeuer\SecureDownloads\Resource\Event\OutputInitializationEvent::class,
     '\Bitmotion\SecureDownloads\Service\SecureDownloadService' => \Leuchtfeuer\SecureDownloads\Service\SecureDownloadService::class,
     '\Bitmotion\SecureDownloads\UserFunctions\CheckConfiguration' => \Leuchtfeuer\SecureDownloads\UserFunctions\CheckConfiguration::class,
-    '\Bitmotion\SecureDownloads\Utility\MimeTypes' => \Leuchtfeuer\SecureDownloads\Utility\MimeTypes::class,
 ];
