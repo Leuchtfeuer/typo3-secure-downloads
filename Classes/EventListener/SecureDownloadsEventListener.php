@@ -24,7 +24,6 @@ use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\PathUtility;
-use TYPO3\CMS\Extbase\Service\EnvironmentService;
 
 /**
  * This event listener listens to PSR-14 events given in TYPO3 10 and above.
@@ -36,15 +35,9 @@ class SecureDownloadsEventListener implements SingletonInterface
      */
     protected $secureDownloadService;
 
-    /**
-     * @var EnvironmentService
-     */
-    protected $environmentService;
-
-    public function __construct(SecureDownloadService $secureDownloadService, EnvironmentService $environmentService)
+    public function __construct(SecureDownloadService $secureDownloadService)
     {
         $this->secureDownloadService = $secureDownloadService;
-        $this->environmentService = $environmentService;
     }
 
     /**
