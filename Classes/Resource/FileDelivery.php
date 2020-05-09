@@ -26,7 +26,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Http\Response;
@@ -175,7 +174,6 @@ class FileDelivery implements SingletonInterface
             $this->token->log([
                 'fileSize' => $this->fileSize,
                 'mimeType' => $mimeType,
-                'user' => $this->userAspect->get('id'),
             ]);
         }
 

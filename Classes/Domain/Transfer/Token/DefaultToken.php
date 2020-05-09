@@ -15,6 +15,7 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Transfer\Token;
 
 use Firebase\JWT\JWT;
 use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DefaultToken extends AbstractToken
@@ -49,7 +50,12 @@ class DefaultToken extends AbstractToken
     {
         if ($this->logged === false) {
             $logRepository = GeneralUtility::makeInstance(LogRepository::class);
-            $logRepository->logDownload($this, $parameters['fileSize'], $parameters['mimeType'], $parameters['user']);
+            $logRepository->logDownload(
+                $this,
+                $parameters['fileSize'],
+                $parameters['mimeType'],
+                GeneralUtility::makeInstance(Context::class)->getPropertyFromAspect('frontend.user', 'id')
+            );
             $this->logged = true;
         }
     }
