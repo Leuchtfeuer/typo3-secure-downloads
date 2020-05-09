@@ -219,9 +219,19 @@ class ExtensionConfiguration implements SingletonInterface
         return trim($this->securedDirs);
     }
 
+    public function getSecuredDirectoriesPattern(): string
+    {
+        return sprintf('#^(%s)#i', $this->getSecuredDirs());
+    }
+
     public function getSecuredFileTypes(): string
     {
         return trim($this->securedFiletypes);
+    }
+
+    public function getSecuredFileTypesPattern(string $pattern = '#^(%s)$#i'): string
+    {
+        return sprintf($pattern, $this->getSecuredFileTypes());
     }
 
     public function getLinkPrefix(): string

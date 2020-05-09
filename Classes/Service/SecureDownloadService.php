@@ -22,15 +22,9 @@ class SecureDownloadService implements SingletonInterface
 {
     protected $extensionConfiguration;
 
-    protected $securedFileTypesPattern;
-
-    protected $securedDirectoriesPattern;
-
     public function __construct(ExtensionConfiguration $extensionConfiguration)
     {
         $this->extensionConfiguration = $extensionConfiguration;
-        $this->securedFileTypesPattern = sprintf('/^(%s)$/i', $this->extensionConfiguration->getSecuredFileTypes());
-        $this->securedDirectoriesPattern = sprintf('/^(%s)/i', str_replace('/', '\/', $this->extensionConfiguration->getSecuredDirs()));
     }
 
     /**
@@ -44,9 +38,8 @@ class SecureDownloadService implements SingletonInterface
             }
 
             $fileExtension = pathinfo($publicUrl, PATHINFO_EXTENSION);
-            if (preg_match($this->securedFileTypesPattern, $fileExtension)) {
-                return true;
-            }
+
+            return (bool)preg_match($this->extensionConfiguration->getSecuredFileTypesPattern(), $fileExtension);
         }
 
         return false;
@@ -54,7 +47,7 @@ class SecureDownloadService implements SingletonInterface
 
     public function folderShouldBeSecured(string $publicUrl): bool
     {
-        return (bool)preg_match($this->securedDirectoriesPattern, $publicUrl);
+        return (bool)preg_match($this->extensionConfiguration->getSecuredDirectoriesPattern(), $publicUrl);
     }
 
     public function getResourceUrl(string $publicUrl): string

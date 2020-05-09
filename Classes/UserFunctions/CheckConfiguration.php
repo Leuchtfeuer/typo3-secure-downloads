@@ -70,7 +70,7 @@ class CheckConfiguration implements SingletonInterface
     public function __construct()
     {
         $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
-        $this->directoryPattern = sprintf('#^(%s)#i', $this->extensionConfiguration->getSecuredDirs());
+        $this->directoryPattern = $this->extensionConfiguration->getSecuredDirectoriesPattern();
         $this->fileTypePattern = sprintf('#\.(%s)$#i', $this->extensionConfiguration->getSecuredFileTypes());
         $this->domain = GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST');
     }
