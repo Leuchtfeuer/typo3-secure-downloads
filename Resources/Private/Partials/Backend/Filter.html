@@ -1,68 +1,74 @@
 <f:form action="{action}" object="{filter}" objectName="filter" class="form-horizontal">
+    <div class="form-group">
+        <label for="user" class="col-sm-1 control-label">
+            <f:translate key="module.filter.user.label"/>
+        </label>
+        <div class="col-sm-5">
+            <div class="col-sm-12">
+                <select id="user" name="tx_securedownloads_web_securedownloadstrafficlog[filter][feUserId]" class="form-control">
+                    <optgroup label="{f:translate(key:'module.filter.user.label.general')}">
+                        <option value="0">{f:translate(key:'module.filter.user.label.all')}</option>
+                        <f:variable name="selected">{f:if(condition: '-1 == {filter.userType}', then: 'selected="selected"')}</f:variable>
+                        <option value="-1" {selected}>{f:translate(key:'module.filter.user.label.logged_in')}</option>
+                        <f:variable name="selected">{f:if(condition: '-2 == {filter.userType}', then: 'selected="selected"')}</f:variable>
+                        <option value="-2" {selected}>{f:translate(key:'module.filter.user.label.not_logged_in')}</option>
+                    </optgroup>
+                    <optgroup label="{f:translate(key:'module.filter.user.label.by_user')}">
+                        <f:for each="{users}" as="user">
+                            <f:variable name="selected">{f:if(condition:'{user.uid} == {filter.feUserId}', then: 'selected="selected"')}</f:variable>
+                            <option value="{user.uid}" {selected}>{user.uid}: {user.username}</option>
+                        </f:for>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
 
-	<div class="form-group">
-		<label for="user" class="col-sm-1 control-label"><f:translate key="tx_securedownloads_domain_model_log.user" /></label>
-		<div class="col-sm-5">
-			<div class="col-sm-12">
-				<select id="user" name="tx_securedownloads_web_securedownloadstrafficlog[filter][feUserId]"
-						class="form-control">
-					<optgroup label="{f:translate(key:'select.general')}">
-						<option value="0">{f:translate(key:'tx_securedownloads_domain_model_log.all')}</option>
-						<option value="-1" {f:if(condition: '-1 == {filter.userType}', then: 'selected="selected"')}>{f:translate(key:'select.logged_in')}</option>
-						<option value="-2" {f:if(condition: '-2 == {filter.userType}', then: 'selected="selected"')}>{f:translate(key:'select.not_logged_in')}</option>
-					</optgroup>
-					<optgroup label="{f:translate(key:'select.by_user')}">
-						<f:for each="{users}" as="user">
-							<option value="{user.uid}" {f:if(condition: '{user.uid} == {filter.feUserId}', then: 'selected="selected"')}>{user.uid}: {user.username}</option>
-						</f:for>
-					</optgroup>
-				</select>
-			</div>
-		</div>
-
-		<label for="filetype" class="col-sm-1 control-label">
-			<f:translate key="tx_securedownloads_domain_model_log.filetype" />
-		</label>
-		<div class="col-sm-5">
-			<div class="col-sm-12">
-				<f:form.select id="filetype" class="form-control" property="fileType" options="{fileTypes}"
-							   optionValueField="media_type" optionLabelField="media_type" prependOptionValue="0"
-							   prependOptionLabel="{f:translate(key:'tx_securedownloads_domain_model_log.all')}" />
-			</div>
-		</div>
-	</div>
+        <label for="fileType" class="col-sm-1 control-label">
+            <f:translate key="module.filter.file_type.label"/>
+        </label>
+        <div class="col-sm-5">
+            <div class="col-sm-12">
+                <f:form.select id="filetype" class="form-control" property="fileType" options="{fileTypes}"
+                               optionValueField="media_type" optionLabelField="media_type" prependOptionValue="0"
+                               prependOptionLabel="{f:translate(key:'module.filter.file_type.label.all')}"/>
+            </div>
+        </div>
+    </div>
 
 
-	<div class="form-group">
-		<label class="col-sm-1 control-label">
-			<f:translate key="tx_securedownloads_domain_model_log.timeframe" />
-		</label>
-		<div class="col-sm-5">
-			<div class="col-sm-6">
-				<f:form.textfield placeholder="{f:translate(key:'timeframe.from')}: YYYY-mm-dd HH:ii:ss"
-								  property="from" class="form-control"
-								  value="{filter.from -> f:format.date(format: 'Y-m-d H:i:s')}"/>
-			</div>
-			<div class="col-sm-6">
-				<f:form.textfield placeholder="{f:translate(key:'timeframe.till')}: YYYY-mm-dd HH:ii:ss"
-								  property="till" class="form-control"
-								  value="{filter.till -> f:format.date(format: 'Y-m-d H:i:s')}"/>
-			</div>
-		</div>
+    <div class="form-group">
+        <label class="col-sm-1 control-label">
+            <f:translate key="module.filter.period.label"/>
+        </label>
+        <div class="col-sm-5">
+            <div class="col-sm-6">
+                <f:form.textfield placeholder="{f:translate(key:'module.filter.placeholder.period.from')}: YYYY-mm-dd HH:ii:ss"
+                                  property="from" class="form-control"
+                                  value="{filter.from -> f:format.date(format: 'Y-m-d H:i:s')}"/>
+            </div>
+            <div class="col-sm-6">
+                <f:form.textfield placeholder="{f:translate(key:'module.filter.placeholder.period.to')}: YYYY-mm-dd HH:ii:ss"
+                                  property="till" class="form-control"
+                                  value="{filter.till -> f:format.date(format: 'Y-m-d H:i:s')}"/>
+            </div>
+        </div>
 
-		<div class="col-sm-1"></div>
-		<div class="col-sm-5">
-			<div class="col-sm-6">
-				<f:link.action action="{action}" arguments="{reset: 1}" class="btn btn-default btn-block">
-					<f:translate key="button.reset" />
-				</f:link.action>
-			</div>
-			<div class="col-sm-6">
-				<button type="submit" class="btn btn-primary btn-block">{f:translate(key:'button.filter')}</button>
-			</div>
-		</div>
-	</div>
+        <div class="col-sm-1"></div>
+
+        <div class="col-sm-5">
+            <div class="col-sm-6">
+                <f:link.action action="{action}" arguments="{reset: 1}" class="btn btn-default btn-block">
+                    <f:translate key="module.filter.button.reset"/>
+                </f:link.action>
+            </div>
+            <div class="col-sm-6">
+                <button type="submit" class="btn btn-primary btn-block">
+                    <f:translate key="module.filter.button.submit" />
+                </button>
+            </div>
+        </div>
+    </div>
 
 </f:form>
 
-<hr />
+<hr/>

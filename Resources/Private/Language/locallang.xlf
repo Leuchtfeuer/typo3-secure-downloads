@@ -4,92 +4,89 @@
           product-name="secure_downloads">
         <header/>
         <body>
-            <trans-unit id="tx_securedownloads_domain_model_log">
-                <source>Log</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.file_id">
-                <source>File Id</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.file_name">
-                <source>File Name</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.file_path">
-                <source>File Path</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.filesize">
-                <source>Filesize</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.filetype">
-                <source>Filetype</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.media_type">
-                <source>Media Type</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.bytes_downloaded">
-                <source>Bytes downloaded</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.protected">
-                <source>Protected</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.host">
-                <source>Host</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.user">
-                <source>User</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.page">
-                <source>Page</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.tstamp">
-                <source>Time</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.timeframe">
-                <source>Timeframe</source>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.all">
-                <source>All</source>
-            </trans-unit>
-            <trans-unit id="select.general">
-                <source>General</source>
-            </trans-unit>
-            <trans-unit id="select.by_user">
-                <source>By User</source>
-            </trans-unit>
-            <trans-unit id="select.logged_in">
-                <source>All logged in users</source>
-            </trans-unit>
-            <trans-unit id="select.not_logged_in">
-                <source>All not logged in users</source>
-            </trans-unit>
-            <trans-unit id="timeframe.from">
-                <source>From</source>
-            </trans-unit>
-            <trans-unit id="timeframe.till">
-                <source>Till</source>
-            </trans-unit>
-            <trans-unit id="button.reset">
-                <source>Reset</source>
-            </trans-unit>
-            <trans-unit id="button.filter">
-                <source>Filter</source>
-            </trans-unit>
-            <trans-unit id="dateformat">
-                <source>Y-m-d H:i:s</source>
-            </trans-unit>
-            <trans-unit id="no_user">
-                <source>None</source>
-            </trans-unit>
-            <trans-unit id="heading">
-                <source>Download Traffic</source>
-            </trans-unit>
-            <trans-unit id="heading_for_page">
-                <source>Download Traffic for Page "%s"</source>
-            </trans-unit>
             <trans-unit id="option.overview">
                 <source>Overview</source>
             </trans-unit>
             <trans-unit id="option.by_page">
                 <source>Show by page</source>
+            </trans-unit>
+            <trans-unit id="dateformat">
+                <source>Y-m-d H:i:s</source>
+            </trans-unit>
+            <trans-unit id="module.unauthorized.title">
+                <source>Unauthorized</source>
+            </trans-unit>
+            <trans-unit id="module.unauthorized.message">
+                <source>You are not allowed to access the secure downloads log.</source>
+            </trans-unit>
+            <trans-unit id="module.subheading">
+                <source><![CDATA[Found <strong>%s</strong> asset(s) (traffic sum: <strong>%s</strong>) in the period from <strong>%s</strong> to <strong>%s</strong>.]]></source>
+            </trans-unit>
+            <trans-unit id="module.table.heading.file_name">
+                <source>File Name</source>
+            </trans-unit>
+            <trans-unit id="module.table.heading.file_size">
+                <source>File Size</source>
+            </trans-unit>
+            <trans-unit id="module.table.heading.file_type">
+                <source>File Type</source>
+            </trans-unit>
+            <trans-unit id="module.table.heading.media_type">
+                <source>Media Type</source>
+            </trans-unit>
+            <trans-unit id="module.table.heading.user">
+                <source>User</source>
+            </trans-unit>
+            <trans-unit id="module.table.heading.tstamp">
+                <source>Time</source>
+            </trans-unit>
+            <trans-unit id="module.table.body.no_user">
+                <source>None</source>
+            </trans-unit>
+            <trans-unit id="module.filter.user.label.general">
+                <source>General</source>
+            </trans-unit>
+            <trans-unit id="module.filter.user.label.by_user">
+                <source>By User</source>
+            </trans-unit>
+            <trans-unit id="module.filter.user.label.all">
+                <source>All</source>
+            </trans-unit>
+            <trans-unit id="module.filter.user.label.logged_in">
+                <source>All logged in users</source>
+            </trans-unit>
+            <trans-unit id="module.filter.user.label.not_logged_in">
+                <source>All not logged in users</source>
+            </trans-unit>
+            <trans-unit id="module.filter.user.label">
+                <source>User</source>
+            </trans-unit>
+            <trans-unit id="module.filter.file_type.label">
+                <source>File Type</source>
+            </trans-unit>
+            <trans-unit id="module.filter.file_type.label.all">
+                <source>All</source>
+            </trans-unit>
+            <trans-unit id="module.filter.period.label">
+                <source>Period</source>
+            </trans-unit>
+            <trans-unit id="module.filter.placeholder.period.from">
+                <source>From</source>
+            </trans-unit>
+            <trans-unit id="module.filter.placeholder.period.to">
+                <source>To</source>
+            </trans-unit>
+            <trans-unit id="module.filter.button.reset">
+                <source>Reset</source>
+            </trans-unit>
+            <trans-unit id="module.filter.button.submit">
+                <source>Filter</source>
+            </trans-unit>
+            <trans-unit id="module.heading.list">
+                <source>Download Traffic</source>
+            </trans-unit>
+            <trans-unit id="module.heading.show">
+                <source>Download Traffic for Page "%s"</source>
             </trans-unit>
         </body>
     </file>
