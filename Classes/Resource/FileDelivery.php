@@ -254,7 +254,8 @@ class FileDelivery
      */
     protected function checkGroupAccess(): bool
     {
-        if (!$this->extensionConfiguration->isEnableGroupCheck()) {
+        if (!$this->isFileCoveredByGroupCheck()) {
+            // Grant access if group check is disabled or file is not covered by group check
             return true;
         }
 
