@@ -23,15 +23,20 @@ use Bitmotion\SecureDownloads\Resource\Event\OutputInitializationEvent;
 use Bitmotion\SecureDownloads\Utility\HookUtility;
 use Bitmotion\SecureDownloads\Utility\MimeTypeUtility;
 use Firebase\JWT\JWT;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
+use TYPO3\CMS\Frontend\Controller\ErrorController;
+use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
 
 /**
  * ToDo: Use PSR-7 HTTP message instead.
@@ -321,7 +326,7 @@ class FileDelivery
     /**
      * Output the requested file
      */
-    public function deliver(): void
+    public function deliver(ServerRequestInterface $request): ?ResponseInterface
     {
         $file = GeneralUtility::getFileAbsFileName(ltrim($this->file, '/'));
         $fileName = basename($file);
@@ -357,12 +362,18 @@ class FileDelivery
                 $this->logDownload($this->fileSize, $mimeType);
             }
 
+            if ($this->shouldStreamFile($outputFunction)) {
+                $stream = new Stream($file);
+
+                return new Response($stream, 200, $header, '');
+            }
+
             $this->sendHeader($header);
             $this->outputFile($outputFunction, $file);
             exit;
         }
 
-        $this->exitScript('File does not exist!', HttpUtility::HTTP_STATUS_404);
+        return $this->getFileNotFoundResponse($request, 'File does not exist!');
     }
 
     protected function shouldForceDownload(string $fileExtension): bool
@@ -402,6 +413,23 @@ class FileDelivery
         return $header;
     }
 
+    /**
+     * @deprecated Will be removed in version 5 since streaming files will become default
+     */
+    protected function shouldStreamFile(string $outputFunction): bool
+    {
+        switch ($outputFunction) {
+            case ExtensionConfiguration::OUTPUT_READ_FILE_CHUNKED:
+            case ExtensionConfiguration::OUTPUT_STREAM:
+                return true;
+        }
+
+        return true;
+    }
+
+    /**
+     * @deprecated Will be removed in version 5 since this class will only return ResponseInterfaces
+     */
     protected function sendHeader(array $header): void
     {
         foreach ($header as $name => $value) {
@@ -412,14 +440,6 @@ class FileDelivery
     protected function outputFile(string $outputFunction, string $file): void
     {
         switch ($outputFunction) {
-            case ExtensionConfiguration::OUTPUT_READ_FILE_CHUNKED:
-                $this->readFileFactional($file);
-                break;
-
-            case ExtensionConfiguration::OUTPUT_STREAM:
-                $this->streamFile($file);
-                break;
-
             case ExtensionConfiguration::OUTPUT_PASS_THRU:
                 $this->passThruFile($file);
                 break;
@@ -436,6 +456,15 @@ class FileDelivery
         // make sure we can detect an aborted connection, call flush
         ob_flush();
         flush();
+    }
+
+    protected function getFileNotFoundResponse(ServerRequestInterface $request, string $reason): ResponseInterface
+    {
+        return GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
+            $request,
+            $reason,
+            ['code' => PageAccessFailureReasons::PAGE_NOT_FOUND]
+        );
     }
 
     /**

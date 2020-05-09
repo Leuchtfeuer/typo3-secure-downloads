@@ -52,7 +52,7 @@ class FileDeliveryMiddleware implements MiddlewareInterface
 
             $cleanPath = mb_substr(urldecode($request->getUri()->getPath()), mb_strlen($this->assetPrefix));
             [$jwt, $basePath] = explode('/', $cleanPath);
-            (new FileDelivery($jwt))->deliver();
+            return (new FileDelivery($jwt))->deliver($request);
         }
 
         return $handler->handle($request);
