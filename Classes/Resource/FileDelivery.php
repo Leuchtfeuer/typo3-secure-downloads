@@ -76,21 +76,13 @@ class FileDelivery implements SingletonInterface
     public function deliver(string $jsonWebToken, ServerRequestInterface $request): ResponseInterface
     {
         if (!$this->retrieveDataFromJsonWebToken($jsonWebToken)) {
-            return GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
-                $request,
-                'Access denied!',
-                ['Could not parse token.']
-            );
+            return $this->getAccessDeniedResponse($request, 'Could not parse token.');
         }
 
         $this->dispatchOutputInitializationEvent();
 
         if (!$this->hasAccess()) {
-            return GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
-                $request,
-                'Access denied!',
-                ['Access check failed.']
-            );
+            return $this->getAccessDeniedResponse($request, 'Access check failed.');
         }
 
         $file = GeneralUtility::getFileAbsFileName(ltrim($this->token->getFile(), '/'));
@@ -106,11 +98,7 @@ class FileDelivery implements SingletonInterface
             return new Response($this->getResponseBody($file, $fileName), 200, $this->header, '');
         }
 
-        return GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
-            $request,
-            'File does not exist!',
-            ['code' => PageAccessFailureReasons::PAGE_NOT_FOUND]
-        );
+        return $this->getFileNotFoundResponse($request, 'File does not exist!');
     }
 
     /**
@@ -131,6 +119,24 @@ class FileDelivery implements SingletonInterface
         }
 
         return true;
+    }
+
+    protected function getAccessDeniedResponse(ServerRequestInterface $request, string $reason): ResponseInterface
+    {
+        return GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+            $request,
+            'Access denied!',
+            [$reason]
+        );
+    }
+
+    protected function getFileNotFoundResponse(ServerRequestInterface $request, string $reason): ResponseInterface
+    {
+        return GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
+            $request,
+            $reason,
+            ['code' => PageAccessFailureReasons::PAGE_NOT_FOUND]
+        );
     }
 
     /**

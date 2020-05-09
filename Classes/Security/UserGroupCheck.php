@@ -44,6 +44,11 @@ class UserGroupCheck extends AbstractCheck
             return false;
         }
 
+        return $this->performStrictGroupCheck($actualGroups, $transmittedGroups);
+    }
+
+    protected function performStrictGroupCheck(array $actualGroups, array $transmittedGroups): bool
+    {
         $excludedGroups = GeneralUtility::intExplode(',', $this->extensionConfiguration->getExcludeGroups(), true);
         $verifiableGroups = array_diff($actualGroups, $excludedGroups);
 

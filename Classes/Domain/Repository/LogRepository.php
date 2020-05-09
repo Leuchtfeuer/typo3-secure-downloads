@@ -20,7 +20,6 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
-use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
@@ -31,13 +30,15 @@ class LogRepository extends Repository
         'tstamp' => QueryInterface::ORDER_DESCENDING,
     ];
 
-    public function initializeObject()
+    public function createQuery(): QueryInterface
     {
-        /** @var Typo3QuerySettings $querySettings */
-        $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
+        $query = parent::createQuery();
+        $querySettings = $query->getQuerySettings();
         $querySettings->setRespectStoragePage(false);
         $querySettings->setRespectSysLanguage(false);
-        $this->setDefaultQuerySettings($querySettings);
+        $query->setQuerySettings($querySettings);
+
+        return $query;
     }
 
     public function findByFilter(?Filter $filter): QueryResultInterface
@@ -63,11 +64,32 @@ class LogRepository extends Repository
         $constraints = [];
 
         // FileType
-        if ($filter->getFileType() !== '' && $filter->getFileType() !== '0') {
-            $constraints[] = $query->equals('mediaType', $filter->getFileType());
-        }
+        $this->applyFileTypePropertyToFilter($filter->getFileType(), $query, $constraints);
 
         // User Type
+        $this->applyUserTypePropertyToFilter($filter, $query, $constraints);
+
+        // Period
+        $this->applyPeriodPropertyToFilter($filter, $query, $constraints);
+
+        // User and Page
+        $this->applyEqualPropertyToFilter((int)$filter->getFeUserId(), 'user', $query, $constraints);
+        $this->applyEqualPropertyToFilter((int)$filter->getPageId(), 'page', $query, $constraints);
+
+        if (count($constraints) > 0) {
+            $query->matching($query->logicalAnd($constraints));
+        }
+    }
+
+    protected function applyFileTypePropertyToFilter($fileType, QueryInterface $query, array &$constraints): void
+    {
+        if ($fileType !== '' && $fileType !== '0') {
+            $constraints[] = $query->equals('mediaType', $fileType);
+        }
+    }
+
+    protected function applyUserTypePropertyToFilter(Filter $filter, QueryInterface $query, array &$constraints): void
+    {
         if ($filter->getUserType() != 0) {
             $userQuery = $query->equals('user', null);
 
@@ -78,32 +100,30 @@ class LogRepository extends Repository
                 $constraints[] = $userQuery;
             }
         }
+    }
 
-        // User
-        if ($filter->getFeUserId() !== 0) {
-            $constraints[] = $query->equals('user', $filter->getFeUserId());
-        }
-
-        // Timeframe
-        if ($filter->getFrom() !== '' && $filter->getFrom() !== null) {
+    /**
+     * @throws InvalidQueryException
+     */
+    protected function applyPeriodPropertyToFilter(Filter $filter, QueryInterface $query, array &$constraints): void
+    {
+        if ((int)$filter->getFrom() !== 0) {
             $constraints[] = $query->greaterThanOrEqual('tstamp', $filter->getFrom());
         }
 
-        if ($filter->getTill() !== '' && $filter->getTill() !== null) {
+        if ((int)$filter->getTill() !== 0) {
             $constraints[] = $query->lessThanOrEqual('tstamp', $filter->getTill());
-        }
-
-        // Page
-        if ($filter->getPageId() !== 0) {
-            $constraints[] = $query->equals('page', $filter->getPageId());
-        }
-
-        if (count($constraints) > 0) {
-            $query->matching($query->logicalAnd($constraints));
         }
     }
 
-    public function logDownload(AbstractToken $token, $fileSize, $mimeType, $user)
+    protected function applyEqualPropertyToFilter(int $property, string $propertyName, QueryInterface $query, array $constraints): void
+    {
+        if ($property !== 0) {
+            $constraints[] = $query->equals($propertyName, $property);
+        }
+    }
+
+    public function logDownload(AbstractToken $token, $fileSize, $mimeType, $user): void
     {
         $pathInfo = pathinfo($token->getFile());
 
