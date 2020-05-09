@@ -1,86 +1,92 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-    <file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2016-07-20T16:46:48Z"
+    <file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2020-05-09T17:14:48Z"
           product-name="secure_downloads">
         <header/>
         <body>
-            <trans-unit id="tx_securedownloads_domain_model_log">
-                <target>Log</target>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.file_id">
-                <target>ID der Datei</target>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.file_name">
-                <target>Dateiname</target>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.file_path">
-                <target>Dateipfad</target>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.filesize">
-                <target>Dateigröße</target>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.filetype">
-                <target>Dateityp</target>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.media_type">
-                <target>Medientyp</target>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.user">
-                <target>Benutzer</target>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.page">
-                <target>Seite</target>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.tstamp">
-                <target>Zeit</target>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.timeframe">
-                <target>Zeitfenster</target>
-            </trans-unit>
-            <trans-unit id="tx_securedownloads_domain_model_log.all">
-                <target>Alle</target>
-            </trans-unit>
-            <trans-unit id="select.general">
-                <target>Allgemein</target>
-            </trans-unit>
-            <trans-unit id="select.by_user">
-                <target>Nach Benutzern</target>
-            </trans-unit>
-            <trans-unit id="select.logged_in">
-                <target>Alle eingeloggten Benutzer</target>
-            </trans-unit>
-            <trans-unit id="select.not_logged_in">
-                <target>Alle nicht eingeloggten Benutzer</target>
-            </trans-unit>
-            <trans-unit id="timeframe.from">
-                <target>Von</target>
-            </trans-unit>
-            <trans-unit id="timeframe.till">
-                <target>Bis</target>
-            </trans-unit>
-            <trans-unit id="button.reset">
-                <target>Zurücksetzen</target>
-            </trans-unit>
-            <trans-unit id="button.filter">
-                <target>Filtern</target>
-            </trans-unit>
-            <trans-unit id="dateformat">
-                <target>d.m.Y H:i:s</target>
-            </trans-unit>
-            <trans-unit id="no_user">
-                <target>Keiner</target>
-            </trans-unit>
-            <trans-unit id="heading">
-                <target>Traffic</target>
-            </trans-unit>
-            <trans-unit id="heading_for_page">
-                <target>Traffic für Seite "%s"</target>
-            </trans-unit>
             <trans-unit id="option.overview">
                 <target>Übersicht</target>
             </trans-unit>
             <trans-unit id="option.by_page">
-                <target>Aktuelle Seite</target>
+                <target>Nach Seite</target>
+            </trans-unit>
+            <trans-unit id="dateformat">
+                <target>d.m.Y H:i:s</target>
+            </trans-unit>
+            <trans-unit id="module.unauthorized.title">
+                <target>Zugriff verweigert!</target>
+            </trans-unit>
+            <trans-unit id="module.unauthorized.message">
+                <target>Du hast keinen Zugriff auf das Log-Modul.</target>
+            </trans-unit>
+            <trans-unit id="module.subheading">
+                <target><![CDATA[Es wurden <strong>%s</strong> Dateien (Traffic: <strong>%s</strong>) im Zeitraum vom <strong>%s</strong> bis <strong>%s</strong> gefunden.]]></target>
+            </trans-unit>
+            <trans-unit id="module.table.heading.file_name">
+                <target>Dateiname</target>
+            </trans-unit>
+            <trans-unit id="module.table.heading.file_size">
+                <target>Dateigröße</target>
+            </trans-unit>
+            <trans-unit id="module.table.heading.file_type">
+                <target>Dateityp</target>
+            </trans-unit>
+            <trans-unit id="module.table.heading.media_type">
+                <target>Medientyp</target>
+            </trans-unit>
+            <trans-unit id="module.table.heading.user">
+                <target>Benutzer</target>
+            </trans-unit>
+            <trans-unit id="module.table.heading.tstamp">
+                <target>Zeitpunkt</target>
+            </trans-unit>
+            <trans-unit id="module.table.body.no_user">
+                <target>Nicht angemeldet</target>
+            </trans-unit>
+            <trans-unit id="module.filter.user.label.general">
+                <target>Generell</target>
+            </trans-unit>
+            <trans-unit id="module.filter.user.label.by_user">
+                <target>Benutzer</target>
+            </trans-unit>
+            <trans-unit id="module.filter.user.label.all">
+                <target>Alle</target>
+            </trans-unit>
+            <trans-unit id="module.filter.user.label.logged_in">
+                <target>Alle angmeldeten Benutzer</target>
+            </trans-unit>
+            <trans-unit id="module.filter.user.label.not_logged_in">
+                <target>Alle nicht angemeldeten Benutzter</target>
+            </trans-unit>
+            <trans-unit id="module.filter.user.label">
+                <target>Benutzer</target>
+            </trans-unit>
+            <trans-unit id="module.filter.file_type.label">
+                <target>Dateityp</target>
+            </trans-unit>
+            <trans-unit id="module.filter.file_type.label.all">
+                <target>Alle</target>
+            </trans-unit>
+            <trans-unit id="module.filter.period.label">
+                <target>Zeitraum</target>
+            </trans-unit>
+            <trans-unit id="module.filter.placeholder.period.from">
+                <target>Von</target>
+            </trans-unit>
+            <trans-unit id="module.filter.placeholder.period.to">
+                <target>Bis</target>
+            </trans-unit>
+            <trans-unit id="module.filter.button.reset">
+                <target>Zurücksetzen</target>
+            </trans-unit>
+            <trans-unit id="module.filter.button.submit">
+                <target>Filtern</target>
+            </trans-unit>
+            <trans-unit id="module.heading.list">
+                <target>Traffic</target>
+            </trans-unit>
+            <trans-unit id="module.heading.show">
+                <target>Traffic für die Seite "%s"</target>
             </trans-unit>
         </body>
     </file>

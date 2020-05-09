@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2020-05-09T17:18:32Z"
+          product-name="secure_downloads">
+        <header/>
+        <body>
+            <trans-unit id="checkAccess">
+                <target>Konfigurationsüberprüfung: Dies ist lediglich eine rudimentäre, grundlegende Überprüfung, deren Ergebnis falsch sein kann.</target>
+            </trans-unit>
+            <trans-unit id="securedDirs">
+                <target>Geschützte Verzeichnisse: Welche Verzeichnisse sollen geschützt werden? Mehrere Verzeichnisse können durch eine Pipe ("|") getrennt werden.</target>
+            </trans-unit>
+            <trans-unit id="securedFileTypes">
+                <target>Geschützte Dateitypen: Welche Dateitypen sollen geschützt werden? Mehrere Typen können durch eine Pipe ("|") getrennt werden. Du kannst ein Sternchen ("*") verwenden, wenn du alle Dateien innerhalb konfigurierter Verzeichnisse schützen möchtest.</target>
+            </trans-unit>
+            <trans-unit id="enableGroupCheck">
+                <target>Benutzergruppen Überprüfung: Ermöglicht die Weiterleitung eines sicheren Download-Links an andere, wenn sie mindestens eine gemeinsame Front-End-Benutzergruppe haben. Wenn Du diese Option aktivierst, ist die Prüfungen WENIGER restriktiv!</target>
+            </trans-unit>
+            <trans-unit id="groupCheckDirs">
+                <target>Verzeichnisse für Gruppenprüfung: Eine Liste von Verzeichnissen (getrennt durch eine Pipe ("|")), für die die Gruppenprüfung durchgeführt werden soll. Du kannst dieses Feld leer lassen, wenn Du die Gruppenprüfung für alle Verzeichnisse aktivieren möchtest. Diese Option greift nur, wenn die Gruppenüberprüfung aktiviert ist.</target>
+            </trans-unit>
+            <trans-unit id="excludeGroups">
+                <target>Ausgeschlossene Gruppen: Eine durch Kommata getrennte Liste von Gruppen, die von der Gruppenprüffunktion ausgeschlossen sind. Diese Option greift nur, wenn die Gruppenüberprüfung aktiviert ist.</target>
+            </trans-unit>
+            <trans-unit id="strictGroupCheck">
+                <target>Strikte Gruppenüberprüfung: Wenn diese Option aktiviert ist, werden Dateien nur dann ausgeliefert, wenn die Benutzergruppen des aktuellen Benutzers exakt mit denen des generierten Token übereinstimmen. Diese Option greift nur, wenn die Gruppenüberprüfung aktiviert ist.</target>
+            </trans-unit>
+            <trans-unit id="linkPrefix">
+                <target>Link Präfix: Präfix für generierte Links (der "securedl"-Teil in "https://example.com/securedl/sdl-[JWT]/image.png").</target>
+            </trans-unit>
+            <trans-unit id="tokenPrefix">
+                <target>Token Präfix: Präfix für den generierten Token (der "sdl-"-Teil in "https://example.com/securedl/sdl-[JWT]/image.png").</target>
+            </trans-unit>
+            <trans-unit id="cacheTimeAdd">
+                <target>Zusätzliche Link Gültigkeit: Der sichere Link ist nur für eine begrenzte Zeit gültig, die sich aus der Cache-Zeit, die für die Seite, die den Link beinhaltet, verwendet wird, plus diesem Wert (in Sekunden) errechnet. Der Standardwert ist 3600 Sekunden (entspricht einer Stunde).</target>
+            </trans-unit>
+            <trans-unit id="documentRootPath">
+                <target>Document Root: Ändere diese Konfigurationsoption nur, wenn deine TYPO3-Instanz in einem Unterverzeichnis läuft oder du einen SSL-Reverse-Proxy verwendest, um TYPO3 in einen virtuellen Unterordner abzubilden. Diese Konfiguration muss mit einem Schrägstrich beginnen und enden (z.B. "/proxy-typo3/").</target>
+            </trans-unit>
+            <trans-unit id="forceDownload">
+                <target>Dateidownload erzwingen: Der Download von definierten Dateitypen wird erzwungen.</target>
+            </trans-unit>
+            <trans-unit id="forceDownloadType">
+                <target>Dateitypen für den forcierten Download: Eine Liste von Dateiendungen, die deren download erzwungen werden soll (getrennt mit einer Pipe ("|")). Diese Option greift nur, wenn "Dateidownload erzwingen" aktiviert ist. Du kannst ein Sternchen ("*") benutzen, um den Download für alle geschützten Dateien zu erzwingen.</target>
+            </trans-unit>
+            <trans-unit id="outputFunction">
+                <target>Auslieferung: Methode, über die die geschützten Dateien an den Webbrowser ausgeliefert werden.</target>
+            </trans-unit>
+            <trans-unit id="protectedPath">
+                <target>Geschützter Pfad: Pfad zum geschützten Speicher für die nginx x-accel-redirect Auslieferung. Wird nur benötigt, wenn diese Option aktiviert ist.</target>
+            </trans-unit>
+            <trans-unit id="log">
+                <target>Log Modul: Der Zugriff auf jede geschützte Datei wird protokolliert. Wenn du diese Option aktivierst, wird ein Backend Modul freigeschaltet.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
