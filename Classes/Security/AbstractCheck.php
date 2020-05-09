@@ -64,17 +64,6 @@ abstract class AbstractCheck implements SingletonInterface
             return true;
         }
 
-        return (bool)preg_match('/' . $this->softQuoteExpression($groupCheckDirectories) . '/', $this->token->getFile());
-    }
-
-    private function softQuoteExpression(string $string): string
-    {
-        $string = str_replace('\\', '\\\\', $string);
-        $string = str_replace(' ', '\ ', $string);
-        $string = str_replace('/', '\/', $string);
-        $string = str_replace('.', '\.', $string);
-        $string = str_replace(':', '\:', $string);
-
-        return $string;
+        return (bool)preg_match(sprintf('#(%s)#i', $groupCheckDirectories), $this->token->getFile());
     }
 }
