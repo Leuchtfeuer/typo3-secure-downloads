@@ -50,7 +50,24 @@ abstract class AbstractCheck implements SingletonInterface
 
     abstract public function hasAccess(): bool;
 
-    protected function softQuoteExpression(string $string): string
+    protected function isFileCoveredByGroupCheck(): bool
+    {
+        if (!$this->extensionConfiguration->isEnableGroupCheck()) {
+            // Return false because group check is disabled therefore the access is not covered by user groups
+            return false;
+        }
+
+        $groupCheckDirectories = $this->extensionConfiguration->getGroupCheckDirs();
+
+        if (empty($groupCheckDirectories) || $groupCheckDirectories === ExtensionConfiguration::FILE_TYPES_WILDCARD) {
+            // Return true because group check is enabled and all protected directories are covered by the check
+            return true;
+        }
+
+        return (bool)preg_match('/' . $this->softQuoteExpression($groupCheckDirectories) . '/', $this->token->getFile());
+    }
+
+    private function softQuoteExpression(string $string): string
     {
         $string = str_replace('\\', '\\\\', $string);
         $string = str_replace(' ', '\ ', $string);

@@ -19,14 +19,9 @@ class UserGroupCheck extends AbstractCheck
 {
     public function hasAccess(): bool
     {
-        if (!$this->extensionConfiguration->isEnableGroupCheck()) {
+        if (!$this->isFileCoveredByGroupCheck()) {
+            // Grant access if group check is disabled or file is not covered by group check
             return true;
-        }
-
-        $groupCheckDirs = $this->extensionConfiguration->getGroupCheckDirs();
-
-        if (!empty($groupCheckDirs) && !preg_match('/' . $this->softQuoteExpression($groupCheckDirs) . '/', $this->token->getFile())) {
-            return false;
         }
 
         $actualGroups = $this->userAspect->get('groupIds');
