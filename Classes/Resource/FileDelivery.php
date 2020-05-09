@@ -45,31 +45,37 @@ class FileDelivery
 
     /**
      * @var UserAspect
+     * @deprecated Will be removed in version 5.
      */
     protected $userAspect;
 
     /**
      * @var int
+     * @deprecated Will be removed in version 5.
      */
     protected $fileSize;
 
     /**
      * @var int
+     * @deprecated Will be removed in version 5.
      */
     protected $userId;
 
     /**
      * @var int
+     * @deprecated Will be removed in version 5.
      */
     protected $pageId;
 
     /**
      * @var string
+     * @deprecated Will be removed in version 5.
      */
     protected $userGroups;
 
     /**
      * @var int
+     * @deprecated Will be removed in version 5.
      */
     protected $expiryTime;
 
@@ -81,6 +87,7 @@ class FileDelivery
 
     /**
      * @var string
+     * @deprecated Will be removed in version 5.
      */
     protected $file;
 
@@ -92,6 +99,7 @@ class FileDelivery
 
     /**
      * @var bool
+     * @deprecated Will be removed in version 5.
      */
     protected $isProcessed = false;
 
@@ -195,6 +203,9 @@ class FileDelivery
         return $this->calculatedHash === $this->hash;
     }
 
+    /**
+     * @deprecated Will be removed in version 5 since this class will only return ResponseInterfaces
+     */
     protected function exitScript(string $message, $httpStatus = HttpUtility::HTTP_STATUS_403): void
     {
         // TODO: Log message?
@@ -215,6 +226,8 @@ class FileDelivery
      * Returns TRUE when the user has direct access to the file or group check is enabled
      * Returns FALSE if the user has noch direct access to the file and group check is disabled
      *
+     * @deprecated Will be moved into dedicated class.
+     *
      * @return bool
      */
     protected function checkUserAccess(): bool
@@ -230,6 +243,9 @@ class FileDelivery
         }
     }
 
+    /**
+     * @deprecated Will be moved into dedicated class.
+     */
     protected function isFileCoveredByGroupCheck(): bool
     {
         if (!$this->extensionConfiguration->isEnableGroupCheck()) {
@@ -251,6 +267,8 @@ class FileDelivery
      * Returns true if the transmitted group list is identical
      * to the group list of the current user or both have at least one group
      * in common.
+     *
+     * @deprecated Will be moved into dedicated class.
      */
     protected function checkGroupAccess(): bool
     {
@@ -293,7 +311,7 @@ class FileDelivery
     }
 
     /**
-     * @deprecated Will be removed in version 5. Use HtmlParser::softQuoteExpression instead.
+     * @deprecated Will be removed in version 5.
      */
     protected function softQuoteExpression(string $string): string
     {
@@ -422,6 +440,8 @@ class FileDelivery
 
     /**
      * Log the access of the file
+     *
+     * @deprecated Will be removed in version 5 since logging will be handled by the model itself
      */
     protected function logDownload(int $fileSize = 0, string $mimeType = ''): void
     {
@@ -464,6 +484,11 @@ class FileDelivery
         return true;
     }
 
+    /**
+     * @param string $fileName
+     *
+     * @deprecated Will be removed in version 5 since the deliver method will return a HTTP Response
+     */
     protected function streamFile(string $fileName): void
     {
         $outputChunkSize = $this->extensionConfiguration->getOutputChunkSize();
@@ -480,6 +505,9 @@ class FileDelivery
         $stream->close();
     }
 
+    /**
+     * @deprecated Will be removed in version 5 since the deliver method will return a HTTP Response
+     */
     protected function passThruFile(string $fileName): void
     {
         $handle = fopen($fileName, 'rb');
@@ -487,6 +515,9 @@ class FileDelivery
         fclose($handle);
     }
 
+    /**
+     * @deprecated Will be removed in version 5 since the nginx delivery will be handled directly within the outputFile method
+     */
     protected function nginxDeliverFile(string $fileName): void
     {
         if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') === 0) {
@@ -506,6 +537,7 @@ class FileDelivery
 
     /**
      * @return \Psr\EventDispatcher\EventDispatcherInterface
+     * @deprecated Will be removed in version 5.
      */
     protected function initializeEventDispatcher()
     {
