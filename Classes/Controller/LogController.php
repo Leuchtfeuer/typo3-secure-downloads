@@ -16,6 +16,7 @@ namespace Leuchtfeuer\SecureDownloads\Controller;
 use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Statistic;
+use TYPO3\CMS\Backend\Template\Components\Menu\Menu;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -160,24 +161,34 @@ class LogController extends ActionController
         $menu->setIdentifier('secure_downloads');
 
         if ((int)GeneralUtility::_GP('id') !== 0) {
-            $actions = [
-                ['controller' => 'Log', 'action' => 'show', 'label' => 'Show by Page'],
-                ['controller' => 'Log', 'action' => 'list', 'label' => 'Overview'],
-            ];
-
-            foreach ($actions as $action) {
-                $isActive = $this->request->getControllerName() === $action['controller'] && $this->request->getControllerActionName() === $action['action'];
-                $item = $menu->makeMenuItem()->setTitle($action['label'])->setHref($this->getUriBuilder()->reset()->uriFor(
-                    $action['action'],
-                    [],
-                    $action['controller']
-                ))->setActive($isActive);
-                $menu->addMenuItem($item);
-            }
+            $this->addMenuItems($menu);
         }
 
         $this->view->assign('action', $this->request->getControllerActionName());
         $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
+    }
+
+    protected function addMenuItems(Menu &$menu): void
+    {
+        $controllerName = $this->request->getControllerName();
+        $controllerActionName = $this->request->getControllerActionName();
+        $actions = [
+            ['controller' => 'Log', 'action' => 'show', 'label' => 'Show by Page'],
+            ['controller' => 'Log', 'action' => 'list', 'label' => 'Overview'],
+        ];
+
+        foreach ($actions as $action) {
+            $isActive = $controllerName === $action['controller'] && $controllerActionName === $action['action'];
+
+            $href = $this->getUriBuilder()->reset()->uriFor(
+                $action['action'],
+                [],
+                $action['controller']
+            );
+
+            $item = $menu->makeMenuItem()->setTitle($action['label'])->setHref($href)->setActive($isActive);
+            $menu->addMenuItem($item);
+        }
     }
 
     protected function getUriBuilder(): UriBuilder
