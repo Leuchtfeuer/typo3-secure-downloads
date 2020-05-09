@@ -20,7 +20,7 @@ use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-abstract class AbstractCheck implements SingletonInterface
+abstract class AbstractCheck
 {
     /**
      * @var ExtensionConfiguration
@@ -37,9 +37,10 @@ abstract class AbstractCheck implements SingletonInterface
      */
     protected $userAspect;
 
-    public function __construct(ExtensionConfiguration $extensionConfiguration)
+    public function __construct()
     {
-        $this->extensionConfiguration = $extensionConfiguration;
+        // Do not use DI as container is not available during enabling this extension
+        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
     }
 
     public function setToken(AbstractToken $token)
