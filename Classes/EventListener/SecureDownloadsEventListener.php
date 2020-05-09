@@ -87,13 +87,18 @@ class SecureDownloadsEventListener implements SingletonInterface
 
     protected function getSecuredUrl(bool $relativeToCurrentScript, string $publicUrl, LocalDriver $driver): string
     {
-        $pathPart = '';
-
         if ($relativeToCurrentScript === true) {
-            $absolutePathToContainingFolder = PathUtility::dirname(Environment::getPublicPath() . '/' . $driver->getDefaultFolder());
+            $absolutePathToContainingFolder = PathUtility::dirname(
+                sprintf(
+                    '%s/%s',
+                    Environment::getPublicPath(),
+                    $driver->getDefaultFolder()
+                )
+            );
+
             $pathPart = PathUtility::getRelativePathTo($absolutePathToContainingFolder);
         }
 
-        return $pathPart . $this->secureDownloadService->getResourceUrl($publicUrl);
+        return ($pathPart ?? '') . $this->secureDownloadService->getResourceUrl($publicUrl);
     }
 }
