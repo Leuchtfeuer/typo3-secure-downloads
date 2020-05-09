@@ -50,16 +50,6 @@ class Log extends AbstractEntity
     protected $mediaType = '';
 
     /**
-     * @var string
-     */
-    protected $protected = '';
-
-    /**
-     * @var string
-     */
-    protected $host = '';
-
-    /**
      * @var int
      */
     protected $user;
@@ -109,8 +99,6 @@ class Log extends AbstractEntity
             'file_size' => $this->getFileSize(),
             'file_type' => $this->getFileType(),
             'media_type' => $this->getMediaType(),
-            'protected' => $this->getProtected(),
-            'host' => $this->getHost(),
             'user' => $this->getUser(),
             'page' => $this->getPage(),
             'tstamp' => time(),
@@ -176,26 +164,6 @@ class Log extends AbstractEntity
     public function setMediaType(string $mediaType): void
     {
         $this->mediaType = $mediaType;
-    }
-
-    public function getProtected(): string
-    {
-        return $this->protected;
-    }
-
-    public function setProtected(string $protected): void
-    {
-        $this->protected = $protected;
-    }
-
-    public function getHost(): string
-    {
-        return $this->host;
-    }
-
-    public function setHost(string $host): void
-    {
-        $this->host = $host;
     }
 
     public function getUser(): int
