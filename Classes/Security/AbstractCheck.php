@@ -49,4 +49,15 @@ abstract class AbstractCheck implements SingletonInterface
     }
 
     abstract public function hasAccess(): bool;
+
+    protected function softQuoteExpression(string $string): string
+    {
+        $string = str_replace('\\', '\\\\', $string);
+        $string = str_replace(' ', '\ ', $string);
+        $string = str_replace('/', '\/', $string);
+        $string = str_replace('.', '\.', $string);
+        $string = str_replace(':', '\:', $string);
+
+        return $string;
+    }
 }

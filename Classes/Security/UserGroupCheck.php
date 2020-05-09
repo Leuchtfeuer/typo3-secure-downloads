@@ -55,15 +55,4 @@ class UserGroupCheck extends AbstractCheck
 
         return false;
     }
-
-    protected function softQuoteExpression(string $string): string
-    {
-        $string = str_replace('\\', '\\\\', $string);
-        $string = str_replace(' ', '\ ', $string);
-        $string = str_replace('/', '\/', $string);
-        $string = str_replace('.', '\.', $string);
-        $string = str_replace(':', '\:', $string);
-
-        return $string;
-    }
 }
