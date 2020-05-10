@@ -84,14 +84,14 @@ Please make sure to adapt the file match pattern as configured in :ref:`admin-ex
 ::
    # Apache 2.4
    <IfModule mod_authz_core.c>
-     <FilesMatch "\.(pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz)$">
+     <FilesMatch "\.([pP][dD][fF]|[jJ][pP][eE]?[gG]|[gG][iI][fF]|[pP][nN][gG]|[oO][dD][tT]|[pP][pP][tT][xX]?|[dD][oO][cC][xX]?|[xX][lL][sS][xX]?|[zZ][iI][pP]|[rR][aA][rR]|[tT][gG][zZ]|[tT][aA][rR]|[gG][zZ])$">
        Require all denied
      </FilesMatch>
    </IfModule>
 
    # Apache 2.2
    <IfModule !mod_authz_core.c>
-     <FilesMatch "\.(pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz)$">
+     <FilesMatch "\.([pP][dD][fF]|[jJ][pP][eE]?[gG]|[gG][iI][fF]|[pP][nN][gG]|[oO][dD][tT]|[pP][pP][tT][xX]?|[dD][oO][cC][xX]?|[xX][lL][sS][xX]?|[zZ][iI][pP]|[rR][aA][rR]|[tT][gG][zZ]|[tT][aA][rR]|[gG][zZ])$">
        Order Allow,Deny
        Deny from all
      </FilesMatch>
@@ -101,14 +101,14 @@ Please make sure to adapt the file match pattern as configured in :ref:`admin-ex
 ::
    # Apache 2.4
    <IfModule mod_authz_core.c>
-     <FilesMatch "\.(pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz)$">
+     <FilesMatch "\.([pP][dD][fF]|[jJ][pP][eE]?[gG]|[gG][iI][fF]|[pP][nN][gG]|[oO][dD][tT]|[pP][pP][tT][xX]?|[dD][oO][cC][xX]?|[xX][lL][sS][xX]?|[zZ][iI][pP]|[rR][aA][rR]|[tT][gG][zZ]|[tT][aA][rR]|[gG][zZ])$">
        Require all granted
      </FilesMatch>
    </IfModule>
 
    # Apache 2.2
    <IfModule !mod_authz_core.c>
-     <FilesMatch "\.(pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz)$">
+     <FilesMatch "\.([pP][dD][fF]|[jJ][pP][eE]?[gG]|[gG][iI][fF]|[pP][nN][gG]|[oO][dD][tT]|[pP][pP][tT][xX]?|[dD][oO][cC][xX]?|[xX][lL][sS][xX]?|[zZ][iI][pP]|[rR][aA][rR]|[tT][gG][zZ]|[tT][aA][rR]|[gG][zZ])$">
        Order Deny,Allow
        Allow from all
      </FilesMatch>
