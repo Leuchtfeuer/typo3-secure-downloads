@@ -26,7 +26,7 @@ If your TYPO3 instance is running in composer mode, you can simply require the e
 
 .. code-block:: bash
 
-   composer req bitmotion/secure-downloads:^4.0
+   composer req leuchtfeuer/secure-downloads:>=5.0
 
 .. _admin-installation-viaExtensionManager:
 
