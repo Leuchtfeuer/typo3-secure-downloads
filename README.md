@@ -46,7 +46,7 @@ For the following versions no more free bug fixes and new features will be provi
 | 2.0.0 - 2.0.3     | -        | -        | x        | x          | -          |
 | 1.x<sup>2)</sup>  | -        | -        | -        | x          | x          |
 
-* <sup>2)</sup> As [`EXT:naw_securedl`](https://extensions.typo3.org/extension/naw_securedl) bzw. `typo3-ter/naw-securedl`.
+* <sup>2)</sup> As [`EXT:naw_securedl`](https://extensions.typo3.org/extension/naw_securedl) or `typo3-ter/naw-securedl`.
 
 ## Installation
 There are several ways to require and install this extension. We recommend getting this extension via 
