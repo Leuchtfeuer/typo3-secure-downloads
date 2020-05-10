@@ -77,8 +77,12 @@ class Signal implements SingletonInterface
             if ($this->sdlService->folderShouldBeSecured($publicUrl)) {
                 $overlayIdentifier = 'overlay-restricted';
             }
-        } elseif ($resource instanceof File && empty($resource->getPublicUrl())) {
-            $overlayIdentifier = 'overlay-restricted';
+        } elseif ($resource instanceof File) {
+            $folder = $resource->getParentFolder();
+            $publicUrl = ($folder->getStorage()->getPublicUrl($folder) ?? $folder->getIdentifier()) . $resource->getName();
+            if ($this->sdlService->pathShouldBeSecured($publicUrl)) {
+                $overlayIdentifier = 'overlay-restricted';
+            }
         }
 
         return [$resource, $size, $options, $iconIdentifier, $overlayIdentifier];
