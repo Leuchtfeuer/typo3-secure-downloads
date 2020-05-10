@@ -1,21 +1,23 @@
 .. include:: ../../Includes.txt
 
-.. _regex:
+.. _admin-regularExpressions:
 
 ===================
 Regular Expressions
 ===================
-
-The configuration values of :ref:`admin-configuration-securedDirs`, :ref:`admin-configuration-securedFileTypes` and
-:ref:`admin-configuration-forcedownloadtype` allow regular expressions. All expressions will be handled case insensitive.
+The configuration values of :ref:`admin-extensionConfiguration-securedDirs`, :ref:`admin-extensionConfiguration-securedFileTypes`,
+:ref:`admin-extensionConfiguration-forcedownloadtype` and :ref:`admin-extensionConfiguration-groupCheckDirs` allow regular
+expressions. All expressions will be handled case insensitive.
 
 .. hint::
     The slash character :code:`(/)` is automatically quoted for your convenience.
 
+.. _admin-regularExpressions-examples:
+
 Examples
 ========
 
-The following are a few examples of the :ref:`admin-configuration-securedDirs` configuration option:
+The following are a few examples of the :ref:`admin-extensionConfiguration-securedDirs` configuration option:
 
 For example, if you need to secure the `fileadmin` and the `typo3temp` directory, but not an uploads directory, you can simply
 write::

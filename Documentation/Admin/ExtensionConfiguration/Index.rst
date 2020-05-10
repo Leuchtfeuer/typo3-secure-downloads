@@ -1,6 +1,6 @@
 ﻿.. include:: ../../Includes.txt
 
-.. _configuration:
+.. _admin-extensionConfiguration:
 
 =======================
 Extension Configuration
@@ -8,34 +8,40 @@ Extension Configuration
 
 All configuration is made in the "Extension Configuration" section of the "Settings" module beneath the "Admin Tools".
 
+.. figure:: ../../Images/ExtensionConfiguration.png
+   :alt: Extension Configuration
+   :class: with-shadow
+
+   The extension configuration can be found in the admin tools.
+
 Properties
 ==========
 
 .. container:: ts-properties
 
-	==================================== ==================================== ==================
-	Property                             Tab                                  Type
-	==================================== ==================================== ==================
-	securedDirs_                         Parsing                              string
-	securedFiletypes_                    Parsing                              string
-	linkPrefix_                          Link Generation                      string
-	tokenPrefix_                         Link Generation                      string
-	cachetimeadd_                        Link Generation                      positive integer
-	documentRootPath_                    Link Generation                      string
-	enableGroupCheck_                    Group Check                          boolean
-	groupCheckDirs_                      Group Check                          string
-	excludeGroups_                       Group Check                          string
-	strictGroupCheck_                    Group Check                          boolean
-	outputFunction_                      File Delivery                        options
-	protectedPath_                       File Delivery                        string
-	forcedownload_                       File Delivery                        boolean
-	forcedownloadtype_                   File Delivery                        string
-	log_                                 Module                               boolean
-	==================================== ==================================== ==================
+   ==================================== ==================================== ==================
+   Property                             Tab                                  Type
+   ==================================== ==================================== ==================
+   securedDirs_                         Parsing                              string
+   securedFiletypes_                    Parsing                              string
+   linkPrefix_                          Link Generation                      string
+   tokenPrefix_                         Link Generation                      string
+   cachetimeadd_                        Link Generation                      positive integer
+   documentRootPath_                    Link Generation                      string
+   enableGroupCheck_                    Group Check                          boolean
+   groupCheckDirs_                      Group Check                          string
+   excludeGroups_                       Group Check                          string
+   strictGroupCheck_                    Group Check                          boolean
+   outputFunction_                      File Delivery                        options
+   protectedPath_                       File Delivery                        string
+   forcedownload_                       File Delivery                        boolean
+   forcedownloadtype_                   File Delivery                        string
+   log_                                 Module                               boolean
+   ==================================== ==================================== ==================
 
 .. ### BEGIN~OF~TABLE ###
 
-.. _admin-configuration-securedDirs:
+.. _admin-extensionConfiguration-securedDirs:
 
 securedDirs
 -----------
@@ -50,10 +56,10 @@ securedDirs
    Description
          List of directories of your TYPO3 Server in that files should be secured, separated by pipe (|). Files in subdirectories
          will also be secured.
-         You can use :ref:`regex` for this option.
+         You can use :ref:`regular expressions <admin-regularExpressions>` for this option.
 
 
-.. _admin-configuration-securedFileTypes:
+.. _admin-extensionConfiguration-securedFileTypes:
 
 securedFiletypes
 ----------------
@@ -68,10 +74,10 @@ securedFiletypes
    Description
          List of file types (file extensions) that should be protected. Multiple file extension patterns can be separated by a
          pipe (|). You can use an asterisk (*) if you want to protect all files within configured directories.
-         You can use :ref:`regex` for this option.
+         You can use :ref:`regular expressions <admin-regularExpressions>` for this option.
 
 
-.. _admin-configuration-linkPrefix:
+.. _admin-extensionConfiguration-linkPrefix:
 
 linkPrefix
 ----------
@@ -87,7 +93,7 @@ linkPrefix
          Prefix for generated links (the `"securedl"` part in "https://example.com/securedl/sdl-[JWT]/image.png").
 
 
-.. _admin-configuration-tokenPrefix:
+.. _admin-extensionConfiguration-tokenPrefix:
 
 tokenPrefix
 -----------
@@ -103,7 +109,7 @@ tokenPrefix
          Prefix for generated token (the `"sdl-"` part in "https://example.com/securedl/sdl-[JWT]/image.png").
 
 
-.. _admin-configuration-cacheTimeAdd:
+.. _admin-extensionConfiguration-cacheTimeAdd:
 
 cachetimeadd
 ------------
@@ -120,7 +126,7 @@ cachetimeadd
          carries the link plus this value (in seconds).
 
 
-.. _admin-configuration-documentRootPath:
+.. _admin-extensionConfiguration-documentRootPath:
 
 documentRootPath
 ----------------
@@ -138,7 +144,7 @@ documentRootPath
          (e.g. "/proxy-typo3/").
 
 
-.. _admin-configuration-enableGroupCheck:
+.. _admin-extensionConfiguration-enableGroupCheck:
 
 enableGroupCheck
 ----------------
@@ -155,7 +161,7 @@ enableGroupCheck
          group in common. Enabling this makes the checks *less* restrictive!
 
 
-.. _admin-configuration-groupCheckDirs:
+.. _admin-extensionConfiguration-groupCheckDirs:
 
 groupCheckDirs
 --------------
@@ -170,9 +176,10 @@ groupCheckDirs
    Description
          A list of directories for the less restrictive group check, separated by a pipe (|). Leave empty if you want to enable
          the group check for all directories.
+         You can use :ref:`regular expressions <admin-regularExpressions>` for this option.
 
 
-.. _admin-configuration-excludeGroups:
+.. _admin-extensionConfiguration-excludeGroups:
 
 excludeGroups
 -------------
@@ -188,7 +195,7 @@ excludeGroups
          A comma separated list of groups that are excluded from the group check feature (if enabled).
 
 
-.. _admin-configuration-strictGroupCheck:
+.. _admin-extensionConfiguration-strictGroupCheck:
 
 strictGroupCheck
 ----------------
@@ -204,7 +211,7 @@ strictGroupCheck
          If enabled, files are only delivered if the user groups exactly match those of the secured link.
 
 
-.. _admin-configuration-outputFunction:
+.. _admin-extensionConfiguration-outputFunction:
 
 outputFunction
 --------------
@@ -217,15 +224,11 @@ outputFunction
    Default
          :code:`stream`
    Description
-         Due to possible restrictions in php and php settings, you probably need to adjust this value. By default "readfile" is
-         used to deliver the file. If this function is disabled in your php settings, you can try "fpassthru". If you have
-         problems with php `memory_limit` and big files to download, you need to set this to "stream", which delivers
-         the files in small portions.
-         For nginx web servers, there is also the possibility to deliver the file directly from the server by setting this
-         property to "x-accel-redirect".
+         Files are delivered as a file stream to the browser. For nginx web servers, there is the possibility to deliver the file
+         directly from the server by setting this property to "x-accel-redirect".
 
 
-.. _admin-configuration-protectedPath:
+.. _admin-extensionConfiguration-protectedPath:
 
 protectedPath
 -------------
@@ -249,7 +252,8 @@ protectedPath
             }
 
 
-.. _admin-configuration-forcedownload:
+
+.. _admin-extensionConfiguration-forcedownload:
 
 forcedownload
 -------------
@@ -266,7 +270,7 @@ forcedownload
          in the browser window.
 
 
-.. _admin-configuration-forcedownloadtype:
+.. _admin-extensionConfiguration-forcedownloadtype:
 
 forcedownloadtype
 -----------------
@@ -281,10 +285,10 @@ forcedownloadtype
    Description
          A list of file types that should not be opened inline in a browser, separated by a pipe. Only used if "forcedownload"
          (see: forcedownload_) is enabled. You can use an asterisk (*) if you want to force download for all file types.
-         You can use :ref:`regex` for this option.
+         You can use :ref:`regular expressions <admin-regularExpressions>` for this option.
 
 
-.. _admin-configuration-log:
+.. _admin-extensionConfiguration-log:
 
 log
 ---

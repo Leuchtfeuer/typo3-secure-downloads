@@ -57,10 +57,8 @@ Secure Downloads
 
 .. toctree::
     :maxdepth: 3
-    :titlesonly:
-    :glob:
+    :hidden:
 
-    Introduction/Index
-    AdministratorManual/Index
-    BackendModule/Index
-    Miscellaneous/Index
+    Admin/Index
+    Editor/Index
+    About/Index
