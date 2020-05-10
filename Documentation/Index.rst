@@ -28,8 +28,9 @@ Secure Downloads
    dev@Leuchtfeuer.com
 
 :License:
-   This document is published under the Open Content License
-   available from http://www.opencontent.org/opl.shtml
+   This extension documentation is published under the
+   `CC BY-NC-SA 4.0 <https://creativecommons.org/licenses/by-nc-sa/4.0/>`__ (Creative Commons)
+   license.
 
 .. hint::
 
