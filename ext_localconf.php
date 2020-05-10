@@ -14,6 +14,17 @@ call_user_func(
             (new \Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration())->getLinkPrefix()
         );
 
+        ##################
+        #   FAL DRIVER   #
+        ##################
+        $driverRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\Driver\DriverRegistry::class);
+        $driverRegistry->registerDriverClass(
+            \Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver::class,
+            \Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver::DRIVER_SHORT_NAME,
+            \Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver::DRIVER_NAME,
+            'FILE:EXT:secure_downloads/Configuration/Resource/Driver/SecureDownloadsDriverFlexForm.xml'
+        );
+
         // Register default token
         \Leuchtfeuer\SecureDownloads\Registry\TokenRegistry::register(
             'tx_securedownloads_default',

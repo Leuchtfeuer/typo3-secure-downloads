@@ -19,5 +19,9 @@ call_user_func(
                 ]
             );
         }
+
+        // Create resource storage
+        $storageRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Leuchtfeuer\SecureDownloads\Domain\Repository\StorageRepository::class);
+        $storageRepository->createSecureDownloadStorage();
     }, 'secure_downloads'
 );

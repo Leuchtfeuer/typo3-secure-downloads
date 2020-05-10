@@ -13,10 +13,11 @@ namespace Leuchtfeuer\SecureDownloads\EventListener;
  *
  ***/
 
+use Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver;
 use Leuchtfeuer\SecureDownloads\Service\SecureDownloadService;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent;
-use TYPO3\CMS\Core\Resource\Driver\LocalDriver;
+use TYPO3\CMS\Core\Resource\Driver\AbstractHierarchicalFilesystemDriver;
 use TYPO3\CMS\Core\Resource\Event\GeneratePublicUrlForResourceEvent;
 use TYPO3\CMS\Core\Resource\Exception;
 use TYPO3\CMS\Core\Resource\File;
@@ -51,10 +52,10 @@ class SecureDownloadsEventListener implements SingletonInterface
         $driver = $event->getDriver();
         $resource = $event->getResource();
 
-        if ($driver instanceof LocalDriver && ($resource instanceof File || $resource instanceof ProcessedFile)) {
+        if ($driver instanceof AbstractHierarchicalFilesystemDriver && ($resource instanceof File || $resource instanceof ProcessedFile)) {
             try {
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier());
-                if ($this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
+                if ($driver instanceof SecureDownloadsDriver || $this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
                     $securedUrl = $this->getSecuredUrl($event->isRelativeToCurrentScript(), $publicUrl, $driver);
                     $event->setPublicUrl($securedUrl);
                 }
@@ -72,20 +73,29 @@ class SecureDownloadsEventListener implements SingletonInterface
     public function onIconFactoryEmitBuildIconForResourceSignal(ModifyIconForResourcePropertiesEvent $event): void
     {
         $resource = $event->getResource();
+        $driverType = $resource->getStorage()->getDriverType();
 
-        if ($resource instanceof Folder) {
-            $publicUrl = $resource->getStorage()->getPublicUrl($resource) ?? $resource->getIdentifier();
-            if ($this->secureDownloadService->folderShouldBeSecured($publicUrl)) {
-                $overlayIdentifier = 'overlay-restricted';
-            }
-        } elseif ($resource instanceof File && empty($resource->getPublicUrl())) {
+        if ($driverType === SecureDownloadsDriver::DRIVER_SHORT_NAME) {
             $overlayIdentifier = 'overlay-restricted';
+        } else {
+            if ($resource instanceof Folder) {
+                $publicUrl = $resource->getStorage()->getPublicUrl($resource) ?? $resource->getIdentifier();
+                if ($this->secureDownloadService->folderShouldBeSecured($publicUrl)) {
+                    $overlayIdentifier = 'overlay-restricted';
+                }
+            } elseif ($resource instanceof File) {
+                $folder = $resource->getParentFolder();
+                $publicUrl = ($folder->getStorage()->getPublicUrl($folder) ?? $folder->getIdentifier()) . $resource->getName();
+                if ($this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
+                    $overlayIdentifier = 'overlay-restricted';
+                }
+            }
         }
 
         $event->setOverlayIdentifier($overlayIdentifier ?? $event->getOverlayIdentifier());
     }
 
-    protected function getSecuredUrl(bool $relativeToCurrentScript, string $publicUrl, LocalDriver $driver): string
+    protected function getSecuredUrl(bool $relativeToCurrentScript, string $publicUrl, AbstractHierarchicalFilesystemDriver $driver): string
     {
         if ($relativeToCurrentScript === true) {
             $absolutePathToContainingFolder = PathUtility::dirname(
