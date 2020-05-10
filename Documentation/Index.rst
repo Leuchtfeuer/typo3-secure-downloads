@@ -31,6 +31,10 @@ Secure Downloads
    This document is published under the Open Content License
    available from http://www.opencontent.org/opl.shtml
 
+.. hint::
+
+   The documentation for version 4 and below can be found `here <https://docs.typo3.org/p/bitmotion/secure-downloads/4.1/en-us/Introduction/Index.html>`__.
+
 **TYPO3**
 
    The content of this document is related to TYPO3, a GNU/GPL CMS/Framework available from `www.typo3.org <http://www.typo3.org/>`_.
