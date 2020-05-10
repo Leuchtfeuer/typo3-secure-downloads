@@ -1,6 +1,6 @@
 ﻿.. include:: ../../Includes.txt
 
-.. _configuration:
+.. _admin-extensionConfiguration:
 
 =======================
 Extension Configuration
@@ -8,38 +8,44 @@ Extension Configuration
 
 All configuration is made in the "Extension Configuration" section of the "Settings" module beneath the "Admin Tools".
 
+.. figure:: ../../Images/ExtensionConfiguration.png
+   :alt: Extension Configuration
+   :class: with-shadow
+
+   The extension configuration can be found in the admin tools.
+
 Properties
 ==========
 
 .. container:: ts-properties
 
-	==================================== ==================================== ==================
-	Property                             Tab                                  Type
-	==================================== ==================================== ==================
-	securedDirs_                         Parsing                              string
-	securedFiletypes_                    Parsing                              string
-	domain_ (legacy)                     Parsing                              string
-	linkPrefix_                          Link Generation                      string
-	tokenPrefix_                         Link Generation                      string
-	cachetimeadd_                        Link Generation                      positive integer
-	documentRootPath_                    Link Generation                      string
-	enableGroupCheck_                    Group Check                          boolean
-	groupCheckDirs_                      Group Check                          string
-	excludeGroups_                       Group Check                          string
-	strictGroupCheck_                    Group Check                          boolean
-	outputFunction_                      File Delivery                        options
-	outputChunkSize_ (legacy)            File Delivery                        positive integer
-	protectedPath_                       File Delivery                        string
-	forcedownload_                       File Delivery                        boolean
-	forcedownloadtype_                   File Delivery                        string
-	additionalMimeTypes_ (legacy)        File Delivery                        string
-	log_                                 Module                               boolean
-	debug_ (legacy)                      Debug                                options
-	==================================== ==================================== ==================
+   ==================================== ==================================== ==================
+   Property                             Tab                                  Type
+   ==================================== ==================================== ==================
+   securedDirs_                         Parsing                              string
+   securedFiletypes_                    Parsing                              string
+   domain_ (legacy)                     Parsing                              string
+   linkPrefix_                          Link Generation                      string
+   tokenPrefix_                         Link Generation                      string
+   cachetimeadd_                        Link Generation                      positive integer
+   documentRootPath_                    Link Generation                      string
+   enableGroupCheck_                    Group Check                          boolean
+   groupCheckDirs_                      Group Check                          string
+   excludeGroups_                       Group Check                          string
+   strictGroupCheck_                    Group Check                          boolean
+   outputFunction_                      File Delivery                        options
+   outputChunkSize_ (legacy)            File Delivery                        positive integer
+   protectedPath_                       File Delivery                        string
+   forcedownload_                       File Delivery                        boolean
+   forcedownloadtype_                   File Delivery                        string
+   additionalMimeTypes_ (legacy)        File Delivery                        string
+   log_                                 Module                               boolean
+   debug_ (legacy)                      Debug                                options
+   ==================================== ==================================== ==================
 
 .. ### BEGIN~OF~TABLE ###
 
-.. _admin-configuration-securedDirs:
+.. _admin-extensionConfiguration-securedDirs:
 
 securedDirs
 -----------
@@ -54,10 +60,10 @@ securedDirs
    Description
          List of directories of your TYPO3 Server in that files should be secured, separated by pipe (|). Files in subdirectories
          will also be secured.
-         You can use :ref:`regex` for this option.
+         You can use :ref:`regular expressions <admin-regularExpressions>` for this option.
 
 
-.. _admin-configuration-securedFileTypes:
+.. _admin-extensionConfiguration-securedFileTypes:
 
 securedFiletypes
 ----------------
@@ -72,10 +78,10 @@ securedFiletypes
    Description
          List of file types (file extensions) that should be protected. Multiple file extension patterns can be separated by a
          pipe (|). You can use an asterisk (*) if you want to protect all files within configured directories.
-         You can use :ref:`regex` for this option.
+         You can use :ref:`regular expressions <admin-regularExpressions>` for this option.
 
 
-.. _admin-configuration-domain:
+.. _admin-extensionConfiguration-domain:
 
 domain
 ------
@@ -91,10 +97,10 @@ domain
          This is only required for absolute file links to your local server, e.g. :code:`https://example.com//fileadmin/image.jpg`.
          Not needed for internal (relative) links. Please note, that this configuration property is deprecated. Parsing the HTML
          output will no longer work with version 5. You should consider to use the TYPO3 API instead.
-         You can use :ref:`regex` for this option.
+         You can use :ref:`regular expressions <admin-regularExpressions>` for this option.
 
 
-.. _admin-configuration-linkPrefix:
+.. _admin-extensionConfiguration-linkPrefix:
 
 linkPrefix
 ----------
@@ -110,7 +116,7 @@ linkPrefix
          Prefix for generated links (the `"securedl"` part in "https://example.com/securedl/sdl-[JWT]/image.png").
 
 
-.. _admin-configuration-tokenPrefix:
+.. _admin-extensionConfiguration-tokenPrefix:
 
 tokenPrefix
 -----------
@@ -126,7 +132,7 @@ tokenPrefix
          Prefix for generated token (the `"sdl-"` part in "https://example.com/securedl/sdl-[JWT]/image.png").
 
 
-.. _admin-configuration-cacheTimeAdd:
+.. _admin-extensionConfiguration-cacheTimeAdd:
 
 cachetimeadd
 ------------
@@ -143,7 +149,7 @@ cachetimeadd
          carries the link plus this value (in seconds).
 
 
-.. _admin-configuration-documentRootPath:
+.. _admin-extensionConfiguration-documentRootPath:
 
 documentRootPath
 ----------------
@@ -161,7 +167,7 @@ documentRootPath
          (e.g. "/proxy-typo3/").
 
 
-.. _admin-configuration-enableGroupCheck:
+.. _admin-extensionConfiguration-enableGroupCheck:
 
 enableGroupCheck
 ----------------
@@ -178,7 +184,7 @@ enableGroupCheck
          group in common. Enabling this makes the checks *less* restrictive!
 
 
-.. _admin-configuration-groupCheckDirs:
+.. _admin-extensionConfiguration-groupCheckDirs:
 
 groupCheckDirs
 --------------
@@ -193,9 +199,10 @@ groupCheckDirs
    Description
          A list of directories for the less restrictive group check, separated by a pipe (|). Leave empty if you want to enable
          the group check for all directories.
+         You can use :ref:`regular expressions <admin-regularExpressions>` for this option.
 
 
-.. _admin-configuration-excludeGroups:
+.. _admin-extensionConfiguration-excludeGroups:
 
 excludeGroups
 -------------
@@ -211,7 +218,7 @@ excludeGroups
          A comma separated list of groups that are excluded from the group check feature (if enabled).
 
 
-.. _admin-configuration-strictGroupCheck:
+.. _admin-extensionConfiguration-strictGroupCheck:
 
 strictGroupCheck
 ----------------
@@ -227,7 +234,7 @@ strictGroupCheck
          If enabled, files are only delivered if the user groups exactly match those of the secured link.
 
 
-.. _admin-configuration-outputFunction:
+.. _admin-extensionConfiguration-outputFunction:
 
 outputFunction
 --------------
@@ -243,12 +250,13 @@ outputFunction
          Due to possible restrictions in php and php settings, you probably need to adjust this value. By default "readfile" is
          used to deliver the file. If this function is disabled in your php settings, you can try "fpassthru". If you have
          problems with php `memory_limit` and big files to download, you need to set this to "stream", which delivers
-         the files in small portions. The option "readfile_chunked" is deprecated, but does the same as "stream" for now.
+         the files in small portions. The options "readfile_chunked", "readfile" and "fpassthru" are deprecated and will be
+         removed in version 5. You should consider to use "stream" as output function.
          For nginx web servers, there is also the possibility to deliver the file directly from the server by setting this
          property to "x-accel-redirect".
 
 
-.. _admin-configuration-protectedPath:
+.. _admin-extensionConfiguration-protectedPath:
 
 protectedPath
 -------------
@@ -272,7 +280,7 @@ protectedPath
             }
 
 
-.. _admin-configuration-outputChunkSize:
+.. _admin-extensionConfiguration-outputChunkSize:
 
 outputChunkSize
 ---------------
@@ -290,7 +298,7 @@ outputChunkSize
          that this property is deprecated and will be removed in version 5.
 
 
-.. _admin-configuration-forcedownload:
+.. _admin-extensionConfiguration-forcedownload:
 
 forcedownload
 -------------
@@ -307,7 +315,7 @@ forcedownload
          in the browser window.
 
 
-.. _admin-configuration-forcedownloadtype:
+.. _admin-extensionConfiguration-forcedownloadtype:
 
 forcedownloadtype
 -----------------
@@ -322,10 +330,10 @@ forcedownloadtype
    Description
          A list of file types that should not be opened inline in a browser, separated by a pipe. Only used if "forcedownload"
          (see: forcedownload_) is enabled. You can use an asterisk (*) if you want to force download for all file types.
-         You can use :ref:`regex` for this option.
+         You can use :ref:`regular expressions <admin-regularExpressions>` for this option.
 
 
-.. _admin-configuration-additionalMimeTypes:
+.. _admin-extensionConfiguration-additionalMimeTypes:
 
 additionalMimeTypes
 -------------------
@@ -340,11 +348,11 @@ additionalMimeTypes
    Description
          Comma separated list of additional MIME types (file extension / mime type pairs, in which file extension and MIME type
          is separated by a pipe symbol). Can be used to override existing MIME type settings of the extension as well. Please
-         note, that this property is deprecated and will be removed in version 5. You should use the TYPO3 API for adding
-         additional MIME types.
+         note, that this property is deprecated and will be removed in version 5. You should extend the globals
+         :php:`$GLOBALS['TYPO3_CONF_VARS']['SYS']['FileInfo']['fileExtensionToMimeType']` array.
 
 
-.. _admin-configuration-log:
+.. _admin-extensionConfiguration-log:
 
 log
 ---
@@ -361,7 +369,7 @@ log
          decide to turn it on, a backend module will be activated to see the traffic caused by user/ file
 
 
-.. _admin-configuration-debug:
+.. _admin-extensionConfiguration-debug:
 
 debug
 -----
@@ -374,6 +382,6 @@ debug
    Default
          :code:`0`
    Description
-         For developing only. This configuration is deprecated. Please consider to use PSR-3 Logger.
+         For developing only. Please note, that this property is deprecated and will be removed in version 5.
 
 .. ### END~OF~TABLE ###

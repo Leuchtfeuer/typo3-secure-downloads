@@ -1,0 +1,28 @@
+.. include:: ../../Includes.txt
+
+===================
+Version 4.1.1 - TBA
+===================
+
+This release is a future release.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v4.1.1>`__.
+
+All Changes
+===========
+
+This is a list of all changes in this release::
+
+   2020-05-10 [DOC] Update readme (Commit d113073 by Florian Wessels)
+   2020-05-10 [FOLLOW-UP][BUGFIX] Show overlay icon for files (Commit dc0e8a3 by Florian Wessels)
+   2020-05-10 [BUGFIX] Show overlay icon for files (Commit 866140c by Florian Wessels)
+   2020-05-09 [TASK] Stream file where possible (Commit 0307df6 by Florian Wessels)
+   2020-05-09 [TASK] Mark several properties and methods as deprecated (Commit 20a5053 by Florian Wessels)
+   2020-05-09 [BUGFIX] Perform group check only if file is covered by group check (Commit 88dab5c by Florian Wessels)
+   2020-05-09 [BUGFIX] Apply group check only to configured directories (Commit c908f06 by Florian Wessels)
+   2020-05-09 [TASK] Set version to 4.1.1-dev (Commit c5be46b by Florian Wessels)
+

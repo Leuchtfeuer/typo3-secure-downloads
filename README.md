@@ -39,6 +39,8 @@ We are currently supporting following TYPO3 versions:<br><br>
 
 ### Outdated Versions
 
+For the following versions no more free bug fixes and new features will be provided by the authors:
+
 | Extension Version | TYPO3 v9 | TYPO3 v8 | TYPO3 v7 | TYPO3 v6.2 | TYPO3 v4.5 |
 | ----------------- | -------- | -------- | -------- | ---------- | ---------- |
 | 3.x               | x        | x        | -        | -          | -          |
@@ -71,7 +73,7 @@ content directly into the `typo3conf/ext` directory of your TYPO3 instance. But 
 must be `secure_downloads` (the repository name will be default).
 
 ## Configuration
-After installation you need to configure this extension. Take a look at the corresponding section of the official 
+After installation, you need to configure this extension. Take a look at the corresponding section of the official 
 [manual](https://docs.typo3.org/p/bitmotion/secure-downloads/4.1/en-us/AdministratorManual/ExtensionConfiguration/Index.html).
 
 ### Best Practice
