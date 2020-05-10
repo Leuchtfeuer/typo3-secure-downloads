@@ -106,7 +106,7 @@ of this extension.
 
 ## Changelog
 The changelog can be found in the changelog chapter of the
-[official TYPO3 documentation](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/master/en-us/Miscellaneous/ChangeLog/Index.html)
+[official TYPO3 documentation](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/master/en-us/About/ChangeLog/Index.html)
 of this extension.
 
 ## Contributing
