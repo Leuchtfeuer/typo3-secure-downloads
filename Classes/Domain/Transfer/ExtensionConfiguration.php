@@ -157,6 +157,14 @@ class ExtensionConfiguration implements SingletonInterface
     private $createFileStorage = false;
 
     /**
+     * If this option is activated, valid links are generated for users who are not logged in. If this option is deactivated
+     * unregistered users (user ID = 0) will not be able to access secured files.
+     *
+     * @var bool If true, not logged in users are able to access secured files
+     */
+    private $allowPublicAccess = true;
+
+    /**
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws ExtensionConfigurationPathDoesNotExistException
      */
@@ -271,5 +279,10 @@ class ExtensionConfiguration implements SingletonInterface
     public function isCreateFileStorage(): bool
     {
         return (bool)$this->createFileStorage;
+    }
+
+    public function isAllowPublicAccess(): bool
+    {
+        return (bool)$this->allowPublicAccess;
     }
 }

@@ -17,10 +17,16 @@ class UserCheck extends AbstractCheck
 {
     public function hasAccess(): bool
     {
-        if ($this->isFileCoveredByGroupCheck() || $this->token->getUser() === 0) {
+        $user = $this->token->getUser();
+
+        if (!$this->extensionConfiguration->isAllowPublicAccess() && $user === 0) {
+            return false;
+        }
+
+        if ($this->isFileCoveredByGroupCheck() || $user === 0) {
             return true;
         }
 
-        return $this->token->getUser() === $this->userAspect->get('id');
+        return $user === $this->userAspect->get('id');
     }
 }

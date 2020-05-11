@@ -49,5 +49,8 @@ outputFunction = stream
 # cat=File Delivery/040; type=string; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:protectedPath
 protectedPath =
 
+# cat=File Delivery/050; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:allowPublicAccess
+allowPublicAccess = 1
+
 # cat=Logging; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:log
 log = 0

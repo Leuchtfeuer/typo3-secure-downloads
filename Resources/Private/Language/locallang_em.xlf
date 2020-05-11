@@ -52,6 +52,9 @@
             <trans-unit id="protectedPath">
                 <source>Protected Path: Path to protected storage for nginx x-accel-redirect delivery method.</source>
             </trans-unit>
+            <trans-unit id="allowPublicAccess">
+                <source>Allow Access For Not Logged In Users: If this option is activated, valid links are generated for users who are not logged in. If this option is deactivated, unregistered users (user ID = 0) will not be able to access secured files.</source>
+            </trans-unit>
             <trans-unit id="log">
                 <source>Log Module: Log each file access. This option will enable a backend module.</source>
             </trans-unit>

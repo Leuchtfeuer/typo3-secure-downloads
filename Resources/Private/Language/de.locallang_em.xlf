@@ -52,6 +52,9 @@
             <trans-unit id="protectedPath">
                 <target>Geschützter Pfad: Pfad zum geschützten Speicher für die nginx x-accel-redirect Auslieferung. Wird nur benötigt, wenn diese Option aktiviert ist.</target>
             </trans-unit>
+            <trans-unit id="allowPublicAccess">
+                <target>Zugriff für nicht angemeldete Benutzer erlauben: Wenn diese Option aktiviert ist, werden für nicht angemeldete Benutzer gültige Links generiert. Wenn diese Option deaktiviert ist, haben nicht angemeldete Benutzer (User-ID = 0) generell keinen Zugriff auf gesicherte Dateien.</target>
+            </trans-unit>
             <trans-unit id="log">
                 <target>Log Modul: Der Zugriff auf jede geschützte Datei wird protokolliert. Wenn du diese Option aktivierst, wird ein Backend Modul freigeschaltet.</target>
             </trans-unit>

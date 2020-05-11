@@ -37,6 +37,7 @@ Properties
    protectedPath_                       File Delivery                        string
    forcedownload_                       File Delivery                        boolean
    forcedownloadtype_                   File Delivery                        string
+   allowPublicAccess_                   File Delivery                        boolean
    log_                                 Module                               boolean
    ==================================== ==================================== ==================
 
@@ -45,7 +46,7 @@ Properties
 .. _admin-extensionConfiguration-createFileStorage:
 
 createFileStorage
------------
+-----------------
 .. container:: table-row
 
    Property
@@ -304,6 +305,23 @@ forcedownloadtype
          A list of file types that should not be opened inline in a browser, separated by a pipe. Only used if "forcedownload"
          (see: forcedownload_) is enabled. You can use an asterisk (*) if you want to force download for all file types.
          You can use :ref:`regular expressions <admin-regularExpressions>` for this option.
+
+
+.. _admin-extensionConfiguration-allowPublicAccess:
+
+allowPublicAccess
+-----------------
+.. container:: table-row
+
+   Property
+        allowPublicAccess
+   Data type
+        boolean
+   Default
+        :code:`true`
+   Description
+        If this option is activated, valid links are generated for users who are not logged in. If this option is deactivated,
+        unregistered users (user ID = 0) will not be able to access secured files.
 
 
 .. _admin-extensionConfiguration-log:
