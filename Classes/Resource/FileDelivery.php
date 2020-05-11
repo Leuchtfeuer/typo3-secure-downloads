@@ -256,19 +256,19 @@ class FileDelivery implements SingletonInterface
         $this->token = $event->getToken();
     }
 
-    protected function dispatchBeforeFileDeliverEvent(&$outputFunction, &$header, $fileName, $mimeType, $forceDownload)
-    {
-        $event = new BeforeReadDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
-        $event = $this->eventDispatcher->dispatch($event);
-        $outputFunction = $event->getOutputFunction();
-        $header = $event->getHeader();
-    }
-
     protected function dispatchAfterFileRetrievedEvent(string &$file, string &$fileName)
     {
         $event = new AfterFileRetrievedEvent($file, $fileName);
         $event = $this->eventDispatcher->dispatch($event);
         $file = $event->getFile();
         $fileName = $event->getFileName();
+    }
+
+    protected function dispatchBeforeFileDeliverEvent(&$outputFunction, &$header, $fileName, $mimeType, $forceDownload)
+    {
+        $event = new BeforeReadDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
+        $event = $this->eventDispatcher->dispatch($event);
+        $outputFunction = $event->getOutputFunction();
+        $header = $event->getHeader();
     }
 }
