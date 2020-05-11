@@ -1,0 +1,169 @@
+﻿.. include:: ../../Includes.txt
+
+===================
+Version 5.0.0 - TBA
+===================
+
+This release is a future release.
+
+Download
+========
+
+Download the beta version from `GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v5.0.0-beta>`__.
+
+Added
+=====
+
+Changed
+=======
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+   2019-12-03 [TASK] Update references (Commit 917a606 by Florian Wessels)
+   2019-12-03 [TASK] Update dependencies (Commit d923531 by Florian Wessels)
+   2019-12-03 [TASK] Add release notes for version 3.0.2 (Commit fb550e7 by Florian Wessels)
+   2019-12-03 [BUGFIX] Use proper block styles (Commit ee18855 by Florian Wessels)
+   2019-12-03 [TASK] Prepare release notes (Commit a0c759b by Florian Wessels)
+   2019-12-03 [TASK] Allow to set additional link timeout (Commit 4f79adc by Florian Wessels)
+   2019-12-03 [FOLLOW-UP] Add hints for regex (Commit db7427c by Florian Wessels)
+   2019-12-03 [DOC] Add hints for regex (Commit b25e694 by Florian Wessels)
+   2019-12-03 [BUGFIX] Update include path (Commit 3d95426 by Florian Wessels)
+   2019-12-03 [WIP] Update documentation (Commit e61abd3 by Florian Wessels)
+   2019-12-03 [TASK] Remove obsolete replace entry (Commit a7be6cf by Florian Wessels)
+   2019-12-03 [TASK] Force slash in x-accel-redirect header (Commit 44c3850 by Florian Wessels)
+   2019-12-03 [TASK] Apply CS and fix some spelling mistakes (Commit 2b8dea1 by Florian Wessels)
+   2019-12-03 [TASK] Use newly introduced API (Commit bbf9d53 by Florian Wessels)
+   2019-12-03 [FEATURE] Introduce API for getting secured URLs (Commit 620e637 by Florian Wessels)
+   2019-12-03 [TASK] Mark ObjectManager as deprecated (Commit 50607d1 by Florian Wessels)
+   2019-12-03 [TASK] Support regular expressions, again (Commit faa9b9f by Florian Wessels)
+   2019-12-02 [FEATURE] Introduce stream as output function (Commit 9371cc0 by Florian Wessels)
+   2019-12-02 [BUGFIX] Store filter data in backend user session (Commit 8585d05 by Florian Wessels)
+   2019-12-02 [TASK] Add README file (Commit ebebdc7 by Florian Wessels)
+   2019-12-02 [DOC] Update documentation (Commit 24ee36e by Florian Wessels)
+   2019-12-02 [DOC] Update documentation (Commit 560436f by Florian Wessels)
+   2019-12-02 [TASK] Apply CS (Commit a8f8600 by Florian Wessels)
+   2019-12-02 [FEATURE] Add nginx x-accel-redirect fileDelivery mode (Commit b0db813 by Florian Wessels)
+   2019-12-02 [TASK] Check whether timeout is greater than null (Commit cc42607 by Florian Wessels)
+   2019-12-02 [BUGFIX] Force value to be integer. (Commit b16da62 by Florian Wessels)
+   2019-12-02 [TASK] Mark HTML parser as deprecated (Commit d634a68 by Florian Wessels)
+   2019-12-02 [DOC] Update documentation (Commit 5f21885 by Florian Wessels)
+   2019-11-28 [TASK] Move changelog to documentation (Commit 04cc31a by Florian Wessels)
+   2019-11-27 [WIP] Update documentation (Commit 8c1dbc6 by Florian Wessels)
+   2019-11-27 [TASK] Remove colon (Commit 3fbf302 by Florian Wessels)
+   2019-11-27 [TASK] Spelling (Commit 7a696ec by Florian Wessels)
+   2019-11-27 [TASK] Add hint (Commit 7b3ec9d by Florian Wessels)
+   2019-11-27 [TASK] Mark request context as deprecated and use core functions (Commit 95fbe81 by Florian Wessels)
+   2019-11-27 [TASK] Handle also processed files (Commit dc7f8f8 by Florian Wessels)
+   2019-11-27 [TASK] Add dedicated method for getting max chunk size (Commit 30a2fce by Florian Wessels)
+   2019-11-27 [DOC] Add code documentation (Commit 870b07c by Florian Wessels)
+   2019-11-27 [TASK] Mark parsing HTML output as deprecated (Commit 914c0d5 by Florian Wessels)
+   2019-11-26 [TASK] Update introducing php docs (Commit b8c07e6 by Florian Wessels)
+   2019-11-26 [FEATURE] Add check for incorrect configuration (Commit 8f1ef1a by Florian Wessels)
+   2019-11-26 [TASK] Use PSR-14 events instead of signals (Commit b186503 by Florian Wessels)
+   2019-11-26 [BUGFIX] Manipulate urls only for files, not for folders (Commit ae3098c by Florian Wessels)
+   2019-11-26 [TASK] Apply CS (Commit e102fb6 by Florian Wessels)
+   2019-11-26 [FEATURE] Allow to force download for all file types (Commit 931dc64 by Florian Wessels)
+   2019-11-26 [TASK] Use constants for output function (Commit 003e4ea by Florian Wessels)
+   2019-11-26 [TASK] Use dedicated class for detecting mime types (Commit b2def69 by Florian Wessels)
+   2019-11-26 [BUGFIX] Spelling (Commit 0be8765 by Florian Wessels)
+   2019-11-25 [FEATURE] Introduce wildcard for secured file types pattern (Commit a00c061 by Florian Wessels)
+   2019-11-25 [TASK] Add further mime types as mime_content_type may be false (Commit 38e2a51 by Florian Wessels)
+   2019-11-25 [TASK] Exit script after content was delivered (Commit 6b2d93d by Florian Wessels)
+   2019-11-25 [FOLLOW-UP] Move phrases into language file (Commit c5a4e32 by Florian Wessels)
+   2019-11-25 [TASK] Move phrases into language file (Commit 70a5020 by Florian Wessels)
+   2019-11-25 [BUGFIX] Call parent constructor only if exists (Commit 37625f3 by Florian Wessels)
+   2019-11-25 [TASK] Introduce TYPO3 10.2 compatibility (Commit 06260f4 by Florian Wessels)
+   2019-11-25 [TASK] Apply CS (Commit fd36bd5 by Florian Wessels)
+   2019-11-25 [TASK] Use user aspect instead of frontend user authentication (Commit 71635e1 by Florian Wessels)
+   2019-11-22 [TASK] Add secured url to additionalAbsRefPrefixDirectories (Commit f7aad50 by Florian Wessels)
+   2019-11-22 [TASK] Force positive integer (Commit 6ed3506 by Florian Wessels)
+   2019-11-22 [FEATURE] Mark secured files and folders in filelist module (Commit 5124e22 by Florian Wessels)
+   2019-11-22 [TASK] Support urls with umlauts (Commit de6c0d1 by Florian Wessels)
+   2019-11-22 [TASK] Remove unused code fragments (Commit df6f3f4 by Florian Wessels)
+   2019-11-22 [TASK] Drop legacy link generation (Commit 9e6c41e by Florian Wessels)
+   2019-11-22 [TASK] Mark softQuoteExpression as deprecated (Commit 8304be2 by Florian Wessels)
+   2019-11-22 [FEATURE] Add hooks for manipulating and reading JWT payload (Commit d252026 by Florian Wessels)
+   2019-11-22 [TASK] Introduce dedicated caching classes (Commit 526dc6f by Florian Wessels)
+   2019-11-22 [TASK] Clean up code (Commit 40ecdce by Florian Wessels)
+   2019-11-22 [TASK] Rename some variables (Commit b82f3b8 by Florian Wessels)
+   2019-11-22 [TASK] Introduce utility for handling hooks (Commit 8b9dfdc by Florian Wessels)
+   2019-11-22 [FEATURE] Introduce hook for manipulating output function and headers (Commit ba905ab by Florian Wessels)
+   2019-11-22 [TASK] Improve implementation of hooks (Commit ef8a25b by Florian Wessels)
+   2019-11-22 [TASK] Trim strings in getters (Commit cccd809 by Florian Wessels)
+   2019-11-22 [TASK] Introduce decode cache for JWTs (Commit d537e7c by Florian Wessels)
+   2019-11-22 [TASK] Apply CS (Commit 20623e6 by Florian Wessels)
+   2019-11-22 [BUGFIX] Do not log download twice (Commit 1c8219b by Florian Wessels)
+   2019-11-22 [TASK] Use EnvironmentService (Commit f26d292 by Florian Wessels)
+   2019-11-22 [TASK] Mark several properties and setters as deprecated (Commit a2c7c69 by Florian Wessels)
+   2019-11-22 [TASK] Get rid of debugging output (Commit 0538a9a by Florian Wessels)
+   2019-11-22 [TASK] Add filename to download link (Commit 649cb0f by Florian Wessels)
+   2019-11-21 [TASK] Mark debug option as deprecated and introduce PSR-3 Logger (Commit 60afb8b by Florian Wessels)
+   2019-11-21 [TASK] Prevents outputFuncSize from being larger than php memory_limit (Commit 1f17ce8 by Florian Wessels)
+   2019-11-21 [TASK] Move Filter and Statistic to Transfer directory (Commit 7147bfd by Florian Wessels)
+   2019-11-21 [TASK] Connect to slot only in FE mode (Commit 251c0f0 by Florian Wessels)
+   2019-11-21 [TASK] Remove TYPO3 Mode information from log module (Commit bfd2cb2 by Florian Wessels)
+   2019-11-21 [BUGFIX] Reintroduce annotations for domain model (Commit a969fb5 by Florian Wessels)
+   2019-11-21 [TASK] Apply CS (Commit 5eb9886 by Florian Wessels)
+   2019-11-21 [TASK] Log deprecations (Commit bf04885 by Florian Wessels)
+   2019-11-21 [TASK] Mark furhter methods as deprecated (Commit c519e5b by Florian Wessels)
+   2019-11-21 [TASK] Introduce cache for generated JWTs (Commit adc551d by Florian Wessels)
+   2019-11-21 [TASK] Use service as singleton (Commit 4cfdd7a by Florian Wessels)
+   2019-11-21 [TASK] Move method for detecting secured file into SDL service (Commit b47b8b4 by Florian Wessels)
+   2019-11-21 [TASK] Use html parser only as backup for link protection (Commit f4d22c7 by Florian Wessels)
+   2019-11-21 [TASK] Remove obsolete ShowImageController (Commit a77ac69 by Florian Wessels)
+   2019-11-21 [TASK] Update changelog (Commit 9d7f260 by Florian Wessels)
+   2019-11-21 [TASK] Use environment class for retrieving OS (Commit 731e680 by Florian Wessels)
+   2019-11-21 [TASK] Initialize FE user authentication only in eID context (Commit 86e80d2 by Florian Wessels)
+   2019-11-21 [TASK] Mark eID script as deprecated (Commit 69e806c by Florian Wessels)
+   2019-11-21 [BUGFIX] Use proper value for gettint mime type (Commit 892ec85 by Florian Wessels)
+   2019-11-21 [FEATURE] Introduce PSR-15 middleware for secured files (Commit 5022f04 by Florian Wessels)
+   2019-11-21 [TASK] Update changelog (Commit 8fa24ce by Florian Wessels)
+   2019-11-21 [TASK] Remove todos and add missing semicolon (Commit b95601f by Florian Wessels)
+   2019-11-21 [TASK] Mark hash property as deprecated (Commit 75f625b by Florian Wessels)
+   2019-11-21 [TASK] Use proper variable name (Commit ae339c0 by Florian Wessels)
+   2019-11-21 [BUGFIX] Rename variable (Commit d1de093 by Florian Wessels)
+   2019-11-21 [TASK] Use fileinfo extension for getting mime types if available (Commit 5d19053 by Florian Wessels)
+   2019-11-21 [TASK] Use pathinfo for retrieving file extension (Commit 314dd29 by Florian Wessels)
+   2019-11-21 [TASK] Add some deprecation notices (Commit 2f416fb by Florian Wessels)
+   2019-11-21 [FOLLOW-UP] Rename some variables and remove obsolte code (Commit 57bd7c8 by Florian Wessels)
+   2019-11-21 [TASK] Use configuration DTO (Commit e28cea5 by Florian Wessels)
+   2019-11-21 [FOLLOW-UP] Rename some variables and remove obsolte code (Commit 33aded6 by Florian Wessels)
+   2019-11-21 [CLEAN-UP] Rename some variables and remove obsolte code (Commit 3772384 by Florian Wessels)
+   2019-11-21 [TASK] Provide JWT library for non composer setups (Commit f3d9f49 by Florian Wessels)
+   2019-11-21 [FEATURE] Introduce link generation with JWTs (Commit affa6fa by Florian Wessels)
+   2019-11-21 [TASK] Remove cookieName as it is not used (Commit 42ee458 by Florian Wessels)
+   2019-11-21 [TASK] Mark actual link generation as deprecated (Commit 6cde671 by Florian Wessels)
+   2019-11-20 [TASK] Update changelog (Commit f05cde5 by Florian Wessels)
+   2019-11-20 [TASK] Remove upload from default secured dirextories (Commit 5d7b325 by Florian Wessels)
+   2019-11-20 [TASK] Use stronger operator (Commit 85f8887 by Florian Wessels)
+   2019-11-20 [TASK] Remove deprecated hook (Commit 5af4be5 by Florian Wessels)
+   2019-11-20 [TASK] Get rid of PATH_site constant (Commit d783af0 by Florian Wessels)
+   2019-11-20 [TASK] Use HttpUtility for exiting script (Commit 203f12a by Florian Wessels)
+   2019-11-20 [CLEAN-UP] Remove blank lines (Commit 0ec4d44 by Florian Wessels)
+   2019-11-20 [TASK] Use new extension configuration DTO (Commit 5dae1b5 by Florian Wessels)
+   2019-11-20 [TASK] Add missing return types (Commit 24a8249 by Florian Wessels)
+   2019-11-20 [BREAKING] Drop TYPO3 8 LTS support (Commit a335bfd by Florian Wessels)
+   2019-11-20 [FOLLOW-UP] Update php docs for classes (Commit 310f9f2 by Florian Wessels)
+   2019-11-20 [TASK] Mark ConfigurationManager as deprecated (Commit 277202b by Florian Wessels)
+   2019-11-20 [TASK] Introduce transfer object for extension configuration (Commit 1e2fcd1 by Florian Wessels)
+   2019-11-20 [TASK] Remove deprecated properties of log model (Commit 9392886 by Florian Wessels)
+   2019-11-20 [TASK] Update php docs for classes (Commit 3ec5b4f by Florian Wessels)
+   2019-11-20 [BREAKING] Drop apache delivery support (Commit 8fbe283 by Florian Wessels)
+
+Contributors
+============
+Following people have contributed to this release:
+
+* Sebastian Afeldt
+* Jan-Michael Loew
+* Florian Wessels
+
+Thank you very much for your support. The next beer is on us! 🍻

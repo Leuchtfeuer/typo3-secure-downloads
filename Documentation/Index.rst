@@ -66,4 +66,5 @@ Secure Downloads
 
     Admin/Index
     Editor/Index
+    Developer/Index
     About/Index

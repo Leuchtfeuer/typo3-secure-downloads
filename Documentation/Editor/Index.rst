@@ -2,9 +2,9 @@
 
 .. _editor:
 
-==============
+===========
 For Editors
-==============
+===========
 
 This extension comes with a backend module showing the access log to secured files. The module has to be enabled by setting the
 :ref:`log <admin-extensionConfiguration-log>` to `true`.
