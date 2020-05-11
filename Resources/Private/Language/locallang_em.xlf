@@ -5,7 +5,7 @@
         <header/>
         <body>
             <trans-unit id="createFileStorage">
-                <source>Create a Secure Downloads File Storage: If enabled, a secure downloads file storage will be created and added to your system automatically. Also, an .htaccess file will be put into that directory. If you are using an nginx web server, you have to deny the access to this path manually. Please note, that this configuration will be set to true by default in upcoming versions.</source>
+                <source>Create a Secure Downloads File Storage: If enabled, a secure downloads file storage is created and automatically added to your system. Also, an .htaccess file will be put into that directory. If you are using an nginx web server, you have to deny the access to this path manually. Please note, that this configuration will be set to true by default in upcoming versions.</source>
             </trans-unit>
             <trans-unit id="checkAccess">
                 <source>Check Direct File Access: This is only a vestigial, basic check and its result may be wrong.</source>

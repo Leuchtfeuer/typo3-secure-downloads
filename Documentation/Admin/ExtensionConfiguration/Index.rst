@@ -55,7 +55,7 @@ createFileStorage
    Default
         :code:`false`
    Description
-        If enabled, a secure downloads file storage will be created and added to your system automatically. Also, an `.htaccess`
+        If enabled, a secure downloads file storage is created and automatically added to your system. Also, an `.htaccess`
         file will be put into that directory. If you are using an nginx web server, you have to deny the access to this path
         manually. Please note, that this configuration will be set to true by default in upcoming versions.
 

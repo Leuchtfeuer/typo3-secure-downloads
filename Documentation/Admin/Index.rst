@@ -61,6 +61,12 @@ using Secure Downloads:
 If you need to secure files outside of that directory, you still can adapt the :ref:`admin-extensionConfiguration-securedDirs` and
 :ref:`admin-extensionConfiguration-securedFileTypes` options.
 
+.. figure:: ../Images/FileStorage.png
+   :alt: The "Secure Downloads" file storage in the file list module
+   :class: with-shadow
+
+   All files of the newly create "Secure Downloads" file storage are protected by default.
+
 .. _admin-accessConfiguration:
 
 Access Configuration
