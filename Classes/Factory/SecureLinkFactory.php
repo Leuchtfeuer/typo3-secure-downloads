@@ -74,11 +74,6 @@ class SecureLinkFactory implements SingletonInterface
         return $cacheTimeout + $GLOBALS['EXEC_TIME'] + $this->extensionConfiguration->getCacheTimeAdd();
     }
 
-    public function setResourceUri(string $resourceUri): void
-    {
-        $this->token->setFile($resourceUri);
-    }
-
     /**
      * Builds a URI which uses a PHP Script to access the resource by taking several parameters into account.
      */
@@ -103,6 +98,46 @@ class SecureLinkFactory implements SingletonInterface
         EncodeCache::addCache($hash, $url);
 
         return $url;
+    }
+
+    public function withLinkTimeout(int $expires): self
+    {
+        $clonedObject = clone $this;
+        $clonedObject->token->setExp($expires);
+
+        return $clonedObject;
+    }
+
+    public function withPage(int $page): self
+    {
+        $clonedObject = clone $this;
+        $clonedObject->token->setPage($page);
+
+        return $clonedObject;
+    }
+
+    public function withUser(int $user): self
+    {
+        $clonedObject = clone $this;
+        $clonedObject->token->setUser($user);
+
+        return $clonedObject;
+    }
+
+    public function withGroups(array $groups): self
+    {
+        $clonedObject = clone $this;
+        $clonedObject->token->setGroups($groups);
+
+        return $clonedObject;
+    }
+
+    public function withResourceUri(string $resourceUri): self
+    {
+        $clonedObject = clone $this;
+        $clonedObject->token->setFile($resourceUri);
+
+        return $clonedObject;
     }
 
     protected function getJsonWebToken(): string
