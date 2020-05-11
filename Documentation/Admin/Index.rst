@@ -63,6 +63,10 @@ using Secure Downloads:
   :ref:`admin-extensionConfiguration-securedFiletypes` option) in your newly created file storage (use the path for the
   :ref:`admin-extensionConfiguration-securedDirs` option)
 
+.. hint::
+
+   From version 5 on, it is possible to automatically generate a file storage in which all contained files are protected from
+   direct access.
 
 .. _admin-accessConfiguration:
 
