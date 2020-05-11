@@ -21,7 +21,10 @@ call_user_func(
         }
 
         // Create resource storage
-        $storageRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Leuchtfeuer\SecureDownloads\Domain\Repository\StorageRepository::class);
-        $storageRepository->createSecureDownloadStorage();
+        if ((new \Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration())->isCreateFileStorage()) {
+            $storageRepositoryClass = \Leuchtfeuer\SecureDownloads\Domain\Repository\StorageRepository::class;
+            $storageRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($storageRepositoryClass);
+            $storageRepository->createSecureDownloadStorage();
+        }
     }, 'secure_downloads'
 );

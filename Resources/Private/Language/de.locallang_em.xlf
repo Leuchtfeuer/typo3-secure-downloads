@@ -4,6 +4,9 @@
           product-name="secure_downloads">
         <header/>
         <body>
+            <trans-unit id="createFileStorage">
+                <target>Dateispeicher für geschützte Dateien hinzufügen: Wenn diese Option aktiviert ist, wird ein sicherer Dateispeicher für Downloads erstellt und automatisch zu deinem System hinzugefügt. Außerdem wird eine .htaccess-Datei in dieses Verzeichnis abgelegt. Wenn du einen nginx-Webserver verwendest, musst du den Zugriff auf diesen Pfad manuell verweigern. Bitte beachte, dass diese Konfiguration in kommenden Versionen standardmäßig aktiviert sein wird.</target>
+            </trans-unit>
             <trans-unit id="checkAccess">
                 <target>Konfigurationsüberprüfung: Dies ist lediglich eine rudimentäre, grundlegende Überprüfung, deren Ergebnis falsch sein kann.</target>
             </trans-unit>

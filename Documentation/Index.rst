@@ -19,7 +19,7 @@ Secure Downloads
    en
 
 :Copyright:
-   2006-2019
+   since 2006 by the athors
 
 :Author:
    Florian Wessels, Leuchtfeuer Digital Marketing

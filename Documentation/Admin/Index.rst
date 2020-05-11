@@ -55,14 +55,11 @@ You can configure this extension to fit your specific needs. However, here are s
 using Secure Downloads:
 
 * Install this extension as described above
-* Create a new `File Storage <https://docs.typo3.org/m/typo3/reference-coreapi/master/en-us/ApiOverview/Fal/Administration/Storages.html>`__
-  of type "Local filesystem" on page 0 of your TYPO3 instance and set the "Is publicly available?" option to false
-* Create a directory on your filesystem which matches the previously configured "Base Path"
-* Put an `.htaccess` file into that folder that denies the access to all files within and underneath this path
-* Configure the extension in the admin section of your TYPO3 Backend to match all files (use an astrix for the
-  :ref:`admin-extensionConfiguration-securedFiletypes` option) in your newly created file storage (use the path for the
-  :ref:`admin-extensionConfiguration-securedDirs` option)
+* Enable the :ref:`create file storage <admin-extensionConfiguration-createFileStorage>` option
+* Put your files into that storage
 
+If you need to secure files outside of that directory, you still can adapt the :ref:`admin-extensionConfiguration-securedDirs` and
+:ref:`admin-extensionConfiguration-securedFileTypes` options.
 
 .. _admin-accessConfiguration:
 

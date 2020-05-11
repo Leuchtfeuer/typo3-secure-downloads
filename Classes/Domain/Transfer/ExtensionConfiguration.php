@@ -143,9 +143,18 @@ class ExtensionConfiguration implements SingletonInterface
     /**
      * Path to protected storage for nginx x-accel-redirect delivery method
      *
-     * @var string The path to the protected Storage.
+     * @var string The path to the protected storage.
      */
     private $protectedPath = '';
+
+    /**
+     * If enabled, a secure downloads file storage will be created and added to your system automatically. Also, an .htaccess
+     * file will be put into that directory. If you are using an nginx web server, you have to deny the access to this path
+     * manually.
+     *
+     * @var bool True if a file storage should be created.
+     */
+    private $createFileStorage = false;
 
     /**
      * @throws ExtensionConfigurationExtensionNotConfiguredException
@@ -257,5 +266,10 @@ class ExtensionConfiguration implements SingletonInterface
     public function getDocumentRootPath(): string
     {
         return trim($this->documentRootPath);
+    }
+
+    public function isCreateFileStorage(): bool
+    {
+        return (bool)$this->createFileStorage;
     }
 }

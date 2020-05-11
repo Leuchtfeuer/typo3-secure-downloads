@@ -26,6 +26,7 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
 
         if (!@is_dir($path)) {
             GeneralUtility::mkdir($path);
+            $this->addHtaccessFile($path);
         }
 
         $storageObjects = $this->findByStorageType(SecureDownloadsDriver::DRIVER_SHORT_NAME);
@@ -68,5 +69,25 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
             ->where($queryBuilder->expr()->eq('driver', $queryBuilder->createNamedParameter(SecureDownloadsDriver::DRIVER_SHORT_NAME)))
             ->execute()
             ->fetchAll();
+    }
+
+    private function addHtaccessFile(string $path): void
+    {
+        $fileLocation = sprintf('%s/.htaccess', rtrim($path, '/'));
+        GeneralUtility::writeFile($fileLocation, $this->getHtaccessContent());
+    }
+
+    private function getHtaccessContent(): string
+    {
+        return <<<htaccess
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+  Order Allow,Deny
+  Deny from all
+</IfModule>
+htaccess;
     }
 }
