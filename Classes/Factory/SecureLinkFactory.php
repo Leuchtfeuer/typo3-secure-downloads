@@ -13,12 +13,11 @@ namespace Leuchtfeuer\SecureDownloads\Factory;
  *
  ***/
 
-use Firebase\JWT\JWT;
 use Leuchtfeuer\SecureDownloads\Cache\EncodeCache;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
+use Leuchtfeuer\SecureDownloads\Factory\Event\EnrichPayloadEvent;
 use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
-use Leuchtfeuer\SecureDownloads\Resource\Event\EnrichPayloadEvent;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;

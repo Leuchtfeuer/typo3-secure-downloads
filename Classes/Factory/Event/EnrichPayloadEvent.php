@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-namespace Leuchtfeuer\SecureDownloads\Resource\Event;
+namespace Leuchtfeuer\SecureDownloads\Factory\Event;
 
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 
