@@ -2,6 +2,8 @@
 declare(strict_types = 1);
 namespace Leuchtfeuer\SecureDownloads\Security;
 
+use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
+
 /***
  *
  * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
@@ -15,6 +17,12 @@ namespace Leuchtfeuer\SecureDownloads\Security;
 
 class UserCheck extends AbstractCheck
 {
+    /**
+     * @inheritDoc
+     *
+     * @return bool
+     * @throws AspectPropertyNotFoundException
+     */
     public function hasAccess(): bool
     {
         $user = $this->token->getUser();

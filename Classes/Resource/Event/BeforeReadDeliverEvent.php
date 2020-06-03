@@ -13,6 +13,10 @@ namespace Leuchtfeuer\SecureDownloads\Resource\Event;
  *
  ***/
 
+/**
+ * This event is executed just before the file is sent to the browser. It is the last chance to influence both the output
+ * function and the headers sent.
+ */
 final class BeforeReadDeliverEvent
 {
     /**
@@ -40,6 +44,15 @@ final class BeforeReadDeliverEvent
      */
     private $forceDownload;
 
+    /**
+     * @param string $outputFunction Contains the output function as string. This property is deprecated and will be removed in
+     *                               further releases since the output function can only be one of "x-accel-redirect" or "stream".
+     * @param array  $header         An array of header which will be sent to the browser. You can add your own headers or remove
+     *                               default ones.
+     * @param string $fileName       The name of the file. This property is read-only.
+     * @param string $mimeType       The mime type of the file. This property is read-only.
+     * @param bool   $forceDownload  Information whether the file should be forced to download or not. This property is read-only.
+     */
     public function __construct(string $outputFunction, array $header, string $fileName, string $mimeType, bool $forceDownload)
     {
         $this->outputFunction = $outputFunction;

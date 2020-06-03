@@ -16,6 +16,7 @@ namespace Leuchtfeuer\SecureDownloads\Security;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -42,14 +43,28 @@ abstract class AbstractCheck
         $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
     }
 
+    /**
+     * @param AbstractToken $token The JSON web token
+     * @throws AspectNotFoundException
+     */
     public function setToken(AbstractToken $token)
     {
         $this->token = $token;
         $this->userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
     }
 
+    /**
+     * Checks the access of an user to the file.
+     *
+     * @return bool True when the current user has access to the file, false if not
+     */
     abstract public function hasAccess(): bool;
 
+    /**
+     * Checks whether the actual file is covered by any user group check.
+     *
+     * @return bool True when the actual file is covered by a group check, false if not
+     */
     protected function isFileCoveredByGroupCheck(): bool
     {
         if (!$this->extensionConfiguration->isEnableGroupCheck()) {

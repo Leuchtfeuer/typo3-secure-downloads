@@ -13,6 +13,10 @@ namespace Leuchtfeuer\SecureDownloads\Resource\Event;
  *
  ***/
 
+/**
+ * This event is executed after the access checks has been performed and both the file and the file name have been read from the
+ * token. Afterwards, the check is made whether the file is available on the file system.
+ */
 final class AfterFileRetrievedEvent
 {
     /**
@@ -25,6 +29,11 @@ final class AfterFileRetrievedEvent
      */
     private $fileName;
 
+    /**
+     * @param string $file     Contains the absolute path to the file on the file system. You can change this property.
+     * @param string $fileName Contains the name of the file. You can change this so that another file name is used when
+     *                         downloading this file.
+     */
     public function __construct(string $file, string $fileName)
     {
         $this->file = $file;

@@ -30,6 +30,11 @@ class LogRepository extends Repository
         'tstamp' => QueryInterface::ORDER_DESCENDING,
     ];
 
+    /**
+     * Initializes the query and applies default options.
+     *
+     * @return QueryInterface The generated query object.
+     */
     public function createQuery(): QueryInterface
     {
         $query = parent::createQuery();
@@ -41,6 +46,13 @@ class LogRepository extends Repository
         return $query;
     }
 
+    /**
+     * Finds log data and applies filter.
+     *
+     * @param Filter|null $filter The filter object.
+     *
+     * @return QueryResultInterface The query result.
+     */
     public function findByFilter(?Filter $filter): QueryResultInterface
     {
         $query = $this->createQuery();
@@ -57,6 +69,10 @@ class LogRepository extends Repository
     }
 
     /**
+     * Applies the filter to a query object.
+     *
+     * @param QueryInterface $query  The query object
+     * @param Filter         $filter The filter object
      * @throws InvalidQueryException
      */
     protected function applyFilter(QueryInterface &$query, Filter $filter): void
@@ -81,6 +97,13 @@ class LogRepository extends Repository
         }
     }
 
+    /**
+     * Applies the file type property of the filter to the query object.
+     *
+     * @param mixed          $fileType    Identifier of the file type
+     * @param QueryInterface $query       The query object
+     * @param array          $constraints Array containing all previously applied constraints
+     */
     protected function applyFileTypePropertyToFilter($fileType, QueryInterface $query, array &$constraints): void
     {
         if ($fileType !== '' && $fileType !== '0') {
@@ -88,6 +111,13 @@ class LogRepository extends Repository
         }
     }
 
+    /**
+     * Applies the user type property of the filter to the query object.
+     *
+     * @param Filter         $filter      The filter object
+     * @param QueryInterface $query       The query object
+     * @param array          $constraints Array containing all previously applied constraints
+     */
     protected function applyUserTypePropertyToFilter(Filter $filter, QueryInterface $query, array &$constraints): void
     {
         if ($filter->getUserType() != 0) {
@@ -103,6 +133,11 @@ class LogRepository extends Repository
     }
 
     /**
+     * Applies the period properties of the filter to the query object.
+     *
+     * @param Filter         $filter      The filter object
+     * @param QueryInterface $query       The query object
+     * @param array          $constraints Array containing all previously applied constraints
      * @throws InvalidQueryException
      */
     protected function applyPeriodPropertyToFilter(Filter $filter, QueryInterface $query, array &$constraints): void
@@ -116,6 +151,14 @@ class LogRepository extends Repository
         }
     }
 
+    /**
+     * Applies given property of the filter to the query object.
+     *
+     * @param int            $property     The value of the property
+     * @param string         $propertyName The property name
+     * @param QueryInterface $query        The query object
+     * @param array          $constraints  Array containing all previously applied constraints
+     */
     protected function applyEqualPropertyToFilter(int $property, string $propertyName, QueryInterface $query, array $constraints): void
     {
         if ($property !== 0) {
@@ -123,7 +166,15 @@ class LogRepository extends Repository
         }
     }
 
-    public function logDownload(AbstractToken $token, $fileSize, $mimeType, $user): void
+    /**
+     * Creates a log entry in the database.
+     *
+     * @param AbstractToken $token    The token containing information that should be logged
+     * @param int           $fileSize The file size of the file that should be logged
+     * @param string        $mimeType The mime type of the file that should be logged
+     * @param int           $user     The ID of the user that downloaded the file
+     */
+    public function logDownload(AbstractToken $token, int $fileSize, string $mimeType, int $user): void
     {
         $pathInfo = pathinfo($token->getFile());
 

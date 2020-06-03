@@ -25,10 +25,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
-use TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
-use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
 
 class LogController extends ActionController
 {
@@ -64,7 +62,7 @@ class LogController extends ActionController
     }
 
     /**
-     * @throws InvalidQueryException
+     * @param Filter|null $filter The filter object
      */
     public function listAction(Filter $filter = null): void
     {
@@ -83,6 +81,9 @@ class LogController extends ActionController
         ]);
     }
 
+    /**
+     * @return array Array containing all users that have downloaded files
+     */
     private function getUsers(): array
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
@@ -97,6 +98,9 @@ class LogController extends ActionController
             ->fetchAll();
     }
 
+    /**
+     * @return array Array containing all used file types
+     */
     private function getFileTypes(): array
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
@@ -111,9 +115,8 @@ class LogController extends ActionController
     }
 
     /**
-     * @throws InvalidQueryException
+     * @param Filter|null $filter The filter object
      * @throws StopActionException
-     * @throws UnsupportedRequestTypeException
      */
     public function showAction(Filter $filter = null): void
     {
@@ -168,6 +171,11 @@ class LogController extends ActionController
         $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
     }
 
+    /**
+     * Adds menu options to the select menu
+     *
+     * @param Menu $menu The Menu object
+     */
     protected function addMenuItems(Menu &$menu): void
     {
         $controllerName = $this->request->getControllerName();
@@ -191,6 +199,9 @@ class LogController extends ActionController
         }
     }
 
+    /**
+     * @return UriBuilder The URI builder
+     */
     protected function getUriBuilder(): UriBuilder
     {
         $uriBuilder = $this->objectManager->get(UriBuilder::class);

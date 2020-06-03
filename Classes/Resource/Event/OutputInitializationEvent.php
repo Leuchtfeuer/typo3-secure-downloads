@@ -15,6 +15,9 @@ namespace Leuchtfeuer\SecureDownloads\Resource\Event;
 
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 
+/**
+ * This event is executed after the JSON Web Token has been decoded and before the access checks take place.
+ */
 final class OutputInitializationEvent
 {
     /**
@@ -22,6 +25,10 @@ final class OutputInitializationEvent
      */
     private $token;
 
+    /**
+     * @param AbstractToken $token This property contains the decoded token object. You can manipulate the properties. The edited
+     *                             token is then used in the further process.
+     */
     public function __construct(AbstractToken $token)
     {
         $this->token = $token;

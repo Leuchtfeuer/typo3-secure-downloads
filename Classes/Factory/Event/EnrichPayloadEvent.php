@@ -15,6 +15,10 @@ use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
  *
  ***/
 
+/**
+ * You can use this event for extending or manipulating the payload of the JSON Web Token. This event is executed immediately
+ * before the JSON Web token is generated.
+ */
 final class EnrichPayloadEvent
 {
     /**
@@ -27,6 +31,11 @@ final class EnrichPayloadEvent
      */
     private $token;
 
+    /**
+     * @param array         $payload This array contains the default payload of the JSON Web Token. You can enrich this data by
+     *                               your own properties or manipulate the existing data.
+     * @param AbstractToken $token   This property is read-only and contains the generated token object.
+     */
     public function __construct(array $payload, AbstractToken $token)
     {
         $this->payload = $payload;

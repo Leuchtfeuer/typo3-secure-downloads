@@ -13,10 +13,17 @@ namespace Leuchtfeuer\SecureDownloads\Security;
  *
  ***/
 
+use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class UserGroupCheck extends AbstractCheck
 {
+    /**
+     * @inheritDoc
+     *
+     * @return bool
+     * @throws AspectPropertyNotFoundException
+     */
     public function hasAccess(): bool
     {
         if (!$this->isFileCoveredByGroupCheck()) {
@@ -42,6 +49,14 @@ class UserGroupCheck extends AbstractCheck
         return $this->performStrictGroupCheck($actualGroups, $transmittedGroups);
     }
 
+    /**
+     * Checks whether one of the actual groups is in the transmitted groups.
+     *
+     * @param array $actualGroups      The user groups the link was generated for
+     * @param array $transmittedGroups The actual user groups of the user that tries to download the file
+     *
+     * @return bool True if one group matches, false if no groups are matching
+     */
     protected function performStrictGroupCheck(array $actualGroups, array $transmittedGroups): bool
     {
         $excludedGroups = GeneralUtility::intExplode(',', $this->extensionConfiguration->getExcludeGroups(), true);

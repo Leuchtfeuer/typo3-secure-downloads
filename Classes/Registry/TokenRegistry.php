@@ -22,6 +22,15 @@ class TokenRegistry extends AbstractRegistry
 {
     private static $token;
 
+    /**
+     * @param string $identifier        An unique identifier for the object
+     * @param string $className         The class name of the object
+     * @param int    $priority          The priority of the registered object
+     * @param bool   $overwriteExisting Whether an existing entry should be overwritten or not
+     *
+     * @throws ClassNotFoundException
+     * @throws InvalidClassException
+     */
     public static function register(string $identifier, string $className, int $priority = 0, bool $overwriteExisting = false): void
     {
         if (self::$token instanceof AbstractToken && $overwriteExisting === false) {
@@ -37,11 +46,24 @@ class TokenRegistry extends AbstractRegistry
         self::sortByPriority(self::$token);
     }
 
+    /**
+     * @return AbstractToken The registered token
+     */
     public static function getToken(): AbstractToken
     {
         return reset(self::$token)['class'];
     }
 
+    /**
+     * Instantiates the token object from its name.
+     *
+     * @param string $className The class name of the token
+     *
+     * @return AbstractToken The actual token object
+     *
+     * @throws ClassNotFoundException
+     * @throws InvalidClassException
+     */
     private static function getTokenFromClassName(string $className): AbstractToken
     {
         if (!class_exists($className)) {

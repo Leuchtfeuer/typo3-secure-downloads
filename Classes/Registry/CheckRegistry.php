@@ -22,6 +22,15 @@ class CheckRegistry extends AbstractRegistry
 {
     protected static $checks = [];
 
+    /**
+     * @param string $identifier        An unique identifier for the object
+     * @param string $className         The class name of the object
+     * @param int    $priority          The priority of the registered object
+     * @param bool   $overwriteExisting Whether an existing entry should be overwritten or not
+     *
+     * @throws ClassNotFoundException
+     * @throws InvalidClassException
+     */
     public static function register(string $identifier, string $className, int $priority = 0, bool $overwriteExisting = false): void
     {
         if (isset(self::$checks[$identifier]) && $overwriteExisting === false) {
@@ -37,11 +46,24 @@ class CheckRegistry extends AbstractRegistry
         self::sortByPriority(self::$checks);
     }
 
+    /**
+     * @return array The registered security checks
+     */
     public static function getChecks(): array
     {
         return self::$checks;
     }
 
+    /**
+     * Instantiates the security check object from its name.
+     *
+     * @param string $className The class name of the check
+     *
+     * @return AbstractCheck The actual security check object
+     *
+     * @throws ClassNotFoundException
+     * @throws InvalidClassException
+     */
     private static function getCheckFromClassName(string $className): AbstractCheck
     {
         if (!class_exists($className)) {

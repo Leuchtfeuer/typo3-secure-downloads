@@ -58,6 +58,11 @@ class FileDeliveryMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
+    /**
+     * @param ServerRequestInterface $request The request interface
+     *
+     * @return bool Returns true when the Secure Downloads middleware is responsible for handling the actual request.
+     */
     public function isResponsible(ServerRequestInterface $request)
     {
         return mb_strpos(urldecode($request->getUri()->getPath()), $this->assetPrefix) === 0 && $request->getMethod() === 'GET';

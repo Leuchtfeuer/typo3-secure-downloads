@@ -95,6 +95,16 @@ class SecureDownloadsEventListener implements SingletonInterface
         $event->setOverlayIdentifier($overlayIdentifier ?? $event->getOverlayIdentifier());
     }
 
+    /**
+     * Returns the encrypted URL.
+     *
+     * @param bool                                 $relativeToCurrentScript Whether the $publicUrl is relative to current script
+     *                                                                      or not.
+     * @param string                               $publicUrl               The public URL to the file.
+     * @param AbstractHierarchicalFilesystemDriver $driver                  The driver which is responsible for the file.
+     *
+     * @return string The secured URL
+     */
     protected function getSecuredUrl(bool $relativeToCurrentScript, string $publicUrl, AbstractHierarchicalFilesystemDriver $driver): string
     {
         if ($relativeToCurrentScript === true) {

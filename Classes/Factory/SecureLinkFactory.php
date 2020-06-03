@@ -52,6 +52,9 @@ class SecureLinkFactory implements SingletonInterface
         $this->init();
     }
 
+    /**
+     * Initialize the token.
+     */
     protected function init()
     {
         $this->token->setExp($this->calculateLinkLifetime());
@@ -67,6 +70,11 @@ class SecureLinkFactory implements SingletonInterface
         }
     }
 
+    /**
+     * Adds the configured additional cache time and the cache lifetime of the current site to the actual time.
+     *
+     * @return int The link lifetime
+     */
     protected function calculateLinkLifetime(): int
     {
         $cacheTimeout = ($GLOBALS['TSFE'] instanceof TypoScriptFrontendController && !empty($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->get_cache_timeout() : self::DEFAULT_CACHE_LIFETIME;
@@ -100,6 +108,11 @@ class SecureLinkFactory implements SingletonInterface
         return $url;
     }
 
+    /**
+     * @param int $expires The timestamp at which the link becomes invalid
+     *
+     * @return $this
+     */
     public function withLinkTimeout(int $expires): self
     {
         $clonedObject = clone $this;
@@ -108,6 +121,11 @@ class SecureLinkFactory implements SingletonInterface
         return $clonedObject;
     }
 
+    /**
+     * @param int $page The page ID for which the link should be generated for
+     *
+     * @return $this
+     */
     public function withPage(int $page): self
     {
         $clonedObject = clone $this;
@@ -116,6 +134,11 @@ class SecureLinkFactory implements SingletonInterface
         return $clonedObject;
     }
 
+    /**
+     * @param int $user The user for which the link should be valid for
+     *
+     * @return $this
+     */
     public function withUser(int $user): self
     {
         $clonedObject = clone $this;
@@ -124,6 +147,11 @@ class SecureLinkFactory implements SingletonInterface
         return $clonedObject;
     }
 
+    /**
+     * @param array $groups An array of user groups for whom the link should be valid for
+     *
+     * @return $this
+     */
     public function withGroups(array $groups): self
     {
         $clonedObject = clone $this;
@@ -132,6 +160,11 @@ class SecureLinkFactory implements SingletonInterface
         return $clonedObject;
     }
 
+    /**
+     * @param string $resourceUri The actual path to the file that should be secured
+     *
+     * @return $this
+     */
     public function withResourceUri(string $resourceUri): self
     {
         $clonedObject = clone $this;
@@ -140,6 +173,9 @@ class SecureLinkFactory implements SingletonInterface
         return $clonedObject;
     }
 
+    /**
+     * @return string The generated JSON web token
+     */
     protected function getJsonWebToken(): string
     {
         $payload = $this->token->getPayload();
@@ -148,6 +184,11 @@ class SecureLinkFactory implements SingletonInterface
         return $this->token->encode($payload);
     }
 
+    /**
+     * Dispatches the EnrichPayloadEvent event.
+     *
+     * @param array $payload The payload of the token
+     */
     protected function dispatchEnrichPayloadEvent(array &$payload): void
     {
         $event = new EnrichPayloadEvent($payload, $this->token);

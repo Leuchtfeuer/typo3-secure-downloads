@@ -75,6 +75,9 @@ class CheckConfiguration implements SingletonInterface
         $this->domain = GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST');
     }
 
+    /**
+     * @return string The HTML content
+     */
     public function render(): string
     {
         $this->setDirectories();
@@ -95,23 +98,39 @@ class CheckConfiguration implements SingletonInterface
         return $this->getConfigurationOkayInfo();
     }
 
+    /**
+     *
+     */
     protected function setDirectories(): void
     {
         foreach ($this->getPublicDirectories() as $publicDirectory) {
             $path = sprintf('%s/%s', Environment::getPublicPath(), $publicDirectory);
             $finder = (new Finder())->directories();
+            $directories = (array)$finder->in($path);
+            $this->getSuitableDirectories($directories, $publicDirectory);
+        }
+    }
 
-            foreach ($finder->in($path) as $directory) {
-                $directoryPath = sprintf('%s/%s', $publicDirectory, $directory->getRelativePathname());
-                if (preg_match($this->directoryPattern, $directoryPath)) {
-                    $realDirectoryPath = $directory->getRealPath();
-                    $this->directories[] = $realDirectoryPath;
-                    $this->checkFilesAccessibility($realDirectoryPath, $directoryPath);
-                }
+    /**
+     * @param array  $directories
+     * @param string $publicDirectory
+     */
+    protected function getSuitableDirectories(array $directories, string $publicDirectory)
+    {
+        foreach ($directories as $directory) {
+            $directoryPath = sprintf('%s/%s', $publicDirectory, $directory->getRelativePathname());
+            if (preg_match($this->directoryPattern, $directoryPath)) {
+                $realDirectoryPath = $directory->getRealPath();
+                $this->directories[] = $realDirectoryPath;
+                $this->checkFilesAccessibility($realDirectoryPath, $directoryPath);
             }
         }
     }
 
+    /**
+     * @param string $realDirectoryPath
+     * @param string $directoryPath
+     */
     protected function checkFilesAccessibility(string $realDirectoryPath, string $directoryPath): void
     {
         if ($this->fileCount < 20) {
@@ -135,6 +154,9 @@ class CheckConfiguration implements SingletonInterface
         }
     }
 
+    /**
+     * @return array
+     */
     protected function getPublicDirectories(): array
     {
         $publicDirectories = scandir(Environment::getPublicPath());
@@ -144,6 +166,9 @@ class CheckConfiguration implements SingletonInterface
         });
     }
 
+    /**
+     *
+     */
     protected function checkDirectories(): void
     {
         $lastSecuredDirectory = null;
@@ -165,6 +190,9 @@ class CheckConfiguration implements SingletonInterface
         }
     }
 
+    /**
+     * @return string
+     */
     protected function getConfigurationOkayInfo(): string
     {
         return $this->getOutput(
@@ -175,6 +203,9 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
+    /**
+     * @return string
+     */
     protected function getFileErrorInfo(): string
     {
         return $this->getOutput(
@@ -185,6 +216,9 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
+    /**
+     * @return string
+     */
     protected function getDirectoryWarningInfo(): string
     {
         return $this->getOutput(
@@ -195,6 +229,9 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
+    /**
+     * @return string
+     */
     protected function getFileErrorContent(): string
     {
         $files = array_slice($this->unprotectedFiles, 0, 10);
@@ -224,6 +261,9 @@ class CheckConfiguration implements SingletonInterface
         return $content;
     }
 
+    /**
+     * @return string
+     */
     protected function getDirectoryErrorContent(): string
     {
         $directories = array_slice($this->unprotectedDirectories, 0, 10);
@@ -250,6 +290,13 @@ class CheckConfiguration implements SingletonInterface
         return $content;
     }
 
+    /**
+     * @param string $type
+     * @param string $icon
+     * @param string $title
+     * @param string $content
+     * @return string
+     */
     protected function getOutput(string $type, string $icon, string $title, string $content): string
     {
         return <<<HTML
@@ -270,6 +317,9 @@ class CheckConfiguration implements SingletonInterface
 HTML;
     }
 
+    /**
+     * @return string
+     */
     protected function getHtaccessExamples(): string
     {
         $fileTypes = $this->extensionConfiguration->getSecuredFileTypes();

@@ -29,6 +29,11 @@ class SecureDownloadService implements SingletonInterface
 
     /**
      * Check whether file is located underneath a secured folder and file extension should matches file types pattern.
+     *
+     * @param string $publicUrl The public (non-secured) URL to the file
+     *
+     * @return bool True, if the path of the file matches the configured configuration or the file is stored in a Secure Downloads
+     *              file storage.
      */
     public function pathShouldBeSecured(string $publicUrl): bool
     {
@@ -45,11 +50,26 @@ class SecureDownloadService implements SingletonInterface
         return false;
     }
 
+    /**
+     * Checks whether secured folder matches secured directories pattern.
+     *
+     * @param string $publicUrl The public (non-secured) URL to the file
+     *
+     * @return bool True, if the path of the folder matches the configured configuration or the folder is part of a Secure
+     *              Downloads file storage.
+     */
     public function folderShouldBeSecured(string $publicUrl): bool
     {
         return (bool)preg_match($this->extensionConfiguration->getSecuredDirectoriesPattern(), $publicUrl);
     }
 
+    /**
+     * Helper method for transforming a public URL into a secured URL.
+     *
+     * @param string $publicUrl The public (non-secured) URL to the file
+     *
+     * @return string The secured URL
+     */
     public function getResourceUrl(string $publicUrl): string
     {
         $secureLinkFactory = GeneralUtility::makeInstance(SecureLinkFactory::class);

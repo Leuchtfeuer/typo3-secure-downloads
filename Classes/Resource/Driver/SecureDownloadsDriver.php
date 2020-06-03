@@ -15,6 +15,9 @@ namespace Leuchtfeuer\SecureDownloads\Resource\Driver;
 
 use TYPO3\CMS\Core\Resource\Driver\LocalDriver;
 
+/**
+ * The Secure Downloads file storage.
+ */
 class SecureDownloadsDriver extends LocalDriver
 {
     const DRIVER_SHORT_NAME = 'sdl';
