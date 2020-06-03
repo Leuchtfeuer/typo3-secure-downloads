@@ -1,10 +1,10 @@
 .. include:: ../../Includes.txt
 
-===================
-Version 4.1.1 - TBA
-===================
+==========================
+Version 4.1.1 - 2020/06/03
+==========================
 
-This release is a future release.
+This release is a regular maintenance release. It contains mostly bug fixes and improvements regarding the documentation.
 
 Download
 ========
@@ -12,11 +12,22 @@ Download
 Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
 `GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v4.1.1>`__.
 
+Changed
+=======
+
+* The composer vendor name was changed from `bitmotion` to `leuchtfeuer`.
+
 All Changes
 ===========
 
 This is a list of all changes in this release::
 
+   2020-06-03 [TASK] Update dependencies (Commit ee69774 by Florian Wessels)
+   2020-05-11 [DOC] Add hint for upcoming feature (Commit 4c08641 by Florian Wessels)
+   2020-05-11 [TASK] Change vendor name in composer.json file (Commit a66114a by Florian Wessels)
+   2020-05-10 [DOC] Mainstream settings file (Commit 04a9a1e by Florian Wessels)
+   2020-05-10 [DOC] Add sitemap (Commit 83b21c2 by Florian Wessels)
+   2020-05-10 [DOC] Update documentation (Commit bc25829 by Florian Wessels)
    2020-05-10 [DOC] Update readme (Commit d113073 by Florian Wessels)
    2020-05-10 [FOLLOW-UP][BUGFIX] Show overlay icon for files (Commit dc0e8a3 by Florian Wessels)
    2020-05-10 [BUGFIX] Show overlay icon for files (Commit 866140c by Florian Wessels)
