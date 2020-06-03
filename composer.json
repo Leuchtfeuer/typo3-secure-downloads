@@ -24,10 +24,10 @@
     }
   ],
   "require": {
-    "typo3/cms-backend": "^10.4",
-    "typo3/cms-core": "^10.4",
-    "typo3/cms-extbase": "^10.4",
-    "typo3/cms-frontend": "^10.4",
+    "typo3/cms-backend": "^10.4.2",
+    "typo3/cms-core": "^10.4.2",
+    "typo3/cms-extbase": "^10.4.2",
+    "typo3/cms-frontend": "^10.4.2",
     "firebase/php-jwt": "^5.0",
     "ext-pdo": "*"
   },
@@ -40,8 +40,8 @@
     }
   },
   "replace": {
-    "typo3-ter/secure-downloads": "self.version",
-    "bitmotion/secure-downloads": "self.version"
+    "bitmotion/secure-downloads": "self.version",
+    "typo3-ter/secure-downloads": "self.version"
   },
   "extra": {
     "typo3/class-alias-loader": {
