@@ -13,7 +13,7 @@
     "email": "dev@Leuchtfeuer.com",
     "issues": "https://github.com/Leuchtfeuer/typo3-secure-downloads/issues",
     "source": "https://github.com/Leuchtfeuer/typo3-secure-downloads/",
-    "docs": "https://docs.typo3.org/p/bitmotion/secure-downloads/master/en-us/"
+    "docs": "https://docs.typo3.org/p/leuchtfeuer/secure-downloads/master/en-us/"
   },
   "authors": [
     {
@@ -24,10 +24,10 @@
     }
   ],
   "require": {
-    "typo3/cms-backend": "^9.5 || ^10.4",
-    "typo3/cms-core": "^9.5 || ^10.4",
-    "typo3/cms-extbase": "^9.5 || ^10.4",
-    "typo3/cms-frontend": "^9.5 || ^10.4",
+    "typo3/cms-backend": "^9.5.17 || ^10.4.2",
+    "typo3/cms-core": "^9.5.17 || ^10.4.2",
+    "typo3/cms-extbase": "^9.5.17 || ^10.4.2",
+    "typo3/cms-frontend": "^9.5.17 || ^10.4.2",
     "firebase/php-jwt": "^5.0",
     "ext-pdo": "*"
   },
@@ -40,8 +40,8 @@
     }
   },
   "replace": {
-    "typo3-ter/secure-downloads": "self.version",
-    "bitmotion/secure-downloads": "self.version"
+    "bitmotion/secure-downloads": "self.version",
+    "typo3-ter/secure-downloads": "self.version"
   },
   "extra": {
     "typo3/cms": {
