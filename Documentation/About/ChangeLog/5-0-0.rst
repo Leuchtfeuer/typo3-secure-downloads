@@ -27,6 +27,13 @@ All Changes
 ===========
 This is a list of all changes in this release::
 
+   2020-06-03 [TASK] Update dependencies (Commit bb4181d by Florian Wessels)
+   2020-06-03 [DOC] Update php doc (Commit c36f660 by Florian Wessels)
+   2020-05-11 [FEATURE] Allow to restrict access for not logged in users (Commit 03acaae by Florian Wessels)
+   2020-05-11 [DOC] Chagne wording and add image (Commit 801ad69 by Florian Wessels)
+   2020-05-11 [FEATURE] Allow to create a secure downloads file storage (Commit 3f4bd07 by Florian Wessels)
+   2020-05-11 [DOC] Add event documentation (Commit 5015684 by Florian Wessels)
+   2020-05-11 [DOC] Update changelog (Commit 22e15a4 by Florian Wessels)
    2020-05-11 [DOC] Add developer documentation (Commit d4cacba by Florian Wessels)
    2020-05-11 [TASK] Reorder event methods (Commit c28d2f4 by Florian Wessels)
    2020-05-11 [TASK] Reintroduce API for generating secured links (Commit c9da355 by Florian Wessels)
