@@ -106,16 +106,16 @@ class CheckConfiguration implements SingletonInterface
         foreach ($this->getPublicDirectories() as $publicDirectory) {
             $path = sprintf('%s/%s', Environment::getPublicPath(), $publicDirectory);
             $finder = (new Finder())->directories();
-            $directories = (array)$finder->in($path);
+            $directories = $finder->in($path);
             $this->getSuitableDirectories($directories, $publicDirectory);
         }
     }
 
     /**
-     * @param array  $directories
+     * @param Finder  $directories
      * @param string $publicDirectory
      */
-    protected function getSuitableDirectories(array $directories, string $publicDirectory)
+    protected function getSuitableDirectories(Finder $directories, string $publicDirectory)
     {
         foreach ($directories as $directory) {
             $directoryPath = sprintf('%s/%s', $publicDirectory, $directory->getRelativePathname());
