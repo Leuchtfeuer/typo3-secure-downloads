@@ -14,9 +14,6 @@ return [
         'searchFields' => '',
         'iconfile' => 'EXT:secure_downloads/Resources/Public/Icons/tx_securedownloads_domain_model_log.png',
     ],
-    'interface' => [
-        'showRecordFieldList' => '',
-    ],
     'types' => [
         '1' => ['showitem' => ''],
     ],
