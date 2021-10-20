@@ -54,7 +54,7 @@ Get a link that is only valid for user `29`, with user group `12`, is generated 
 
    if ($secureDownloadService->pathShouldBeSecured($publicUrl)) {
        $securedUrl = GeneralUtility::makeInstance(SecureLinkFactory::class)
-           ->withResourceUri(rawurlencode($publicUrl)
+           ->withResourceUri(rawurlencode($publicUrl))
            ->withUser(29)
            ->withPage(89)
            ->withGroups([12])
