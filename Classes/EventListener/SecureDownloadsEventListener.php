@@ -61,8 +61,13 @@ class SecureDownloadsEventListener implements SingletonInterface
 
         if ($driver instanceof LocalDriver && ($resource instanceof File || $resource instanceof ProcessedFile)) {
             try {
+                $originalPathShouldBeSecured = false;
+                if ($resource instanceof ProcessedFile) {
+                    $originalPublicUrl = $driver->getPublicUrl($resource->getOriginalFile()->getIdentifier());
+                    $originalPathShouldBeSecured = $this->sdlService->pathShouldBeSecured($originalPublicUrl);
+                }
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier());
-                if ($this->sdlService->pathShouldBeSecured($publicUrl)) {
+                if ($originalPathShouldBeSecured || $this->sdlService->pathShouldBeSecured($publicUrl)) {
                     $securedUrl = $this->getSecuredUrl($event->isRelativeToCurrentScript(), $publicUrl, $driver);
                     $event->setPublicUrl($securedUrl);
                 }
