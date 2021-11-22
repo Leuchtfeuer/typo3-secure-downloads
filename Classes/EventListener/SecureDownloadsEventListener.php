@@ -52,7 +52,7 @@ class SecureDownloadsEventListener implements SingletonInterface
         $driver = $event->getDriver();
         $resource = $event->getResource();
 
-        if ($driver instanceof AbstractHierarchicalFilesystemDriver && ($resource instanceof File || $resource instanceof ProcessedFile)) {
+        if ($driver instanceof AbstractHierarchicalFilesystemDriver && ($resource instanceof File || $resource instanceof ProcessedFile) && $resource->getStorage()->isPublic()) {
             try {
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier());
                 if ($driver instanceof SecureDownloadsDriver || $this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
