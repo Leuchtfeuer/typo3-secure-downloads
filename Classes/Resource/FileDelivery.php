@@ -214,7 +214,8 @@ class FileDelivery
     protected function exitScript(string $message, $httpStatus = HttpUtility::HTTP_STATUS_403): void
     {
         // TODO: Log message?
-        HttpUtility::setResponseCodeAndExit($httpStatus);
+        HttpUtility::setResponseCode($httpStatus);
+        exit($message);
     }
 
     /**
