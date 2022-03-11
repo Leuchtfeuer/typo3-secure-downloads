@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Utility;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
