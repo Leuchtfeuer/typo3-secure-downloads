@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 namespace Bitmotion\SecureDownloads\Factory;
 
 /***
@@ -26,7 +27,7 @@ class SecureLinkFactory
 {
     const DEFAULT_CACHE_LIFETIME = 86400;
 
-    private $extensionConfiguration;
+    protected $extensionConfiguration;
 
     protected $userId = 0;
 
@@ -115,7 +116,9 @@ class SecureLinkFactory
         $pageId = $this->getPageId();
         $resourceUri = $this->getResourceUri();
 
-        $hash = md5($userId . $userGroups . $resourceUri . $pageId);
+        $userGroupsString = implode(',', $userGroups);
+
+        $hash = md5($userId . $userGroupsString . $resourceUri . $pageId);
 
         // Retrieve URL from JWT cache
         if (EncodeCache::hasCache($hash)) {

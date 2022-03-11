@@ -31,6 +31,9 @@
     "firebase/php-jwt": "^5.0",
     "ext-pdo": "*"
   },
+  "require-dev": {
+    "typo3/testing-framework": "^6.16"
+  },
   "suggest": {
     "ext-fileinfo": "For getting mime types from file path."
   },
@@ -45,7 +48,17 @@
   },
   "extra": {
     "typo3/cms": {
-      "extension-key": "secure_downloads"
+      "extension-key": "secure_downloads",
+      "app-dir": ".Build",
+      "web-dir": ".Build/public"
+    }
+  },
+  "config": {
+    "vendor-dir" : ".Build",
+    "bin-dir": ".Build/bin",
+    "allow-plugins": {
+      "typo3/class-alias-loader": true,
+      "typo3/cms-composer-installers": true
     }
   }
 }

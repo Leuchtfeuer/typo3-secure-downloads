@@ -24,5 +24,11 @@ return [
             ],
             'before' => $before,
         ],
+        'bitmotion/secure-downloads/token-refresh' => [
+            'target' => \Bitmotion\SecureDownloads\Middleware\TokenRefreshMiddleware::class,
+            'after' => [
+                'typo3/cms-frontend/content-length-headers',
+            ],
+        ],
     ],
 ];
