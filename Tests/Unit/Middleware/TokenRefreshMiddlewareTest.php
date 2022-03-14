@@ -328,7 +328,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         $secureLinkFactory = $this->getMockBuilder(SecureLinkFactory::class)
             ->disableOriginalConstructor()
             ->setMethods(null)
-            ->getMock(); //SecureLinkFactory::class, ['__construct']);
+            ->getMock();
 
         $this->setProtectedProperty($secureLinkFactory, 'extensionConfiguration', $extensionConfiguration);
         $this->setProtectedProperty($secureLinkFactory, 'userId', 1);
