@@ -6,6 +6,7 @@
 *.idea
 *.project
 *.swp
+.Build
 .buildpath
 .cache
 .project
