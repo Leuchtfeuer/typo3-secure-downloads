@@ -24,10 +24,10 @@
     }
   ],
   "require": {
-    "typo3/cms-backend": "^10.4",
-    "typo3/cms-core": "^10.4",
-    "typo3/cms-extbase": "^10.4",
-    "typo3/cms-frontend": "^10.4",
+    "typo3/cms-backend": "^10.4 || ^11.5",
+    "typo3/cms-core": "^10.4 || ^11.5",
+    "typo3/cms-extbase": "^10.4 || ^11.5",
+    "typo3/cms-frontend": "^10.4 || ^11.5",
     "firebase/php-jwt": "^5.0",
     "ext-pdo": "*"
   },
