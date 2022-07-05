@@ -103,7 +103,8 @@ class CheckConfiguration implements SingletonInterface
      */
     protected function setDirectories(): void
     {
-        foreach ($this->getPublicDirectories() as $publicDirectory) {
+        $publicDirectories = $this->getPublicDirectories();
+        foreach ($publicDirectories as $publicDirectory) {
             $path = sprintf('%s/%s', Environment::getPublicPath(), $publicDirectory);
             $finder = (new Finder())->directories();
             $directories = $finder->in($path);
