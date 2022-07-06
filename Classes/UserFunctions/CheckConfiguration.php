@@ -121,6 +121,9 @@ class CheckConfiguration implements SingletonInterface
             $directoryPath = sprintf('%s/%s', $publicDirectory, $directory->getRelativePathname());
             if (preg_match($this->directoryPattern, $directoryPath)) {
                 $realDirectoryPath = $directory->getRealPath();
+                if (!$realDirectoryPath) {
+                    continue;
+                }
                 $this->directories[] = $realDirectoryPath;
                 $this->checkFilesAccessibility($realDirectoryPath, $directoryPath);
             }
