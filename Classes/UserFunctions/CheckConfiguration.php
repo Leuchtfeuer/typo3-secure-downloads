@@ -124,6 +124,9 @@ class CheckConfiguration implements SingletonInterface
                 $this->directories[] = $realDirectoryPath;
                 $this->checkFilesAccessibility($realDirectoryPath, $directoryPath);
             }
+            if ($this->fileCount >= 20) {
+                break;
+            }
         }
     }
 
@@ -133,22 +136,20 @@ class CheckConfiguration implements SingletonInterface
      */
     protected function checkFilesAccessibility(string $realDirectoryPath, string $directoryPath): void
     {
-        if ($this->fileCount < 20) {
-            $fileFinder = (new Finder())->name($this->fileTypePattern)->in($realDirectoryPath)->depth(0);
-            foreach ($fileFinder->files() as $file) {
-                $publicUrl = sprintf('%s/%s/%s', $this->domain, $directoryPath, $file->getRelativePathname());
-                $statusCode = (new Client())->request('HEAD', $publicUrl, ['http_errors' => false])->getStatusCode();
+        $fileFinder = (new Finder())->name($this->fileTypePattern)->in($realDirectoryPath)->depth(0);
+        foreach ($fileFinder->files() as $file) {
+            $publicUrl = sprintf('%s/%s/%s', $this->domain, $directoryPath, $file->getRelativePathname());
+            $statusCode = (new Client())->request('HEAD', $publicUrl, ['http_errors' => false])->getStatusCode();
 
-                if ($statusCode !== 403) {
-                    $this->fileCount++;
-                    $this->unprotectedFiles[] = [
-                        'url' => $publicUrl,
-                        'statusCode' => $statusCode,
-                    ];
+            if ($statusCode !== 403) {
+                $this->fileCount++;
+                $this->unprotectedFiles[] = [
+                    'url' => $publicUrl,
+                    'statusCode' => $statusCode,
+                ];
 
-                    if ($this->fileCount >= 20) {
-                        break;
-                    }
+                if ($this->fileCount >= 20) {
+                    break;
                 }
             }
         }
