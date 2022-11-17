@@ -14,7 +14,7 @@ $EM_CONF['secure_downloads'] = [
     'author_company' => 'Leuchtfeuer Digital Marketing',
     'constraints' => [
         'depends' => [
-            'php' => '7.2.0-8.0.99',
+            'php' => '7.2.0-8.1.99',
             'typo3' => '10.4.0-11.9.99',
         ],
         'conflicts' => [
