@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace Leuchtfeuer\SecureDownloads\Domain\Transfer\Token;
 
 /***
@@ -12,7 +13,6 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Transfer\Token;
  *  (c) 2020 Florian Wessels <f.wessels@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
  *
  ***/
-
 abstract class AbstractToken
 {
     /**
@@ -130,6 +130,6 @@ abstract class AbstractToken
 
     public function getHash(): string
     {
-        return md5($this->getUser() . $this->getGroups() . $this->getFile() . $this->getPage());
+        return md5($this->getUser() . implode('',$this->getGroups()) . $this->getFile() . $this->getPage());
     }
 }
