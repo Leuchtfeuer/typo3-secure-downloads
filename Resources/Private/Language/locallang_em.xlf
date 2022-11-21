@@ -58,6 +58,9 @@
             <trans-unit id="log">
                 <source>Log Module: Log each file access. This option will enable a backend module.</source>
             </trans-unit>
+            <trans-unit id="skipCheckConfiguration">
+                <source>Extension Configuration:  If this option is activated, the checkConfiguration step in backend module extension configuration is skipped. This should be avoided, but comes in handy if there is a lot of folders as this could create long waits before the module is loaded.</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>
