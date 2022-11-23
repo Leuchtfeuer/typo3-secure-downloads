@@ -269,14 +269,21 @@ class TokenRefreshMiddlewareTest extends TestCase
 
         $url = $secureLinkFactory->getUrl();
 
-        $response = new HtmlResponse('<a src="' . $url . '">foo.txt</a>', 200);
+        $content = '<a href="' . $url . '">foo.txt</a>';
+
+        $response = new HtmlResponse($content, 200);
 
         $handler->expects(self::any())
             ->method('handle')->willReturn($response);
 
         $returnResponse = $tokenRefreshMiddleWare->process($request, $handler);
 
+        $body = $returnResponse->getBody();
+        $body->rewind();
+        $returnContent = $body->getContents();
+
         self::assertSame($response, $returnResponse);
+        self::assertSame($content, $returnContent);
     }
 
     /**
@@ -341,7 +348,7 @@ class TokenRefreshMiddlewareTest extends TestCase
 
         $url = $secureLinkFactory->getUrl();
 
-        $content = '<a src="/' . $url . '">foo.txt</a>';
+        $content = '<a href="/' . $url . '">foo.txt</a>';
 
         $response = new HtmlResponse($content, 200);
 
@@ -351,7 +358,7 @@ class TokenRefreshMiddlewareTest extends TestCase
 
         self::assertTrue($expectedUrl != $url);
 
-        $expectedContent = '<a src="/' . $expectedUrl . '">foo.txt</a>';
+        $expectedContent = '<a href="/' . $expectedUrl . '">foo.txt</a>';
 
         self::assertTrue($expectedContent != $content);
 

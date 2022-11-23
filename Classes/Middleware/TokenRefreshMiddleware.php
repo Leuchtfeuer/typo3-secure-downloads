@@ -72,7 +72,7 @@ class TokenRefreshMiddleware implements MiddlewareInterface
 
                 $foundJwtTokens = [];
 
-                $pattern = '/' . preg_quote($this->assetPrefix, '/') . '([a-zA-Z0-9\_\.\-]+)/';
+                $pattern = '/' . preg_quote($this->assetPrefix, '/') . '([a-zA-Z0-9_.\-]+)/';
                 $replaces = [];
 
                 if (preg_match_all($pattern, $content, $foundJwtTokens)) {
@@ -92,11 +92,12 @@ class TokenRefreshMiddleware implements MiddlewareInterface
                         foreach ($replaces as $search => $replace) {
                             $content = str_replace($search, $replace, $content);
                         }
-                        $body = new Stream('php://temp', 'rw');
-                        $body->write($content);
-                        return $response->withBody($body);
                     }
                 }
+
+                $body = new Stream('php://temp', 'rw');
+                $body->write($content);
+                return $response->withBody($body);
             }
         }
 
