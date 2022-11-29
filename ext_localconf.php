@@ -13,7 +13,10 @@ call_user_func(
 
         // Register eID script
         // TODO: This part is deprecated and will be removed with version 5
-        $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['tx_securedownloads'] = 'EXT:secure_downloads/Resources/Private/Scripts/FileDeliveryEidDispatcher.php';
+        // TODO: Remove this when dropping TYPO3 9 LTS support.
+        if (version_compare(TYPO3_version, '10.0.0', '<')) {
+            $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['tx_securedownloads'] = 'EXT:secure_downloads/Resources/Private/Scripts/FileDeliveryEidDispatcher.php';
+        }
 
         // Register hooks
         // TODO: This part is deprecated and will be removed with version 5
