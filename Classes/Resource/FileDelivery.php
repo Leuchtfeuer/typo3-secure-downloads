@@ -149,10 +149,15 @@ class FileDelivery
             }
         }
 
-        $this->userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
+        $context = GeneralUtility::makeInstance(Context::class);
+        $this->userAspect = $context->getAspect('backend.user');
 
-        if (!$this->checkUserAccess() || !$this->checkGroupAccess()) {
-            $this->exitScript('Access denied for User!');
+        if (!$this->userAspect instanceof UserAspect) {
+            $this->userAspect = $context->getAspect('frontend.user');
+
+            if (!$this->checkUserAccess() || !$this->checkGroupAccess()) {
+                $this->exitScript('Access denied for User!');
+            }
         }
     }
 
