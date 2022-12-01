@@ -158,7 +158,7 @@ class TokenRefreshMiddlewareTest extends TestCase
     /**
      * @test
      */
-    public function whenGroupCheckEnableAndUserLogInWithOutSecuredLinkResponseBodyIsNotModified()
+    public function whenNotGroupCheckEnableAndUserLogInWithOutSecuredLinkResponseBodyIsNotModified()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
@@ -177,7 +177,7 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $context->expects(self::once())
+        $context->expects(self::any())
             ->method('getAspect')
             ->with('frontend.user')
             ->willReturn($currentUser);
@@ -197,14 +197,19 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $response = new HtmlResponse('Test', 200);
+        $content = '<h1>Test</h1>';
+        $response = new HtmlResponse($content, 200);
 
         $handler->expects(self::any())
             ->method('handle')->willReturn($response);
 
         $returnResponse = $tokenRefreshMiddleWare->process($request, $handler);
 
-        self::assertSame($response, $returnResponse);
+        $body = $returnResponse->getBody();
+        $body->rewind();
+        $returnContent = $body->getContents();
+
+        self::assertSame($content, $returnContent);
     }
 
     /**
