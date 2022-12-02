@@ -152,7 +152,7 @@ class FileDelivery
         $context = GeneralUtility::makeInstance(Context::class);
         $this->userAspect = $context->getAspect('backend.user');
 
-        if (!$this->userAspect instanceof UserAspect) {
+        if ($this->userAspect->get('id') === 0) {
             $this->userAspect = $context->getAspect('frontend.user');
 
             if (!$this->checkUserAccess() || !$this->checkGroupAccess()) {
