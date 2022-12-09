@@ -19,7 +19,7 @@ Secure Downloads
    en
 
 :Copyright:
-   2006-2019
+   2006-2022
 
 :Author:
    Florian Wessels, Leuchtfeuer Digital Marketing
