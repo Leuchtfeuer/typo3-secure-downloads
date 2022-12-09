@@ -58,7 +58,7 @@ class SecureLinkFactory implements SingletonInterface
     protected function init()
     {
         $this->token->setExp($this->calculateLinkLifetime());
-        $this->token->setPage((int)$GLOBALS['TSFE']->id);
+        $this->token->setPage((int)($GLOBALS['TSFE']->id ?? 0));
 
         try {
             /** @var UserAspect $userAspect */
@@ -77,7 +77,7 @@ class SecureLinkFactory implements SingletonInterface
      */
     protected function calculateLinkLifetime(): int
     {
-        $cacheTimeout = ($GLOBALS['TSFE'] instanceof TypoScriptFrontendController && !empty($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->get_cache_timeout() : self::DEFAULT_CACHE_LIFETIME;
+        $cacheTimeout = (isset($GLOBALS['TSFE']) && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController && !empty($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->get_cache_timeout() : self::DEFAULT_CACHE_LIFETIME;
 
         return $cacheTimeout + $GLOBALS['EXEC_TIME'] + $this->extensionConfiguration->getCacheTimeAdd();
     }
