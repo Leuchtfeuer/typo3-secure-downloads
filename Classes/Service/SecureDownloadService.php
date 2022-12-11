@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 namespace Leuchtfeuer\SecureDownloads\Service;
 
 /***
@@ -60,7 +61,15 @@ class SecureDownloadService implements SingletonInterface
      */
     public function folderShouldBeSecured(string $publicUrl): bool
     {
-        return (bool)preg_match($this->extensionConfiguration->getSecuredDirectoriesPattern(), $publicUrl);
+        $pattern = $this->extensionConfiguration->getSecuredDirectoriesPattern();
+
+        $result = (bool)preg_match($pattern, rtrim($publicUrl, '/'));
+
+        if (!$result && substr($publicUrl, 0, 1) === '/') {
+            return $this->folderShouldBeSecured(substr($publicUrl, 1));
+        }
+
+        return $result;
     }
 
     /**

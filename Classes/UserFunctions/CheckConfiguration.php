@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 namespace Leuchtfeuer\SecureDownloads\UserFunctions;
 
 /***
@@ -67,9 +68,15 @@ class CheckConfiguration implements SingletonInterface
      */
     protected $unprotectedFiles = [];
 
-    public function __construct()
+    /**
+     * @param ExtensionConfiguration|null $extensionConfiguration
+     */
+    public function __construct(?ExtensionConfiguration $extensionConfiguration = null)
     {
-        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+        if ($extensionConfiguration === null) {
+            $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+        }
+        $this->extensionConfiguration = $extensionConfiguration;
         $this->directoryPattern = $this->extensionConfiguration->getSecuredDirectoriesPattern();
         $this->fileTypePattern = sprintf('#\.(%s)$#i', $this->extensionConfiguration->getSecuredFileTypes());
         $this->domain = GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST');
@@ -78,7 +85,7 @@ class CheckConfiguration implements SingletonInterface
     /**
      * @return string The HTML content
      */
-    public function render(): string
+    public function renderCheckAccess(): string
     {
         $this->setDirectories();
 
@@ -99,8 +106,29 @@ class CheckConfiguration implements SingletonInterface
     }
 
     /**
-     *
+     * @return string
      */
+    public function renderCheckDirs(): string
+    {
+        $this->setDirectories();
+
+        if (count($this->protectedDirectories) === 0) {
+            return $this->noSecuredDirectoryFoundWarningInfo();
+        }
+        return $this->securedDirectoryFoundOkayInfo();
+    }
+
+    protected function isDirectoryMatching(string $directoryPath): bool
+    {
+        $result = preg_match($this->directoryPattern, $directoryPath) === 1;
+
+        if (!$result && substr($directoryPath, 0, 1) === '/') {
+            return $this->isDirectoryMatching(substr($directoryPath, 1));
+        }
+
+        return $result;
+    }
+
     protected function setDirectories(): void
     {
         foreach ($this->getPublicDirectories() as $publicDirectory) {
@@ -119,7 +147,7 @@ class CheckConfiguration implements SingletonInterface
     {
         foreach ($directories as $directory) {
             $directoryPath = sprintf('%s/%s', $publicDirectory, $directory->getRelativePathname());
-            if (preg_match($this->directoryPattern, $directoryPath)) {
+            if ($this->isDirectoryMatching($directoryPath)) {
                 $realDirectoryPath = $directory->getRealPath();
                 if (!$realDirectoryPath) {
                     continue;
@@ -170,9 +198,6 @@ class CheckConfiguration implements SingletonInterface
         });
     }
 
-    /**
-     *
-     */
     protected function checkDirectories(): void
     {
         $lastSecuredDirectory = null;
@@ -230,6 +255,32 @@ class CheckConfiguration implements SingletonInterface
             'times',
             'Your system might be insecure 🤕',
             $this->getDirectoryErrorContent()
+        );
+    }
+
+    /**
+     * @return string
+     */
+    protected function securedDirectoryFoundOkayInfo(): string
+    {
+        return $this->getOutput(
+            'success',
+            'check',
+            'You have a least one protected directory 😀',
+            implode('<br>', $this->protectedDirectories)
+        );
+    }
+
+    /**
+     * @return string
+     */
+    protected function noSecuredDirectoryFoundWarningInfo(): string
+    {
+        return $this->getOutput(
+            'warning',
+            'times',
+            'Your system might be insecure 🤕',
+            'No directory found that matches the search pattern.'
         );
     }
 

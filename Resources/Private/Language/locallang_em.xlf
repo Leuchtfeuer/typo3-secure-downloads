@@ -10,6 +10,9 @@
             <trans-unit id="checkAccess">
                 <source>Check Direct File Access: This is only a vestigial, basic check and its result may be wrong.</source>
             </trans-unit>
+            <trans-unit id="checkDirs">
+                <source>Checks directories matching the pattern.</source>
+            </trans-unit>
             <trans-unit id="securedDirs">
                 <source>Directory Pattern: What directories shall be protected? Multiple directory patterns can be separated by a pipe (|).</source>
             </trans-unit>

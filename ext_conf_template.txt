@@ -1,5 +1,8 @@
-# cat=Parsing/010; type=user[Leuchtfeuer\SecureDownloads\UserFunctions\CheckConfiguration->render]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:checkAccess
+# cat=Parsing/010; type=user[Leuchtfeuer\SecureDownloads\UserFunctions\CheckConfiguration->renderCheckAccess]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:checkAccess
 checkAccess = 0
+
+# cat=Parsing/010; type=user[Leuchtfeuer\SecureDownloads\UserFunctions\CheckConfiguration->renderCheckDirs]; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:checkDirs
+checkDirs = 0
 
 # cat=Parsing/020; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:createFileStorage
 createFileStorage = 0

@@ -24,7 +24,7 @@
     }
   ],
   "require": {
-    "php": "^7.2 || ^8.0",
+    "php": "^7.2 || ^7.4 || ^8.1",
     "typo3/cms-backend": "^10.4 || ^11.5",
     "typo3/cms-core": "^10.4 || ^11.5",
     "typo3/cms-extbase": "^10.4 || ^11.5",
@@ -51,7 +51,18 @@
       ]
     },
     "typo3/cms": {
-      "extension-key": "secure_downloads"
+      "extension-key": "secure_downloads",
+      "app-dir": ".Build",
+      "web-dir": ".Build/public"
+    }
+  },
+  "require-dev": {
+    "typo3/testing-framework": "^6.16"
+  },
+  "config": {
+    "allow-plugins": {
+      "typo3/class-alias-loader": true,
+      "typo3/cms-composer-installers": true
     }
   }
 }
