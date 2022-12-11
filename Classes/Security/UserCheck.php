@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 namespace Leuchtfeuer\SecureDownloads\Security;
 
 use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;

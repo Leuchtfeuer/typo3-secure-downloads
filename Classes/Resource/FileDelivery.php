@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 namespace Leuchtfeuer\SecureDownloads\Resource;
 
 /***
@@ -337,8 +338,7 @@ class FileDelivery implements SingletonInterface
         string $fileName,
         string $mimeType,
         bool $forceDownload
-    ): void
-    {
+    ): void {
         $event = new BeforeReadDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
         $event = $this->eventDispatcher->dispatch($event);
         $outputFunction = $event->getOutputFunction();

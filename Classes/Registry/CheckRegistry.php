@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 namespace Leuchtfeuer\SecureDownloads\Registry;
 
 /***
@@ -40,7 +41,7 @@ class CheckRegistry extends AbstractRegistry
 
         self::$checks[$identifier] = [
             'class' => self::getCheckFromClassName($className),
-            'priority' => $priority
+            'priority' => $priority,
         ];
 
         self::sortByPriority(self::$checks);
