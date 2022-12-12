@@ -87,6 +87,10 @@ class CheckConfiguration implements SingletonInterface
      */
     public function renderCheckAccess(): string
     {
+        if ($this->extensionConfiguration->isSkipCheckConfiguration()) {
+            return '';
+        }
+
         $this->setDirectories();
 
         if (!empty($this->unprotectedFiles)) {

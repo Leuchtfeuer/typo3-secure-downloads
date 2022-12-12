@@ -166,6 +166,15 @@ class ExtensionConfiguration implements SingletonInterface
     private $allowPublicAccess = true;
 
     /**
+     * If this option is activated, the checkConfiguration step in backend module extension configuration is skipped.
+     * This should be avoided, but comes in handy if there is a lot of folders as this could create long waits before the
+     * module is loaded.
+     *
+     * @var bool If true, checkConfiguration->render() is skipped
+     */
+    private $skipCheckConfiguration = false;
+
+    /**
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws ExtensionConfigurationPathDoesNotExistException
      */
@@ -285,5 +294,10 @@ class ExtensionConfiguration implements SingletonInterface
     public function isAllowPublicAccess(): bool
     {
         return (bool)$this->allowPublicAccess;
+    }
+
+    public function isSkipCheckConfiguration(): bool
+    {
+        return (bool)$this->skipCheckConfiguration;
     }
 }

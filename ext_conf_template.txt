@@ -57,3 +57,6 @@ allowPublicAccess = 1
 
 # cat=Logging; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:log
 log = 0
+
+# cat=Backend/010; type=boolean; label=LLL:EXT:secure_downloads/Resources/Private/Language/locallang_em.xlf:skipCheckConfiguration
+skipCheckConfiguration = 0
