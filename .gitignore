@@ -15,3 +15,5 @@
 .webprj
 .idea
 /.Build/
+/vendor
+composer.lock

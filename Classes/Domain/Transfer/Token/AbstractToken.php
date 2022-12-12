@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Leuchtfeuer\SecureDownloads\Domain\Transfer\Token;
@@ -130,6 +131,6 @@ abstract class AbstractToken
 
     public function getHash(): string
     {
-        return md5($this->getUser() . implode('',$this->getGroups()) . $this->getFile() . $this->getPage());
+        return md5($this->getUser() . implode('', $this->getGroups()) . $this->getFile() . $this->getPage());
     }
 }

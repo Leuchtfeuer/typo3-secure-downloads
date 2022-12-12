@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 namespace Leuchtfeuer\SecureDownloads\Factory;
 
 /***
@@ -142,7 +143,7 @@ class SecureLinkFactory implements SingletonInterface
     public function withUser(int $user): self
     {
         $clonedObject = clone $this;
-        $clonedObject->token->setUser($user);
+        $this->token->setUser($user);
 
         return $clonedObject;
     }

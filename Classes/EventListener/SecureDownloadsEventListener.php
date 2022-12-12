@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 namespace Leuchtfeuer\SecureDownloads\EventListener;
 
 /***
@@ -54,8 +55,13 @@ class SecureDownloadsEventListener implements SingletonInterface
 
         if ($driver instanceof AbstractHierarchicalFilesystemDriver && ($resource instanceof File || $resource instanceof ProcessedFile) && $resource->getStorage()->isPublic()) {
             try {
+                $originalPathShouldBeSecured = false;
+                if ($resource instanceof ProcessedFile) {
+                    $originalPublicUrl = $driver->getPublicUrl($resource->getOriginalFile()->getIdentifier());
+                    $originalPathShouldBeSecured = $this->secureDownloadService->pathShouldBeSecured($originalPublicUrl);
+                }
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier()) ?? '';
-                if ($driver instanceof SecureDownloadsDriver || $this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
+                if ($originalPathShouldBeSecured || $driver instanceof SecureDownloadsDriver || $this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
                     $securedUrl = $this->getSecuredUrl($event->isRelativeToCurrentScript(), $publicUrl, $driver);
                     $event->setPublicUrl($securedUrl);
                 }
