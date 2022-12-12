@@ -43,8 +43,8 @@ class UserGroupCheck extends AbstractCheck
         }
 
         if ($this->extensionConfiguration->isStrictGroupCheck()) {
-            // Groups are not identically. Deny access when strict group access is enabled.
-            return false;
+            // File groups are a real subset of the users groups -> return true, else return false
+            return array_intersect($actualGroups, $transmittedGroups) == $actualGroups;
         }
 
         return $this->performStrictGroupCheck($actualGroups, $transmittedGroups);
