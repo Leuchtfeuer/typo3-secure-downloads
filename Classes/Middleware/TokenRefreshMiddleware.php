@@ -22,6 +22,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Http\Stream;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * PSR-15 middleware for delivering secured files to the browser.
@@ -38,13 +39,26 @@ class TokenRefreshMiddleware implements MiddlewareInterface
      */
     protected $isEnableGroupCheck;
 
+    /**
+     * @var TYPO3\CMS\Core\Context\Context
+     */
     private $context;
 
-    /**
-     * @param ExtensionConfiguration $extensionConfiguration
-     * @param Context $context
-     */
-    public function __construct(ExtensionConfiguration $extensionConfiguration, Context $context)
+    public function __construct(?ExtensionConfiguration $extensionConfiguration = null, ?Context $context = null)
+    {
+        if ($extensionConfiguration === null) {
+            $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+        }
+
+        $this->setExtensionConfiguration($extensionConfiguration);
+        if ($context === null) {
+            $this->context = GeneralUtility::makeInstance(Context::class);
+        } else {
+            $this->context = $context;
+        }
+    }
+
+    public function setExtensionConfiguration(ExtensionConfiguration $extensionConfiguration): void
     {
         $this->assetPrefix = sprintf(
             '%s%s/%s',
@@ -54,7 +68,6 @@ class TokenRefreshMiddleware implements MiddlewareInterface
         );
 
         $this->isEnableGroupCheck = $extensionConfiguration->isEnableGroupCheck();
-        $this->context = $context;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface

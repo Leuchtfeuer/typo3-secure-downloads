@@ -28,6 +28,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
@@ -85,7 +86,7 @@ class FileDelivery implements SingletonInterface
 
         $this->dispatchOutputInitializationEvent();
 
-        if (!$this->hasAccess()) {
+        if (!$this->hasAccess() && !$this->isBackendUser()) {
             return $this->getAccessDeniedResponse($request, 'Access check failed.');
         }
 
@@ -183,6 +184,14 @@ class FileDelivery implements SingletonInterface
         }
 
         return true;
+    }
+
+    protected function isBackendUser(): bool
+    {
+        $context = GeneralUtility::makeInstance(Context::class);
+        $backendUser = $context->getAspect('backend.user');
+
+        return $backendUser->get('id') !== 0;
     }
 
     /**
