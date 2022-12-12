@@ -1,0 +1,50 @@
+.. include:: ../../Includes.txt
+
+==========================
+Version 4.1.5 - 2022/12/09
+==========================
+
+This release is a regular maintenance release. It contains mostly bug fixes and improvements regarding the documentation.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v4.1.5>`__.
+
+Changed
+=======
+
+* Do not include FileDeliveryEidDispatcher.php in TYPO3 10.4 and greater.
+* Update the user UID in links, because the EventListener is no longer called due to the cache.
+* Strict checking also works if a user is a member of more than the necessary groups.
+* Remove display errors for backend users.
+* Introduces unit tests.
+
+All Changes
+===========
+
+This is a list of all changes in this release::
+
+    2022-12-02 [BUGFIX] check backend user (Commit f53674b by Marcus Balasch)
+    2022-12-01 [TASK] correct unit test (Commit 81fad0f by Marcus Balasch)
+    2022-12-01 [BUGFIX] Set empty string if publicURL is not available, thanks to ayacoo (Commit d8750ad by Marcus Balasch)
+    2022-12-01 [TASK] Enables access with logged in backend user always (Commit 4e7b4bf by Marcus Balasch)
+    2022-11-30 [TASK ] A subset for verification is sufficient for strict separation, thanks to foobar13372 (Commit 76929f1 by Marcus Balasch)
+    2022-11-29 [TASK ] Do not include FileDeliveryEidDispatcher.php as of TYPO3 10 any more (Commit 74358cc by Marcus Balasch)
+    2022-11-23 [TASK] fix double content generation (Commit 2723756 by Marcus Balasch)
+    2022-03-21 [TASK] replaces the user uids in urls (#124) (Commit 08103b1 by Marcus Balasch)
+    2022-03-11 [TASK] Fix code style (Commit ec7c04f by Marcus Balasch)
+    2021-11-09 [TASK] Set version to 4.1.5-dev (Commit f4a7958 by Marcus Balasch)
+
+
+Contributors
+============
+Following people have contributed to this release:
+
+* (foobar13372)
+* Guido Schmechel
+* Marcus Balasch
+* Oliver Heins
+
+Thank you very much for your support. The next beer is on us! 🍻

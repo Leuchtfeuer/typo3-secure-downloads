@@ -104,3 +104,10 @@ This is a list of all changes in this release::
    2020-05-06 [BREAKING] Remove deprecated code and drop TYPO3 v9 support (Commit fb52a49 by Florian Wessels)
 
 
+Contributors
+============
+Following people have contributed to this release:
+
+*   Annett Jähnichen
+
+Thank you very much for your support. The next beer is on us! 🍻

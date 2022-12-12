@@ -1,0 +1,39 @@
+.. include:: ../../Includes.txt
+
+==========================
+Version 4.1.4 - 2021/11/09
+==========================
+
+This release is a regular maintenance release. It contains mostly bug fixes and improvements regarding the documentation.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v4.1.4>`__.
+
+Changed
+=======
+
+* Support for proccessed files,
+
+All Changes
+===========
+
+This is a list of all changes in this release::
+
+   2021-11-09 [TASK] Set version to 4.1.4-dev (Commit d5d403b by Marcus Balasch)
+   2021-11-09 [BUGFIX] add suport for proccessed files (#117) (Commit 959e606 by Marcus Balasch)
+   2021-11-08 FEATURE: Increase max logged filesize (#110) (Commit 73cea3e by Jan-Michael Loew)
+
+Contributors
+============
+Following people have contributed to this release:
+
+* Annett Jähnichen
+* Jan-Michael Loew
+* Marcus Balasch
+* Max Rösch
+* Oliver Heins
+
+Thank you very much for your support. The next beer is on us! 🍻
