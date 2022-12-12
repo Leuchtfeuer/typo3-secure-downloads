@@ -29,22 +29,22 @@ As a complementary measure, you will of course need to configure your web server
 ## Requirements
 We are currently supporting following TYPO3 versions:
 
-| Extension Version                                                              | TYPO3 v10 | TYPO3 v9 |
-| ------------------------------------------------------------------------------ | --------- | -------- |
-| [5.x](https://github.com/Leuchtfeuer/typo3-secure-downloads) <sup>1)</sup>     | x         | -        |
-| [4.x](https://github.com/Leuchtfeuer/typo3-secure-downloads/tree/release-4.x)  | x         | x        |
+| Extension Version                                                              | TYPO3 v11 | TYPO3 v10 |
+| ------------------------------------------------------------------------------ |-----------|-----------|
+| [5.x](https://github.com/Leuchtfeuer/typo3-secure-downloads) <sup>1)</sup>     | x         | x         |
 
 * <sup>1)</sup> Upcoming release as `leuchtfeuer/secure-downloads` (vendor name changed).
 
 ### Outdated Versions
 For the following versions no more free bug fixes and new features will be provided by the authors:
 
-| Extension Version | TYPO3 v9 | TYPO3 v8 | TYPO3 v7 | TYPO3 v6.2 | TYPO3 v4.5 |
-| ----------------- | -------- | -------- | -------- | ---------- | ---------- |
-| 3.x               | x        | x        | -        | -          | -          |
-| 2.0.4 - 2.x       | -        | x        | x        | -          | -          |
-| 2.0.0 - 2.0.3     | -        | -        | x        | x          | -          |
-| 1.x<sup>2)</sup>  | -        | -        | -        | x          | x          |
+| Extension Version | TYPO3 v10 | TYPO3 v9 | TYPO3 v8 | TYPO3 v7 | TYPO3 v6.2 | TYPO3 v4.5 |
+|-------------------|-----------|----------|----------|----------|------------|------------|
+| 4.x               | x         | x        | -        | -        | -          | -          |
+| 3.x               | -         | x        | x        | -        | -          | -          |
+| 2.0.4 - 2.x       | -         | -        | x        | x        | -          | -          |
+| 2.0.0 - 2.0.3     | -         | -        | -        | x        | x          | -          |
+| 1.x<sup>2)</sup>  | -         | -        | -        | -        | x          | x          |
 
 * <sup>2)</sup> As [`EXT:naw_securedl`](https://extensions.typo3.org/extension/naw_securedl) or `typo3-ter/naw-securedl`.
 
