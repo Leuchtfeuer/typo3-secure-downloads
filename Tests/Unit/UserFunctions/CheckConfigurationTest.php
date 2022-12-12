@@ -31,17 +31,16 @@ class CheckConfigurationTest extends TestCase
      */
     public function someDirectoriesPatternTests()
     {
-        $methods = get_class_methods(ExtensionConfiguration::class);
-        $methods =  array_diff($methods, ['getSecuredDirectoriesPattern']);
-
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
-            ->onlyMethods($methods)
+            ->onlyMethods([])
             ->getMock();
 
-        $directories = 'fileadmin/secure|typo3temp';
+        $configuration = [
+            'securedDirs' => 'fileadmin/secure|typo3temp',
+        ];
 
-        $extensionConfiguration->expects(self::any())->method('getSecuredDirs')->willReturn($directories);
+        $this->invokeMethod($extensionConfiguration, 'setPropertiesFromConfiguration', [$configuration]);
 
         $checkConfiguration = new CheckConfiguration($extensionConfiguration);
 
