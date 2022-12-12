@@ -18,5 +18,11 @@ return [
             ],
             'before' => $before,
         ],
+        'leuchtfeuer/secure-downloads/token-refresh' => [
+            'target' => \Leuchtfeuer\SecureDownloads\Middleware\TokenRefreshMiddleware::class,
+            'after' => [
+                'typo3/cms-frontend/content-length-headers',
+            ],
+        ],
     ],
 ];

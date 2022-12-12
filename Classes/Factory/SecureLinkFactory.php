@@ -143,7 +143,7 @@ class SecureLinkFactory implements SingletonInterface
     public function withUser(int $user): self
     {
         $clonedObject = clone $this;
-        $clonedObject->token->setUser($user);
+        $this->token->setUser($user);
 
         return $clonedObject;
     }
