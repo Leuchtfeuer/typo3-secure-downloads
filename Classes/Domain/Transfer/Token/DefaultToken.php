@@ -15,6 +15,7 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Transfer\Token;
  ***/
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -38,7 +39,7 @@ class DefaultToken extends AbstractToken
 
     public function decode(string $jsonWebToken): void
     {
-        $data = (array)JWT::decode($jsonWebToken, $this->getKey(), [$this->getAlgorithm()]);
+        $data = (array)JWT::decode($jsonWebToken, new Key($this->getKey(), $this->getAlgorithm()));
 
         foreach ($data ?? [] as $property => $value) {
             if (property_exists(__CLASS__, $property)) {
