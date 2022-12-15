@@ -40,7 +40,7 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
         if (count($storageObjects) === 0) {
             $this->createLocalStorage(
                 'Secure Downloads (auto-created)',
-                \Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver::BASE_PATH,
+                SecureDownloadsDriver::BASE_PATH,
                 'relative',
                 'This is the local "Secure Downloads" directory. All contained files are protected against direct access.',
                 false

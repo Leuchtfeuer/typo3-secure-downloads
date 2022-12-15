@@ -40,7 +40,7 @@ class TokenRefreshMiddleware implements MiddlewareInterface
     protected $isEnableGroupCheck;
 
     /**
-     * @var TYPO3\CMS\Core\Context\Context
+     * @var Context
      */
     private $context;
 
