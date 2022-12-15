@@ -46,16 +46,11 @@ class TokenRefreshMiddleware implements MiddlewareInterface
 
     public function __construct(?ExtensionConfiguration $extensionConfiguration = null, ?Context $context = null)
     {
-        if ($extensionConfiguration === null) {
-            $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
-        }
+        $this->setExtensionConfiguration(
+            $extensionConfiguration ?? GeneralUtility::makeInstance(ExtensionConfiguration::class)
+        );
 
-        $this->setExtensionConfiguration($extensionConfiguration);
-        if ($context === null) {
-            $this->context = GeneralUtility::makeInstance(Context::class);
-        } else {
-            $this->context = $context;
-        }
+        $this->context = $context ?? GeneralUtility::makeInstance(Context::class);
     }
 
     public function setExtensionConfiguration(ExtensionConfiguration $extensionConfiguration): void
