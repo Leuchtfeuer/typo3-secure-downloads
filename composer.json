@@ -21,6 +21,12 @@
       "email": "f.wessels@Leuchtfeuer.com",
       "role": "Developer",
       "homepage": "https://www.Leuchtfeuer.com"
+    },
+    {
+      "name": "Marcus Balasch",
+      "email": "m.balasch@Leuchtfeuer.com",
+      "role": "Developer",
+      "homepage": "https://www.Leuchtfeuer.com"
     }
   ],
   "require": {

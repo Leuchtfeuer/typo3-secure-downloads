@@ -1,0 +1,43 @@
+.. include:: ../../Includes.txt
+
+==========================
+Version 4.1.6 - 2022/12/15
+==========================
+
+This release is a regular maintenance release. It contains mostly bug fixes and improvements regarding the documentation.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v4.1.6>`__.
+
+Changed
+=======
+
+* Do not include FileDeliveryEidDispatcher.php in TYPO3 10.4 and greater.
+* Update the user UID in links, because the EventListener is no longer called due to the cache.
+* Strict checking also works if a user is a member of more than the necessary groups.
+* Remove display errors for backend users.
+* Introduces unit tests.
+
+All Changes
+===========
+
+This is a list of all changes in this release::
+
+    2022-12-15 [TASK] update gitignore (Commit e6957b1 by Marcus Balasch)
+    2022-12-15 [TASK] build script for ter releases (Commit 264a317 by Marcus Balasch)
+    2022-12-15 Merge remote-tracking branch 'origin/release-4.x' into release-4.x (Commit fa7de31 by Marcus Balasch)
+    2022-12-15 [TASK] update libraries for non composer setup (Commit 84bf6e2 by Marcus Balasch)
+    2022-12-15 [BUGFIX] sometimes bypass missing dependency injection (Commit 44de09b by Marcus Balasch)
+    2022-12-15 [TASK] Set version to 4.1.6-dev (Commit 1806ff5 by Marcus Balasch)
+    2022-12-12 Fix access error if a folder in private storage via file list was called (#136) (Commit b65cf3a by Denis Kassor)
+
+Contributors
+============
+Following people have contributed to this release:
+
+* Denis Kassor
+
+Thank you very much for your support. The next drink is on us! 🍻

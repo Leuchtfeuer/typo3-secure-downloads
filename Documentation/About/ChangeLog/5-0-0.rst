@@ -27,6 +27,27 @@ All Changes
 ===========
 This is a list of all changes in this release::
 
+   2022-12-15 [TASK] Optimization in CheckConfiguration (max 20) (#132) (Commit 392f745 by Sybille Peters)
+   2022-12-15 [TASK] a little makeover (Commit 4c75d19 by Marcus Balasch)
+   2022-12-13 [TASK] raise php-jwt to V6.1 or higher (Commit e9b9d75 by Marcus Balasch)
+   2022-12-12 [BUGFIX] access for backend users (Commit 9bd7764 by Marcus Balasch)
+   2022-12-12 [FEATURE] add option to skip checkConfiguration (#139) (Commit 8bea4da by J. Peter M. Schuler)
+   2022-12-12 [TASK] Check for correct value in CheckConfiguration (#131) (Commit 0007195 by Sybille Peters)
+   2022-12-12 Backport v4 (#142) (Commit ff8e484 by Marcus Balasch)
+   2022-12-09 PHP 8.1 compatibility (#137) (Commit 76f5db8 by J. Peter M. Schuler)
+   2022-12-01 [BUGFIX] Set empty string if publicURL is not available (#99) (Commit 208fc21 by Guido Schmechel)
+   2021-11-22 fix error when storage is not public (#115) (Commit 20e3fa9 by Henrik Ahrens)
+   2021-11-09 [TASK] Update dependencies (Commit e69d89f by Marcus Balasch)
+   2021-11-09 [DOC] Removal of faulty versions (Commit 48ad01a by Marcus Balasch)
+   2021-11-09 [TASK] Remove TCA configuration showRecordFieldList (#113) (Commit 13199ca by Patrick Lenk)
+   2021-10-20 one bracket was missing (#93) (Commit 3d4b6b5 by Usman Ahmad)
+   2021-09-13 [DOC] Add changelog for 4.1.3 (Commit df569a8 by Marcus Balasch)
+   2021-09-13 [DOC] Add changelog for 4.1.2 (Commit c45468c by Marcus Balasch)
+   2021-09-13 fix invalid call getRelativePathname on array (#109) (Commit 34164ea by Henrik Ahrens)
+   2021-08-30 [TASK] Add TER release script (Commit 35bd855 by Max Rösch)
+   2020-09-18 [TASK] Use unique class names within svg files (Commit 2c50515 by Florian Wessels)
+   2020-06-03 [DOC] Update change log (Commit 7141422 by Florian Wessels)
+   2020-06-03 [TASK] Update dependencies (Commit bb4181d by Florian Wessels)
    2020-06-03 [TASK] Update dependencies (Commit bb4181d by Florian Wessels)
    2020-06-03 [DOC] Update php doc (Commit c36f660 by Florian Wessels)
    2020-05-11 [FEATURE] Allow to restrict access for not logged in users (Commit 03acaae by Florian Wessels)
@@ -109,5 +130,13 @@ Contributors
 Following people have contributed to this release:
 
 *   Annett Jähnichen
+*   Florian Wessels
+*   Guido Schmechel
+*   Henrik Ahrens
+*   J. Peter M. Schuler
+*   Max Rösch
+*   Patrick Lenk
+*   Sybille Peters
+*   Usman Ahmad
 
-Thank you very much for your support. The next beer is on us! 🍻
+Thank you very much for your support. The next drink is on us! 🍻
