@@ -88,7 +88,7 @@ class CheckConfiguration implements SingletonInterface
     public function renderCheckAccess(): string
     {
         if ($this->extensionConfiguration->isSkipCheckConfiguration()) {
-            return '';
+            return 'Check skipped as the option "backend.skipCheckConfiguration" is active';
         }
 
         $this->setDirectories();
@@ -114,6 +114,10 @@ class CheckConfiguration implements SingletonInterface
      */
     public function renderCheckDirs(): string
     {
+        if ($this->extensionConfiguration->isSkipCheckConfiguration()) {
+            return 'Check skipped as the option "backend.skipCheckConfiguration" is active';
+        }
+
         $this->setDirectories();
 
         if (count($this->protectedDirectories) === 0) {
