@@ -6,6 +6,6 @@
     "classmap-authoritative": true
   },
   "require": {
-    "firebase/php-jwt": "^5.0"
+    "firebase/php-jwt": "^6.0"
   }
 }
