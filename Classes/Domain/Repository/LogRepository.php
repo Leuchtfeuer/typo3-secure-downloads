@@ -160,7 +160,7 @@ class LogRepository extends Repository
      * @param QueryInterface $query        The query object
      * @param array          $constraints  Array containing all previously applied constraints
      */
-    protected function applyEqualPropertyToFilter(int $property, string $propertyName, QueryInterface $query, array $constraints): void
+    protected function applyEqualPropertyToFilter(int $property, string $propertyName, QueryInterface $query, array &$constraints): void
     {
         if ($property !== 0) {
             $constraints[] = $query->equals($propertyName, $property);
