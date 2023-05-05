@@ -1,27 +1,37 @@
 ﻿.. include:: ../../Includes.txt
 
-===================
-Version 5.0.0 - TBA
-===================
+==========================
+Version 5.0.0 - 2023/05/05
+==========================
 
-This release is a future release.
+This release is a new major release. It introduces support for TYPO3 11 LTS as well as for PHP 8.1. TYPO3 9 LTS is not supported anymore.
 
 Download
 ========
 
-Download the beta version from `GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v5.0.0-beta>`__.
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v5.0.0>`__.
 
 Added
 =====
+* Support for TYPO3 version 11
+* Support for PHP 8.1
+* Checking of the configuration via real HTTP(S) accesses, optionally deactivatable
+* Option to protect file links without logged-in users
+* Option for fully protected FileStorage
+* New configurable access model with the possibility to include own checks.
 
 Changed
 =======
+* Renaming “Bitmotion” to ”Leuchtfeuer”
+* Upgrade PHP-JWT to V6.1
 
 Deprecated
 ==========
 
 Removed
 =======
+* Support for TYPO3 version 9
 
 All Changes
 ===========
