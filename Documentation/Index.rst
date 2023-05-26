@@ -22,7 +22,7 @@ Secure Downloads
    since 2006 by the athors
 
 :Author:
-   Florian Wessels, Leuchtfeuer Digital Marketing
+   Leuchtfeuer Digital Marketing
 
 :Email:
    dev@Leuchtfeuer.com
