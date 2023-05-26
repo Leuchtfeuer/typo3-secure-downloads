@@ -1,0 +1,53 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 5.0.0 - 2023/05/05
+==========================
+
+This release is a new major release. It introduces support for TYPO3 11 LTS as well as for PHP 8.1. TYPO3 9 LTS is not supported anymore.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v5.0.1>`__.
+
+Added
+=====
+* Pagination in backend module
+* Add skipConfiguration im backend
+
+Changed
+=======
+* Replace author
+* Upgrade PHP-JWT to V6.4
+
+Deprecated
+==========
+
+Removed
+=======
+* Amazon wish list
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+    2023-05-26 [TASK] Update authors and funding links. (#155) (Commit 449a779 by Sebastian Afeldt)
+    2023-03-17 [TASK] Update firebase/jwt library from ^5.0 to ^6.0 (#149) (Commit 146b7e7 by Niklas Grieger)
+    2023-03-16 bugfix/TERROAD-74 (#150) (Commit e82f3ca by Sebastian Afeldt)
+    2023-03-08 [BUGFIX] Fix "Create a Secure Downloads File Storage" extension configuration functionality (#147) (Commit 6426fab by Niklas Grieger)
+    2023-03-08 bugfix/TERROAD-74 (#146) (Commit bd0935b by Niklas Grieger)
+    2023-01-12 [REGRESSION] backend.skipConfiguration doesn't skip new check (#143) (Commit c04c52f by J. Peter M. Schuler)
+    2022-12-15 [TASK] some rector updates (Commit 68c6782 by Marcus Balasch)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   J. Peter M. Schuler
+*   Marcus Balasch
+*   Niklas Grieger
+*   Sebastian Afeldt
+
+Thank you very much for your support. The next drink is on us! 🍻
