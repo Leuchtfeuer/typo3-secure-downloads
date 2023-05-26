@@ -1,7 +1,7 @@
 ﻿.. include:: ../../Includes.txt
 
 ==========================
-Version 5.0.0 - 2023/05/05
+Version 5.0.1 - 2023/05/26
 ==========================
 
 This release is a new major release. It introduces support for TYPO3 11 LTS as well as for PHP 8.1. TYPO3 9 LTS is not supported anymore.
