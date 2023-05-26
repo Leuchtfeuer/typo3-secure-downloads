@@ -1,67 +1,61 @@
-<f:form action="{action}" object="{filter}" objectName="filter" class="form-horizontal">
-    <div class="form-group">
-        <label for="user" class="col-sm-1 control-label">
-            <f:translate key="module.filter.user.label"/>
-        </label>
-        <div class="col-sm-5">
-            <div class="col-sm-12">
-                <select id="user" name="tx_securedownloads_web_securedownloadstrafficlog[filter][feUserId]" class="form-control">
-                    <optgroup label="{f:translate(key:'module.filter.user.label.general')}">
-                        <option value="0">{f:translate(key:'module.filter.user.label.all')}</option>
-                        <f:variable name="selected">{f:if(condition: '-1 == {filter.userType}', then: 'selected="selected"')}</f:variable>
-                        <option value="-1" {selected}>{f:translate(key:'module.filter.user.label.logged_in')}</option>
-                        <f:variable name="selected">{f:if(condition: '-2 == {filter.userType}', then: 'selected="selected"')}</f:variable>
-                        <option value="-2" {selected}>{f:translate(key:'module.filter.user.label.not_logged_in')}</option>
-                    </optgroup>
-                    <optgroup label="{f:translate(key:'module.filter.user.label.by_user')}">
-                        <f:for each="{users}" as="user">
-                            <f:variable name="selected">{f:if(condition:'{user.uid} == {filter.feUserId}', then: 'selected="selected"')}</f:variable>
-                            <option value="{user.uid}" {selected}>{user.uid}: {user.username}</option>
-                        </f:for>
-                    </optgroup>
-                </select>
-            </div>
+<f:form action="{action}" object="{filter}" objectName="filter">
+    <div class="row">
+        <div class="col-12 col-md-6 form-group">
+            <label for="user" class="control-label">
+                <f:translate key="module.filter.user.label"/>
+            </label>
+            <select id="user" name="tx_securedownloads_web_securedownloadstrafficlog[filter][feUserId]" class="form-control">
+                <optgroup label="{f:translate(key:'module.filter.user.label.general')}">
+                    <option value="0">{f:translate(key:'module.filter.user.label.all')}</option>
+                    <f:variable name="selected">{f:if(condition: '-1 == {filter.userType}', then: 'selected="selected"')}</f:variable>
+                    <option value="-1" {selected}>{f:translate(key:'module.filter.user.label.logged_in')}</option>
+                    <f:variable name="selected">{f:if(condition: '-2 == {filter.userType}', then: 'selected="selected"')}</f:variable>
+                    <option value="-2" {selected}>{f:translate(key:'module.filter.user.label.not_logged_in')}</option>
+                </optgroup>
+                <optgroup label="{f:translate(key:'module.filter.user.label.by_user')}">
+                    <f:for each="{users}" as="user">
+                        <f:variable name="selected">{f:if(condition:'{user.uid} == {filter.feUserId}', then: 'selected="selected"')}</f:variable>
+                        <option value="{user.uid}" {selected}>{user.uid}: {user.username}</option>
+                    </f:for>
+                </optgroup>
+            </select>
         </div>
-
-        <label for="fileType" class="col-sm-1 control-label">
-            <f:translate key="module.filter.file_type.label"/>
-        </label>
-        <div class="col-sm-5">
-            <div class="col-sm-12">
-                <f:form.select id="filetype" class="form-control" property="fileType" options="{fileTypes}"
-                               optionValueField="media_type" optionLabelField="media_type" prependOptionValue="0"
-                               prependOptionLabel="{f:translate(key:'module.filter.file_type.label.all')}"/>
-            </div>
+        <div class="col-12 col-md-6 form-group">
+            <label for="fileType" class="control-label">
+                <f:translate key="module.filter.file_type.label"/>
+            </label>
+            <f:form.select id="filetype" class="form-control" property="fileType" options="{fileTypes}"
+                           optionValueField="media_type" optionLabelField="media_type" prependOptionValue="0"
+                           prependOptionLabel="{f:translate(key:'module.filter.file_type.label.all')}"/>
         </div>
     </div>
 
-
     <div class="form-group">
-        <label class="col-sm-1 control-label">
+        <label class="control-label">
             <f:translate key="module.filter.period.label"/>
         </label>
-        <div class="col-sm-5">
-            <div class="col-sm-6">
+        <div class="row">
+            <div class="col-12 col-md-6">
                 <f:form.textfield placeholder="{f:translate(key:'module.filter.placeholder.period.from')}: YYYY-mm-dd HH:ii:ss"
                                   property="from" class="form-control"
                                   value="{filter.from -> f:format.date(format: 'Y-m-d H:i:s')}"/>
             </div>
-            <div class="col-sm-6">
+            <div class="col-12 col-md-6">
                 <f:form.textfield placeholder="{f:translate(key:'module.filter.placeholder.period.to')}: YYYY-mm-dd HH:ii:ss"
                                   property="till" class="form-control"
                                   value="{filter.till -> f:format.date(format: 'Y-m-d H:i:s')}"/>
             </div>
         </div>
+    </div>
 
-        <div class="col-sm-1"></div>
-
-        <div class="col-sm-5">
-            <div class="col-sm-6">
+    <div class="form-group mt-4">
+        <div class="row">
+            <div class="col-auto col-md-3">
                 <f:link.action action="{action}" arguments="{reset: 1}" class="btn btn-default btn-block">
                     <f:translate key="module.filter.button.reset"/>
                 </f:link.action>
             </div>
-            <div class="col-sm-6">
+            <div class="col-auto col-md-3">
                 <button type="submit" class="btn btn-primary btn-block">
                     <f:translate key="module.filter.button.submit" />
                 </button>

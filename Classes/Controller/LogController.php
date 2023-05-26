@@ -10,7 +10,7 @@ namespace Leuchtfeuer\SecureDownloads\Controller;
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- *  (c) 2019 Florian Wessels <f.wessels@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ *  (c) 2019 Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
  *
  ***/
 
@@ -22,6 +22,8 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Pagination\ArrayPaginator;
+use TYPO3\CMS\Core\Pagination\SimplePagination;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException;
@@ -58,27 +60,41 @@ class LogController extends ActionController
         }
 
         if ($this->request->hasArgument('reset') && (bool)$this->request->getArgument('reset') === true) {
-            $GLOBALS['BE_USER']->setSessionData(self::FILTER_SESSION_KEY, null);
+            $GLOBALS['BE_USER']->setSessionData(self::FILTER_SESSION_KEY, serialize(new Filter()));
+        }
+
+        if ($GLOBALS['BE_USER']->getSessionData(self::FILTER_SESSION_KEY) === null) {
+            $GLOBALS['BE_USER']->setSessionData(self::FILTER_SESSION_KEY, serialize(new Filter()));
         }
     }
 
     /**
      * @param Filter|null $filter The filter object
      */
-    public function listAction(Filter $filter = null): void
+    public function listAction(?Filter $filter = null): void
     {
-        $filter = $filter ?? $GLOBALS['BE_USER']->getSessionData(self::FILTER_SESSION_KEY) ?? (new Filter());
+        $filter = $filter ?? unserialize($GLOBALS['BE_USER']->getSessionData(self::FILTER_SESSION_KEY)) ?? (new Filter());
+        $filter->setPageId(0);
         $logEntries = $this->logRepository->findByFilter($filter);
 
         // Store filter data in session of backend user (used for pagination)
-        $GLOBALS['BE_USER']->setSessionData(self::FILTER_SESSION_KEY, $filter);
+        $GLOBALS['BE_USER']->setSessionData(self::FILTER_SESSION_KEY, serialize($filter));
+
+        $itemsPerPage = 20;
+        $currentPage = GeneralUtility::_GP('currentPage') ? (int)GeneralUtility::_GP('currentPage') : 1;
+
+        $paginator = new ArrayPaginator($logEntries->toArray(), $currentPage, $itemsPerPage);
+        $pagination = new SimplePagination($paginator);
 
         $this->view->assignMultiple([
-            'logs' => $logEntries,
+            'logs' => $paginator->getPaginatedItems(),
             'users' => $this->getUsers(),
             'fileTypes' => $this->getFileTypes(),
             'filter' => $filter,
             'statistic' => new Statistic($logEntries),
+            'paginator' => $paginator,
+            'pagination' => $pagination,
+            'totalResultCount' => count($logEntries),
         ]);
     }
 
@@ -119,7 +135,7 @@ class LogController extends ActionController
      * @param Filter|null $filter The filter object
      * @throws StopActionException
      */
-    public function showAction(Filter $filter = null): void
+    public function showAction(?Filter $filter = null): void
     {
         $pageId = (int)GeneralUtility::_GP('id');
 
@@ -127,20 +143,29 @@ class LogController extends ActionController
             $this->redirect('list');
         }
 
-        $filter = $filter ?? $GLOBALS['BE_USER']->getSessionData('filter') ?? (new Filter());
+        $filter = $filter ?? unserialize($GLOBALS['BE_USER']->getSessionData(self::FILTER_SESSION_KEY)) ?? (new Filter());
         $filter->setPageId($pageId);
         $logEntries = $this->logRepository->findByFilter($filter);
 
         // Store filter data in session of backend user (used for pagination)
-        $GLOBALS['BE_USER']->setSessionData('filter', $filter);
+        $GLOBALS['BE_USER']->setSessionData(self::FILTER_SESSION_KEY, serialize($filter));
+
+        $itemsPerPage = 20;
+        $currentPage = GeneralUtility::_GP('currentPage') ? (int)GeneralUtility::_GP('currentPage') : 1;
+
+        $paginator = new ArrayPaginator($logEntries->toArray(), $currentPage, $itemsPerPage);
+        $pagination = new SimplePagination($paginator);
 
         $this->view->assignMultiple([
-            'logs' => $logEntries,
+            'logs' => $paginator->getPaginatedItems(),
             'page' => BackendUtility::getRecord('pages', $pageId),
             'users' => $this->getUsers(),
             'fileTypes' => $this->getFileTypes(),
             'filter' => $filter,
             'statistic' => new Statistic($logEntries),
+            'paginator' => $paginator,
+            'pagination' => $pagination,
+            'totalResultCount' => count($logEntries),
         ]);
     }
 

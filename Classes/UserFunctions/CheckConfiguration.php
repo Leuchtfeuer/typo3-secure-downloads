@@ -10,7 +10,7 @@ namespace Leuchtfeuer\SecureDownloads\UserFunctions;
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- *  (c) 2019 Florian Wessels <f.wessels@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ *  (c) 2019 Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
  *
  ***/
 
@@ -88,7 +88,7 @@ class CheckConfiguration implements SingletonInterface
     public function renderCheckAccess(): string
     {
         if ($this->extensionConfiguration->isSkipCheckConfiguration()) {
-            return '';
+            return 'Check skipped as the option "backend.skipCheckConfiguration" is active';
         }
 
         $this->setDirectories();
@@ -114,6 +114,10 @@ class CheckConfiguration implements SingletonInterface
      */
     public function renderCheckDirs(): string
     {
+        if ($this->extensionConfiguration->isSkipCheckConfiguration()) {
+            return 'Check skipped as the option "backend.skipCheckConfiguration" is active';
+        }
+
         $this->setDirectories();
 
         if (count($this->protectedDirectories) === 0) {

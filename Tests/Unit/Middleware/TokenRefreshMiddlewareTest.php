@@ -3,6 +3,7 @@
 namespace Leuchtfeuer\SecureDownloads\Tests\Unit\Middleware;
 
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\DefaultToken;
 use Leuchtfeuer\SecureDownloads\Factory\SecureLinkFactory;
 use Leuchtfeuer\SecureDownloads\Middleware\TokenRefreshMiddleware;
 use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
@@ -406,9 +407,9 @@ class TokenRefreshMiddlewareTest extends TestCase
 
         $this->setPrivateProperty(SecureLinkFactory::class, $secureLinkFactory, 'extensionConfiguration', $extensionConfiguration);
 
-        \Leuchtfeuer\SecureDownloads\Registry\TokenRegistry::register(
+        TokenRegistry::register(
             'tx_securedownloads_default',
-            \Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\DefaultToken::class,
+            DefaultToken::class,
             0,
             false
         );
