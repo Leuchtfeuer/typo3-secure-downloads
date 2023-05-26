@@ -11,7 +11,7 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Transfer\Token;
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- *  (c) 2020 Florian Wessels <f.wessels@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ *  (c) 2020 Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
  *
  ***/
 abstract class AbstractToken
