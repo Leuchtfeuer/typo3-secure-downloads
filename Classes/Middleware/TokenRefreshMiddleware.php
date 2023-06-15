@@ -15,6 +15,7 @@ namespace Leuchtfeuer\SecureDownloads\Middleware;
  ***/
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -86,7 +87,7 @@ class TokenRefreshMiddleware implements MiddlewareInterface
                 if (preg_match_all($pattern, $content, $foundJwtTokens)) {
                     foreach ($foundJwtTokens[1] as $foundJwtToken) {
                         try {
-                            $data = JWT::decode($foundJwtToken, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], ['HS256']);
+                            $data = JWT::decode($foundJwtToken, new Key($GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], 'HS256'));
                             if ((int)$data->user !== $currentUserId) {
                                 $data->user = $currentUserId;
                                 $newToken = JWT::encode($data, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], 'HS256');
