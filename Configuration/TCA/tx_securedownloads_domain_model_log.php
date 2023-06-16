@@ -7,7 +7,6 @@ return [
         'label' => 'file_id',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
-        'cruser_id' => 'cruser_id',
         'versioningWS' => false,
         'enablecolumns' => [],
         'hideTable' => true,

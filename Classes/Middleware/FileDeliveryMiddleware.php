@@ -48,7 +48,7 @@ class FileDeliveryMiddleware implements MiddlewareInterface
     {
         if ($this->isResponsible($request)) {
             $frontendUserAuthentication = $request->getAttribute('frontend.user');
-            $frontendUserAuthentication->fetchGroupData();
+            $frontendUserAuthentication->fetchGroupData($request);
 
             $cleanPath = mb_substr(urldecode($request->getUri()->getPath()), mb_strlen($this->assetPrefix));
             [$jwt, $basePath] = explode('/', $cleanPath);

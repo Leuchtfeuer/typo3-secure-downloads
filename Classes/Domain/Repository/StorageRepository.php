@@ -72,7 +72,7 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
             ->set('is_public', 0)
             ->set('driver', SecureDownloadsDriver::DRIVER_SHORT_NAME)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($storageId, \PDO::PARAM_INT)))
-            ->execute();
+            ->executeStatement();
 
         return $storageId;
     }
@@ -92,7 +92,7 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
             ->select('*')
             ->from($this->table)
             ->where($queryBuilder->expr()->eq('driver', $queryBuilder->createNamedParameter(SecureDownloadsDriver::DRIVER_SHORT_NAME)))
-            ->execute()
+            ->executeQuery()
             ->fetchAll();
     }
 

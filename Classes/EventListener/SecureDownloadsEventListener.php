@@ -16,7 +16,6 @@ namespace Leuchtfeuer\SecureDownloads\EventListener;
 
 use Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver;
 use Leuchtfeuer\SecureDownloads\Service\SecureDownloadService;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent;
 use TYPO3\CMS\Core\Resource\Driver\AbstractHierarchicalFilesystemDriver;
 use TYPO3\CMS\Core\Resource\Event\GeneratePublicUrlForResourceEvent;
@@ -25,7 +24,6 @@ use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\PathUtility;
 
 /**
  * This event listener listens to PSR-14 events given in TYPO3 10 and above.
@@ -35,7 +33,7 @@ class SecureDownloadsEventListener implements SingletonInterface
     /**
      * @var SecureDownloadService
      */
-    protected $secureDownloadService;
+    protected SecureDownloadService $secureDownloadService;
 
     public function __construct(SecureDownloadService $secureDownloadService)
     {
@@ -62,7 +60,7 @@ class SecureDownloadsEventListener implements SingletonInterface
                 }
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier()) ?? '';
                 if ($originalPathShouldBeSecured || $driver instanceof SecureDownloadsDriver || $this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
-                    $securedUrl = $this->getSecuredUrl($event->isRelativeToCurrentScript(), $publicUrl, $driver);
+                    $securedUrl = $this->getSecuredUrl($publicUrl);
                     $event->setPublicUrl($securedUrl);
                 }
             } catch (Exception $exception) {
@@ -104,27 +102,11 @@ class SecureDownloadsEventListener implements SingletonInterface
     /**
      * Returns the encrypted URL.
      *
-     * @param bool                                 $relativeToCurrentScript Whether the $publicUrl is relative to current script
-     *                                                                      or not.
-     * @param string                               $publicUrl               The public URL to the file.
-     * @param AbstractHierarchicalFilesystemDriver $driver                  The driver which is responsible for the file.
-     *
+     * @param string $publicUrl The public URL to the file.
      * @return string The secured URL
      */
-    protected function getSecuredUrl(bool $relativeToCurrentScript, string $publicUrl, AbstractHierarchicalFilesystemDriver $driver): string
+    protected function getSecuredUrl(string $publicUrl): string
     {
-        if ($relativeToCurrentScript === true) {
-            $absolutePathToContainingFolder = PathUtility::dirname(
-                sprintf(
-                    '%s/%s',
-                    Environment::getPublicPath(),
-                    $driver->getDefaultFolder()
-                )
-            );
-
-            $pathPart = PathUtility::getRelativePathTo($absolutePathToContainingFolder);
-        }
-
-        return ($pathPart ?? '') . $this->secureDownloadService->getResourceUrl($publicUrl);
+        return $this->secureDownloadService->getResourceUrl($publicUrl);
     }
 }

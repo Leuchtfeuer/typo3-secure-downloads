@@ -22,8 +22,11 @@ use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\CMS\Core\Http\ApplicationType;
+use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\Exception\ContentRenderingException;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class SecureLinkFactory implements SingletonInterface
@@ -33,42 +36,59 @@ class SecureLinkFactory implements SingletonInterface
     /**
      * @var EventDispatcher
      */
-    private $eventDispatcher;
+    private EventDispatcher $eventDispatcher;
 
     /**
      * @var ExtensionConfiguration
      */
-    private $extensionConfiguration;
+    private ExtensionConfiguration $extensionConfiguration;
 
     /**
      * @var AbstractToken
      */
-    private $token;
+    private AbstractToken $token;
 
+    /**
+     * @throws ContentRenderingException
+     */
     public function __construct(EventDispatcher $eventDispatcher, ExtensionConfiguration $extensionConfiguration)
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->extensionConfiguration = $extensionConfiguration;
         $this->token = TokenRegistry::getToken();
-        $this->init();
+        $this->initializeToken();
     }
 
     /**
      * Initialize the token.
+     * @throws ContentRenderingException
      */
-    protected function init()
+    protected function initializeToken(): void
     {
         $this->token->setExp($this->calculateLinkLifetime());
-        $this->token->setPage((int)($GLOBALS['TSFE']->id ?? 0));
+        $request = $this->getRequest();
+        if (ApplicationType::fromRequest($request)->isFrontend()) {
+            $pageArguments = $request->getAttribute('routing');
+            $pageId = $pageArguments->getPageId();
+        } elseif (ApplicationType::fromRequest($request)->isBackend()) {
+            $site = $request->getAttribute('site');
+            $pageId = $site->getRootPageId();
+        }
+        $this->token->setPage($pageId ?? 0);
 
         try {
             /** @var UserAspect $userAspect */
             $userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
             $this->token->setUser($userAspect->get('id'));
             $this->token->setGroups($userAspect->getGroupIds());
-        } catch (\Exception $exception) {
+        } catch (\Exception) {
             // Do nothing.
         }
+    }
+
+    private function getRequest(): ServerRequest
+    {
+        return $GLOBALS['TYPO3_REQUEST'];
     }
 
     /**

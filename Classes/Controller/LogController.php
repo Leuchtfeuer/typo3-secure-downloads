@@ -14,12 +14,15 @@ namespace Leuchtfeuer\SecureDownloads\Controller;
  *
  ***/
 
+use Doctrine\DBAL\Exception;
 use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Statistic;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Template\Components\Menu\Menu;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Pagination\ArrayPaginator;
@@ -27,31 +30,33 @@ use TYPO3\CMS\Core\Pagination\SimplePagination;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException;
-use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 
 class LogController extends ActionController
 {
     const FILTER_SESSION_KEY = 'sdl-filter';
+
     /**
-     * @var BackendTemplateView
+     * @var LogRepository $logRepository
      */
-    protected $view;
+    protected LogRepository $logRepository;
 
-    protected $defaultViewObjectName = BackendTemplateView::class;
+    /**
+     * @var ModuleTemplateFactory
+     */
+    protected ModuleTemplateFactory $moduleTemplateFactory;
 
-    protected $logRepository;
-
-    public function __construct(LogRepository $logRepository)
+    public function __construct(LogRepository $logRepository, ModuleTemplateFactory $moduleTemplateFactory)
     {
         $this->logRepository = $logRepository;
+        $this->moduleTemplateFactory = $moduleTemplateFactory;
     }
 
     /**
+     * @return ResponseInterface
      * @throws NoSuchArgumentException
      */
-    public function initializeAction(): void
+    public function initializeAction(): ResponseInterface
     {
         parent::initializeAction();
 
@@ -66,12 +71,17 @@ class LogController extends ActionController
         if ($GLOBALS['BE_USER']->getSessionData(self::FILTER_SESSION_KEY) === null) {
             $GLOBALS['BE_USER']->setSessionData(self::FILTER_SESSION_KEY, serialize(new Filter()));
         }
+        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+        $pageRenderer->addCssFile('EXT:secure_downloads/Resources/Public/Styles/Styles.css');
+        return $this->htmlResponse('');
     }
 
     /**
      * @param Filter|null $filter The filter object
+     * @return ResponseInterface
+     * @throws Exception
      */
-    public function listAction(?Filter $filter = null): void
+    public function listAction(?Filter $filter = null): ResponseInterface
     {
         $filter = $filter ?? unserialize($GLOBALS['BE_USER']->getSessionData(self::FILTER_SESSION_KEY)) ?? (new Filter());
         $filter->setPageId(0);
@@ -96,10 +106,15 @@ class LogController extends ActionController
             'pagination' => $pagination,
             'totalResultCount' => count($logEntries),
         ]);
+        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->createMenu();
+        $moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($moduleTemplate->renderContent());
     }
 
     /**
      * @return array Array containing all users that have downloaded files
+     * @throws Exception
      */
     private function getUsers(): array
     {
@@ -111,12 +126,13 @@ class LogController extends ActionController
             ->join('log', 'fe_users', 'users', $queryBuilder->expr()->eq('users.uid', 'log.user'))
             ->where($queryBuilder->expr()->neq('user', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)))
             ->groupBy('users.uid')
-            ->execute()
+            ->executeQuery()
             ->fetchAll();
     }
 
     /**
      * @return array Array containing all used file types
+     * @throws Exception
      */
     private function getFileTypes(): array
     {
@@ -125,22 +141,22 @@ class LogController extends ActionController
         return $queryBuilder
             ->select('media_type')
             ->from('tx_securedownloads_domain_model_log')
-            ->groupBy('media_type')
-            ->orderBy('media_type', 'ASC')
-            ->execute()
+            ->groupBy('media_type')->orderBy('media_type', 'ASC')
+            ->executeQuery()
             ->fetchAll();
     }
 
     /**
      * @param Filter|null $filter The filter object
-     * @throws StopActionException
+     * @return ResponseInterface
+     * @throws Exception
      */
-    public function showAction(?Filter $filter = null): void
+    public function showAction(?Filter $filter = null): ResponseInterface
     {
         $pageId = (int)GeneralUtility::_GP('id');
 
         if ($pageId === 0) {
-            $this->redirect('list');
+            return $this->redirect('list');
         }
 
         $filter = $filter ?? unserialize($GLOBALS['BE_USER']->getSessionData(self::FILTER_SESSION_KEY)) ?? (new Filter());
@@ -167,15 +183,18 @@ class LogController extends ActionController
             'pagination' => $pagination,
             'totalResultCount' => count($logEntries),
         ]);
+
+        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->createMenu();
+        $moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($moduleTemplate->renderContent());
     }
 
     /**
      * Set up the doc header properly here
      */
-    public function initializeView(ViewInterface $view): void
+    public function initializeView(): void
     {
-        parent::initializeView($view);
-
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->addCssFile('EXT:secure_downloads/Resources/Public/Styles/Styles.css');
         $this->createMenu();
@@ -186,7 +205,8 @@ class LogController extends ActionController
      */
     private function createMenu(): void
     {
-        $menu = $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
+        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $menu = $moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
         $menu->setIdentifier('secure_downloads');
 
         if ((int)GeneralUtility::_GP('id') !== 0) {
@@ -194,7 +214,7 @@ class LogController extends ActionController
         }
 
         $this->view->assign('action', $this->request->getControllerActionName());
-        $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
+        $moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
     }
 
     /**

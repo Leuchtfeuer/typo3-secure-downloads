@@ -195,6 +195,6 @@ class LogRepository extends Repository
         }
 
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
-        $queryBuilder->insert('tx_securedownloads_domain_model_log')->values($log->toArray())->execute();
+        $queryBuilder->insert('tx_securedownloads_domain_model_log')->values($log->toArray())->executeStatement();
     }
 }
