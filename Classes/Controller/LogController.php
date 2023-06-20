@@ -22,6 +22,7 @@ use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Pagination\ArrayPaginator;
@@ -72,6 +73,8 @@ class LogController extends ActionController
             $filter = $this->getFilterFromBeUserData();
         }
 
+        $extensionConfigurationLogging = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('secure_downloads', 'log') ?? 0;
+
         $pageId = $this->request->getQueryParams()['id'] ?? 0;
         $filter->setPageId((int)$pageId);
         $logEntries = $this->logRepository->findByFilter($filter);
@@ -87,6 +90,7 @@ class LogController extends ActionController
 
         $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
         $moduleTemplate->assignMultiple([
+            'loggingEnabled' => $extensionConfigurationLogging,
             'logs' => $paginator->getPaginatedItems(),
             'page' => BackendUtility::getRecord('pages', $pageId),
             'users' => $this->getUsers(),
