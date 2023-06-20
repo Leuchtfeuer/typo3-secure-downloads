@@ -14,6 +14,7 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Repository;
  *
  ***/
 
+use Doctrine\DBAL\Exception;
 use Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -26,7 +27,7 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
      * Creates the "Secure Downloads" file storage object if not exists and if the extension configuration option is enabled. This
      * method will also create the directory containing the assets and puts an .htaccess file into that directory.
      */
-    public function createSecureDownloadStorage()
+    public function createSecureDownloadStorage(): void
     {
         $path = sprintf('%s/%s', Environment::getPublicPath(), SecureDownloadsDriver::BASE_PATH);
 
@@ -62,7 +63,7 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
      *
      * @return int id of the inserted record
      */
-    public function createLocalStorage($name, $basePath, $pathType, $description = '', $default = false)
+    public function createLocalStorage($name, $basePath, $pathType, $description = '', $default = false): int
     {
         $storageId = parent::createLocalStorage($name, $basePath, $pathType, $description, $default);
 
@@ -83,6 +84,7 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
      * @param string $storageType The identifier of the storage.
      *
      * @return ResourceStorage[]
+     * @throws Exception
      */
     public function findByStorageType($storageType): array
     {
@@ -93,7 +95,7 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
             ->from($this->table)
             ->where($queryBuilder->expr()->eq('driver', $queryBuilder->createNamedParameter(SecureDownloadsDriver::DRIVER_SHORT_NAME)))
             ->executeQuery()
-            ->fetchAll();
+            ->fetchAllAssociative();
     }
 
     /**

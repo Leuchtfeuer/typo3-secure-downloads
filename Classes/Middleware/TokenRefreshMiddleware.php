@@ -86,7 +86,7 @@ class TokenRefreshMiddleware implements MiddlewareInterface
                 if (preg_match_all($pattern, $content, $foundJwtTokens)) {
                     foreach ($foundJwtTokens[1] as $foundJwtToken) {
                         try {
-                            $headers = (object) ['alg' => 'HS256'];
+                            $headers = (object)['alg' => 'HS256'];
                             $data = JWT::decode($foundJwtToken, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], $headers);
                             if ((int)$data->user !== $currentUserId) {
                                 $data->user = $currentUserId;

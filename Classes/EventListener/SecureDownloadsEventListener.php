@@ -60,7 +60,7 @@ class SecureDownloadsEventListener implements SingletonInterface
                 }
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier()) ?? '';
                 if ($originalPathShouldBeSecured || $driver instanceof SecureDownloadsDriver || $this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
-                    $securedUrl = $this->getSecuredUrl($publicUrl);
+                    $securedUrl = $this->secureDownloadService->getResourceUrl($publicUrl);
                     $event->setPublicUrl($securedUrl);
                 }
             } catch (Exception $exception) {
@@ -97,16 +97,5 @@ class SecureDownloadsEventListener implements SingletonInterface
         }
 
         $event->setOverlayIdentifier($overlayIdentifier ?? $event->getOverlayIdentifier());
-    }
-
-    /**
-     * Returns the encrypted URL.
-     *
-     * @param string $publicUrl The public URL to the file.
-     * @return string The secured URL
-     */
-    protected function getSecuredUrl(string $publicUrl): string
-    {
-        return $this->secureDownloadService->getResourceUrl($publicUrl);
     }
 }
