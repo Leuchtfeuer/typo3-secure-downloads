@@ -75,17 +75,17 @@ class LogController extends ActionController
 
         $extensionConfigurationLogging = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('secure_downloads', 'log') ?? 0;
 
-        $pageId = $this->request->getQueryParams()['id'] ?? 0;
-        $filter->setPageId((int)$pageId);
+        $pageId = (int) $this->request->getQueryParams()['id'] ?? 0;
+        $filter->setPageId($pageId);
         $logEntries = $this->logRepository->findByFilter($filter);
 
         $this->persistFilterInBeUserData($filter);
         $this->resetFilterOnMemoryExhaustionError();
 
         $itemsPerPage = 20;
-        $currentPage = array_key_exists('currentPage', $this->request->getQueryParams()) && $this->request->getQueryParams()['currentPage'] > 0 ? $this->request->getQueryParams()['currentPage'] : 1;
+        $currentPage = (int) array_key_exists('currentPage', $this->request->getQueryParams()) && $this->request->getQueryParams()['currentPage'] > 0 ? $this->request->getQueryParams()['currentPage'] : 1;
 
-        $paginator = new ArrayPaginator($logEntries->toArray(), (int)$currentPage, $itemsPerPage);
+        $paginator = new ArrayPaginator($logEntries->toArray(), $currentPage, $itemsPerPage);
         $pagination = new SimplePagination($paginator);
 
         $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
