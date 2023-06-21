@@ -1,0 +1,55 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 6.0.0 - 2023/06/26
+==========================
+
+This release is a new major release. It introduces support for TYPO3 12 LTS as well as for PHP 8.1. TYPO3 11 LTS is not supported anymore.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v6.0.0>`__.
+
+Added
+=====
+* Support for TYPO3 version 12
+
+Changed
+=======
+* Reworked backend module
+
+Deprecated
+==========
+* -
+
+Removed
+=======
+* Backend module action 'show'
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+    2023-06-21 [TASK] Move typecast to variable assignment. (Commit a2a6c98 by Sebastian Afeldt)
+    2023-06-21 [BUGFIX] Test 'whenALinkWithAnOtherUserIDofTheCurrentUserLinkResponseBodyIsModified' fails. Thanks to J. Peter M. Schuler #163 (Commit 20fbdbf by Sebastian Afeldt)
+    2023-06-21 [TASK] Update testing framework. (Commit ca9177c by Sebastian Afeldt)
+    2023-06-20 [TASK] Undo removal of extension configuration 'log'. (Commit 0ba273a by Sebastian Afeldt)
+    2023-06-20 [TASK] Remove extension configuration 'Log Module (logging.log [boolean])'. (Commit 0587085 by Sebastian Afeldt)
+    2023-06-20 [TASK] Refactor Traffic Log backend module and its templates. (Commit f5ebf85 by Sebastian Afeldt)
+    2023-06-20 [TASK] Refactor code for PHP >=7.4. Thanks to Oliver Kleinecke (Commit 0d156c3 by Sebastian Afeldt)
+    2023-06-16 [TASK] Support TYPO3 12.4. Thanks to sk-foresite #162 (Commit a605ecf by Sebastian Afeldt)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   'sk-foresite <https://github.com/sk-foresite>'
+*   'J. Peter M. Schuler <https://https://github.com/jpmschuler>'
+*   Oliver Kleinecke
+*   Marcus Balasch
+*   Niklas Grieger
+*   Sebastian Afeldt
+
+Thank you very much for your support. The next drink is on us! 🍻
