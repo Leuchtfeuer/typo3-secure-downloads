@@ -57,7 +57,7 @@
     }
   },
   "require-dev": {
-    "typo3/testing-framework": "^6.16"
+    "typo3/testing-framework": "^8.0.1"
   },
   "config": {
     "allow-plugins": {

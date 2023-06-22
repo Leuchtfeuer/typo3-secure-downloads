@@ -18,6 +18,7 @@ use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
@@ -94,7 +95,7 @@ class LogRepository extends Repository
         $this->applyEqualPropertyToFilter((int)$filter->getPageId(), 'page', $query, $constraints);
 
         if (count($constraints) > 0) {
-            $query->matching($query->logicalAnd($constraints));
+            $query->matching($query->logicalAnd(...$constraints));
         }
     }
 
@@ -170,10 +171,11 @@ class LogRepository extends Repository
     /**
      * Creates a log entry in the database.
      *
-     * @param AbstractToken $token    The token containing information that should be logged
-     * @param int           $fileSize The file size of the file that should be logged
-     * @param string        $mimeType The mime type of the file that should be logged
-     * @param int           $user     The ID of the user that downloaded the file
+     * @param AbstractToken $token The token containing information that should be logged
+     * @param int $fileSize The file size of the file that should be logged
+     * @param string $mimeType The mime type of the file that should be logged
+     * @param int $user The ID of the user that downloaded the file
+     * @throws ResourceDoesNotExistException
      */
     public function logDownload(AbstractToken $token, int $fileSize, string $mimeType, int $user): void
     {

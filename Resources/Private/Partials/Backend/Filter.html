@@ -1,68 +1,79 @@
-<f:form action="{action}" object="{filter}" objectName="filter">
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:form action="{list}" object="{filter}" objectName="filter" class="mb-3">
     <div class="row">
-        <div class="col-12 col-md-6 form-group">
+        <div class="col-12 col-md-6 mb-3">
             <label for="user" class="control-label">
                 <f:translate key="module.filter.user.label"/>
             </label>
-            <select id="user" name="tx_securedownloads_web_securedownloadstrafficlog[filter][feUserId]" class="form-control">
-                <optgroup label="{f:translate(key:'module.filter.user.label.general')}">
-                    <option value="0">{f:translate(key:'module.filter.user.label.all')}</option>
-                    <f:variable name="selected">{f:if(condition: '-1 == {filter.userType}', then: 'selected="selected"')}</f:variable>
-                    <option value="-1" {selected}>{f:translate(key:'module.filter.user.label.logged_in')}</option>
-                    <f:variable name="selected">{f:if(condition: '-2 == {filter.userType}', then: 'selected="selected"')}</f:variable>
-                    <option value="-2" {selected}>{f:translate(key:'module.filter.user.label.not_logged_in')}</option>
-                </optgroup>
-                <optgroup label="{f:translate(key:'module.filter.user.label.by_user')}">
+            <f:form.select id="user"
+                           class="form-select"
+                           property="feUserId"
+                           name="tx_securedownloads_web_securedownloadstrafficlog[filter][feUserId]"
+                           value="{f:if(condition: '{filter.userType} < 0', then: '{filter.userType}', else: '{filter.feUserId}')}">
+                <f:form.select.optgroup label="{f:translate(key:'module.filter.user.label.general')}">
+                    <f:form.select.option value="0">{f:translate(key:'module.filter.user.label.all')}</f:form.select.option>
+                    <f:form.select.option value="-1">{f:translate(key:'module.filter.user.label.logged_in')}</f:form.select.option>
+                    <f:form.select.option value="-2">{f:translate(key:'module.filter.user.label.not_logged_in')}</f:form.select.option>
+                </f:form.select.optgroup>
+                <f:form.select.optgroup label="{f:translate(key:'module.filter.user.label.by_user')}">
                     <f:for each="{users}" as="user">
-                        <f:variable name="selected">{f:if(condition:'{user.uid} == {filter.feUserId}', then: 'selected="selected"')}</f:variable>
-                        <option value="{user.uid}" {selected}>{user.uid}: {user.username}</option>
+                        <f:form.select.option value="{user.uid}">{user.uid}: {user.username}</f:form.select.option>
                     </f:for>
-                </optgroup>
-            </select>
+                </f:form.select.optgroup>
+            </f:form.select>
         </div>
-        <div class="col-12 col-md-6 form-group">
+        <div class="col-12 col-md-6 mb-3">
             <label for="fileType" class="control-label">
                 <f:translate key="module.filter.file_type.label"/>
             </label>
-            <f:form.select id="filetype" class="form-control" property="fileType" options="{fileTypes}"
-                           optionValueField="media_type" optionLabelField="media_type" prependOptionValue="0"
+            <f:form.select id="filetype"
+                           class="form-select"
+                           property="fileType"
+                           options="{fileTypes}"
+                           optionValueField="media_type"
+                           optionLabelField="media_type"
+                           prependOptionValue="0"
                            prependOptionLabel="{f:translate(key:'module.filter.file_type.label.all')}"/>
         </div>
     </div>
-
-    <div class="form-group">
-        <label class="control-label">
-            <f:translate key="module.filter.period.label"/>
-        </label>
-        <div class="row">
-            <div class="col-12 col-md-6">
-                <f:form.textfield placeholder="{f:translate(key:'module.filter.placeholder.period.from')}: YYYY-mm-dd HH:ii:ss"
-                                  property="from" class="form-control"
-                                  value="{filter.from -> f:format.date(format: 'Y-m-d H:i:s')}"/>
-            </div>
-            <div class="col-12 col-md-6">
-                <f:form.textfield placeholder="{f:translate(key:'module.filter.placeholder.period.to')}: YYYY-mm-dd HH:ii:ss"
-                                  property="till" class="form-control"
-                                  value="{filter.till -> f:format.date(format: 'Y-m-d H:i:s')}"/>
-            </div>
+    <div class="row">
+        <div class="col-12 col-md-6 mb-3">
+            <label for="periodFrom" class="control-label">
+                {f:translate(key: 'module.filter.period.label')} {f:translate(key: 'module.filter.placeholder.period.from') -> f:format.case(mode: 'lower')}
+            </label>
+            <f:form.textfield id="periodFrom"
+                              placeholder="{f:translate(key:'module.filter.placeholder.period.from')}: YYYY-mm-dd HH:ii:ss"
+                              property="from"
+                              class="form-control"
+                              type="datetime-local"
+                              value="{filter.from -> f:format.date(format: 'Y-m-d H:i:s')}"/>
+        </div>
+        <div class="col-12 col-md-6 mb-3">
+            <label for="periodTo" class="control-label">
+                {f:translate(key: 'module.filter.period.label')} {f:translate(key: 'module.filter.placeholder.period.to') -> f:format.case(mode: 'lower')}
+            </label>
+            <f:form.textfield id="periodTo"
+                              placeholder="{f:translate(key:'module.filter.placeholder.period.to')}: YYYY-mm-dd HH:ii:ss"
+                              property="till"
+                              class="form-control"
+                              type="datetime-local"
+                              value="{filter.till -> f:format.date(format: 'Y-m-d H:i:s')}"/>
         </div>
     </div>
-
-    <div class="form-group mt-4">
-        <div class="row">
-            <div class="col-auto col-md-3">
-                <f:link.action action="{action}" arguments="{reset: 1}" class="btn btn-default btn-block">
-                    <f:translate key="module.filter.button.reset"/>
-                </f:link.action>
-            </div>
-            <div class="col-auto col-md-3">
-                <button type="submit" class="btn btn-primary btn-block">
-                    <f:translate key="module.filter.button.submit" />
-                </button>
-            </div>
+    <div class="row justify-content-end mt-1">
+        <div class="col-auto col-md-3 mb-3">
+            <f:link.action action="{list}" arguments="{reset: 1}" class="btn btn-default btn-block">
+                <f:translate key="module.filter.button.reset"/>
+            </f:link.action>
+        </div>
+        <div class="col-auto col-md-3 mb-3">
+            <button type="submit" class="btn btn-primary btn-block">
+                <f:translate key="module.filter.button.submit" />
+            </button>
         </div>
     </div>
-
 </f:form>
-
-<hr/>

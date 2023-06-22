@@ -1,7 +1,58 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
 <f:layout name="Default"/>
 
-<f:section name="heading">
-    <h1>
-        <f:translate key="module.heading.list"/>
-    </h1>
+<f:section name="Main">
+    <f:be.security.ifAuthenticated>
+        <f:then>
+            <f:if condition="{loggingEnabled}">
+                <f:then>
+                    <div id="tx-securedownloads" class="c-sdl-log">
+                        <h1>
+                            <f:if condition="{isRoot}">
+                                <f:then>
+                                    <f:translate key="module.heading.list"/>
+                                </f:then>
+                                <f:else>
+                                    <f:translate key="module.heading.show" arguments="{0: page.title}"/> [{page.uid}]
+                                </f:else>
+                            </f:if>
+                        </h1>
+
+                        <f:render partial="Backend/Filter" arguments="{_all}"/>
+
+                        <div class="callout callout-info">
+                            <f:variable name="traffic" value="{statistic.traffic -> f:format.bytes()}" />
+                            <f:variable name="from" value="{statistic.from -> f:format.date(format: '{f:translate(key:\'dateformat\')}')}" />
+                            <f:variable name="till" value="{statistic.till -> f:format.date(format: '{f:translate(key:\'dateformat\')}')}" />
+                            {f:translate(key: 'module.subheading', arguments: '{0: totalResultCount, 1: traffic, 2: from, 3: till}') -> f:format.raw()}
+                        </div>
+
+                        <f:if condition="{logs}">
+                            <f:render partial="Backend/View" arguments="{_all}"/>
+                        </f:if>
+                    </div>
+                </f:then>
+                <f:else>
+                    <div class="callout callout-warning">
+                        <h1>Logging is disabled</h1>
+                        <p>If you want to enable logging, goto extension configuration of <b>EXT:secure_downloads</b>
+                            and activate the checkbox <b>'Log Module' <span class="font-monospace">[log]</span></b>
+                            within the configuration tab <b>'Logging'</b>.<br>Inform a system maintainer in case you
+                            don't have access to the extension configuration.</p>
+                    </div>
+                </f:else>
+            </f:if>
+
+
+        </f:then>
+        <f:else>
+            <f:be.infobox title="{f:translate(key:'module.unauthorized.title')}" state="2">
+                <f:translate key="module.unauthorized.title"/>
+            </f:be.infobox>
+        </f:else>
+    </f:be.security.ifAuthenticated>
 </f:section>

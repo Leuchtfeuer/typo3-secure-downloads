@@ -32,16 +32,14 @@ As a complementary measure, you will of course need to configure your web server
 
 Compatibility
 =============
-We are currently supporting following TYPO3 versions:<br><br>
+We are currently supporting following TYPO3 versions:
 
-.. csv-table:: Version Matrix
-   :header: "Extension Version", "TYPO3 v10 Support", "TYPO3 v9 Support"
+.. csv-table:: Version Matrix - Supported Versions
+   :header: "Extension Version", "TYPO3 v12", "TYPO3 v11", "TYPO3 v10"
    :align: center
 
-        "5.x", "🙋‍♂️", "🙅‍♀️"
-        "4.x", "🙋‍♂️", "🙋‍♂️"
-
-Version 5 is an upcoming release. Its package name has been changed to `leuchtfeuer/secure-downloads`.
+        "6.x", "yes", "no", "no"
+        "5.x", "no", "yes", "yes"
 
 .. _about-compatibility-outdatedVersions:
 
@@ -49,17 +47,18 @@ Outdated Versions
 -----------------
 For the following versions no more free bug fixes and new features will be provided by the authors:
 
-
-.. csv-table:: Version Matrix
-   :header: "Extension Version", "TYPO3 v9", "TYPO3 v8", "TYPO3 v7", "TYPO3 v6.2", "TYPO3 v4.5"
+.. csv-table:: Version Matrix - Outdated Versions
+   :header: "Extension Version", "TYPO3 v10", "TYPO3 v9", "TYPO3 v8", "TYPO3 v7", "TYPO3 v6.2", "TYPO3 v4.5"
    :align: center
 
-        "3.x", "🙋‍♂️", "🙋‍♂️", "🙅‍♀️", "🙅‍♀️", "🙅‍♀️"
-        "2.0.4 - 2.x", "🙅‍♀️", "🙋‍♂️", "🙋‍♂️", "🙅‍♀️", "🙅‍♀️"
-        "2.0.0 - 2.0.3", "🙅‍♀️", "🙅‍♀️", "🙋‍♂️", "🙋‍♂️", "🙅‍♀️"
-        "1.x", "🙅‍♀️", "🙅‍♀️", "🙅‍♀️", "🙋‍♂️", "🙋‍♂️"
+        "4.x", "yes", "yes", "no", "no", "no", "no"
+        "3.x", "no", "yes", "yes", "no", "no", "no"
+        "2.0.4 - 2.x", "no", "no", "yes", "yes", "no", "no"
+        "2.0.0 - 2.0.3", "no", "no", "yes", "yes", "yes", "no"
+        "1.x", "no", "no", "no", "no", "no", "yes"
 
 Version 1 was released as `EXT:naw_securedl <https://extensions.typo3.org/extension/naw_securedl>`__ or `typo3-ter/naw-securedl`.
+Its package name has been changed to `leuchtfeuer/secure-downloads` since Version 5.
 
 .. _about-links:
 
