@@ -75,7 +75,7 @@ class LogController extends ActionController
 
         $extensionConfigurationLogging = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('secure_downloads', 'log') ?? 0;
 
-        $pageId = (int) $this->request->getQueryParams()['id'] ?? 0;
+        $pageId = (int) (array_key_exists('id', $this->request->getQueryParams()) ? $this->request->getQueryParams()['id'] : 0);
         $filter->setPageId($pageId);
         $logEntries = $this->logRepository->findByFilter($filter);
 

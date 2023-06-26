@@ -42,26 +42,50 @@
     </div>
     <div class="row">
         <div class="col-12 col-md-6 mb-3">
-            <label for="periodFrom" class="control-label">
+            <div class="form-group">
+            <label for="from" class="control-label">
                 {f:translate(key: 'module.filter.period.label')} {f:translate(key: 'module.filter.placeholder.period.from') -> f:format.case(mode: 'lower')}
             </label>
-            <f:form.textfield id="periodFrom"
-                              placeholder="{f:translate(key:'module.filter.placeholder.period.from')}: YYYY-mm-dd HH:ii:ss"
-                              property="from"
-                              class="form-control"
-                              type="datetime-local"
-                              value="{filter.from -> f:format.date(format: 'Y-m-d H:i:s')}"/>
+                <div class="input-group">
+                    <f:form.textfield id="from"
+                                      name="from"
+                                      placeholder="{f:translate(key:'module.filter.placeholder.period.from')}: H:i d-m-Y"
+                                      additionalAttributes="{'autocomplete': 'off'}"
+                                      class="form-control form-control-clearable t3js-datetimepicker t3js-clearable"
+                                      value="{f:if(condition: filter.from, then: '{filter.from -> f:format.date(format: \'H:i d-m-Y\')}')}"
+                                      data="{date-type: 'datetime'}"
+                    />
+                    <f:form.hidden property="from"
+                                   value="{f:if(condition: filter.from, then: '{filter.from -> f:format.date(format: \'H:i d-m-Y\')}')}"
+                    />
+                    <label class="btn btn-default" for="from">
+                        <core:icon identifier="actions-calendar" />
+                    </label>
+                </div>
+            </div>
         </div>
         <div class="col-12 col-md-6 mb-3">
-            <label for="periodTo" class="control-label">
-                {f:translate(key: 'module.filter.period.label')} {f:translate(key: 'module.filter.placeholder.period.to') -> f:format.case(mode: 'lower')}
-            </label>
-            <f:form.textfield id="periodTo"
-                              placeholder="{f:translate(key:'module.filter.placeholder.period.to')}: YYYY-mm-dd HH:ii:ss"
-                              property="till"
-                              class="form-control"
-                              type="datetime-local"
-                              value="{filter.till -> f:format.date(format: 'Y-m-d H:i:s')}"/>
+            <div class="form-group">
+                <label for="till" class="control-label">
+                    {f:translate(key: 'module.filter.period.label')} {f:translate(key: 'module.filter.placeholder.period.to') -> f:format.case(mode: 'lower')}
+                </label>
+                <div class="input-group">
+                    <f:form.textfield id="till"
+                                      name="till"
+                                      placeholder="{f:translate(key:'module.filter.placeholder.period.to')}: H:i d-m-Y"
+                                      additionalAttributes="{'autocomplete': 'off'}"
+                                      class="form-control form-control-clearable t3js-datetimepicker t3js-clearable"
+                                      value="{filter.till -> f:format.date(format: 'H:i d-m-Y')}"
+                                      data="{date-type: 'datetime'}"
+                    />
+                    <f:form.hidden property="till"
+                                   value="{filter.till -> f:format.date(format: 'H:i d-m-Y')}"
+                    />
+                    <label class="btn btn-default" for="till">
+                        <core:icon identifier="actions-calendar" />
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row justify-content-end mt-1">

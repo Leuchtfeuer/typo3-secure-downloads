@@ -8,6 +8,13 @@
 <f:section name="Main">
     <f:be.security.ifAuthenticated>
         <f:then>
+            <f:be.pageRenderer includeJavaScriptModules="{
+                0: '@typo3/backend/global-event-handler.js',
+                1: '@leuchtfeuer/secure-downloads/sdl-log.js'
+            }"
+            />
+
+
             <f:if condition="{loggingEnabled}">
                 <f:then>
                     <div id="tx-securedownloads" class="c-sdl-log">
