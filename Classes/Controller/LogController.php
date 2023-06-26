@@ -32,22 +32,10 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 class LogController extends ActionController
 {
-    /**
-     * @var LogRepository $logRepository
-     */
-    protected LogRepository $logRepository;
-
-    /**
-     * @var ModuleTemplateFactory
-     */
-    protected ModuleTemplateFactory $moduleTemplateFactory;
-
     public function __construct(
-        ModuleTemplateFactory $moduleTemplateFactory,
-        LogRepository $logRepository,
+        protected ModuleTemplateFactory $moduleTemplateFactory,
+        protected LogRepository $logRepository,
     ) {
-        $this->moduleTemplateFactory = $moduleTemplateFactory;
-        $this->logRepository = $logRepository;
     }
 
     /**
@@ -75,7 +63,7 @@ class LogController extends ActionController
 
         $extensionConfigurationLogging = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('secure_downloads', 'log') ?? 0;
 
-        $pageId = (int) (array_key_exists('id', $this->request->getQueryParams()) ? $this->request->getQueryParams()['id'] : 0);
+        $pageId = (int)(array_key_exists('id', $this->request->getQueryParams()) ? $this->request->getQueryParams()['id'] : 0);
         $filter->setPageId($pageId);
         $logEntries = $this->logRepository->findByFilter($filter);
 
@@ -83,7 +71,7 @@ class LogController extends ActionController
         $this->resetFilterOnMemoryExhaustionError();
 
         $itemsPerPage = 20;
-        $currentPage = (int) array_key_exists('currentPage', $this->request->getQueryParams()) && $this->request->getQueryParams()['currentPage'] > 0 ? $this->request->getQueryParams()['currentPage'] : 1;
+        $currentPage = (int)array_key_exists('currentPage', $this->request->getQueryParams()) && $this->request->getQueryParams()['currentPage'] > 0 ? $this->request->getQueryParams()['currentPage'] : 1;
 
         $paginator = new ArrayPaginator($logEntries->toArray(), $currentPage, $itemsPerPage);
         $pagination = new SimplePagination($paginator);
