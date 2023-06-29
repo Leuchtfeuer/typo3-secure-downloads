@@ -29,9 +29,10 @@ As a complementary measure, you will of course need to configure your web server
 ## Requirements
 We are currently supporting following TYPO3 versions:
 
-| Extension Version                                                              | TYPO3 v11 | TYPO3 v10 |
-| ------------------------------------------------------------------------------ |-----------|-----------|
-| [5.x](https://github.com/Leuchtfeuer/typo3-secure-downloads) <sup>1)</sup>     | x         | x         |
+| Extension Version | TYPO3 v12 | TYPO3 v11 | TYPO3 v10 |
+|-------------------|-----------|-----------|-----------|
+| 6.x               | x         | -         | -         |
+| 5.x <sup>1)</sup> | -         | x         | x         |
 
 * <sup>1)</sup> Upcoming release as `leuchtfeuer/secure-downloads` (vendor name changed).
 
