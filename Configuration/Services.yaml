@@ -17,3 +17,6 @@ services:
         identifier: sdl.onIconFactoryEmitBuilderIconForResource
         method: onIconFactoryEmitBuildIconForResourceSignal
         event: TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent
+
+  Leuchtfeuer\SecureDownloads\Controller\LogController:
+    tags: ['backend.controller']

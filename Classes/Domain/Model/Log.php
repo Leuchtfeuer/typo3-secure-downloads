@@ -14,6 +14,7 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Model;
  *
  ***/
 
+use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
@@ -75,6 +76,9 @@ class Log extends AbstractEntity
         $this->tstamp = $tstamp;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getUserObject(): ?array
     {
         if ($this->user !== null && $this->user !== 0) {
@@ -84,8 +88,8 @@ class Log extends AbstractEntity
                 ->select('*')
                 ->from('fe_users')
                 ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->user, \PDO::PARAM_INT)))
-                ->execute()
-                ->fetch();
+                ->executeQuery()
+                ->fetchAssociative();
         }
 
         return null;

@@ -26,47 +26,47 @@ class CheckConfiguration implements SingletonInterface
     /**
      * @var ExtensionConfiguration
      */
-    protected $extensionConfiguration;
+    protected mixed $extensionConfiguration;
 
     /**
      * @var string
      */
-    protected $directoryPattern = '';
+    protected string $directoryPattern = '';
 
     /**
      * @var string
      */
-    protected $fileTypePattern = '';
+    protected string $fileTypePattern = '';
 
     /**
      * @var string
      */
-    protected $domain = '';
+    protected string $domain = '';
 
     /**
      * @var int
      */
-    protected $fileCount = 0;
+    protected int $fileCount = 0;
 
     /**
      * @var array
      */
-    protected $directories = [];
+    protected array $directories = [];
 
     /**
      * @var array
      */
-    protected $unprotectedDirectories = [];
+    protected array $unprotectedDirectories = [];
 
     /**
      * @var array
      */
-    protected $protectedDirectories = [];
+    protected array $protectedDirectories = [];
 
     /**
      * @var array
      */
-    protected $unprotectedFiles = [];
+    protected array $unprotectedFiles = [];
 
     /**
      * @param ExtensionConfiguration|null $extensionConfiguration
@@ -98,7 +98,7 @@ class CheckConfiguration implements SingletonInterface
         }
 
         // .htaccess check is only available for Apache web server
-        if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') === 0) {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with($_SERVER['SERVER_SOFTWARE'], 'Apache')) {
             $this->checkDirectories();
 
             if (!empty($this->unprotectedDirectories)) {
@@ -130,7 +130,7 @@ class CheckConfiguration implements SingletonInterface
     {
         $result = preg_match($this->directoryPattern, $directoryPath) === 1;
 
-        if (!$result && substr($directoryPath, 0, 1) === '/') {
+        if (!$result && str_starts_with($directoryPath, '/')) {
             return $this->isDirectoryMatching(substr($directoryPath, 1));
         }
 
@@ -148,10 +148,10 @@ class CheckConfiguration implements SingletonInterface
     }
 
     /**
-     * @param Finder  $directories
+     * @param Finder $directories
      * @param string $publicDirectory
      */
-    protected function getSuitableDirectories(Finder $directories, string $publicDirectory)
+    protected function getSuitableDirectories(Finder $directories, string $publicDirectory): void
     {
         foreach ($directories as $directory) {
             $directoryPath = sprintf('%s/%s', $publicDirectory, $directory->getRelativePathname());
@@ -211,7 +211,7 @@ class CheckConfiguration implements SingletonInterface
         $lastSecuredDirectory = null;
 
         foreach ($this->directories as $directory) {
-            if ($lastSecuredDirectory && strpos($directory, $lastSecuredDirectory) === 0) {
+            if ($lastSecuredDirectory && str_starts_with($directory, $lastSecuredDirectory)) {
                 continue;
             }
 
@@ -316,7 +316,7 @@ class CheckConfiguration implements SingletonInterface
             $content .= '<p>Only the first ten results are shown.</p>';
         }
 
-        if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') === 0) {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with($_SERVER['SERVER_SOFTWARE'], 'Apache')) {
             $content .= '<p>Here is some example code which can be used depending on your Apache version:</p>';
             $content .= $this->getHtaccessExamples();
         }

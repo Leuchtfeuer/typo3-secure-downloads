@@ -318,7 +318,7 @@ class InstalledVersions
     private static function getInstalled()
     {
         if (null === self::$canGetVendors) {
-            self::$canGetVendors = method_exists('Composer\Autoload\ClassLoader', 'getRegisteredLoaders');
+            self::$canGetVendors = method_exists(ClassLoader::class, 'getRegisteredLoaders');
         }
 
         $installed = array();

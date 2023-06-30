@@ -45,22 +45,22 @@ class FileDelivery implements SingletonInterface
     /**
      * @var ExtensionConfiguration
      */
-    protected $extensionConfiguration;
+    protected ExtensionConfiguration $extensionConfiguration;
 
     /**
      * @var EventDispatcherInterface
      */
-    protected $eventDispatcher;
+    protected EventDispatcherInterface $eventDispatcher;
 
     /**
      * @var AbstractToken
      */
-    protected $token;
+    protected AbstractToken $token;
 
     /**
      * @var array
      */
-    protected $header = [];
+    protected array $header = [];
 
     public function __construct(ExtensionConfiguration $extensionConfiguration, EventDispatcher $eventDispatcher)
     {
@@ -202,14 +202,14 @@ class FileDelivery implements SingletonInterface
      *
      * @return StreamInterface|string Whether a stream or a string, when x-accel-redirect is used
      */
-    protected function getResponseBody(string $file, string $fileName)
+    protected function getResponseBody(string $file, string $fileName): StreamInterface|string
     {
         $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
         $forceDownload = $this->shouldForceDownload($fileExtension);
         $fileSize = filesize($file);
         $mimeType = (new FileInfo($file))->getMimeType() ?? MimeTypes::DEFAULT_MIME_TYPE;
         $outputFunction = $this->extensionConfiguration->getOutputFunction();
-        $header = $this->getHeader($mimeType, $fileName, $forceDownload, $fileSize);
+        $header = $this->getFileHeader($mimeType, $fileName, $forceDownload, $fileSize);
 
         $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
         $this->header = $header;
@@ -258,7 +258,7 @@ class FileDelivery implements SingletonInterface
      *
      * @return string[] An array of HTTP header
      */
-    protected function getHeader(string $mimeType, string $fileName, bool $forceDownload, int $fileSize): array
+    protected function getFileHeader(string $mimeType, string $fileName, bool $forceDownload, int $fileSize): array
     {
         $header = [
             'Pragma' => 'private',

@@ -14,80 +14,73 @@ namespace Leuchtfeuer\SecureDownloads\Controller;
  *
  ***/
 
+use Doctrine\DBAL\Exception;
 use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Statistic;
-use TYPO3\CMS\Backend\Template\Components\Menu\Menu;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Pagination\ArrayPaginator;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException;
-use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 
 class LogController extends ActionController
 {
-    const FILTER_SESSION_KEY = 'sdl-filter';
-    /**
-     * @var BackendTemplateView
-     */
-    protected $view;
-
-    protected $defaultViewObjectName = BackendTemplateView::class;
-
-    protected $logRepository;
-
-    public function __construct(LogRepository $logRepository)
-    {
-        $this->logRepository = $logRepository;
+    public function __construct(
+        protected ModuleTemplateFactory $moduleTemplateFactory,
+        protected LogRepository $logRepository,
+    ) {
     }
 
     /**
-     * @throws NoSuchArgumentException
+     * @return ResponseInterface
      */
-    public function initializeAction(): void
+    public function initializeAction(): ResponseInterface
     {
-        parent::initializeAction();
-
-        if ($this->arguments->hasArgument('filter')) {
-            $this->arguments->getArgument('filter')->getPropertyMappingConfiguration()->allowAllProperties();
-        }
-
-        if ($this->request->hasArgument('reset') && (bool)$this->request->getArgument('reset') === true) {
-            $GLOBALS['BE_USER']->setSessionData(self::FILTER_SESSION_KEY, serialize(new Filter()));
-        }
-
-        if ($GLOBALS['BE_USER']->getSessionData(self::FILTER_SESSION_KEY) === null) {
-            $GLOBALS['BE_USER']->setSessionData(self::FILTER_SESSION_KEY, serialize(new Filter()));
-        }
+        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+        $pageRenderer->addCssFile('EXT:secure_downloads/Resources/Public/Styles/Styles.css');
+        return $this->htmlResponse('');
     }
 
     /**
      * @param Filter|null $filter The filter object
+     * @return ResponseInterface
+     * @throws Exception
      */
-    public function listAction(?Filter $filter = null): void
+    public function listAction(?Filter $filter = null): ResponseInterface
     {
-        $filter = $filter ?? unserialize($GLOBALS['BE_USER']->getSessionData(self::FILTER_SESSION_KEY)) ?? (new Filter());
-        $filter->setPageId(0);
+        if ($this->request->hasArgument('reset') && (bool)$this->request->getArgument('reset') === true) {
+            $filter = new Filter();
+        } elseif ($filter === null) {
+            $filter = $this->getFilterFromBeUserData();
+        }
+
+        $extensionConfigurationLogging = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('secure_downloads', 'log') ?? 0;
+
+        $pageId = (int)(array_key_exists('id', $this->request->getQueryParams()) ? $this->request->getQueryParams()['id'] : 0);
+        $filter->setPageId($pageId);
         $logEntries = $this->logRepository->findByFilter($filter);
 
-        // Store filter data in session of backend user (used for pagination)
-        $GLOBALS['BE_USER']->setSessionData(self::FILTER_SESSION_KEY, serialize($filter));
+        $this->persistFilterInBeUserData($filter);
+        $this->resetFilterOnMemoryExhaustionError();
 
         $itemsPerPage = 20;
-        $currentPage = GeneralUtility::_GP('currentPage') ? (int)GeneralUtility::_GP('currentPage') : 1;
+        $currentPage = (int)array_key_exists('currentPage', $this->request->getQueryParams()) && $this->request->getQueryParams()['currentPage'] > 0 ? $this->request->getQueryParams()['currentPage'] : 1;
 
         $paginator = new ArrayPaginator($logEntries->toArray(), $currentPage, $itemsPerPage);
         $pagination = new SimplePagination($paginator);
 
-        $this->view->assignMultiple([
+        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $moduleTemplate->assignMultiple([
+            'loggingEnabled' => $extensionConfigurationLogging,
             'logs' => $paginator->getPaginatedItems(),
+            'page' => BackendUtility::getRecord('pages', $pageId),
             'users' => $this->getUsers(),
             'fileTypes' => $this->getFileTypes(),
             'filter' => $filter,
@@ -95,11 +88,14 @@ class LogController extends ActionController
             'paginator' => $paginator,
             'pagination' => $pagination,
             'totalResultCount' => count($logEntries),
+            'isRoot' => $pageId == 0,
         ]);
+        return $moduleTemplate->renderResponse('List');
     }
 
     /**
      * @return array Array containing all users that have downloaded files
+     * @throws Exception
      */
     private function getUsers(): array
     {
@@ -111,12 +107,13 @@ class LogController extends ActionController
             ->join('log', 'fe_users', 'users', $queryBuilder->expr()->eq('users.uid', 'log.user'))
             ->where($queryBuilder->expr()->neq('user', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)))
             ->groupBy('users.uid')
-            ->execute()
-            ->fetchAll();
+            ->executeQuery()
+            ->fetchAllAssociative();
     }
 
     /**
      * @return array Array containing all used file types
+     * @throws Exception
      */
     private function getFileTypes(): array
     {
@@ -125,114 +122,54 @@ class LogController extends ActionController
         return $queryBuilder
             ->select('media_type')
             ->from('tx_securedownloads_domain_model_log')
-            ->groupBy('media_type')
-            ->orderBy('media_type', 'ASC')
-            ->execute()
-            ->fetchAll();
+            ->groupBy('media_type')->orderBy('media_type', 'ASC')
+            ->executeQuery()
+            ->fetchAllAssociative();
     }
 
     /**
-     * @param Filter|null $filter The filter object
-     * @throws StopActionException
+     * Get module states (the filter object) from user data
      */
-    public function showAction(?Filter $filter = null): void
+    protected function getFilterFromBeUserData(): Filter
     {
-        $pageId = (int)GeneralUtility::_GP('id');
-
-        if ($pageId === 0) {
-            $this->redirect('list');
+        $serializedConstraint = $this->request->getAttribute('moduleData')->get('filter');
+        $filter = null;
+        if (is_string($serializedConstraint) && !empty($serializedConstraint)) {
+            $filter = @unserialize($serializedConstraint, ['allowed_classes' => [Filter::class, \DateTime::class]]);
         }
-
-        $filter = $filter ?? unserialize($GLOBALS['BE_USER']->getSessionData(self::FILTER_SESSION_KEY)) ?? (new Filter());
-        $filter->setPageId($pageId);
-        $logEntries = $this->logRepository->findByFilter($filter);
-
-        // Store filter data in session of backend user (used for pagination)
-        $GLOBALS['BE_USER']->setSessionData(self::FILTER_SESSION_KEY, serialize($filter));
-
-        $itemsPerPage = 20;
-        $currentPage = GeneralUtility::_GP('currentPage') ? (int)GeneralUtility::_GP('currentPage') : 1;
-
-        $paginator = new ArrayPaginator($logEntries->toArray(), $currentPage, $itemsPerPage);
-        $pagination = new SimplePagination($paginator);
-
-        $this->view->assignMultiple([
-            'logs' => $paginator->getPaginatedItems(),
-            'page' => BackendUtility::getRecord('pages', $pageId),
-            'users' => $this->getUsers(),
-            'fileTypes' => $this->getFileTypes(),
-            'filter' => $filter,
-            'statistic' => new Statistic($logEntries),
-            'paginator' => $paginator,
-            'pagination' => $pagination,
-            'totalResultCount' => count($logEntries),
-        ]);
+        return $filter ?: GeneralUtility::makeInstance(Filter::class);
     }
 
     /**
-     * Set up the doc header properly here
+     * Save current filter object in be user settings (uC)
      */
-    public function initializeView(ViewInterface $view): void
+    protected function persistFilterInBeUserData(Filter $filter): void
     {
-        parent::initializeView($view);
-
-        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        $pageRenderer->addCssFile('EXT:secure_downloads/Resources/Public/Styles/Styles.css');
-        $this->createMenu();
+        $moduleData = $this->request->getAttribute('moduleData');
+        $moduleData->set('filter', serialize($filter));
+        $this->getBackendUser()->pushModuleData($moduleData->getModuleIdentifier(), $moduleData->toArray());
     }
 
     /**
-     * Create menu
+     * In case the script execution fails, because the user requested too many results
+     * (memory exhaustion in php), reset the filters in be user settings, so
+     * the belog can be accessed again in the next call.
      */
-    private function createMenu(): void
+    protected function resetFilterOnMemoryExhaustionError(): void
     {
-        $menu = $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
-        $menu->setIdentifier('secure_downloads');
-
-        if ((int)GeneralUtility::_GP('id') !== 0) {
-            $this->addMenuItems($menu);
-        }
-
-        $this->view->assign('action', $this->request->getControllerActionName());
-        $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
+        $reservedMemory = new \SplFixedArray(187500); // 3M
+        register_shutdown_function(function () use (&$reservedMemory): void {
+            $reservedMemory = null; // free the reserved memory
+            $error = error_get_last();
+            if (str_contains($error['message'] ?? '', 'Allowed memory size of')) {
+                $filter = GeneralUtility::makeInstance(Filter::class);
+                $this->persistFilterInBeUserData($filter);
+            }
+        });
     }
 
-    /**
-     * Adds menu options to the select menu
-     *
-     * @param Menu $menu The Menu object
-     */
-    protected function addMenuItems(Menu &$menu): void
+    protected function getBackendUser(): BackendUserAuthentication
     {
-        $controllerName = $this->request->getControllerName();
-        $controllerActionName = $this->request->getControllerActionName();
-        $actions = [
-            ['controller' => 'Log', 'action' => 'show', 'label' => 'Show by Page'],
-            ['controller' => 'Log', 'action' => 'list', 'label' => 'Overview'],
-        ];
-
-        foreach ($actions as $action) {
-            $isActive = $controllerName === $action['controller'] && $controllerActionName === $action['action'];
-
-            $href = $this->getUriBuilder()->reset()->uriFor(
-                $action['action'],
-                [],
-                $action['controller']
-            );
-
-            $item = $menu->makeMenuItem()->setTitle($action['label'])->setHref($href)->setActive($isActive);
-            $menu->addMenuItem($item);
-        }
-    }
-
-    /**
-     * @return UriBuilder The URI builder
-     */
-    protected function getUriBuilder(): UriBuilder
-    {
-        $uriBuilder = $this->objectManager->get(UriBuilder::class);
-        $uriBuilder->setRequest($this->request);
-
-        return $uriBuilder;
+        return $GLOBALS['BE_USER'];
     }
 }

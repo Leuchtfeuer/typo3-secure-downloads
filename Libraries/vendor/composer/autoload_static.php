@@ -4,6 +4,14 @@
 
 namespace Composer\Autoload;
 
+use Composer\InstalledVersions;
+use Firebase\JWT\BeforeValidException;
+use Firebase\JWT\CachedKeySet;
+use Firebase\JWT\ExpiredException;
+use Firebase\JWT\JWK;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use Firebase\JWT\SignatureInvalidException;
 class ComposerStaticInit64b631d7d31383d9b1d9c3bbb5bb21d0
 {
     public static $prefixLengthsPsr4 = array (
@@ -21,14 +29,14 @@ class ComposerStaticInit64b631d7d31383d9b1d9c3bbb5bb21d0
     );
 
     public static $classMap = array (
-        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Firebase\\JWT\\BeforeValidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/BeforeValidException.php',
-        'Firebase\\JWT\\CachedKeySet' => __DIR__ . '/..' . '/firebase/php-jwt/src/CachedKeySet.php',
-        'Firebase\\JWT\\ExpiredException' => __DIR__ . '/..' . '/firebase/php-jwt/src/ExpiredException.php',
-        'Firebase\\JWT\\JWK' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWK.php',
-        'Firebase\\JWT\\JWT' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWT.php',
-        'Firebase\\JWT\\Key' => __DIR__ . '/..' . '/firebase/php-jwt/src/Key.php',
-        'Firebase\\JWT\\SignatureInvalidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/SignatureInvalidException.php',
+        InstalledVersions::class => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        BeforeValidException::class => __DIR__ . '/..' . '/firebase/php-jwt/src/BeforeValidException.php',
+        CachedKeySet::class => __DIR__ . '/..' . '/firebase/php-jwt/src/CachedKeySet.php',
+        ExpiredException::class => __DIR__ . '/..' . '/firebase/php-jwt/src/ExpiredException.php',
+        JWK::class => __DIR__ . '/..' . '/firebase/php-jwt/src/JWK.php',
+        JWT::class => __DIR__ . '/..' . '/firebase/php-jwt/src/JWT.php',
+        Key::class => __DIR__ . '/..' . '/firebase/php-jwt/src/Key.php',
+        SignatureInvalidException::class => __DIR__ . '/..' . '/firebase/php-jwt/src/SignatureInvalidException.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
