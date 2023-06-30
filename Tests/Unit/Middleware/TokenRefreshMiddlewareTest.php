@@ -35,7 +35,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         return $method->invokeArgs($object, $parameters);
     }
 
-    public function setPrivateProperty(string $className, object $object, string $property, mixed $value)
+    public function setPrivateProperty(string $className, object $object, string $property, $value)
     {
         $reflectionProperty = new \ReflectionProperty($className, $property);
         $reflectionProperty->setAccessible(true);
