@@ -35,11 +35,11 @@ Compatibility
 We are currently supporting following TYPO3 versions:<br><br>
 
 .. csv-table:: Version Matrix
-   :header: "Extension Version", "TYPO3 v10 Support", "TYPO3 v9 Support"
+   :header: "Extension Version", "TYPO3 v11 Support", "TYPO3 v10 Support", "TYPO3 v9 Support"
    :align: center
 
-        "5.x", "🙋‍♂️", "🙅‍♀️"
-        "4.x", "🙋‍♂️", "🙋‍♂️"
+        "5.x", "Yes", "Yes️", "No"
+        "4.x", "No", "Yes", "Yes"
 
 Version 5 is an upcoming release. Its package name has been changed to `leuchtfeuer/secure-downloads`.
 
@@ -54,10 +54,10 @@ For the following versions no more free bug fixes and new features will be provi
    :header: "Extension Version", "TYPO3 v9", "TYPO3 v8", "TYPO3 v7", "TYPO3 v6.2", "TYPO3 v4.5"
    :align: center
 
-        "3.x", "🙋‍♂️", "🙋‍♂️", "🙅‍♀️", "🙅‍♀️", "🙅‍♀️"
-        "2.0.4 - 2.x", "🙅‍♀️", "🙋‍♂️", "🙋‍♂️", "🙅‍♀️", "🙅‍♀️"
-        "2.0.0 - 2.0.3", "🙅‍♀️", "🙅‍♀️", "🙋‍♂️", "🙋‍♂️", "🙅‍♀️"
-        "1.x", "🙅‍♀️", "🙅‍♀️", "🙅‍♀️", "🙋‍♂️", "🙋‍♂️"
+        "3.x", "Yes", "Yes️", "No️", "No️", "No️️"
+        "2.0.4 - 2.x", "No️", "Yes️", "Yes️", "No️", "No️"
+        "2.0.0 - 2.0.3", "No️️", "No️️", "Yes", "Yes️", "No️"
+        "1.x", "No️", "No️", "No️", "Yes", "Yes"
 
 Version 1 was released as `EXT:naw_securedl <https://extensions.typo3.org/extension/naw_securedl>`__ or `typo3-ter/naw-securedl`.
 
