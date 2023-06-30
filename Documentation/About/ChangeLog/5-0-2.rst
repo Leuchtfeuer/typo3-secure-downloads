@@ -1,0 +1,49 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 5.0.2 - 2023/06/30
+==========================
+
+Bugfix and maintenance release
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v5.0.2>`__.
+
+Added
+=====
+
+Changed
+=======
+* Some branches cleanups
+* Bugfix JWT::decode method signature
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+  2023-06-30 Merge branch 'master' into release-5.x (Commit db25b11 by Marcus Balasch)
+  2023-06-29 [BUGFIX] PHP 7.4 compatibility for test. TER-118 TER-120 (#168) (Commit f23876c by Sebastian Afeldt)
+  2023-06-27 [BUGFIX] JWT::decode method signature not respected (#163) (Commit d287211 by J. Peter M. Schuler)
+  2023-05-26 Featue/newrelease 5.0.1 (#160) (Commit 8e0e340 by Marcus Balasch)
+  2023-05-26 Release 5.0.1 (#156) (Commit 3aebabc by Marcus Balasch)
+  2023-05-08 [RELEASE] Release of version 5.0.0 (#153) (Commit 312766c by bitmotionAE)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   J. Peter M. Schuler
+*   Marcus Balasch
+*   Niklas Grieger
+*   Sebastian Afeldt
+
+Thank you very much for your support. The next drink is on us! 🍻
