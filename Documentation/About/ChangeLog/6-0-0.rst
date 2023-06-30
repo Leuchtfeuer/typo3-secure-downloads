@@ -4,7 +4,7 @@
 Version 6.0.0 - 2023/06/26
 ==========================
 
-This release is a new major release. It introduces support for TYPO3 12 LTS as well as for PHP 8.1. TYPO3 11 LTS is not supported anymore.
+This release is a new major release. It introduces support for TYPO3 12 LTS. TYPO3 11 LTS and 10 LTS is not supported anymore in Version 6.x.
 
 Download
 ========
