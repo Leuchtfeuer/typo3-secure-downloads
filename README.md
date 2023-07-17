@@ -73,7 +73,7 @@ must be `secure_downloads` (the repository name will be default).
 
 ## Configuration
 After installation you need to configure this extension. Take a look at the corresponding section of the official 
-[manual](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/master/en-us/AdministratorManual/ExtensionConfiguration/Index.html).
+[manual](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/main/en-us/Admin/ExtensionConfiguration/Index.html).
 
 ### Best Practice
 You can configure this extension to fit your specific needs. However, here are some "best practices" that may help you when first
@@ -85,15 +85,15 @@ using Secure Downloads:
 * Create a directory on your filesystem which matches the previously configured "Base Path"
 * Put an `.htaccess` file into that folder that denies the access to all files within and underneath this path
 * Configure the extension in the admin section of your TYPO3 Backend to match all files (use an astrix for the 
-  [securedFiletypes](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/master/en-us/AdministratorManual/ExtensionConfiguration/Index.html#securedfiletypes)
+  [securedFiletypes](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/main/en-us/Admin/ExtensionConfiguration/Index.html#securedfiletypes)
   option) in your newly created file storage (use the path for the 
-  [securedDirs](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/master/en-us/AdministratorManual/ExtensionConfiguration/Index.html#securedfiletypes)
+  [securedDirs](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/main/en-us/Admin/ExtensionConfiguration/Index.html#secureddirs)
   option).
 
 ### Access Configuration
 You also need to secure all the directories and file types by your server configuration. This can be done with `.htaccess` files.
 Some example .htaccess files can be found in the 
-[Resources/Private/Examples](https://github.com/Leuchtfeuer/typo3-secure-downloads/tree/master/Resources/Private/Examples) 
+[Resources/Private/Examples](https://github.com/Leuchtfeuer/typo3-secure-downloads/tree/main/Resources/Private/Examples) 
 folder.
 
 **Note**: This extension cannot secure links to files that you include in your CSS file. For example, you can secure `/fileadmin` 
@@ -102,7 +102,7 @@ default `.htaccess_allow` file by putting this file to `/fileadmin/template/`.
 
 ## Documentation
 A detailed documentation can be found in the 
-[official TYPO3 documentation](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/master/en-us/Index.html)
+[official TYPO3 documentation](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/main/en-us/Index.html)
 of this extension.
 
 ## Changelog
