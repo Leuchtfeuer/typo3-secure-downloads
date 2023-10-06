@@ -178,7 +178,11 @@ class CheckConfiguration implements SingletonInterface
         $fileFinder = (new Finder())->name($this->fileTypePattern)->in($realDirectoryPath)->depth(0);
         foreach ($fileFinder->files() as $file) {
             $publicUrl = sprintf('%s/%s/%s', $this->domain, $directoryPath, $file->getRelativePathname());
-            $statusCode = (new Client())->request('HEAD', $publicUrl, ['http_errors' => false])->getStatusCode();
+            $statusCode = (new Client())->request(
+                'HEAD',
+                $publicUrl,
+                ['http_errors' => false, 'verify' => $GLOBALS['TYPO3_CONF_VARS']['HTTP']['verify'] ?? true]
+            )->getStatusCode();
 
             if ($statusCode !== 403) {
                 $this->fileCount++;
