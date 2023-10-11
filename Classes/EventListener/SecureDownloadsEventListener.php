@@ -20,6 +20,7 @@ use TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent;
 use TYPO3\CMS\Core\Resource\Driver\AbstractHierarchicalFilesystemDriver;
 use TYPO3\CMS\Core\Resource\Event\GeneratePublicUrlForResourceEvent;
 use TYPO3\CMS\Core\Resource\Exception;
+use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
@@ -88,10 +89,14 @@ class SecureDownloadsEventListener implements SingletonInterface
                     $overlayIdentifier = 'overlay-restricted';
                 }
             } elseif ($resource instanceof File) {
-                $folder = $resource->getParentFolder();
-                $publicUrl = ($folder->getStorage()->getPublicUrl($folder) ?? $folder->getIdentifier()) . $resource->getName();
-                if ($this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
-                    $overlayIdentifier = 'overlay-restricted';
+                try {
+                    $folder = $resource->getParentFolder();
+                    $publicUrl = ($folder->getStorage()->getPublicUrl($folder) ?? $folder->getIdentifier()) . $resource->getName();
+                    if ($this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
+                        $overlayIdentifier = 'overlay-restricted';
+                    }
+                } catch (InsufficientFolderAccessPermissionsException $e) {
+                    return;
                 }
             }
         }
