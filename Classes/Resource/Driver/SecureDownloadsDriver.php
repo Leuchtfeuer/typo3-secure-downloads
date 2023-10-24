@@ -14,7 +14,9 @@ namespace Leuchtfeuer\SecureDownloads\Resource\Driver;
  *
  ***/
 
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource\Driver\LocalDriver;
+use TYPO3\CMS\Core\Utility\PathUtility;
 
 /**
  * The Secure Downloads file storage.
@@ -26,4 +28,22 @@ class SecureDownloadsDriver extends LocalDriver
     const DRIVER_NAME = 'Secure Downloads';
 
     const BASE_PATH = 'sdl/';
+
+    public function determineSecureDownloadsDriverBaseUrl(): void
+    {
+        if ($this->baseUri === null) {
+            if (!empty($this->configuration['baseUri'])) {
+                $this->baseUri = rtrim($this->configuration['baseUri'], '/') . '/';
+            } elseif (str_starts_with($this->absoluteBasePath, Environment::getPublicPath())) {
+                // use site-relative URLs
+                $temporaryBaseUri = rtrim(PathUtility::stripPathSitePrefix($this->absoluteBasePath), '/');
+                if ($temporaryBaseUri !== '') {
+                    $uriParts = explode('/', $temporaryBaseUri);
+                    $uriParts = array_map('rawurlencode', $uriParts);
+                    $temporaryBaseUri = implode('/', $uriParts) . '/';
+                }
+                $this->baseUri = $temporaryBaseUri;
+            }
+        }
+    }
 }

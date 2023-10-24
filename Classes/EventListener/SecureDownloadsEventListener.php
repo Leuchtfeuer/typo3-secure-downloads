@@ -54,17 +54,23 @@ class SecureDownloadsEventListener implements SingletonInterface
         $driver = $event->getDriver();
         $resource = $event->getResource();
 
-        if ($driver instanceof AbstractHierarchicalFilesystemDriver && ($resource instanceof File || $resource instanceof ProcessedFile) && $resource->getStorage()->isPublic()) {
+        if ($driver instanceof AbstractHierarchicalFilesystemDriver && ($resource instanceof File || $resource instanceof ProcessedFile) && ($resource->getStorage()->isPublic() || $driver instanceof SecureDownloadsDriver)) {
             try {
                 $originalPathShouldBeSecured = false;
+                if ($driver instanceof SecureDownloadsDriver) {
+                    $driver->determineSecureDownloadsDriverBaseUrl();
+                }
                 if ($resource instanceof ProcessedFile) {
                     $originalPublicUrl = $driver->getPublicUrl($resource->getOriginalFile()->getIdentifier());
                     $originalPathShouldBeSecured = $this->secureDownloadService->pathShouldBeSecured($originalPublicUrl);
                 }
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier()) ?? '';
                 if ($originalPathShouldBeSecured || $driver instanceof SecureDownloadsDriver || $this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
-                    $securedUrl = $this->getSecuredUrl($event->isRelativeToCurrentScript(), $publicUrl, $driver);
+                    $securedUrl = $this->secureDownloadService->getResourceUrl($publicUrl);
                     $event->setPublicUrl($securedUrl);
+                }
+                if ($driver instanceof SecureDownloadsDriver) {
+                    $event->setPublicUrl('/' . $event->getPublicUrl());
                 }
             } catch (Exception $exception) {
                 // Do nothing.
