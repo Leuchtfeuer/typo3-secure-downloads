@@ -22,6 +22,8 @@ Properties
    ==================================== ==================================== ==================
    Property                             Tab                                  Type
    ==================================== ==================================== ==================
+   checkAccess_                         Parsing                              user
+   checkDirs_                           Parsing                              user
    createFileStorage_                   Parsing                              boolean
    securedDirs_                         Parsing                              string
    securedFiletypes_                    Parsing                              string
@@ -39,9 +41,41 @@ Properties
    forcedownloadtype_                   File Delivery                        string
    allowPublicAccess_                   File Delivery                        boolean
    log_                                 Module                               boolean
+   skipCheckConfiguration_              Backend                              boolean
    ==================================== ==================================== ==================
 
 .. ### BEGIN~OF~TABLE ###
+
+.. _admin-extensionConfiguration-checkAccess:
+
+checkAccess
+-----------------
+.. container:: table-row
+
+   Property
+        checkAccess
+   Data type
+        user
+   Default
+        :code:`0`
+   Description
+        Used internally for rendering the "Check Direct File Access" section in the extension's configuration module. The configured value has no impact.
+
+.. _admin-extensionConfiguration-checkAccess:
+
+checkAccess
+-----------------
+.. container:: table-row
+
+   Property
+        checkDirs
+   Data type
+        user
+   Default
+        :code:`0`
+   Description
+        Used internally for rendering the "Checks directories matching the pattern" section in the extension's configuration module. The configured value has no impact.
+
 
 .. _admin-extensionConfiguration-createFileStorage:
 
@@ -339,5 +373,20 @@ log
    Description
          Each file access will be logged to database, this could be a performance issue, if you have a high traffic site. If you
          decide to turn it on, a backend module will be activated to see the traffic caused by user/ file
+
+.. _admin-extensionConfiguration-skipCheckConfiguration:
+
+skipCheckConfiguration
+---
+.. container:: table-row
+
+   Property
+         skipCheckConfiguration
+   Data type
+         boolean
+   Default
+         :code:`false`
+   Description
+         Skip checking the secured files and directories in the extension's configuration module. The sections "Check Direct File Access" and "Checks directories matching the pattern" will not be rendered. This option may be useful if you have many or large secured directories.
 
 .. ### END~OF~TABLE ###
