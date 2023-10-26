@@ -248,7 +248,7 @@ class ExtensionConfiguration implements SingletonInterface
 
     public function getSecuredDirectoriesPattern(): string
     {
-        if (trim($this->securedDirs) === '') {
+        if ($this->getSecuredDirs() === '') {
             return '';
         }
         return sprintf('#^(%s)#i', $this->getSecuredDirs());
