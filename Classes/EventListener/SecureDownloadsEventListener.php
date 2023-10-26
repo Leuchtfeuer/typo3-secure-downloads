@@ -18,6 +18,7 @@ use Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver;
 use Leuchtfeuer\SecureDownloads\Service\SecureDownloadService;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Resource\Driver\AbstractHierarchicalFilesystemDriver;
 use TYPO3\CMS\Core\Resource\Event\GeneratePublicUrlForResourceEvent;
 use TYPO3\CMS\Core\Resource\Exception;
@@ -26,6 +27,7 @@ use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 
 /**
@@ -66,10 +68,10 @@ class SecureDownloadsEventListener implements SingletonInterface
                 }
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier()) ?? '';
                 if ($originalPathShouldBeSecured || $driver instanceof SecureDownloadsDriver || $this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
-                    $securedUrl = $this->secureDownloadService->getResourceUrl($publicUrl);
+                    $securedUrl = $this->getSecuredUrl($event->isRelativeToCurrentScript(), $publicUrl, $driver);
                     $event->setPublicUrl($securedUrl);
                 }
-                if ($driver instanceof SecureDownloadsDriver) {
+                if ($driver instanceof SecureDownloadsDriver && GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() === 11) {
                     $event->setPublicUrl('/' . $event->getPublicUrl());
                 }
             } catch (Exception $exception) {
