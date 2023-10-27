@@ -18,6 +18,7 @@ use Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver;
 use Leuchtfeuer\SecureDownloads\Service\SecureDownloadService;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Resource\Driver\AbstractHierarchicalFilesystemDriver;
 use TYPO3\CMS\Core\Resource\Event\GeneratePublicUrlForResourceEvent;
 use TYPO3\CMS\Core\Resource\Exception;
@@ -26,6 +27,7 @@ use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 
 /**
@@ -54,9 +56,12 @@ class SecureDownloadsEventListener implements SingletonInterface
         $driver = $event->getDriver();
         $resource = $event->getResource();
 
-        if ($driver instanceof AbstractHierarchicalFilesystemDriver && ($resource instanceof File || $resource instanceof ProcessedFile) && $resource->getStorage()->isPublic()) {
+        if ($driver instanceof AbstractHierarchicalFilesystemDriver && ($resource instanceof File || $resource instanceof ProcessedFile) && ($resource->getStorage()->isPublic() || $driver instanceof SecureDownloadsDriver)) {
             try {
                 $originalPathShouldBeSecured = false;
+                if ($driver instanceof SecureDownloadsDriver) {
+                    $driver->determineSecureDownloadsDriverBaseUrl();
+                }
                 if ($resource instanceof ProcessedFile) {
                     $originalPublicUrl = $driver->getPublicUrl($resource->getOriginalFile()->getIdentifier());
                     $originalPathShouldBeSecured = $this->secureDownloadService->pathShouldBeSecured($originalPublicUrl);
@@ -65,6 +70,9 @@ class SecureDownloadsEventListener implements SingletonInterface
                 if ($originalPathShouldBeSecured || $driver instanceof SecureDownloadsDriver || $this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
                     $securedUrl = $this->getSecuredUrl($event->isRelativeToCurrentScript(), $publicUrl, $driver);
                     $event->setPublicUrl($securedUrl);
+                }
+                if ($driver instanceof SecureDownloadsDriver && GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() === 11) {
+                    $event->setPublicUrl('/' . $event->getPublicUrl());
                 }
             } catch (Exception $exception) {
                 // Do nothing.
