@@ -19,7 +19,7 @@ Secure Downloads
    en
 
 :Copyright:
-   since 2006 by the athors
+   since 2006 by the authors
 
 :Author:
    Leuchtfeuer Digital Marketing

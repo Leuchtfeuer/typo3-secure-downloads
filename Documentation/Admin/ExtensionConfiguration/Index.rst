@@ -39,6 +39,7 @@ Properties
    forcedownloadtype_                   File Delivery                        string
    allowPublicAccess_                   File Delivery                        boolean
    log_                                 Module                               boolean
+   skipCheckConfiguration_              Backend                              boolean
    ==================================== ==================================== ==================
 
 .. ### BEGIN~OF~TABLE ###
@@ -339,5 +340,20 @@ log
    Description
          Each file access will be logged to database, this could be a performance issue, if you have a high traffic site. If you
          decide to turn it on, a backend module will be activated to see the traffic caused by user/ file
+
+.. _admin-extensionConfiguration-skipCheckConfiguration:
+
+skipCheckConfiguration
+---
+.. container:: table-row
+
+   Property
+         skipCheckConfiguration
+   Data type
+         boolean
+   Default
+         :code:`false`
+   Description
+         Skip checking the secured files and directories in the extension's configuration module. The sections "Check Direct File Access" and "Checks directories matching the pattern" will not be rendered. This option may be useful if you have many or large secured directories.
 
 .. ### END~OF~TABLE ###

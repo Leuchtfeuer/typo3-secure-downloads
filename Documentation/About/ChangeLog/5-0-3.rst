@@ -1,0 +1,50 @@
+.. include:: ../../Includes.txt
+
+==========================
+Version 5.0.3 - 2023/10/27
+==========================
+
+Bugfix and maintenance release
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v5.0.3>`__.
+
+Added
+=====
+
+Changed
+=======
+* Add: Extend documentation for extension configuration
+* Bugfix: Files from secure_downloads file storage are no longer delivered via dumpFile eID
+* Bugfix: If securedDirs in extension configuration is empty, no folders instead of all folders are considered to be secure
+* Bugfix: Secured icons from files do not break list view anymore if editor has no access to parent folder
+* Bugfix: Consider global SSL setting set by TYPO3
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+  2023-10-27 Bugfix/ter 144 (#187) (Commit d3394f5 by Niklas Grieger)
+  2023-10-12 [BUGFIX] Filter global SSL setting to boolean first [TER-133] [TER-142] (#180) (Commit 111a95f by Niklas Grieger)
+  2023-10-11 [BUGFIX] Fix list module if icons from files in secured directories are displayed and the editor has no access to the parent folder [TER-139] [TER-140] (#181) (Commit 43a31c1 by Niklas Grieger)
+  2023-10-06 Merge pull request #177 from Leuchtfeuer/bugfix/TER-124 (Commit 59d4f4f by Marcus Balasch)
+  2023-10-06 [BUGFIX] Considers the SSL setting of the global setting (Commit 29a836a by Marcus Balasch)
+
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Marcus Balasch
+*   Niklas Grieger
+
+Thank you very much for your support. The next drink is on us! 🍻

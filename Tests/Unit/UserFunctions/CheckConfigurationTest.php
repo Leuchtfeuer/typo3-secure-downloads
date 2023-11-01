@@ -59,4 +59,33 @@ class CheckConfigurationTest extends TestCase
         self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['/fileadmin-secure']));
         self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['fileadmin-secure']));
     }
+
+    /**
+     * @test
+     */
+    public function emptyDirectoriesPatternTests()
+    {
+        $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([])
+            ->getMock();
+
+        $configuration = [
+            'securedDirs' => '',
+        ];
+
+        $this->invokeMethod($extensionConfiguration, 'setPropertiesFromConfiguration', [$configuration]);
+
+        $checkConfiguration = new CheckConfiguration($extensionConfiguration);
+
+        self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['typo3temp']));
+        self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['/typo3temp']));
+        self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['fileadmin/secure']));
+        self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['fileadmin/secure/something_else']));
+        self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['/fileadmin/secure']));
+        self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['nomatch']));
+        self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['fileadmin']));
+        self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['/fileadmin-secure']));
+        self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['fileadmin-secure']));
+    }
 }
