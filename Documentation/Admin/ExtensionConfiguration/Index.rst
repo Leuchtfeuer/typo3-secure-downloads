@@ -344,7 +344,7 @@ log
 .. _admin-extensionConfiguration-skipCheckConfiguration:
 
 skipCheckConfiguration
----
+----------------------
 .. container:: table-row
 
    Property

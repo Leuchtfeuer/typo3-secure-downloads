@@ -1,10 +1,10 @@
 ﻿.. include:: ../../Includes.txt
 
 ==========================
-Version 6.0.0 - 2023/06/26
+Version 6.0.0 - 2023/11/06
 ==========================
 
-This release is a new major release. It introduces support for TYPO3 12 LTS. TYPO3 11 LTS and 10 LTS is not supported anymore in Version 6.x.
+This release is a new major release. It introduces support for TYPO3 12 LTS. TYPO3 11 LTS and 10 LTS are not supported anymore in Version 6.x.
 
 Download
 ========
@@ -22,7 +22,6 @@ Changed
 
 Deprecated
 ==========
-* -
 
 Removed
 =======
@@ -32,6 +31,11 @@ All Changes
 ===========
 This is a list of all changes in this release::
 
+    2023-11-06 [TASK] Migrate fixes from TER-144 as well as documentation from latest 5.x release [TER-151] [TER-152] (#189) (Commit da4fbdd by Niklas Grieger)
+    2023-10-12 [BUGFIX] Fix list module if icons from files in secured directories are displayed and the editor has no access to the parent folder [TER-139] [TER-140] (#182) (Commit 7e6138d by Niklas Grieger)
+    2023-10-11 [BUGFIX] Consider global SSL setting [TER-133] [TER-134] (#179) (Commit ae85fc9 by Niklas Grieger)
+    2023-07-17 Merge pull request #174 from ervaude/patch-1 (Commit b560d85 by Marcus Balasch)
+    2023-07-17 [BUGFIX] Update URLs for links to docs.typo3.org in README.md (Commit a46fa9c by Daniel Goerz)
     2023-06-21 [TASK] Move typecast to variable assignment. (Commit a2a6c98 by Sebastian Afeldt)
     2023-06-21 [BUGFIX] Test 'whenALinkWithAnOtherUserIDofTheCurrentUserLinkResponseBodyIsModified' fails. Thanks to J. Peter M. Schuler #163 (Commit 20fbdbf by Sebastian Afeldt)
     2023-06-21 [TASK] Update testing framework. (Commit ca9177c by Sebastian Afeldt)
@@ -48,6 +52,7 @@ Following people have contributed to this release:
 *   'sk-foresite <https://github.com/sk-foresite>'
 *   'J. Peter M. Schuler <https://https://github.com/jpmschuler>'
 *   Oliver Kleinecke
+*   Daniel Goerz
 *   Marcus Balasch
 *   Niklas Grieger
 *   Sebastian Afeldt

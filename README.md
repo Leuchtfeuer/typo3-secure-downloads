@@ -56,7 +56,7 @@ There are several ways to require and install this extension. We recommend getti
 ### Via Composer
 If your TYPO3 instance is running in composer mode, you can simply require the extension by running:
 
-    composer req leuchtfeuer/secure-downloads:>=5.0
+    composer req leuchtfeuer/secure-downloads:^6.0
 
 ### Via Extension Manager
 Open the extension manager module of your TYPO3 instance and select "Get Extensions" in the select menu above the upload button. 
