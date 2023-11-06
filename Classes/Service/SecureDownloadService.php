@@ -63,6 +63,10 @@ class SecureDownloadService implements SingletonInterface
     {
         $pattern = $this->extensionConfiguration->getSecuredDirectoriesPattern();
 
+        if ($pattern === '') {
+            return false;
+        }
+
         $result = (bool)preg_match($pattern, rtrim($publicUrl, '/'));
 
         if (!$result && substr($publicUrl, 0, 1) === '/') {

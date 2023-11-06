@@ -31,14 +31,8 @@ use TYPO3\CMS\Core\SingletonInterface;
  */
 class SecureDownloadsEventListener implements SingletonInterface
 {
-    /**
-     * @var SecureDownloadService
-     */
-    protected SecureDownloadService $secureDownloadService;
-
-    public function __construct(SecureDownloadService $secureDownloadService)
+    public function __construct(protected SecureDownloadService $secureDownloadService)
     {
-        $this->secureDownloadService = $secureDownloadService;
     }
 
     /**
@@ -52,9 +46,12 @@ class SecureDownloadsEventListener implements SingletonInterface
         $driver = $event->getDriver();
         $resource = $event->getResource();
 
-        if ($driver instanceof AbstractHierarchicalFilesystemDriver && ($resource instanceof File || $resource instanceof ProcessedFile) && $resource->getStorage()->isPublic()) {
+        if ($driver instanceof AbstractHierarchicalFilesystemDriver && ($resource instanceof File || $resource instanceof ProcessedFile) && ($resource->getStorage()->isPublic() || $driver instanceof SecureDownloadsDriver)) {
             try {
                 $originalPathShouldBeSecured = false;
+                if ($driver instanceof SecureDownloadsDriver) {
+                    $driver->determineSecureDownloadsDriverBaseUrl();
+                }
                 if ($resource instanceof ProcessedFile) {
                     $originalPublicUrl = $driver->getPublicUrl($resource->getOriginalFile()->getIdentifier());
                     $originalPathShouldBeSecured = $this->secureDownloadService->pathShouldBeSecured($originalPublicUrl);
@@ -63,6 +60,9 @@ class SecureDownloadsEventListener implements SingletonInterface
                 if ($originalPathShouldBeSecured || $driver instanceof SecureDownloadsDriver || $this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
                     $securedUrl = $this->secureDownloadService->getResourceUrl($publicUrl);
                     $event->setPublicUrl($securedUrl);
+                }
+                if ($driver instanceof SecureDownloadsDriver) {
+                    $event->setPublicUrl('/' . $event->getPublicUrl());
                 }
             } catch (Exception $exception) {
                 // Do nothing.

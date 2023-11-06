@@ -62,6 +62,38 @@ class SecureDownloadServiceTest extends TestCase
     /**
      * @test
      */
+    public function emptyDirectoriesPatternTests()
+    {
+        $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([])
+            ->getMock();
+
+        $configuration = [
+            'securedDirs' => '',
+            'securedFiletypes' => 'pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz',
+        ];
+
+        $this->invokeMethod($extensionConfiguration, 'setPropertiesFromConfiguration', [$configuration]);
+
+        $secureDownloadService = new SecureDownloadService($extensionConfiguration);
+
+        //matching
+
+        self::assertFalse($secureDownloadService->folderShouldBeSecured('typo3temp'));
+        self::assertFalse($secureDownloadService->folderShouldBeSecured('/typo3temp'));
+        self::assertFalse($secureDownloadService->folderShouldBeSecured('fileadmin/secure'));
+        self::assertFalse($secureDownloadService->folderShouldBeSecured('fileadmin/secure/something_else'));
+        self::assertFalse($secureDownloadService->folderShouldBeSecured('/fileadmin/secure'));
+        self::assertFalse($secureDownloadService->folderShouldBeSecured('nomatch'));
+        self::assertFalse($secureDownloadService->folderShouldBeSecured('fileadmin'));
+        self::assertFalse($secureDownloadService->folderShouldBeSecured('/fileadmin-secure'));
+        self::assertFalse($secureDownloadService->folderShouldBeSecured('fileadmin-secure'));
+    }
+
+    /**
+     * @test
+     */
     public function someFileTypesTests()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)

@@ -128,6 +128,10 @@ class CheckConfiguration implements SingletonInterface
 
     protected function isDirectoryMatching(string $directoryPath): bool
     {
+        if ($this->directoryPattern === '') {
+            return false;
+        }
+
         $result = preg_match($this->directoryPattern, $directoryPath) === 1;
 
         if (!$result && str_starts_with($directoryPath, '/')) {
