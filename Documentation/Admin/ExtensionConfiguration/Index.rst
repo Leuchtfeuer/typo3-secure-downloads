@@ -49,7 +49,7 @@ Properties
 .. _admin-extensionConfiguration-checkAccess:
 
 checkAccess
------------------
+-----------
 .. container:: table-row
 
    Property
@@ -61,10 +61,10 @@ checkAccess
    Description
         Used internally for rendering the "Check Direct File Access" section in the extension's configuration module. The configured value has no impact.
 
-.. _admin-extensionConfiguration-checkAccess:
+.. _admin-extensionConfiguration-checkDirs:
 
-checkAccess
------------------
+checkDirs
+---------
 .. container:: table-row
 
    Property
@@ -377,7 +377,7 @@ log
 .. _admin-extensionConfiguration-skipCheckConfiguration:
 
 skipCheckConfiguration
----
+----------------------
 .. container:: table-row
 
    Property
