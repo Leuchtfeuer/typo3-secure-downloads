@@ -66,7 +66,6 @@ class SecureLinkFactory implements SingletonInterface
     protected function initializeToken(): void
     {
         $this->token->setExp($this->calculateLinkLifetime());
-        $request = $this->getRequest();
         if (!Environment::isCli()) {
             $request = $this->getRequest();
             if (ApplicationType::fromRequest($request)->isFrontend()) {
