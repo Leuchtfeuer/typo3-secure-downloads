@@ -67,12 +67,15 @@ class SecureLinkFactory implements SingletonInterface
     {
         $this->token->setExp($this->calculateLinkLifetime());
         $request = $this->getRequest();
-        if (ApplicationType::fromRequest($request)->isFrontend()) {
-            $pageArguments = $request->getAttribute('routing');
-            $pageId = $pageArguments->getPageId();
-        } elseif (ApplicationType::fromRequest($request)->isBackend()) {
-            $site = $request->getAttribute('site');
-            $pageId = $site->getRootPageId();
+        if (!Environment::isCli()) {
+            $request = $this->getRequest();
+            if (ApplicationType::fromRequest($request)->isFrontend()) {
+                $pageArguments = $request->getAttribute('routing');
+                $pageId = $pageArguments->getPageId();
+            } elseif (ApplicationType::fromRequest($request)->isBackend()) {
+                $site = $request->getAttribute('site');
+                $pageId = $site->getRootPageId();
+            }
         }
         $this->token->setPage($pageId ?? 0);
 
