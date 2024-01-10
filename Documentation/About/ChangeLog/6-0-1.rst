@@ -1,0 +1,45 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 6.0.1 - 2024/01/10
+==========================
+
+This release is a bugfix and maintenance release.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v6.0.1>`__.
+
+Added
+=====
+
+Changed
+=======
+* Bugfix: Check for CLI usage in Secure Link Factory
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+    2024-01-08 Merge pull request #192 from georgringer/patch-1 (Commit ac5f83f by Marcus Balasch)
+    2024-01-08 Update SecureLinkFactory.php (Commit 5f3009b by Georg Ringer)
+    2024-01-08 Update SecureLinkFactory.php (Commit 658d2ab by Georg Ringer)
+    2024-01-08 [BUGFIX] Check for CLI usage (Commit 7e9e0a7 by Georg Ringer)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Georg Ringer
+*   Marcus Balasch
+*   Niklas Grieger
+
+Thank you very much for your support. The next drink is on us! 🍻
