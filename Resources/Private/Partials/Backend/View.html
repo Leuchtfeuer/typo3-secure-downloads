@@ -34,66 +34,65 @@
     </f:for>
     </tbody>
 </table>
-
-<f:if condition="{pagination.firstPageNumber} != {pagination.lastPageNumber}">
+<f:if condition="{pagination.totalPages} > 1">
     <ul class="pagination">
-        <f:if condition="{paginator.currentPageNumber} != 1">
+        <f:if condition="{pagination.previousPage}">
             <li class="page-item d-none d-sm-block">
-                <f:link.action class="page-link" arguments="{filter: filter}" additionalParams="{currentPage: pagination.previousPageNumber}" addQueryString="1">
+                <f:link.action class="page-link" arguments="{filter: filter}" additionalParams="{currentPage: pagination.previousPage}" addQueryString="1">
                     Previous
                 </f:link.action>
             </li>
         </f:if>
-        <f:if condition="{paginator.currentPageNumber} > 2">
+        <f:if condition="{pagination.currentPage} > 2">
             <li class="page-item">
                 <f:link.action class="page-link" arguments="{filter: filter}" additionalParams="{currentPage: 1}" addQueryString="1">
                     1
                 </f:link.action>
             </li>
         </f:if>
-        <f:if condition="{paginator.currentPageNumber} > 3">
+        <f:if condition="{pagination.currentPage} > 3">
             <li class="page-item disabled">
                 <span class="page-link">
                     ...
                 </span>
             </li>
         </f:if>
-        <f:if condition="{paginator.currentPageNumber} != 1">
+        <f:if condition="{pagination.previousPage}">
             <li class="page-item">
-                <f:link.action class="page-link" arguments="{filter: filter}" additionalParams="{currentPage: pagination.previousPageNumber}" addQueryString="1">
-                    {pagination.previousPageNumber}
+                <f:link.action class="page-link" arguments="{filter: filter}" additionalParams="{currentPage: pagination.previousPage}" addQueryString="1">
+                    {pagination.previousPage}
                 </f:link.action>
             </li>
         </f:if>
         <li class="page-item active">
             <span class="page-link">
-                {paginator.currentPageNumber}
+                {pagination.currentPage}
             </span>
         </li>
-        <f:if condition="{paginator.currentPageNumber} != {pagination.lastPageNumber}">
+        <f:if condition="{pagination.nextPage} && {pagination.nextPage} != {pagination.totalPages}">
             <li class="page-item">
-                <f:link.action class="page-link" arguments="{foo: 'bar'}" additionalParams="{currentPage: pagination.nextPageNumber}" addQueryString="1">
-                    {pagination.nextPageNumber}
+                <f:link.action class="page-link" arguments="{filter: filter}" additionalParams="{currentPage: pagination.nextPage}" addQueryString="1">
+                    {pagination.nextPage}
                 </f:link.action>
             </li>
         </f:if>
-        <f:if condition="{paginator.currentPageNumber} < {pagination.lastPageNumber - 2}">
+        <f:if condition="{pagination.currentPage} < {pagination.totalPages - 2}">
             <li class="page-item disabled">
                 <span class="page-link">
                     ...
                 </span>
             </li>
         </f:if>
-        <f:if condition="{paginator.currentPageNumber} < {pagination.lastPageNumber - 1}">
+        <f:if condition="{pagination.currentPage} < {pagination.totalPages}">
             <li class="page-item">
-                <f:link.action class="page-link" arguments="{filter: filter}" additionalParams="{currentPage: pagination.lastPageNumber}" addQueryString="1">
-                    {pagination.lastPageNumber}
+                <f:link.action class="page-link" arguments="{filter: filter}" additionalParams="{currentPage: pagination.totalPages}" addQueryString="1">
+                    {pagination.totalPages}
                 </f:link.action>
             </li>
         </f:if>
-        <f:if condition="{paginator.currentPageNumber} != {pagination.lastPageNumber}">
+        <f:if condition="{pagination.nextPage}">
             <li class="page-item d-none d-sm-block">
-                <f:link.action class="page-link" arguments="{filter: filter}" additionalParams="{currentPage: pagination.nextPageNumber}" addQueryString="1">
+                <f:link.action class="page-link" arguments="{filter: filter}" additionalParams="{currentPage: pagination.nextPage}" addQueryString="1">
                     Next
                 </f:link.action>
             </li>

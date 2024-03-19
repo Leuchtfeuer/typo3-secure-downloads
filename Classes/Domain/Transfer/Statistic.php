@@ -60,6 +60,11 @@ class Statistic
         return $this->traffic;
     }
 
+    public function setTraffic(float $traffic): void
+    {
+        $this->traffic = $traffic;
+    }
+
     public function getFrom(): \DateTime
     {
         return $this->from;
