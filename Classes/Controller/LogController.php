@@ -75,26 +75,31 @@ class LogController extends ActionController
     {
         $filter = $filter ?? unserialize($GLOBALS['BE_USER']->getSessionData(self::FILTER_SESSION_KEY)) ?? (new Filter());
         $filter->setPageId(0);
-        $logEntries = $this->logRepository->findByFilter($filter);
+        $currentPage = GeneralUtility::_GP('currentPage') ? (int)GeneralUtility::_GP('currentPage') : 1;
+        $itemsPerPage = 20;
+
+        $logEntries = $this->logRepository->findByFilter($filter, $currentPage, $itemsPerPage);
+        $totalResultsCount = $this->logRepository->countByFilter($filter);
+        $totalPages = (int)(ceil($totalResultsCount / 20));
+        $statistics = new Statistic($logEntries);
+        $statistics->setTraffic($this->logRepository->getTrafficSumByFilter($filter));
 
         // Store filter data in session of backend user (used for pagination)
         $GLOBALS['BE_USER']->setSessionData(self::FILTER_SESSION_KEY, serialize($filter));
 
-        $itemsPerPage = 20;
-        $currentPage = GeneralUtility::_GP('currentPage') ? (int)GeneralUtility::_GP('currentPage') : 1;
-
-        $paginator = new ArrayPaginator($logEntries->toArray(), $currentPage, $itemsPerPage);
-        $pagination = new SimplePagination($paginator);
-
         $this->view->assignMultiple([
-            'logs' => $paginator->getPaginatedItems(),
+            'logs' => $logEntries,
             'users' => $this->getUsers(),
             'fileTypes' => $this->getFileTypes(),
             'filter' => $filter,
-            'statistic' => new Statistic($logEntries),
-            'paginator' => $paginator,
-            'pagination' => $pagination,
-            'totalResultCount' => count($logEntries),
+            'statistic' => $statistics,
+            'pagination' => [
+                'totalPages' => $totalPages,
+                'currentPage' => $currentPage,
+                'previousPage' => ($currentPage - 1) > 0 ? $currentPage - 1 : null,
+                'nextPage' => $totalPages > $currentPage ? $currentPage + 1 : null,
+            ],
+            'totalResultCount' => $totalResultsCount,
         ]);
     }
 
@@ -145,7 +150,6 @@ class LogController extends ActionController
 
         $filter = $filter ?? unserialize($GLOBALS['BE_USER']->getSessionData(self::FILTER_SESSION_KEY)) ?? (new Filter());
         $filter->setPageId($pageId);
-        $logEntries = $this->logRepository->findByFilter($filter);
 
         // Store filter data in session of backend user (used for pagination)
         $GLOBALS['BE_USER']->setSessionData(self::FILTER_SESSION_KEY, serialize($filter));
@@ -153,19 +157,26 @@ class LogController extends ActionController
         $itemsPerPage = 20;
         $currentPage = GeneralUtility::_GP('currentPage') ? (int)GeneralUtility::_GP('currentPage') : 1;
 
-        $paginator = new ArrayPaginator($logEntries->toArray(), $currentPage, $itemsPerPage);
-        $pagination = new SimplePagination($paginator);
+        $logEntries = $this->logRepository->findByFilter($filter, $currentPage, $itemsPerPage);
+        $totalResultsCount = $this->logRepository->countByFilter($filter);
+        $totalPages = (int)(ceil($totalResultsCount / 20));
+        $statistics = new Statistic($logEntries);
+        $statistics->setTraffic($this->logRepository->getTrafficSumByFilter($filter));
 
         $this->view->assignMultiple([
-            'logs' => $paginator->getPaginatedItems(),
+            'logs' => $logEntries,
             'page' => BackendUtility::getRecord('pages', $pageId),
             'users' => $this->getUsers(),
             'fileTypes' => $this->getFileTypes(),
             'filter' => $filter,
-            'statistic' => new Statistic($logEntries),
-            'paginator' => $paginator,
-            'pagination' => $pagination,
-            'totalResultCount' => count($logEntries),
+            'statistic' => $statistics,
+            'pagination' => [
+                'totalPages' => $totalPages,
+                'currentPage' => $currentPage,
+                'previousPage' => ($currentPage - 1) > 0 ? $currentPage - 1 : null,
+                'nextPage' => $totalPages > $currentPage ? $currentPage + 1 : null,
+            ],
+            'totalResultCount' => $totalResultsCount,
         ]);
     }
 

@@ -6,7 +6,7 @@
             <f:render partial="Backend/Filter" arguments="{_all}"/>
 
             <div class="com-sm-12">
-                <f:variable name="traffic">{statistic.traffic -> f:format.bytes()}</f:variable>
+                <f:variable name="traffic">{statistic.traffic -> f:format.bytes(decimals: '2')}</f:variable>
                 <f:variable name="from">{statistic.from -> f:format.date(format: '{f:translate(key: \'dateformat\')}')}</f:variable>
                 <f:variable name="till">{statistic.till -> f:format.date(format: '{f:translate(key: \'dateformat\')}')}</f:variable>
 

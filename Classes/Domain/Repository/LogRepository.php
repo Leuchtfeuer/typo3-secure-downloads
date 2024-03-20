@@ -18,6 +18,7 @@ use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
@@ -54,7 +55,7 @@ class LogRepository extends Repository
      *
      * @return QueryResultInterface The query result.
      */
-    public function findByFilter(?Filter $filter): QueryResultInterface
+    public function findByFilter(?Filter $filter, int $currentPage = 1, int $itemsPerPage = 20): QueryResultInterface
     {
         $query = $this->createQuery();
 
@@ -66,7 +67,51 @@ class LogRepository extends Repository
             }
         }
 
+        $query->setLimit($itemsPerPage);
+        $query->setOffset($itemsPerPage * ($currentPage - 1));
+
         return $query->execute();
+    }
+
+    public function countByFilter(?Filter $filter): int
+    {
+        $query = $this->createQuery();
+
+        if ($filter instanceof Filter) {
+            try {
+                $this->applyFilter($query, $filter);
+            } catch (InvalidQueryException $exception) {
+                // Do nothing for now.
+            }
+        }
+
+        return $query->count();
+    }
+
+    public function getTrafficSumByFilter(?Filter $filter): float
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+        $constraints = [];
+
+        // FileType
+        $this->applyFileTypePropertyToFilterQB($filter->getFileType(), $queryBuilder, $constraints);
+
+        // User Type
+        $this->applyUserTypePropertyToFilterQB($filter, $queryBuilder, $constraints);
+
+        // Period
+        $this->applyPeriodPropertyToFilterQB($filter, $queryBuilder, $constraints);
+
+        // User and Page
+        $this->applyEqualPropertyToFilterQB((int)$filter->getFeUserId(), 'user', $queryBuilder, $constraints);
+        $this->applyEqualPropertyToFilterQB((int)$filter->getPageId(), 'page', $queryBuilder, $constraints);
+
+        return (float)$queryBuilder
+            ->selectLiteral('SUM(file_size) AS sum')
+            ->from('tx_securedownloads_domain_model_log')
+            ->where(...$constraints)
+            ->executeQuery()
+            ->fetchOne() ?? 0.0;
     }
 
     /**
@@ -112,6 +157,13 @@ class LogRepository extends Repository
         }
     }
 
+    protected function applyFileTypePropertyToFilterQB(string $fileType, QueryBuilder $queryBuilder, array &$constraints): void
+    {
+        if ($fileType !== '' && $fileType !== '0') {
+            $constraints[] = $queryBuilder->expr()->eq('media_type', $queryBuilder->createNamedParameter($fileType));
+        }
+    }
+
     /**
      * Applies the user type property of the filter to the query object.
      *
@@ -121,15 +173,21 @@ class LogRepository extends Repository
      */
     protected function applyUserTypePropertyToFilter(Filter $filter, QueryInterface $query, array &$constraints): void
     {
-        if ($filter->getUserType() != 0) {
-            $userQuery = $query->equals('user', null);
+        if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_ON) {
+            $constraints[] = $query->greaterThan('user', 0);
+        }
+        if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_OFF) {
+            $constraints[] = $query->equals('user', 0);
+        }
+    }
 
-            if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_ON) {
-                $constraints[] = $query->logicalNot($userQuery);
-            }
-            if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_OFF) {
-                $constraints[] = $userQuery;
-            }
+    protected function applyUserTypePropertyToFilterQB(Filter $filter, QueryBuilder $queryBuilder, array &$constraints): void
+    {
+        if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_ON) {
+            $constraints[] = $queryBuilder->expr()->gt('user', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT));
+        }
+        if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_OFF) {
+            $constraints[] = $queryBuilder->expr()->eq('user', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT));
         }
     }
 
@@ -152,6 +210,17 @@ class LogRepository extends Repository
         }
     }
 
+    protected function applyPeriodPropertyToFilterQB(Filter $filter, QueryBuilder $queryBuilder, array &$constraints): void
+    {
+        if ((int)$filter->getFrom() !== 0) {
+            $constraints[] = $queryBuilder->expr()->gte('tstamp', $queryBuilder->createNamedParameter($filter->getFrom(), \PDO::PARAM_INT));
+        }
+
+        if ((int)$filter->getTill() !== 0) {
+            $constraints[] = $queryBuilder->expr()->lte('tstamp', $queryBuilder->createNamedParameter($filter->getTill(), \PDO::PARAM_INT));
+        }
+    }
+
     /**
      * Applies given property of the filter to the query object.
      *
@@ -164,6 +233,13 @@ class LogRepository extends Repository
     {
         if ($property !== 0) {
             $constraints[] = $query->equals($propertyName, $property);
+        }
+    }
+
+    protected function applyEqualPropertyToFilterQB(int $property, string $propertyName, QueryBuilder $queryBuilder, array &$constraints): void
+    {
+        if ($property !== 0) {
+            $constraints[] = $queryBuilder->expr()->eq($propertyName, $queryBuilder->createNamedParameter($property, \PDO::PARAM_INT));
         }
     }
 
