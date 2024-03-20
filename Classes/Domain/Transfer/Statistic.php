@@ -15,6 +15,7 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Transfer;
  ***/
 
 use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
+use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 class Statistic
@@ -34,25 +35,25 @@ class Statistic
      */
     protected $till;
 
-    public function __construct(QueryResultInterface $logEntries)
+    public function __construct(Filter $filter, LogRepository $logRepository)
     {
         $this->from = new \DateTime();
+        if ($filter->getFrom() !== null) {
+            $this->from->setTimestamp($filter->getFrom());
+        } else {
+            $this->from->setTimestamp($logRepository->getFirstTimestampByFilter($filter));
+        }
+
         $this->till = new \DateTime();
-        $count = $logEntries->count();
-
-        if ($count > 0) {
-            $this->till->setTimestamp($logEntries->getFirst()->getTstamp());
-            $i = 1;
-
-            /** @var Log $logEntry */
-            foreach ($logEntries as $logEntry) {
-                $this->traffic += $logEntry->getFileSize();
-                if ($i === $count) {
-                    $this->from->setTimestamp($logEntry->getTstamp());
-                }
-                $i++;
+        if ($filter->getTill() !== null) {
+            $this->till->setTimestamp($filter->getTill());
+        } else {
+            if ($logRepository->getFirstTimestampByFilter($filter, true) > 0) {
+                $this->till->setTimestamp($logRepository->getFirstTimestampByFilter($filter, true));
             }
         }
+
+        $this->traffic = $logRepository->getTrafficSumByFilter($filter);
     }
 
     public function getTraffic(): float

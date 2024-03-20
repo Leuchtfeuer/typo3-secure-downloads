@@ -65,29 +65,33 @@ class LogController extends ActionController
 
         $pageId = (int)(array_key_exists('id', $this->request->getQueryParams()) ? $this->request->getQueryParams()['id'] : 0);
         $filter->setPageId($pageId);
-        $logEntries = $this->logRepository->findByFilter($filter);
 
         $this->persistFilterInBeUserData($filter);
         $this->resetFilterOnMemoryExhaustionError();
 
         $itemsPerPage = 20;
-        $currentPage = (int)array_key_exists('currentPage', $this->request->getQueryParams()) && $this->request->getQueryParams()['currentPage'] > 0 ? $this->request->getQueryParams()['currentPage'] : 1;
+        $currentPage = (int)(array_key_exists('currentPage', $this->request->getQueryParams()) && $this->request->getQueryParams()['currentPage'] > 0 ? $this->request->getQueryParams()['currentPage'] : 1);
+        $logEntries = $this->logRepository->findByFilter($filter, $currentPage, $itemsPerPage);
 
-        $paginator = new ArrayPaginator($logEntries->toArray(), $currentPage, $itemsPerPage);
-        $pagination = new SimplePagination($paginator);
+        $totalResultsCount = $this->logRepository->countByFilter($filter);
+        $totalPages = (int)(ceil($totalResultsCount / $itemsPerPage));
 
         $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
         $moduleTemplate->assignMultiple([
             'loggingEnabled' => $extensionConfigurationLogging,
-            'logs' => $paginator->getPaginatedItems(),
+            'logs' => $logEntries,
             'page' => BackendUtility::getRecord('pages', $pageId),
             'users' => $this->getUsers(),
             'fileTypes' => $this->getFileTypes(),
             'filter' => $filter,
-            'statistic' => new Statistic($logEntries),
-            'paginator' => $paginator,
-            'pagination' => $pagination,
-            'totalResultCount' => count($logEntries),
+            'statistic' => new Statistic($filter, $this->logRepository),
+            'pagination' => [
+                'totalPages' => $totalPages,
+                'currentPage' => $currentPage,
+                'previousPage' => ($currentPage - 1) > 0 ? $currentPage - 1 : null,
+                'nextPage' => $totalPages > $currentPage ? $currentPage + 1 : null,
+            ],
+            'totalResultCount' => $totalResultsCount,
             'isRoot' => $pageId == 0,
         ]);
         return $moduleTemplate->renderResponse('List');
