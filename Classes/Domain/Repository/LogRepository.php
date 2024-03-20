@@ -184,10 +184,10 @@ class LogRepository extends Repository
     protected function applyUserTypePropertyToFilterQB(Filter $filter, QueryBuilder $queryBuilder, array &$constraints): void
     {
         if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_ON) {
-            $constraints[] = $queryBuilder->expr()->gt('user', $queryBuilder->createNamedParameter(0));
+            $constraints[] = $queryBuilder->expr()->gt('user', $queryBuilder->createNamedParameter(0, \PDO::INT));
         }
         if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_OFF) {
-            $constraints[] = $queryBuilder->expr()->eq('user', $queryBuilder->createNamedParameter(0));
+            $constraints[] = $queryBuilder->expr()->eq('user', $queryBuilder->createNamedParameter(0, \PDO::INT));
         }
     }
 
@@ -213,11 +213,11 @@ class LogRepository extends Repository
     protected function applyPeriodPropertyToFilterQB(Filter $filter, QueryBuilder $queryBuilder, array &$constraints): void
     {
         if ((int)$filter->getFrom() !== 0) {
-            $constraints[] = $queryBuilder->expr()->gte('tstamp', $queryBuilder->createNamedParameter($filter->getFrom()));
+            $constraints[] = $queryBuilder->expr()->gte('tstamp', $queryBuilder->createNamedParameter($filter->getFrom(), \PDO::INT));
         }
 
         if ((int)$filter->getTill() !== 0) {
-            $constraints[] = $queryBuilder->expr()->lte('tstamp', $queryBuilder->createNamedParameter($filter->getTill()));
+            $constraints[] = $queryBuilder->expr()->lte('tstamp', $queryBuilder->createNamedParameter($filter->getTill(), \PDO::INT));
         }
     }
 
@@ -239,7 +239,7 @@ class LogRepository extends Repository
     protected function applyEqualPropertyToFilterQB(int $property, string $propertyName, QueryBuilder $queryBuilder, array &$constraints): void
     {
         if ($property !== 0) {
-            $constraints[] = $queryBuilder->expr()->eq($propertyName, $queryBuilder->createNamedParameter($property));
+            $constraints[] = $queryBuilder->expr()->eq($propertyName, $queryBuilder->createNamedParameter($property, \PDO::INT));
         }
     }
 
