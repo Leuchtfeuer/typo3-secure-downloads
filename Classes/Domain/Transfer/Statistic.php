@@ -14,9 +14,7 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Transfer;
  *
  ***/
 
-use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
 use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
-use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 class Statistic
 {

@@ -14,7 +14,6 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Repository;
  *
  ***/
 
-use Doctrine\DBAL\Result;
 use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
@@ -26,8 +25,6 @@ use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
-use TYPO3\CMS\Extbase\Persistence\QueryInterface;
-use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 class LogRepository extends Repository
@@ -37,8 +34,7 @@ class LogRepository extends Repository
     public function __construct(
         private readonly ConnectionPool $connectionPool,
         private readonly DataMapper $dataMapper
-    )
-    {
+    ) {
     }
 
     public function createQueryBuilder(): QueryBuilder
