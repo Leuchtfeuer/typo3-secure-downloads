@@ -71,7 +71,7 @@ class LogController extends ActionController
         $this->resetFilterOnMemoryExhaustionError();
 
         $itemsPerPage = 20;
-        $currentPage = (int)array_key_exists('currentPage', $this->request->getQueryParams()) && $this->request->getQueryParams()['currentPage'] > 0 ? $this->request->getQueryParams()['currentPage'] : 1;
+        $currentPage = (int)(array_key_exists('currentPage', $this->request->getQueryParams()) && $this->request->getQueryParams()['currentPage'] > 0 ? $this->request->getQueryParams()['currentPage'] : 1);
 
         $paginator = new ArrayPaginator($logEntries->toArray(), $currentPage, $itemsPerPage);
         $pagination = new SimplePagination($paginator);
