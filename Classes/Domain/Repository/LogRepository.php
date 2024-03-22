@@ -69,10 +69,10 @@ class LogRepository extends Repository
 
         $this->applyFilter($queryBuilder, $filter);
 
-        return (int)$queryBuilder
+        return (int)($queryBuilder
             ->count('uid')
             ->executeQuery()
-            ->fetchOne() ?? 0;
+            ->fetchOne() ?? 0);
     }
 
     public function getFirstTimestampByFilter(?Filter $filter, bool $reverse = false): int
@@ -81,11 +81,11 @@ class LogRepository extends Repository
 
         $this->applyFilter($queryBuilder, $filter);
 
-        return (int)$queryBuilder
+        return (int)($queryBuilder
             ->select('tstamp')
             ->orderBy('tstamp', $reverse ? 'DESC' : 'ASC')
             ->executeQuery()
-            ->fetchOne() ?? 0;
+            ->fetchOne() ?? 0);
     }
 
     public function getTrafficSumByFilter(?Filter $filter): float
@@ -94,10 +94,10 @@ class LogRepository extends Repository
 
         $this->applyFilter($queryBuilder, $filter);
 
-        return (float)$queryBuilder
+        return (float)($queryBuilder
             ->selectLiteral('SUM(file_size) AS sum')
             ->executeQuery()
-            ->fetchOne() ?? 0.0;
+            ->fetchOne() ?? 0.0);
     }
 
     protected function applyFilter(QueryBuilder &$queryBuilder, Filter $filter): void

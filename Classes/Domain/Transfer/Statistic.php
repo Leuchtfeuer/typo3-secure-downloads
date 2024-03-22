@@ -18,37 +18,26 @@ use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
 
 class Statistic
 {
-    /**
-     * @var float
-     */
-    protected $traffic = 0.00;
-
-    /**
-     * @var \DateTime
-     */
-    protected $from;
-
-    /**
-     * @var \DateTime
-     */
-    protected $till;
-
-    public function __construct(Filter $filter, LogRepository $logRepository)
+    public function __construct(
+        protected \DateTime $from = new \DateTime(),
+        protected \DateTime $till = new \DateTime(),
+        protected float $traffic = 0.00
+    )
     {
-        $this->from = new \DateTime();
+    }
+
+    public function calc(Filter $filter, LogRepository $logRepository): void
+    {
         if ($filter->getFrom() !== null) {
             $this->from->setTimestamp($filter->getFrom());
         } else {
             $this->from->setTimestamp($logRepository->getFirstTimestampByFilter($filter));
         }
 
-        $this->till = new \DateTime();
         if ($filter->getTill() !== null) {
             $this->till->setTimestamp($filter->getTill());
-        } else {
-            if ($logRepository->getFirstTimestampByFilter($filter, true) > 0) {
-                $this->till->setTimestamp($logRepository->getFirstTimestampByFilter($filter, true));
-            }
+        } elseif ($logRepository->getFirstTimestampByFilter($filter, true) > 0) {
+            $this->till->setTimestamp($logRepository->getFirstTimestampByFilter($filter, true));
         }
 
         $this->traffic = $logRepository->getTrafficSumByFilter($filter);

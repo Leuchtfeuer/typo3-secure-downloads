@@ -74,6 +74,9 @@ class LogController extends ActionController
         $totalResultsCount = $this->logRepository->countByFilter($filter);
         $totalPages = (int)(ceil($totalResultsCount / $itemsPerPage));
 
+        $statistic = new Statistic();
+        $statistic->calc($filter, $this->logRepository);
+
         $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
         $moduleTemplate->assignMultiple([
             'loggingEnabled' => $extensionConfigurationLogging,
@@ -82,12 +85,12 @@ class LogController extends ActionController
             'users' => $this->getUsers(),
             'fileTypes' => $this->getFileTypes(),
             'filter' => $filter,
-            'statistic' => new Statistic($filter, $this->logRepository),
+            'statistic' => $statistic,
             'pagination' => [
                 'totalPages' => $totalPages,
                 'currentPage' => $currentPage,
-                'previousPage' => ($currentPage - 1) > 0 ? $currentPage - 1 : null,
-                'nextPage' => $totalPages > $currentPage ? $currentPage + 1 : null,
+                'previousPage' => ($currentPage - 1) > 0 ? $currentPage - 1 : 0,
+                'nextPage' => $totalPages > $currentPage ? $currentPage + 1 : 0,
             ],
             'totalResultCount' => $totalResultsCount,
             'isRoot' => $pageId == 0,
