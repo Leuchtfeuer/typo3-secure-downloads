@@ -1,0 +1,46 @@
+.. include:: ../../Includes.txt
+
+==========================
+Version 5.0.4 - 2023/03/22
+==========================
+
+Bugfix and maintenance release
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v5.0.4>`__.
+
+Added
+=====
+
+Changed
+=======
+* Improve performance of backend module with many log entries
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+    2024-03-22 Merge branch 'release-5.x' into feature/TER-187 (Commit cdcf70c by Niklas Grieger)
+    2024-03-20 [TASK] Performance improvement for backend module with many download … (#197) (Commit 4c0f7b0 by Niklas Grieger)
+    2024-03-20 [BUGFIX] Use \PDO::PARAM_INT instead of \PDO::INT #151 [TER-187] [TER-188] (Commit 9bfb867 by Niklas Grieger)
+    2024-03-20 [TASK] Add second parameter for integer values in createNamedParameter #151 [TER-187] [TER-188] (Commit d063e05 by Niklas Grieger)
+    2024-03-19 [TASK] Performance improvement for backend module with many download log entries #151 [TER-187] [TER-188] (Commit d6e875c by Niklas Grieger)
+    2023-11-07 [BUGFIX] Fix wrong markup in documentation [TER-137] [TER-158] (#191) (Commit 38435e0 by Niklas Grieger)
+
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Niklas Grieger
+
+Thank you very much for your support. The next drink is on us! 🍻
