@@ -31,7 +31,7 @@
                         <f:render partial="Backend/Filter" arguments="{_all}"/>
 
                         <div class="callout callout-info">
-                            <f:variable name="traffic" value="{statistic.traffic -> f:format.bytes()}" />
+                            <f:variable name="traffic" value="{statistic.traffic -> f:format.bytes(decimals: '2')}" />
                             <f:variable name="from" value="{statistic.from -> f:format.date(format: '{f:translate(key:\'dateformat\')}')}" />
                             <f:variable name="till" value="{statistic.till -> f:format.date(format: '{f:translate(key:\'dateformat\')}')}" />
                             {f:translate(key: 'module.subheading', arguments: '{0: totalResultCount, 1: traffic, 2: from, 3: till}') -> f:format.raw()}

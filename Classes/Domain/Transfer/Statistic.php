@@ -14,45 +14,33 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Transfer;
  *
  ***/
 
-use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
-use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
+use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
 
 class Statistic
 {
-    /**
-     * @var float
-     */
-    protected $traffic = 0.00;
-
-    /**
-     * @var \DateTime
-     */
-    protected $from;
-
-    /**
-     * @var \DateTime
-     */
-    protected $till;
-
-    public function __construct(QueryResultInterface $logEntries)
+    public function __construct(
+        protected \DateTime $from = new \DateTime(),
+        protected \DateTime $till = new \DateTime(),
+        protected float $traffic = 0.00
+    )
     {
-        $this->from = new \DateTime();
-        $this->till = new \DateTime();
-        $count = $logEntries->count();
+    }
 
-        if ($count > 0) {
-            $this->till->setTimestamp($logEntries->getFirst()->getTstamp());
-            $i = 1;
-
-            /** @var Log $logEntry */
-            foreach ($logEntries as $logEntry) {
-                $this->traffic += $logEntry->getFileSize();
-                if ($i === $count) {
-                    $this->from->setTimestamp($logEntry->getTstamp());
-                }
-                $i++;
-            }
+    public function calc(Filter $filter, LogRepository $logRepository): void
+    {
+        if ($filter->getFrom() !== null) {
+            $this->from->setTimestamp($filter->getFrom());
+        } else {
+            $this->from->setTimestamp($logRepository->getFirstTimestampByFilter($filter));
         }
+
+        if ($filter->getTill() !== null) {
+            $this->till->setTimestamp($filter->getTill());
+        } elseif ($logRepository->getFirstTimestampByFilter($filter, true) > 0) {
+            $this->till->setTimestamp($logRepository->getFirstTimestampByFilter($filter, true));
+        }
+
+        $this->traffic = $logRepository->getTrafficSumByFilter($filter);
     }
 
     public function getTraffic(): float
