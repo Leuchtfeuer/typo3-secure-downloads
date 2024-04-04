@@ -13,17 +13,6 @@ declare(strict_types=1);
 
 namespace Leuchtfeuer\SecureDownloads\Domain\Transfer\Token;
 
-/***
- *
- * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- *  (c) 2020 Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
- *
- ***/
-
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;

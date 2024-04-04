@@ -13,17 +13,6 @@ declare(strict_types=1);
 
 namespace Leuchtfeuer\SecureDownloads\Domain\Transfer;
 
-/***
- *
- * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- *  (c) 2019 Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
- *
- ***/
-
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\SingletonInterface;
