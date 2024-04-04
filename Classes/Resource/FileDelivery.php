@@ -10,11 +10,10 @@ namespace Leuchtfeuer\SecureDownloads\Resource;
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- *  (c) 2019 Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ *  (c) Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
  *
  ***/
 
-use Firebase\JWT\JWT;
 use Leuchtfeuer\SecureDownloads\Cache\DecodeCache;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
@@ -31,7 +30,6 @@ use Psr\Http\Message\StreamInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
-use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -42,30 +40,15 @@ use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
 
 class FileDelivery implements SingletonInterface
 {
-    /**
-     * @var ExtensionConfiguration
-     */
-    protected ExtensionConfiguration $extensionConfiguration;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    protected EventDispatcherInterface $eventDispatcher;
-
-    /**
-     * @var AbstractToken
-     */
     protected AbstractToken $token;
 
-    /**
-     * @var array
-     */
     protected array $header = [];
 
-    public function __construct(ExtensionConfiguration $extensionConfiguration, EventDispatcher $eventDispatcher)
-    {
-        $this->extensionConfiguration = $extensionConfiguration;
-        $this->eventDispatcher = $eventDispatcher;
+    public function __construct(
+        protected ExtensionConfiguration $extensionConfiguration,
+        protected EventDispatcherInterface $eventDispatcher,
+        protected ResourceFactory $resourceFactory
+    ) {
     }
 
     /**
@@ -76,7 +59,7 @@ class FileDelivery implements SingletonInterface
      *
      * @return ResponseInterface Either the valid file as a stream or an error response
      *
-     * @throws PageNotFoundException
+     * @throws PageNotFoundException|ResourceDoesNotExistException
      */
     public function deliver(string $jsonWebToken, ServerRequestInterface $request): ResponseInterface
     {
@@ -100,7 +83,25 @@ class FileDelivery implements SingletonInterface
         $this->dispatchAfterFileRetrievedEvent($file, $fileName);
 
         if (file_exists($file)) {
-            return new Response($this->getResponseBody($file, $fileName), 200, $this->header, '');
+            $fileObject = $this->resourceFactory->retrieveFileOrFolderObject($this->token->getFile());
+            if ($fileObject instanceof File) {
+                $response = $fileObject
+                    ->getStorage()
+                    ->streamFile(
+                        $fileObject,
+                        $this->shouldForceDownload($fileObject->getExtension())
+                    );
+                ob_end_clean();
+
+                return $response;
+            }
+
+            return new Response(
+                $this->getResponseBody($file, $fileName),
+                200,
+                $this->header,
+                ''
+            );
         }
 
         return $this->getFileNotFoundResponse($request, 'File does not exist!');
