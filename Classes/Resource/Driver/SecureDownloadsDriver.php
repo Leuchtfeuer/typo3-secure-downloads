@@ -1,6 +1,16 @@
 <?php
 
 declare(strict_types=1);
+
+/*
+ * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * (c) Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ */
+
 namespace Leuchtfeuer\SecureDownloads\Resource\Driver;
 
 /***
@@ -23,11 +33,11 @@ use TYPO3\CMS\Core\Utility\PathUtility;
  */
 class SecureDownloadsDriver extends LocalDriver
 {
-    const DRIVER_SHORT_NAME = 'sdl';
+    public const DRIVER_SHORT_NAME = 'sdl';
 
-    const DRIVER_NAME = 'Secure Downloads';
+    public const DRIVER_NAME = 'Secure Downloads';
 
-    const BASE_PATH = 'sdl/';
+    public const BASE_PATH = 'sdl/';
 
     public function determineSecureDownloadsDriverBaseUrl(): void
     {

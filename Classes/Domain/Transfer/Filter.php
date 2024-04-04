@@ -1,6 +1,16 @@
 <?php
 
 declare(strict_types=1);
+
+/*
+ * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * (c) Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ */
+
 namespace Leuchtfeuer\SecureDownloads\Domain\Transfer;
 
 /***
@@ -16,9 +26,9 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Transfer;
 
 class Filter
 {
-    const USER_TYPE_ALL = 0;
-    const USER_TYPE_LOGGED_ON = -1;
-    const USER_TYPE_LOGGED_OFF = -2;
+    public const USER_TYPE_ALL = 0;
+    public const USER_TYPE_LOGGED_ON = -1;
+    public const USER_TYPE_LOGGED_OFF = -2;
 
     /**
      * @var string The file type.

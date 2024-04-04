@@ -1,6 +1,16 @@
 <?php
 
 declare(strict_types=1);
+
+/*
+ * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * (c) Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ */
+
 namespace Leuchtfeuer\SecureDownloads\Resource;
 
 /***
@@ -48,8 +58,7 @@ class FileDelivery implements SingletonInterface
         protected ExtensionConfiguration $extensionConfiguration,
         protected EventDispatcherInterface $eventDispatcher,
         protected ResourceFactory $resourceFactory
-    ) {
-    }
+    ) {}
 
     /**
      * Delivers the file to the browser if all checks pass and file exists.
@@ -290,7 +299,7 @@ class FileDelivery implements SingletonInterface
     protected function outputFile(string $outputFunction, string $file): ?StreamInterface
     {
         if ($outputFunction === ExtensionConfiguration::OUTPUT_NGINX) {
-            if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') === 0) {
+            if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with($_SERVER['SERVER_SOFTWARE'], 'nginx')) {
                 $this->header['X-Accel-Redirect'] = sprintf(
                     '%s/%s',
                     rtrim($this->extensionConfiguration->getProtectedPath(), '/'),

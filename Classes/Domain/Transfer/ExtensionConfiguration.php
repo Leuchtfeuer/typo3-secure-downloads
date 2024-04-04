@@ -1,6 +1,16 @@
 <?php
 
 declare(strict_types=1);
+
+/*
+ * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * (c) Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ */
+
 namespace Leuchtfeuer\SecureDownloads\Domain\Transfer;
 
 /***
@@ -24,11 +34,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ExtensionConfiguration implements SingletonInterface
 {
-    const FILE_TYPES_WILDCARD = '*';
+    public const FILE_TYPES_WILDCARD = '*';
 
-    const OUTPUT_STREAM = 'stream';
+    public const OUTPUT_STREAM = 'stream';
 
-    const OUTPUT_NGINX = 'x-accel-redirect';
+    public const OUTPUT_NGINX = 'x-accel-redirect';
 
     /**
      * The value will be added to configured cache lifetime of the page, where the resource is embedded in.

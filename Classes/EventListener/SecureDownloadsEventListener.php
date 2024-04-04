@@ -1,6 +1,16 @@
 <?php
 
 declare(strict_types=1);
+
+/*
+ * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * (c) Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ */
+
 namespace Leuchtfeuer\SecureDownloads\EventListener;
 
 /***
@@ -31,9 +41,7 @@ use TYPO3\CMS\Core\SingletonInterface;
  */
 class SecureDownloadsEventListener implements SingletonInterface
 {
-    public function __construct(protected SecureDownloadService $secureDownloadService)
-    {
-    }
+    public function __construct(protected SecureDownloadService $secureDownloadService) {}
 
     /**
      * This will secure a link when given file is underneath a protected directory and the file type matches the configured

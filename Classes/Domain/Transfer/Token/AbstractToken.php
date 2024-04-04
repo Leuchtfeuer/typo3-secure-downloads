@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * (c) Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ */
+
 namespace Leuchtfeuer\SecureDownloads\Domain\Transfer\Token;
 
 /***
@@ -53,7 +62,7 @@ abstract class AbstractToken
     public function __construct()
     {
         $this->iat = time();
-        $this->implementationClassName = get_called_class();
+        $this->implementationClassName = static::class;
     }
 
     abstract public function encode(?array $payload = null): string;
