@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * (c) Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ */
+
 namespace Leuchtfeuer\SecureDownloads\Tests\Unit\Middleware;
 
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
@@ -324,7 +333,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         $this->setProtectedProperty($secureLinkFactory, 'userId', 1);
         $this->setProtectedProperty($secureLinkFactory, 'userGroups', [0, -2, 1]);
         $this->setProtectedProperty($secureLinkFactory, 'pageId', 1);
-        $this->setProtectedProperty($secureLinkFactory, 'linkTimeout', time()+60);
+        $this->setProtectedProperty($secureLinkFactory, 'linkTimeout', time() + 60);
         $this->setProtectedProperty($secureLinkFactory, 'resourceUri', 'fileadmin/foo.txt');
 
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'secret';
@@ -419,7 +428,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         $secureLinkFactory->withUser(1)
             ->withGroups([0, -2, 1])
             ->withPage(1)
-            ->withLinkTimeout(time() +60)
+            ->withLinkTimeout(time() + 60)
             ->withResourceUri('fileadmin/secure/document.pdf');
 
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'my-secret';

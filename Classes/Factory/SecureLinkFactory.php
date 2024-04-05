@@ -1,18 +1,17 @@
 <?php
 
 declare(strict_types=1);
-namespace Leuchtfeuer\SecureDownloads\Factory;
 
-/***
- *
+/*
  * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- *  (c) 2019 Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
- *
- ***/
+ * (c) Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ */
+
+namespace Leuchtfeuer\SecureDownloads\Factory;
 
 use Leuchtfeuer\SecureDownloads\Cache\EncodeCache;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
@@ -32,7 +31,7 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class SecureLinkFactory implements SingletonInterface
 {
-    const DEFAULT_CACHE_LIFETIME = 86400;
+    public const DEFAULT_CACHE_LIFETIME = 86400;
 
     /**
      * @var EventDispatcher

@@ -1,18 +1,17 @@
 <?php
 
 declare(strict_types=1);
-namespace Leuchtfeuer\SecureDownloads\Resource\Event;
 
-/***
- *
+/*
  * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- *  (c) 2020 Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
- *
- ***/
+ * (c) Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ */
+
+namespace Leuchtfeuer\SecureDownloads\Resource\Event;
 
 /**
  * This event is executed after the access checks has been performed and both the file and the file name have been read from the
