@@ -1,18 +1,17 @@
 <?php
 
 declare(strict_types=1);
-namespace Leuchtfeuer\SecureDownloads\Domain\Repository;
 
-/***
- *
+/*
  * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- *  (c) 2019 Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
- *
- ***/
+ * (c) Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ */
+
+namespace Leuchtfeuer\SecureDownloads\Domain\Repository;
 
 use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
@@ -29,13 +28,12 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 
 class LogRepository extends Repository
 {
-    const TABLENAME = 'tx_securedownloads_domain_model_log';
+    public const TABLENAME = 'tx_securedownloads_domain_model_log';
 
     public function __construct(
         private readonly ConnectionPool $connectionPool,
         private readonly DataMapper $dataMapper
-    ) {
-    }
+    ) {}
 
     public function createQueryBuilder(): QueryBuilder
     {
