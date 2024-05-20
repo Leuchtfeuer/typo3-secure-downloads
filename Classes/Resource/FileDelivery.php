@@ -90,7 +90,8 @@ class FileDelivery implements SingletonInterface
                     ->getStorage()
                     ->streamFile(
                         $fileObject,
-                        $this->shouldForceDownload($fileObject->getExtension())
+                        $this->shouldForceDownload($fileObject->getExtension()),
+                        $fileName
                     );
                 ob_end_clean();
 
