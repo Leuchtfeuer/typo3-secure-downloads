@@ -48,9 +48,6 @@ call_user_func(
             true
         );
 
-        // Add MimeTypes
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['FileInfo']['fileExtensionToMimeType'] += \Leuchtfeuer\SecureDownloads\MimeTypes::ADDITIONAL_MIME_TYPES;
-
         // Schedulter task
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\TYPO3\CMS\Scheduler\Task\TableGarbageCollectionTask::class]['options']['tables']['tx_securedownloads_domain_model_log'] = [
             'dateField' => 'tstamp',
