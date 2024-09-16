@@ -48,7 +48,7 @@ call_user_func(
             true
         );
 
-        // Schedulter task
+        // Scheduler task
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\TYPO3\CMS\Scheduler\Task\TableGarbageCollectionTask::class]['options']['tables']['tx_securedownloads_domain_model_log'] = [
             'dateField' => 'tstamp',
             'expirePeriod' => '180'
