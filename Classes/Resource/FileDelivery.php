@@ -237,7 +237,8 @@ class FileDelivery implements SingletonInterface
         $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
         $forceDownload = $this->shouldForceDownload($fileExtension);
         $fileSize = filesize($file);
-        $mimeType = (new FileInfo($file))->getMimeType() ?? MimeTypes::DEFAULT_MIME_TYPE;
+        // Try to get MimeType via TYPO3 buildin logic first. If that fails, use our extended file extension list.
+        $mimeType = (new FileInfo($file))->getMimeType() ?? $this->guessMimeTypeByFileExtension($file) ?? MimeTypes::DEFAULT_MIME_TYPE;
         $outputFunction = $this->extensionConfiguration->getOutputFunction();
         $header = $this->getHeader($mimeType, $fileName, $forceDownload, $fileSize);
 
@@ -252,6 +253,15 @@ class FileDelivery implements SingletonInterface
         }
 
         return $this->outputFile($outputFunction, $file) ?? 'php://temp';
+    }
+
+    protected function guessMimeTypeByFileExtension(string $file): false|string
+    {
+        $lowercaseFileExtension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        if (!empty(MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension])) {
+            return MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension];
+        }
+        return false;
     }
 
     /**
