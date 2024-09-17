@@ -1,0 +1,45 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 6.0.4 - 2024/09/17
+==========================
+
+This release is a bugfix and maintenance release.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v6.0.4>`__.
+
+Added
+=====
+
+Changed
+=======
+
+* Stop misuse of TYPO3's fileExtensionToMimeType list 
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+2024-09-16 [BUGFIX] Do not override internal TYPO3 list [TER-236] (#208) (Commit 327626d by bmheins)
+2024-05-20 [BUGFIX] Allow custom filename from Event (Commit d02f4ff by Benni Mack)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Marcus Balasch
+*   Oliver Heins
+*   Benni Mack
+*   Sybille Peters
+
+Thank you very much for your support. The next drink is on us! 🍻
