@@ -1,0 +1,44 @@
+.. include:: ../../Includes.txt
+
+==========================
+Version 5.0.5 - 2024/09/17
+==========================
+
+Bugfix and maintenance release
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v5.0.5>`__.
+
+Added
+=====
+
+Changed
+=======
+
+* Stop misuse of TYPO3's fileExtensionToMimeType list
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+    2024-09-16 [BUGFIX] Do not override internal TYPO3 list [TER-236] (#208) (Commit 075ac4a by bmheins)
+    2024-05-20 [BUGFIX] Allow custom filename from Event (Commit e19f38c by Benni Mack)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Oliver Heins
+*   Benni Mack
+*   Sybille Peters
+
+Thank you very much for your support. The next drink is on us! 🍻
