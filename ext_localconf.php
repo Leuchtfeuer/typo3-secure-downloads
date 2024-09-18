@@ -48,9 +48,6 @@ call_user_func(
             true
         );
 
-        // Add MimeTypes
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['FileInfo']['fileExtensionToMimeType'] += \Leuchtfeuer\SecureDownloads\MimeTypes::ADDITIONAL_MIME_TYPES;
-
     }, 'secure_downloads'
 );
 

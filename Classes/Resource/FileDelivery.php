@@ -34,6 +34,8 @@ use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
+use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Type\File\FileInfo;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -53,6 +55,11 @@ class FileDelivery implements SingletonInterface
     protected $eventDispatcher;
 
     /**
+     * @var ResourceFactory
+     */
+    protected $resourceFactory;
+
+    /**
      * @var AbstractToken
      */
     protected $token;
@@ -62,10 +69,14 @@ class FileDelivery implements SingletonInterface
      */
     protected $header = [];
 
-    public function __construct(ExtensionConfiguration $extensionConfiguration, EventDispatcher $eventDispatcher)
-    {
+    public function __construct(
+        ExtensionConfiguration $extensionConfiguration,
+        EventDispatcher $eventDispatcher,
+        ResourceFactory $resourceFactory
+    ) {
         $this->extensionConfiguration = $extensionConfiguration;
         $this->eventDispatcher = $eventDispatcher;
+        $this->resourceFactory = $resourceFactory;
     }
 
     /**
@@ -100,7 +111,26 @@ class FileDelivery implements SingletonInterface
         $this->dispatchAfterFileRetrievedEvent($file, $fileName);
 
         if (file_exists($file)) {
-            return new Response($this->getResponseBody($file, $fileName), 200, $this->header, '');
+            $fileObject = $this->resourceFactory->retrieveFileOrFolderObject($this->token->getFile());
+            if ($fileObject instanceof File) {
+                $response = $fileObject
+                    ->getStorage()
+                    ->streamFile(
+                        $fileObject,
+                        $this->shouldForceDownload($fileObject->getExtension()),
+                        $fileName
+                    );
+                ob_end_clean();
+
+                return $response;
+            }
+
+            return new Response(
+                $this->getResponseBody($file, $fileName),
+                200,
+                $this->header,
+                ''
+            );
         }
 
         return $this->getFileNotFoundResponse($request, 'File does not exist!');
@@ -207,7 +237,8 @@ class FileDelivery implements SingletonInterface
         $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
         $forceDownload = $this->shouldForceDownload($fileExtension);
         $fileSize = filesize($file);
-        $mimeType = (new FileInfo($file))->getMimeType() ?? MimeTypes::DEFAULT_MIME_TYPE;
+        // Try to get MimeType via TYPO3 buildin logic first. If that fails, use our extended file extension list.
+        $mimeType = (new FileInfo($file))->getMimeType() ?? $this->guessMimeTypeByFileExtension($file) ?? MimeTypes::DEFAULT_MIME_TYPE;
         $outputFunction = $this->extensionConfiguration->getOutputFunction();
         $header = $this->getHeader($mimeType, $fileName, $forceDownload, $fileSize);
 
@@ -222,6 +253,15 @@ class FileDelivery implements SingletonInterface
         }
 
         return $this->outputFile($outputFunction, $file) ?? 'php://temp';
+    }
+
+    protected function guessMimeTypeByFileExtension(string $file): false|string
+    {
+        $lowercaseFileExtension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        if (!empty(MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension])) {
+            return MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension];
+        }
+        return false;
     }
 
     /**
