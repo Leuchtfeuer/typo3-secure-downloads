@@ -1,0 +1,41 @@
+.. include:: ../../Includes.txt
+
+==========================
+Version 5.0.6 - 2024/09/23
+==========================
+
+Bugfix and maintenance release
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v5.0.6>`__.
+
+Added
+=====
+
+Changed
+=======
+
+* Stop misuse of TYPO3's fileExtensionToMimeType list
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release:
+
+    2024-09-23 [BUGFIX] Remove PHP 8.x style return type declaration (fixes #212) (Commit 372a9fe by Oliver Heins)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Oliver Heins
+
+Thank you very much for your support. The next drink is on us! 🍻
