@@ -70,7 +70,7 @@ class SecureLinkFactory implements SingletonInterface
             $request = $this->getRequest();
             if (ApplicationType::fromRequest($request)->isFrontend()) {
                 $pageArguments = $request->getAttribute('routing');
-                $pageId = $pageArguments->getPageId();
+                $pageId = $pageArguments?->getPageId();
             } elseif (ApplicationType::fromRequest($request)->isBackend()) {
                 $site = $request->getAttribute('site');
                 $pageId = $site->getRootPageId();
