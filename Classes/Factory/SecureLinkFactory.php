@@ -171,7 +171,7 @@ class SecureLinkFactory implements SingletonInterface
     }
 
     /**
-     * @param array $groups An array of user groups for whom the link should be valid for
+     * @param array<int> $groups An array of user groups for whom the link should be valid for
      *
      * @return $this
      */
@@ -210,7 +210,7 @@ class SecureLinkFactory implements SingletonInterface
     /**
      * Dispatches the EnrichPayloadEvent event.
      *
-     * @param array $payload The payload of the token
+     * @param array<string, mixed> $payload The payload of the token
      */
     protected function dispatchEnrichPayloadEvent(array &$payload): void
     {

@@ -20,7 +20,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TokenRegistry extends AbstractRegistry
 {
-    private static $token;
+    /**
+     * @var array<string, mixed>
+     */
+    private static array $tokenList;
 
     /**
      * @param string $identifier        An unique identifier for the object
@@ -33,25 +36,30 @@ class TokenRegistry extends AbstractRegistry
      */
     public static function register(string $identifier, string $className, int $priority = 0, bool $overwriteExisting = false): void
     {
-        if (self::$token instanceof AbstractToken && $overwriteExisting === false) {
+        if (array_key_exists($identifier, self::$tokenList) && $overwriteExisting === false) {
             // Do nothing. Maybe log this in future.
             return;
         }
 
-        self::$token[$identifier] = [
+        self::$tokenList[$identifier] = [
             'class' => self::getTokenFromClassName($className),
             'priority' => $priority,
         ];
 
-        self::sortByPriority(self::$token);
+        self::sortByPriority(self::$tokenList);
     }
 
     /**
-     * @return AbstractToken The registered token
+     * @return AbstractToken Get the highest prioritized token
+     * @throws InvalidClassException
      */
     public static function getToken(): AbstractToken
     {
-        return reset(self::$token)['class'];
+        $firstEntry = reset(self::$tokenList);
+        if (is_array($firstEntry)) {
+            return $firstEntry['class'];
+        }
+        throw new InvalidClassException();
     }
 
     /**

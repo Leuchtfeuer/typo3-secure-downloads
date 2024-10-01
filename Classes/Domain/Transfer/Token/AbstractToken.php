@@ -15,39 +15,18 @@ namespace Leuchtfeuer\SecureDownloads\Domain\Transfer\Token;
 
 abstract class AbstractToken
 {
-    /**
-     * @var int
-     */
-    protected $iat = 0;
+    protected int $iat = 0;
+    protected int $exp = 0;
+    protected int $user = 0;
 
     /**
-     * @var int
-     */
-    protected $exp = 0;
-
-    /**
-     * @var int
-     */
-    protected $user = 0;
-
-    /**
-     * @var array
+     * @var array<int>
      */
     protected $groups = [];
-
-    /**
-     * @var string
-     */
-    protected $file = '';
-
-    /**
-     * @var int
-     */
-    protected $page = 0;
-
-    protected $implementationClassName = __CLASS__;
-
-    protected $logged = false;
+    protected string $file = '';
+    protected int $page = 0;
+    protected string $implementationClassName = __CLASS__;
+    protected bool $logged = false;
 
     public function __construct()
     {
@@ -55,10 +34,18 @@ abstract class AbstractToken
         $this->implementationClassName = static::class;
     }
 
+    /**
+     * @param array<mixed>|null $payload
+     * @return string
+     */
     abstract public function encode(?array $payload = null): string;
 
     abstract public function decode(string $jsonWebToken): void;
 
+    /**
+     * @param array<string, mixed> $parameters
+     * @return void
+     */
     abstract public function log(array $parameters = []): void;
 
     public function getIat(): int
@@ -86,11 +73,18 @@ abstract class AbstractToken
         $this->user = $user;
     }
 
+    /**
+     * @return int[]
+     */
     public function getGroups(): array
     {
         return $this->groups;
     }
 
+    /**
+     * @param int[] $groups
+     * @return void
+     */
     public function setGroups(array $groups): void
     {
         $this->groups = $groups;
@@ -116,6 +110,9 @@ abstract class AbstractToken
         $this->page = $page;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getPayload(): array
     {
         return [

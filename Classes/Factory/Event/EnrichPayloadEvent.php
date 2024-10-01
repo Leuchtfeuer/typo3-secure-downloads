@@ -22,17 +22,14 @@ use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 final class EnrichPayloadEvent
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     private $payload;
 
-    /**
-     * @var AbstractToken
-     */
-    private $token;
+    private AbstractToken $token;
 
     /**
-     * @param array         $payload This array contains the default payload of the JSON Web Token. You can enrich this data by
+     * @param array<string, mixed>   $payload This array contains the default payload of the JSON Web Token. You can enrich this data by
      *                               your own properties or manipulate the existing data.
      * @param AbstractToken $token   This property is read-only and contains the generated token object.
      */
@@ -42,11 +39,18 @@ final class EnrichPayloadEvent
         $this->token = $token;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getPayload(): array
     {
         return $this->payload;
     }
 
+    /**
+     * @param array<string, mixed> $payload
+     * @return void
+     */
     public function setPayload(array $payload): void
     {
         $this->payload = $payload;

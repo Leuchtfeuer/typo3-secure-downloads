@@ -97,7 +97,7 @@ class LogController extends ActionController
     }
 
     /**
-     * @return array Array containing all users that have downloaded files
+     * @return list<array<string,mixed>> Array containing all users that have downloaded files
      * @throws Exception
      */
     private function getUsers(): array
@@ -115,7 +115,7 @@ class LogController extends ActionController
     }
 
     /**
-     * @return array Array containing all used file types
+     * @return list<array<string,mixed>> Array containing all used file types
      * @throws Exception
      */
     private function getFileTypes(): array

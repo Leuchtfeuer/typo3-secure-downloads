@@ -22,20 +22,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 abstract class AbstractCheck
 {
-    /**
-     * @var ExtensionConfiguration
-     */
-    protected $extensionConfiguration;
-
-    /**
-     * @var AbstractToken
-     */
-    protected $token;
-
-    /**
-     * @var UserAspect
-     */
-    protected $userAspect;
+    protected ExtensionConfiguration $extensionConfiguration;
+    protected AbstractToken $token;
+    protected UserAspect $userAspect;
 
     public function __construct()
     {
@@ -47,7 +36,7 @@ abstract class AbstractCheck
      * @param AbstractToken $token The JSON web token
      * @throws AspectNotFoundException
      */
-    public function setToken(AbstractToken $token)
+    public function setToken(AbstractToken $token): void
     {
         $this->token = $token;
         $this->userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');

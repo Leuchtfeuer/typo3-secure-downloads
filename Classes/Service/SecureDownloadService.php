@@ -20,11 +20,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class SecureDownloadService implements SingletonInterface
 {
-    protected $extensionConfiguration;
-
-    public function __construct(ExtensionConfiguration $extensionConfiguration)
+    public function __construct(protected ExtensionConfiguration $extensionConfiguration)
     {
-        $this->extensionConfiguration = $extensionConfiguration;
     }
 
     /**

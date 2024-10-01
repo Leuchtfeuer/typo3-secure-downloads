@@ -28,7 +28,7 @@ abstract class AbstractRegistry implements SingletonInterface
     /**
      * Sorts given elements by its priority.
      *
-     * @param array $elements The elements to be sorted
+     * @param array<string, mixed> $elements The elements to be sorted
      */
     protected static function sortByPriority(array &$elements): void
     {

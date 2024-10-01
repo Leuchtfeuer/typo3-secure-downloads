@@ -189,7 +189,7 @@ class ExtensionConfiguration implements SingletonInterface
     /**
      * Remove invalid configuration from the extension configuration array and map values to properties of this class.
      *
-     * @param array $configuration The extension configuration.
+     * @param array<mixed> $configuration The extension configuration.
      */
     protected function setPropertiesFromConfiguration(array $configuration): void
     {

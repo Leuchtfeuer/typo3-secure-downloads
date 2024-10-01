@@ -35,9 +35,7 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
             $this->addHtaccessFile($path);
         }
 
-        $storageObjects = $this->findByStorageType(SecureDownloadsDriver::DRIVER_SHORT_NAME);
-
-        if (count($storageObjects) === 0) {
+        if (!$this->isStorageDriverExisting()) {
             $this->createLocalStorage(
                 'Secure Downloads (auto-created)',
                 SecureDownloadsDriver::BASE_PATH,
@@ -78,23 +76,22 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
     }
 
     /**
-     * Finds storages by type, i.e. the driver used
+     * Checks if a storage driver for secure downloads already exists
      *
-     * @param string $storageType The identifier of the storage.
-     *
-     * @return ResourceStorage[]
+     * @return bool
      * @throws Exception
      */
-    public function findByStorageType($storageType): array
+    private function isStorageDriverExisting(): bool
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
 
-        return $queryBuilder
+        $result = $queryBuilder
             ->select('*')
             ->from($this->table)
             ->where($queryBuilder->expr()->eq('driver', $queryBuilder->createNamedParameter(SecureDownloadsDriver::DRIVER_SHORT_NAME)))
-            ->executeQuery()
-            ->fetchAllAssociative();
+            ->executeQuery();
+
+        return $result->rowCount() > 0;
     }
 
     /**

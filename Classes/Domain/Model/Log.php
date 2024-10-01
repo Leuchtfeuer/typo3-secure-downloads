@@ -76,6 +76,7 @@ class Log extends AbstractEntity
     }
 
     /**
+     * @return array<string, mixed>|null
      * @throws Exception
      */
     public function getUserObject(): ?array
@@ -94,6 +95,9 @@ class Log extends AbstractEntity
         return null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [

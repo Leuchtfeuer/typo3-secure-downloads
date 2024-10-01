@@ -22,54 +22,32 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class CheckConfiguration implements SingletonInterface
 {
-    /**
-     * @var ExtensionConfiguration
-     */
-    protected mixed $extensionConfiguration;
-
-    /**
-     * @var string
-     */
+    protected ExtensionConfiguration $extensionConfiguration;
     protected string $directoryPattern = '';
-
-    /**
-     * @var string
-     */
     protected string $fileTypePattern = '';
-
-    /**
-     * @var string
-     */
     protected string $domain = '';
-
-    /**
-     * @var int
-     */
     protected int $fileCount = 0;
 
     /**
-     * @var array
+     * @var array<string>
      */
     protected array $directories = [];
 
     /**
-     * @var array
+     * @var array<string>
      */
     protected array $unprotectedDirectories = [];
 
     /**
-     * @var array
+     * @var array<string>
      */
     protected array $protectedDirectories = [];
 
     /**
-     * @var array
+     * @var array<int|string, mixed>
      */
     protected array $unprotectedFiles = [];
 
-    /**
-     * @param ExtensionConfiguration|null $extensionConfiguration
-     */
     public function __construct(?ExtensionConfiguration $extensionConfiguration = null)
     {
         if ($extensionConfiguration === null) {
@@ -203,13 +181,13 @@ class CheckConfiguration implements SingletonInterface
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     protected function getPublicDirectories(): array
     {
         $publicDirectories = scandir(Environment::getPublicPath());
 
-        return array_filter($publicDirectories, function ($directory) {
+        return array_filter($publicDirectories, function ($directory) { // @phpstan-ignore-line
             return is_dir(sprintf('%s/%s', Environment::getPublicPath(), $directory)) && !in_array($directory, ['.', '..', 'typo3', 'typo3conf']);
         });
     }

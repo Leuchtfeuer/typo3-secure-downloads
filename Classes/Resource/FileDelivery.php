@@ -22,6 +22,7 @@ use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
 use Leuchtfeuer\SecureDownloads\Resource\Event\AfterFileRetrievedEvent;
 use Leuchtfeuer\SecureDownloads\Resource\Event\BeforeReadDeliverEvent;
 use Leuchtfeuer\SecureDownloads\Resource\Event\OutputInitializationEvent;
+use Leuchtfeuer\SecureDownloads\Security\AbstractCheck;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -39,11 +40,15 @@ use TYPO3\CMS\Core\Type\File\FileInfo;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
+use TYPO3\CMS\Install\SystemEnvironment\CheckInterface;
 
 class FileDelivery implements SingletonInterface
 {
     protected AbstractToken $token;
 
+    /**
+     * @var string[]
+     */
     protected array $header = [];
 
     public function __construct(
@@ -178,11 +183,13 @@ class FileDelivery implements SingletonInterface
      */
     protected function hasAccess(): bool
     {
-        foreach (CheckRegistry::getChecks() ?? [] as $check) {
-            $check['class']->setToken($this->token);
-
-            if ($check['class']->hasAccess() === false) {
-                return false;
+        foreach (CheckRegistry::getChecks() as $check) {
+            $checkClass = $check['class'];
+            if ($checkClass instanceof AbstractCheck) {
+                $checkClass->setToken($this->token);
+                if ($checkClass->hasAccess() === false) {
+                    return false;
+                }
             }
         }
 
@@ -211,9 +218,9 @@ class FileDelivery implements SingletonInterface
         $forceDownload = $this->shouldForceDownload($fileExtension);
         $fileSize = filesize($file);
         // Try to get MimeType via TYPO3 buildin logic first. If that fails, use our extended file extension list.
-        $mimeType = (new FileInfo($file))->getMimeType() ?? $this->guessMimeTypeByFileExtension($file) ?? MimeTypes::DEFAULT_MIME_TYPE;
+        $mimeType = (new FileInfo($file))->getMimeType() ?: $this->guessMimeTypeByFileExtension($file) ?: MimeTypes::DEFAULT_MIME_TYPE;
         $outputFunction = $this->extensionConfiguration->getOutputFunction();
-        $header = $this->getFileHeader($mimeType, $fileName, $forceDownload, $fileSize);
+        $header = $this->getFileHeader($mimeType, $fileName, $forceDownload, (int)$fileSize);
 
         $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
         $this->header = $header;
@@ -281,7 +288,7 @@ class FileDelivery implements SingletonInterface
         ];
 
         if (!@ini_get('zlib.output_compression')) {
-            $header['Content-Length'] = $fileSize;
+            $header['Content-Length'] = (string)$fileSize;
         }
 
         if ($forceDownload === true) {
@@ -348,7 +355,7 @@ class FileDelivery implements SingletonInterface
      *
      * @param string $outputFunction Contains the output function as string. This property is deprecated and will be removed in
      *                               further releases since the output function can only be one of "x-accel-redirect" or "stream".
-     * @param array  $header         An array of header which will be sent to the browser. You can add your own headers or remove
+     * @param string[]  $header         An array of header which will be sent to the browser. You can add your own headers or remove
      *                               default ones.
      * @param string $fileName       The name of the file. This property is read-only.
      * @param string $mimeType       The mime type of the file. This property is read-only.

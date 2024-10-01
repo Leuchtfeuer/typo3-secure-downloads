@@ -20,7 +20,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class CheckRegistry extends AbstractRegistry
 {
-    protected static $checks = [];
+    /**
+     * @var array<string, mixed>
+     */
+    protected static array $checks = [];
 
     /**
      * @param string $identifier        An unique identifier for the object
@@ -47,7 +50,7 @@ class CheckRegistry extends AbstractRegistry
     }
 
     /**
-     * @return array The registered security checks
+     * @return array<string, mixed> The registered security checks
      */
     public static function getChecks(): array
     {

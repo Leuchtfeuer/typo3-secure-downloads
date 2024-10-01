@@ -25,7 +25,7 @@ final class BeforeReadDeliverEvent
     private $outputFunction;
 
     /**
-     * @var array
+     * @var string[]
      */
     private $header;
 
@@ -47,7 +47,7 @@ final class BeforeReadDeliverEvent
     /**
      * @param string $outputFunction Contains the output function as string. This property is deprecated and will be removed in
      *                               further releases since the output function can only be one of "x-accel-redirect" or "stream".
-     * @param array  $header         An array of header which will be sent to the browser. You can add your own headers or remove
+     * @param string[]  $header         An array of header which will be sent to the browser. You can add your own headers or remove
      *                               default ones.
      * @param string $fileName       The name of the file. This property is read-only.
      * @param string $mimeType       The mime type of the file. This property is read-only.
@@ -72,11 +72,18 @@ final class BeforeReadDeliverEvent
         $this->outputFunction = $outputFunction;
     }
 
+    /**
+     * @return string[]
+     */
     public function getHeader(): array
     {
         return $this->header;
     }
 
+    /**
+     * @param string[] $header
+     * @return void
+     */
     public function setHeader(array $header): void
     {
         $this->header = $header;
