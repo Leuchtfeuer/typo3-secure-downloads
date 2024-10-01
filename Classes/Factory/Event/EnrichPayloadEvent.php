@@ -49,7 +49,6 @@ final class EnrichPayloadEvent
 
     /**
      * @param array<string, mixed> $payload
-     * @return void
      */
     public function setPayload(array $payload): void
     {

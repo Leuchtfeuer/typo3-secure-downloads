@@ -55,7 +55,6 @@ class DefaultToken extends AbstractToken
 
     /**
      * @param array<string, mixed> $parameters
-     * @return void
      * @throws AspectNotFoundException
      * @throws ResourceDoesNotExistException
      */

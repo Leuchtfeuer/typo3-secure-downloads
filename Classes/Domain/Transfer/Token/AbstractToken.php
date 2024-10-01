@@ -44,7 +44,6 @@ abstract class AbstractToken
 
     /**
      * @param array<string, mixed> $parameters
-     * @return void
      */
     abstract public function log(array $parameters = []): void;
 
@@ -83,7 +82,6 @@ abstract class AbstractToken
 
     /**
      * @param int[] $groups
-     * @return void
      */
     public function setGroups(array $groups): void
     {

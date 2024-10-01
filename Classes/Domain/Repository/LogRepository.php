@@ -141,7 +141,6 @@ class LogRepository extends Repository
      * @param string $fileType
      * @param QueryBuilder $queryBuilder
      * @param string[] $constraints
-     * @return void
      */
     protected function applyFileTypePropertyToFilter(string $fileType, QueryBuilder $queryBuilder, array &$constraints): void
     {
@@ -154,7 +153,6 @@ class LogRepository extends Repository
      * @param Filter $filter
      * @param QueryBuilder $queryBuilder
      * @param string[] $constraints
-     * @return void
      */
     protected function applyUserTypePropertyToFilter(Filter $filter, QueryBuilder $queryBuilder, array &$constraints): void
     {
@@ -170,7 +168,6 @@ class LogRepository extends Repository
      * @param Filter $filter
      * @param QueryBuilder $queryBuilder
      * @param string[] $constraints
-     * @return void
      */
     protected function applyPeriodPropertyToFilter(Filter $filter, QueryBuilder $queryBuilder, array &$constraints): void
     {
@@ -188,7 +185,6 @@ class LogRepository extends Repository
      * @param string $propertyName
      * @param QueryBuilder $queryBuilder
      * @param string[] $constraints
-     * @return void
      */
     protected function applyEqualPropertyToFilter(int $property, string $propertyName, QueryBuilder $queryBuilder, array &$constraints): void
     {

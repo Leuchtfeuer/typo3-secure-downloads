@@ -40,7 +40,6 @@ use TYPO3\CMS\Core\Type\File\FileInfo;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
-use TYPO3\CMS\Install\SystemEnvironment\CheckInterface;
 
 class FileDelivery implements SingletonInterface
 {

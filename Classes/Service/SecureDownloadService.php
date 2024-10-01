@@ -20,9 +20,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class SecureDownloadService implements SingletonInterface
 {
-    public function __construct(protected ExtensionConfiguration $extensionConfiguration)
-    {
-    }
+    public function __construct(protected ExtensionConfiguration $extensionConfiguration) {}
 
     /**
      * Check whether file is located underneath a secured folder and file extension should matches file types pattern.

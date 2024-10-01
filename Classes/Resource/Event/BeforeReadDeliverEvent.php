@@ -82,7 +82,6 @@ final class BeforeReadDeliverEvent
 
     /**
      * @param string[] $header
-     * @return void
      */
     public function setHeader(array $header): void
     {
