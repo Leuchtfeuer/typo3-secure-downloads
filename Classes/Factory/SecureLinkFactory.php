@@ -85,6 +85,8 @@ class SecureLinkFactory implements SingletonInterface
      * Adds the configured additional cache time and the cache lifetime of the current site to the actual time.
      *
      * @return int The link lifetime
+     * @throws AspectNotFoundException
+     * @throws AspectNotFoundException
      */
     protected function calculateLinkLifetime(): int
     {
