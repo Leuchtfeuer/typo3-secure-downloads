@@ -75,7 +75,7 @@ class CheckConfiguration implements SingletonInterface
         }
 
         // .htaccess check is only available for Apache web server
-        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string) $_SERVER['SERVER_SOFTWARE'], 'Apache')) {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'Apache')) {
             $this->checkDirectories();
 
             if ($this->unprotectedDirectories !== []) {
@@ -273,7 +273,7 @@ class CheckConfiguration implements SingletonInterface
             $content .= '<p>Only the first ten results are shown.</p>';
         }
 
-        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string) $_SERVER['SERVER_SOFTWARE'], 'Apache')) {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'Apache')) {
             $content .= '<p>Here is some example code which can be used depending on your Apache version:</p>';
             $content .= $this->getHtaccessExamples();
         }

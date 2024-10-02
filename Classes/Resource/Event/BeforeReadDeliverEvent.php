@@ -28,9 +28,7 @@ final class BeforeReadDeliverEvent
      * @param string $mimeType       The mime type of the file. This property is read-only.
      * @param bool   $forceDownload  Information whether the file should be forced to download or not. This property is read-only.
      */
-    public function __construct(private string $outputFunction, private array $header, private readonly string $fileName, private readonly string $mimeType, private readonly bool $forceDownload)
-    {
-    }
+    public function __construct(private string $outputFunction, private array $header, private readonly string $fileName, private readonly string $mimeType, private readonly bool $forceDownload) {}
 
     public function getOutputFunction(): string
     {

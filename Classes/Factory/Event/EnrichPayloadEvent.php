@@ -26,9 +26,7 @@ final class EnrichPayloadEvent
      *                               your own properties or manipulate the existing data.
      * @param AbstractToken $token   This property is read-only and contains the generated token object.
      */
-    public function __construct(private array $payload, private readonly AbstractToken $token)
-    {
-    }
+    public function __construct(private array $payload, private readonly AbstractToken $token) {}
 
     /**
      * @return array<string, mixed>

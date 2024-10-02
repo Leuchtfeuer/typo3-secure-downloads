@@ -306,7 +306,7 @@ class FileDelivery implements SingletonInterface
     protected function outputFile(string $outputFunction, string $file): ?StreamInterface
     {
         if ($outputFunction === ExtensionConfiguration::OUTPUT_NGINX) {
-            if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string) $_SERVER['SERVER_SOFTWARE'], 'nginx')) {
+            if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'nginx')) {
                 $this->header['X-Accel-Redirect'] = sprintf(
                     '%s/%s',
                     rtrim($this->extensionConfiguration->getProtectedPath(), '/'),

@@ -16,9 +16,11 @@ namespace Leuchtfeuer\SecureDownloads\Factory;
 use Leuchtfeuer\SecureDownloads\Cache\EncodeCache;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
+use Leuchtfeuer\SecureDownloads\Exception\InvalidClassException;
 use Leuchtfeuer\SecureDownloads\Factory\Event\EnrichPayloadEvent;
 use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
@@ -37,6 +39,7 @@ class SecureLinkFactory implements SingletonInterface
 
     /**
      * @throws ContentRenderingException
+     * @throws InvalidClassException
      */
     public function __construct(private EventDispatcher $eventDispatcher, private ExtensionConfiguration $extensionConfiguration)
     {

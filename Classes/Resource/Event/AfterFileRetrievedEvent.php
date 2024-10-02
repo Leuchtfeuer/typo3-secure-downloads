@@ -24,9 +24,7 @@ final class AfterFileRetrievedEvent
      * @param string $fileName Contains the name of the file. You can change this so that another file name is used when
      *                         downloading this file.
      */
-    public function __construct(private string $file, private string $fileName)
-    {
-    }
+    public function __construct(private string $file, private string $fileName) {}
 
     public function getFile(): string
     {
