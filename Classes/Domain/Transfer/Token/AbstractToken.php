@@ -25,7 +25,7 @@ abstract class AbstractToken
     protected $groups = [];
     protected string $file = '';
     protected int $page = 0;
-    protected string $implementationClassName = __CLASS__;
+    protected string $implementationClassName = '';
     protected bool $logged = false;
 
     public function __construct()
