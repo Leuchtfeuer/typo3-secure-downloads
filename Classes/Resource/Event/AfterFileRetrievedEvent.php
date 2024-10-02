@@ -20,25 +20,11 @@ namespace Leuchtfeuer\SecureDownloads\Resource\Event;
 final class AfterFileRetrievedEvent
 {
     /**
-     * @var string
-     */
-    private $file;
-
-    /**
-     * @var string
-     */
-    private $fileName;
-
-    /**
      * @param string $file     Contains the absolute path to the file on the file system. You can change this property.
      * @param string $fileName Contains the name of the file. You can change this so that another file name is used when
      *                         downloading this file.
      */
-    public function __construct(string $file, string $fileName)
-    {
-        $this->file = $file;
-        $this->fileName = $fileName;
-    }
+    public function __construct(private string $file, private string $fileName) {}
 
     public function getFile(): string
     {

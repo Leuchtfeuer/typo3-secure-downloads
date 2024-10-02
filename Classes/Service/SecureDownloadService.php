@@ -20,12 +20,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class SecureDownloadService implements SingletonInterface
 {
-    protected $extensionConfiguration;
-
-    public function __construct(ExtensionConfiguration $extensionConfiguration)
-    {
-        $this->extensionConfiguration = $extensionConfiguration;
-    }
+    public function __construct(protected ExtensionConfiguration $extensionConfiguration) {}
 
     /**
      * Check whether file is located underneath a secured folder and file extension should matches file types pattern.
@@ -68,7 +63,7 @@ class SecureDownloadService implements SingletonInterface
 
         $result = (bool)preg_match($pattern, rtrim($publicUrl, '/'));
 
-        if (!$result && substr($publicUrl, 0, 1) === '/') {
+        if (!$result && str_starts_with($publicUrl, '/')) {
             return $this->folderShouldBeSecured(substr($publicUrl, 1));
         }
 

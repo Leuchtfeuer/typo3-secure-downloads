@@ -17,7 +17,6 @@ use Doctrine\DBAL\Exception;
 use Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
@@ -35,9 +34,7 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
             $this->addHtaccessFile($path);
         }
 
-        $storageObjects = $this->findByStorageType(SecureDownloadsDriver::DRIVER_SHORT_NAME);
-
-        if (count($storageObjects) === 0) {
+        if (!$this->isStorageDriverExisting()) {
             $this->createLocalStorage(
                 'Secure Downloads (auto-created)',
                 SecureDownloadsDriver::BASE_PATH,
@@ -78,23 +75,21 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
     }
 
     /**
-     * Finds storages by type, i.e. the driver used
+     * Checks if a storage driver for secure downloads already exists
      *
-     * @param string $storageType The identifier of the storage.
-     *
-     * @return ResourceStorage[]
      * @throws Exception
      */
-    public function findByStorageType($storageType): array
+    private function isStorageDriverExisting(): bool
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
 
-        return $queryBuilder
-            ->select('*')
+        $result = $queryBuilder
+            ->count('*')
             ->from($this->table)
             ->where($queryBuilder->expr()->eq('driver', $queryBuilder->createNamedParameter(SecureDownloadsDriver::DRIVER_SHORT_NAME)))
-            ->executeQuery()
-            ->fetchAllAssociative();
+            ->executeQuery();
+
+        return $result->fetchOne() > 0;
     }
 
     /**

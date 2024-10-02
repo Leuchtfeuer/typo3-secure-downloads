@@ -71,7 +71,7 @@ class TokenRefreshMiddleware implements MiddlewareInterface
             $currentUser = $this->context->getAspect('frontend.user');
             $currentUserId = (int)$currentUser->get('id');
 
-            if ($currentUserId) {
+            if ($currentUserId !== 0) {
                 $response = $handler->handle($request);
 
                 $body = $response->getBody();
@@ -92,14 +92,12 @@ class TokenRefreshMiddleware implements MiddlewareInterface
                                 $newToken = JWT::encode((array)$data, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], 'HS256');
                                 $replaces[$foundJwtToken] = $newToken;
                             }
-                        } catch (\Exception $exception) {
+                        } catch (\Exception) {
                             // Do nothing
                         }
                     }
-                    if (count($replaces)) {
-                        foreach ($replaces as $search => $replace) {
-                            $content = str_replace($search, $replace, $content);
-                        }
+                    foreach ($replaces as $search => $replace) {
+                        $content = str_replace($search, $replace, $content);
                     }
                 }
 

@@ -22,57 +22,35 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class CheckConfiguration implements SingletonInterface
 {
-    /**
-     * @var ExtensionConfiguration
-     */
-    protected mixed $extensionConfiguration;
-
-    /**
-     * @var string
-     */
+    protected ExtensionConfiguration $extensionConfiguration;
     protected string $directoryPattern = '';
-
-    /**
-     * @var string
-     */
     protected string $fileTypePattern = '';
-
-    /**
-     * @var string
-     */
     protected string $domain = '';
-
-    /**
-     * @var int
-     */
     protected int $fileCount = 0;
 
     /**
-     * @var array
+     * @var array<string>
      */
     protected array $directories = [];
 
     /**
-     * @var array
+     * @var array<string>
      */
     protected array $unprotectedDirectories = [];
 
     /**
-     * @var array
+     * @var array<string>
      */
     protected array $protectedDirectories = [];
 
     /**
-     * @var array
+     * @var array<int|string, mixed>
      */
     protected array $unprotectedFiles = [];
 
-    /**
-     * @param ExtensionConfiguration|null $extensionConfiguration
-     */
     public function __construct(?ExtensionConfiguration $extensionConfiguration = null)
     {
-        if ($extensionConfiguration === null) {
+        if (!$extensionConfiguration instanceof ExtensionConfiguration) {
             $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
         }
         $this->extensionConfiguration = $extensionConfiguration;
@@ -92,15 +70,15 @@ class CheckConfiguration implements SingletonInterface
 
         $this->setDirectories();
 
-        if (!empty($this->unprotectedFiles)) {
+        if ($this->unprotectedFiles !== []) {
             return $this->getFileErrorInfo();
         }
 
         // .htaccess check is only available for Apache web server
-        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with($_SERVER['SERVER_SOFTWARE'], 'Apache')) {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'Apache')) {
             $this->checkDirectories();
 
-            if (!empty($this->unprotectedDirectories)) {
+            if ($this->unprotectedDirectories !== []) {
                 return $this->getDirectoryWarningInfo();
             }
         }
@@ -108,9 +86,6 @@ class CheckConfiguration implements SingletonInterface
         return $this->getConfigurationOkayInfo();
     }
 
-    /**
-     * @return string
-     */
     public function renderCheckDirs(): string
     {
         if ($this->extensionConfiguration->isSkipCheckConfiguration()) {
@@ -119,7 +94,7 @@ class CheckConfiguration implements SingletonInterface
 
         $this->setDirectories();
 
-        if (count($this->protectedDirectories) === 0) {
+        if ($this->protectedDirectories === []) {
             return $this->noSecuredDirectoryFoundWarningInfo();
         }
         return $this->securedDirectoryFoundOkayInfo();
@@ -150,10 +125,6 @@ class CheckConfiguration implements SingletonInterface
         }
     }
 
-    /**
-     * @param Finder $directories
-     * @param string $publicDirectory
-     */
     protected function getSuitableDirectories(Finder $directories, string $publicDirectory): void
     {
         foreach ($directories as $directory) {
@@ -172,10 +143,6 @@ class CheckConfiguration implements SingletonInterface
         }
     }
 
-    /**
-     * @param string $realDirectoryPath
-     * @param string $directoryPath
-     */
     protected function checkFilesAccessibility(string $realDirectoryPath, string $directoryPath): void
     {
         $fileFinder = (new Finder())->name($this->fileTypePattern)->in($realDirectoryPath)->depth(0);
@@ -203,15 +170,15 @@ class CheckConfiguration implements SingletonInterface
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     protected function getPublicDirectories(): array
     {
         $publicDirectories = scandir(Environment::getPublicPath());
 
-        return array_filter($publicDirectories, function ($directory) {
-            return is_dir(sprintf('%s/%s', Environment::getPublicPath(), $directory)) && !in_array($directory, ['.', '..', 'typo3', 'typo3conf']);
-        });
+        return array_filter($publicDirectories, fn($directory): bool =>
+            // @phpstan-ignore-line
+            is_dir(sprintf('%s/%s', Environment::getPublicPath(), $directory)) && !in_array($directory, ['.', '..', 'typo3', 'typo3conf']));
     }
 
     protected function checkDirectories(): void
@@ -235,9 +202,6 @@ class CheckConfiguration implements SingletonInterface
         }
     }
 
-    /**
-     * @return string
-     */
     protected function getConfigurationOkayInfo(): string
     {
         return $this->getOutput(
@@ -248,9 +212,6 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
-    /**
-     * @return string
-     */
     protected function getFileErrorInfo(): string
     {
         return $this->getOutput(
@@ -261,9 +222,6 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
-    /**
-     * @return string
-     */
     protected function getDirectoryWarningInfo(): string
     {
         return $this->getOutput(
@@ -274,9 +232,6 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
-    /**
-     * @return string
-     */
     protected function securedDirectoryFoundOkayInfo(): string
     {
         return $this->getOutput(
@@ -287,9 +242,6 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
-    /**
-     * @return string
-     */
     protected function noSecuredDirectoryFoundWarningInfo(): string
     {
         return $this->getOutput(
@@ -300,14 +252,11 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
-    /**
-     * @return string
-     */
     protected function getFileErrorContent(): string
     {
         $files = array_slice($this->unprotectedFiles, 0, 10);
 
-        array_walk($files, function (&$item, $key) {
+        array_walk($files, function (&$item, $key): void {
             $item = sprintf(
                 '<li><code>%s</code><br/>Returned status code: <strong>%d</strong> (expected: 403).</li>',
                 $item['url'],
@@ -317,14 +266,14 @@ class CheckConfiguration implements SingletonInterface
 
         $content = sprintf(
             'There are files publicly available which should be secured:<ul>%s</ul>',
-            implode($files)
+            implode('', $files)
         );
 
         if (count($this->unprotectedFiles) > 10) {
             $content .= '<p>Only the first ten results are shown.</p>';
         }
 
-        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with($_SERVER['SERVER_SOFTWARE'], 'Apache')) {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'Apache')) {
             $content .= '<p>Here is some example code which can be used depending on your Apache version:</p>';
             $content .= $this->getHtaccessExamples();
         }
@@ -332,14 +281,11 @@ class CheckConfiguration implements SingletonInterface
         return $content;
     }
 
-    /**
-     * @return string
-     */
     protected function getDirectoryErrorContent(): string
     {
         $directories = array_slice($this->unprotectedDirectories, 0, 10);
 
-        array_walk($directories, function (&$item, $key) {
+        array_walk($directories, function (&$item, $key): void {
             $item = '<li><code>' . $item . '</code></li>';
         });
 
@@ -351,7 +297,7 @@ class CheckConfiguration implements SingletonInterface
         $content .= sprintf(
             '<p>%s</p>Please check these directories:<ul>%s</ul>',
             $this->getHtaccessExamples(),
-            implode($directories)
+            implode('', $directories)
         );
 
         if (count($this->unprotectedDirectories) > 10) {
@@ -361,13 +307,6 @@ class CheckConfiguration implements SingletonInterface
         return $content;
     }
 
-    /**
-     * @param string $type
-     * @param string $icon
-     * @param string $title
-     * @param string $content
-     * @return string
-     */
     protected function getOutput(string $type, string $icon, string $title, string $content): string
     {
         return <<<HTML
@@ -388,9 +327,6 @@ class CheckConfiguration implements SingletonInterface
 HTML;
     }
 
-    /**
-     * @return string
-     */
     protected function getHtaccessExamples(): string
     {
         $fileTypes = $this->extensionConfiguration->getSecuredFileTypes();

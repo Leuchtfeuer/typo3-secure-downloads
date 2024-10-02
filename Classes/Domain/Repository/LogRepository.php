@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Leuchtfeuer\SecureDownloads\Domain\Repository;
 
+use Doctrine\DBAL\Exception;
 use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
@@ -22,6 +23,7 @@ use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
 use TYPO3\CMS\Extbase\Persistence\Repository;
@@ -33,7 +35,9 @@ class LogRepository extends Repository
     public function __construct(
         private readonly ConnectionPool $connectionPool,
         private readonly DataMapper $dataMapper
-    ) {}
+    ) {
+        parent::__construct();
+    }
 
     public function createQueryBuilder(): QueryBuilder
     {
@@ -46,6 +50,10 @@ class LogRepository extends Repository
         return $queryBuilder;
     }
 
+    /**
+     * @return DomainObjectInterface[]
+     * @throws Exception
+     */
     public function findByFilter(?Filter $filter, int $currentPage = 1, int $itemsPerPage = 20): array
     {
         $queryBuilder = $this->createQueryBuilder();
@@ -120,12 +128,15 @@ class LogRepository extends Repository
                 if (count($constraints) > 0) {
                     $queryBuilder->where(...$constraints);
                 }
-            } catch (InvalidQueryException $exception) {
+            } catch (InvalidQueryException) {
                 // Do nothing for now.
             }
         }
     }
 
+    /**
+     * @param string[] $constraints
+     */
     protected function applyFileTypePropertyToFilter(string $fileType, QueryBuilder $queryBuilder, array &$constraints): void
     {
         if ($fileType !== '' && $fileType !== '0') {
@@ -133,6 +144,9 @@ class LogRepository extends Repository
         }
     }
 
+    /**
+     * @param string[] $constraints
+     */
     protected function applyUserTypePropertyToFilter(Filter $filter, QueryBuilder $queryBuilder, array &$constraints): void
     {
         if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_ON) {
@@ -143,6 +157,9 @@ class LogRepository extends Repository
         }
     }
 
+    /**
+     * @param string[] $constraints
+     */
     protected function applyPeriodPropertyToFilter(Filter $filter, QueryBuilder $queryBuilder, array &$constraints): void
     {
         if ((int)$filter->getFrom() !== 0) {
@@ -154,6 +171,9 @@ class LogRepository extends Repository
         }
     }
 
+    /**
+     * @param string[] $constraints
+     */
     protected function applyEqualPropertyToFilter(int $property, string $propertyName, QueryBuilder $queryBuilder, array &$constraints): void
     {
         if ($property !== 0) {

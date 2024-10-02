@@ -28,16 +28,10 @@ abstract class AbstractRegistry implements SingletonInterface
     /**
      * Sorts given elements by its priority.
      *
-     * @param array $elements The elements to be sorted
+     * @param array<string, mixed> $elements The elements to be sorted
      */
     protected static function sortByPriority(array &$elements): void
     {
-        usort($elements, function ($a, $b) {
-            if ($a['priority'] === $b['priority']) {
-                return 0;
-            }
-
-            return $a['priority'] > $b['priority'] ? -1 : 1;
-        });
+        usort($elements, fn($a, $b): int => $b['priority'] <=> $a['priority']);
     }
 }

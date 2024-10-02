@@ -16,9 +16,11 @@ namespace Leuchtfeuer\SecureDownloads\Factory;
 use Leuchtfeuer\SecureDownloads\Cache\EncodeCache;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
+use Leuchtfeuer\SecureDownloads\Exception\InvalidClassException;
 use Leuchtfeuer\SecureDownloads\Factory\Event\EnrichPayloadEvent;
 use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
@@ -33,28 +35,14 @@ class SecureLinkFactory implements SingletonInterface
 {
     public const DEFAULT_CACHE_LIFETIME = 86400;
 
-    /**
-     * @var EventDispatcher
-     */
-    private EventDispatcher $eventDispatcher;
-
-    /**
-     * @var ExtensionConfiguration
-     */
-    private ExtensionConfiguration $extensionConfiguration;
-
-    /**
-     * @var AbstractToken
-     */
     private AbstractToken $token;
 
     /**
      * @throws ContentRenderingException
+     * @throws InvalidClassException
      */
-    public function __construct(EventDispatcher $eventDispatcher, ExtensionConfiguration $extensionConfiguration)
+    public function __construct(private EventDispatcher $eventDispatcher, private ExtensionConfiguration $extensionConfiguration)
     {
-        $this->eventDispatcher = $eventDispatcher;
-        $this->extensionConfiguration = $extensionConfiguration;
         $this->token = TokenRegistry::getToken();
         $this->initializeToken();
     }
@@ -97,12 +85,14 @@ class SecureLinkFactory implements SingletonInterface
      * Adds the configured additional cache time and the cache lifetime of the current site to the actual time.
      *
      * @return int The link lifetime
+     * @throws AspectNotFoundException
+     * @throws AspectNotFoundException
      */
     protected function calculateLinkLifetime(): int
     {
         $cacheTimeout = (isset($GLOBALS['TSFE']) && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController && !empty($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->get_cache_timeout() : self::DEFAULT_CACHE_LIFETIME;
 
-        return $cacheTimeout + $GLOBALS['EXEC_TIME'] + $this->extensionConfiguration->getCacheTimeAdd();
+        return $cacheTimeout + GeneralUtility::makeInstance(\TYPO3\CMS\Core\Context\Context::class)->getPropertyFromAspect('date', 'timestamp') + $this->extensionConfiguration->getCacheTimeAdd();
     }
 
     /**
@@ -171,7 +161,7 @@ class SecureLinkFactory implements SingletonInterface
     }
 
     /**
-     * @param array $groups An array of user groups for whom the link should be valid for
+     * @param array<int> $groups An array of user groups for whom the link should be valid for
      *
      * @return $this
      */
@@ -210,7 +200,7 @@ class SecureLinkFactory implements SingletonInterface
     /**
      * Dispatches the EnrichPayloadEvent event.
      *
-     * @param array $payload The payload of the token
+     * @param array<string, mixed> $payload The payload of the token
      */
     protected function dispatchEnrichPayloadEvent(array &$payload): void
     {

@@ -22,7 +22,7 @@ use TYPO3\CMS\Core\SingletonInterface;
 abstract class AbstractCache implements SingletonInterface
 {
     /**
-     * @var array Contains the cache entries for given cache.
+     * @var array<string,mixed> Contains the cache entries for given cache.
      */
     protected static $_cache = [];
 
@@ -56,7 +56,7 @@ abstract class AbstractCache implements SingletonInterface
      * @param string $key The cache key.
      * @param mixed  $value The cache data.
      */
-    public static function addCache(string $key, $value): void
+    public static function addCache(string $key, mixed $value): void
     {
         self::$_cache[$key] = $value;
     }

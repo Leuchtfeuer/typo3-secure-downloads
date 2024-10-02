@@ -21,7 +21,6 @@ class UserGroupCheck extends AbstractCheck
     /**
      * @inheritDoc
      *
-     * @return bool
      * @throws AspectPropertyNotFoundException
      */
     public function hasAccess(): bool
@@ -52,8 +51,8 @@ class UserGroupCheck extends AbstractCheck
     /**
      * Checks whether one of the actual groups is in the transmitted groups.
      *
-     * @param array $actualGroups      The user groups the link was generated for
-     * @param array $transmittedGroups The actual user groups of the user that tries to download the file
+     * @param array<int> $actualGroups      The user groups the link was generated for
+     * @param array<int> $transmittedGroups The actual user groups of the user that tries to download the file
      *
      * @return bool True if one group matches, false if no groups are matching
      */

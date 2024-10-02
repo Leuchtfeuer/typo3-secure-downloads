@@ -51,9 +51,8 @@ return [
             'exclude' => 0,
             'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.file_size',
             'config' => [
-                'type' => 'input',
+                'type' => 'number',
                 'size' => 4,
-                'eval' => 'int',
             ],
         ],
         'file_type' => [
@@ -87,18 +86,16 @@ return [
             'exclude' => 0,
             'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.page',
             'config' => [
-                'type' => 'input',
+                'type' => 'number',
                 'size' => 4,
-                'eval' => 'int',
             ],
         ],
         'tstamp' => [
             'exclude' => 0,
             'label' => 'LLL:EXT:secure_downloads/Resources/Private/Language/locallang_db.xlf:tx_securedownloads_domain_model_log.tstamp',
             'config' => [
-                'type' => 'input',
+                'type' => 'number',
                 'size' => 4,
-                'eval' => 'int',
             ],
         ],
     ],

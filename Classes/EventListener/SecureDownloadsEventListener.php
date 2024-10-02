@@ -61,7 +61,7 @@ class SecureDownloadsEventListener implements SingletonInterface
                 if ($driver instanceof SecureDownloadsDriver) {
                     $event->setPublicUrl('/' . $event->getPublicUrl());
                 }
-            } catch (Exception $exception) {
+            } catch (Exception) {
                 // Do nothing.
             }
         }
@@ -92,7 +92,7 @@ class SecureDownloadsEventListener implements SingletonInterface
                     if ($this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
                         $overlayIdentifier = 'overlay-restricted';
                     }
-                } catch (InsufficientFolderAccessPermissionsException $e) {
+                } catch (InsufficientFolderAccessPermissionsException) {
                     return;
                 }
             }
