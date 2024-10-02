@@ -23,7 +23,7 @@ class TokenRegistry extends AbstractRegistry
     /**
      * @var array<string, mixed>
      */
-    private static array $tokenList;
+    private static array $tokenList = [];
 
     /**
      * @param string $identifier        An unique identifier for the object
