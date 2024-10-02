@@ -54,7 +54,7 @@ class LogController extends ActionController
     {
         if ($this->request->hasArgument('reset') && (bool)$this->request->getArgument('reset')) {
             $filter = new Filter();
-        } elseif (!$filter instanceof \Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter) {
+        } elseif (!$filter instanceof Filter) {
             $filter = $this->getFilterFromBeUserData();
         }
 

@@ -50,7 +50,7 @@ class CheckConfiguration implements SingletonInterface
 
     public function __construct(?ExtensionConfiguration $extensionConfiguration = null)
     {
-        if (!$extensionConfiguration instanceof \Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration) {
+        if (!$extensionConfiguration instanceof ExtensionConfiguration) {
             $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
         }
         $this->extensionConfiguration = $extensionConfiguration;
