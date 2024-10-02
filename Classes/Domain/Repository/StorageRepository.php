@@ -85,12 +85,12 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
 
         $result = $queryBuilder
-            ->select('*')
+            ->count('*')
             ->from($this->table)
             ->where($queryBuilder->expr()->eq('driver', $queryBuilder->createNamedParameter(SecureDownloadsDriver::DRIVER_SHORT_NAME)))
             ->executeQuery();
 
-        return $result->rowCount() > 0;
+        return $result->fetchOne() > 0;
     }
 
     /**

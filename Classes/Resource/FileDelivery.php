@@ -215,11 +215,11 @@ class FileDelivery implements SingletonInterface
     {
         $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
         $forceDownload = $this->shouldForceDownload($fileExtension);
-        $fileSize = filesize($file);
+        $fileSize = (int)filesize($file);
         // Try to get MimeType via TYPO3 buildin logic first. If that fails, use our extended file extension list.
         $mimeType = (new FileInfo($file))->getMimeType() ?: $this->guessMimeTypeByFileExtension($file) ?: MimeTypes::DEFAULT_MIME_TYPE;
         $outputFunction = $this->extensionConfiguration->getOutputFunction();
-        $header = $this->getFileHeader($mimeType, $fileName, $forceDownload, (int)$fileSize);
+        $header = $this->getFileHeader($mimeType, $fileName, $forceDownload, $fileSize);
 
         $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
         $this->header = $header;
