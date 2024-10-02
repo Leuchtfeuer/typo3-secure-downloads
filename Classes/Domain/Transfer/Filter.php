@@ -90,7 +90,7 @@ class Filter
 
     private function formatDate(string $dateString): ?int
     {
-        if ($dateString == '') {
+        if ($dateString === '') {
             return null;
         }
 

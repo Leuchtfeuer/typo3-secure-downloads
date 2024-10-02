@@ -143,7 +143,6 @@ class FileDelivery implements SingletonInterface
      * @param ServerRequestInterface $request The server request
      * @param string                 $reason  The reason phrase
      *
-     * @return ResponseInterface
      *
      * @throws PageNotFoundException
      */
@@ -162,7 +161,6 @@ class FileDelivery implements SingletonInterface
      * @param ServerRequestInterface $request The server request
      * @param string                 $reason  The reason phrase
      *
-     * @return ResponseInterface
      *
      * @throws PageNotFoundException
      */
@@ -290,7 +288,7 @@ class FileDelivery implements SingletonInterface
             $header['Content-Length'] = (string)$fileSize;
         }
 
-        if ($forceDownload === true) {
+        if ($forceDownload) {
             $header['Content-Disposition'] = sprintf('attachment; filename="%s"', $fileName);
         }
 

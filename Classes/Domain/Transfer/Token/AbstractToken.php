@@ -36,7 +36,6 @@ abstract class AbstractToken
 
     /**
      * @param array<mixed>|null $payload
-     * @return string
      */
     abstract public function encode(?array $payload = null): string;
 

@@ -33,9 +33,6 @@ class SecureLinkFactory implements SingletonInterface
 {
     public const DEFAULT_CACHE_LIFETIME = 86400;
 
-    /**
-     * @var AbstractToken
-     */
     private AbstractToken $token;
 
     /**

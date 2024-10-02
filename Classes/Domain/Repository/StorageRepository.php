@@ -77,7 +77,6 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
     /**
      * Checks if a storage driver for secure downloads already exists
      *
-     * @return bool
      * @throws Exception
      */
     private function isStorageDriverExisting(): bool

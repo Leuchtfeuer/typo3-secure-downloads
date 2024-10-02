@@ -50,7 +50,7 @@ class CheckConfiguration implements SingletonInterface
 
     public function __construct(?ExtensionConfiguration $extensionConfiguration = null)
     {
-        if ($extensionConfiguration === null) {
+        if (!$extensionConfiguration instanceof \Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration) {
             $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
         }
         $this->extensionConfiguration = $extensionConfiguration;
@@ -70,7 +70,7 @@ class CheckConfiguration implements SingletonInterface
 
         $this->setDirectories();
 
-        if (!empty($this->unprotectedFiles)) {
+        if ($this->unprotectedFiles !== []) {
             return $this->getFileErrorInfo();
         }
 
@@ -78,7 +78,7 @@ class CheckConfiguration implements SingletonInterface
         if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string) $_SERVER['SERVER_SOFTWARE'], 'Apache')) {
             $this->checkDirectories();
 
-            if (!empty($this->unprotectedDirectories)) {
+            if ($this->unprotectedDirectories !== []) {
                 return $this->getDirectoryWarningInfo();
             }
         }
@@ -86,9 +86,6 @@ class CheckConfiguration implements SingletonInterface
         return $this->getConfigurationOkayInfo();
     }
 
-    /**
-     * @return string
-     */
     public function renderCheckDirs(): string
     {
         if ($this->extensionConfiguration->isSkipCheckConfiguration()) {
@@ -97,7 +94,7 @@ class CheckConfiguration implements SingletonInterface
 
         $this->setDirectories();
 
-        if (count($this->protectedDirectories) === 0) {
+        if ($this->protectedDirectories === []) {
             return $this->noSecuredDirectoryFoundWarningInfo();
         }
         return $this->securedDirectoryFoundOkayInfo();
@@ -128,10 +125,6 @@ class CheckConfiguration implements SingletonInterface
         }
     }
 
-    /**
-     * @param Finder $directories
-     * @param string $publicDirectory
-     */
     protected function getSuitableDirectories(Finder $directories, string $publicDirectory): void
     {
         foreach ($directories as $directory) {
@@ -150,10 +143,6 @@ class CheckConfiguration implements SingletonInterface
         }
     }
 
-    /**
-     * @param string $realDirectoryPath
-     * @param string $directoryPath
-     */
     protected function checkFilesAccessibility(string $realDirectoryPath, string $directoryPath): void
     {
         $fileFinder = (new Finder())->name($this->fileTypePattern)->in($realDirectoryPath)->depth(0);
@@ -213,9 +202,6 @@ class CheckConfiguration implements SingletonInterface
         }
     }
 
-    /**
-     * @return string
-     */
     protected function getConfigurationOkayInfo(): string
     {
         return $this->getOutput(
@@ -226,9 +212,6 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
-    /**
-     * @return string
-     */
     protected function getFileErrorInfo(): string
     {
         return $this->getOutput(
@@ -239,9 +222,6 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
-    /**
-     * @return string
-     */
     protected function getDirectoryWarningInfo(): string
     {
         return $this->getOutput(
@@ -252,9 +232,6 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
-    /**
-     * @return string
-     */
     protected function securedDirectoryFoundOkayInfo(): string
     {
         return $this->getOutput(
@@ -265,9 +242,6 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
-    /**
-     * @return string
-     */
     protected function noSecuredDirectoryFoundWarningInfo(): string
     {
         return $this->getOutput(
@@ -278,9 +252,6 @@ class CheckConfiguration implements SingletonInterface
         );
     }
 
-    /**
-     * @return string
-     */
     protected function getFileErrorContent(): string
     {
         $files = array_slice($this->unprotectedFiles, 0, 10);
@@ -310,9 +281,6 @@ class CheckConfiguration implements SingletonInterface
         return $content;
     }
 
-    /**
-     * @return string
-     */
     protected function getDirectoryErrorContent(): string
     {
         $directories = array_slice($this->unprotectedDirectories, 0, 10);
@@ -339,13 +307,6 @@ class CheckConfiguration implements SingletonInterface
         return $content;
     }
 
-    /**
-     * @param string $type
-     * @param string $icon
-     * @param string $title
-     * @param string $content
-     * @return string
-     */
     protected function getOutput(string $type, string $icon, string $title, string $content): string
     {
         return <<<HTML
@@ -366,9 +327,6 @@ class CheckConfiguration implements SingletonInterface
 HTML;
     }
 
-    /**
-     * @return string
-     */
     protected function getHtaccessExamples(): string
     {
         $fileTypes = $this->extensionConfiguration->getSecuredFileTypes();

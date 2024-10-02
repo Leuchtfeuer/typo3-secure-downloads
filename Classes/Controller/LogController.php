@@ -34,9 +34,6 @@ class LogController extends ActionController
         protected LogRepository $logRepository,
     ) {}
 
-    /**
-     * @return ResponseInterface
-     */
     public function initializeAction(): ResponseInterface
     {
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
@@ -46,14 +43,13 @@ class LogController extends ActionController
 
     /**
      * @param Filter|null $filter The filter object
-     * @return ResponseInterface
      * @throws Exception
      */
     public function listAction(?Filter $filter = null): ResponseInterface
     {
-        if ($this->request->hasArgument('reset') && (bool)$this->request->getArgument('reset') === true) {
+        if ($this->request->hasArgument('reset') && (bool)$this->request->getArgument('reset')) {
             $filter = new Filter();
-        } elseif ($filter === null) {
+        } elseif (!$filter instanceof \Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter) {
             $filter = $this->getFilterFromBeUserData();
         }
 
@@ -87,7 +83,7 @@ class LogController extends ActionController
             'pagination' => [
                 'totalPages' => $totalPages,
                 'currentPage' => $currentPage,
-                'previousPage' => ($currentPage - 1) > 0 ? $currentPage - 1 : 0,
+                'previousPage' => max($currentPage - 1, 0),
                 'nextPage' => $totalPages > $currentPage ? $currentPage + 1 : 0,
             ],
             'totalResultCount' => $totalResultsCount,

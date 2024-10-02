@@ -21,7 +21,6 @@ class UserGroupCheck extends AbstractCheck
     /**
      * @inheritDoc
      *
-     * @return bool
      * @throws AspectPropertyNotFoundException
      */
     public function hasAccess(): bool

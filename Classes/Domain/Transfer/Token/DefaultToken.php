@@ -35,7 +35,6 @@ class DefaultToken extends AbstractToken
 
     /**
      * @param array<mixed>|null $payload
-     * @return string
      */
     public function encode(?array $payload = null): string
     {
