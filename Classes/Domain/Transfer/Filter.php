@@ -96,7 +96,7 @@ class Filter
 
         try {
             $dateTime = (new \DateTime($dateString))->getTimestamp();
-        } catch (\Exception $exception) {
+        } catch (\Exception) {
             $dateTime = null;
         }
 

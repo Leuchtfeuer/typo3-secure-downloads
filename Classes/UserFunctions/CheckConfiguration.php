@@ -75,7 +75,7 @@ class CheckConfiguration implements SingletonInterface
         }
 
         // .htaccess check is only available for Apache web server
-        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with($_SERVER['SERVER_SOFTWARE'], 'Apache')) {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string) $_SERVER['SERVER_SOFTWARE'], 'Apache')) {
             $this->checkDirectories();
 
             if (!empty($this->unprotectedDirectories)) {
@@ -187,9 +187,9 @@ class CheckConfiguration implements SingletonInterface
     {
         $publicDirectories = scandir(Environment::getPublicPath());
 
-        return array_filter($publicDirectories, function ($directory) { // @phpstan-ignore-line
-            return is_dir(sprintf('%s/%s', Environment::getPublicPath(), $directory)) && !in_array($directory, ['.', '..', 'typo3', 'typo3conf']);
-        });
+        return array_filter($publicDirectories, fn($directory): bool =>
+            // @phpstan-ignore-line
+            is_dir(sprintf('%s/%s', Environment::getPublicPath(), $directory)) && !in_array($directory, ['.', '..', 'typo3', 'typo3conf']));
     }
 
     protected function checkDirectories(): void
@@ -285,7 +285,7 @@ class CheckConfiguration implements SingletonInterface
     {
         $files = array_slice($this->unprotectedFiles, 0, 10);
 
-        array_walk($files, function (&$item, $key) {
+        array_walk($files, function (&$item, $key): void {
             $item = sprintf(
                 '<li><code>%s</code><br/>Returned status code: <strong>%d</strong> (expected: 403).</li>',
                 $item['url'],
@@ -295,14 +295,14 @@ class CheckConfiguration implements SingletonInterface
 
         $content = sprintf(
             'There are files publicly available which should be secured:<ul>%s</ul>',
-            implode($files)
+            implode('', $files)
         );
 
         if (count($this->unprotectedFiles) > 10) {
             $content .= '<p>Only the first ten results are shown.</p>';
         }
 
-        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with($_SERVER['SERVER_SOFTWARE'], 'Apache')) {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string) $_SERVER['SERVER_SOFTWARE'], 'Apache')) {
             $content .= '<p>Here is some example code which can be used depending on your Apache version:</p>';
             $content .= $this->getHtaccessExamples();
         }
@@ -317,7 +317,7 @@ class CheckConfiguration implements SingletonInterface
     {
         $directories = array_slice($this->unprotectedDirectories, 0, 10);
 
-        array_walk($directories, function (&$item, $key) {
+        array_walk($directories, function (&$item, $key): void {
             $item = '<li><code>' . $item . '</code></li>';
         });
 
@@ -329,7 +329,7 @@ class CheckConfiguration implements SingletonInterface
         $content .= sprintf(
             '<p>%s</p>Please check these directories:<ul>%s</ul>',
             $this->getHtaccessExamples(),
-            implode($directories)
+            implode('', $directories)
         );
 
         if (count($this->unprotectedDirectories) > 10) {

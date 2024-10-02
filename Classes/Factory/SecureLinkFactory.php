@@ -34,16 +34,6 @@ class SecureLinkFactory implements SingletonInterface
     public const DEFAULT_CACHE_LIFETIME = 86400;
 
     /**
-     * @var EventDispatcher
-     */
-    private EventDispatcher $eventDispatcher;
-
-    /**
-     * @var ExtensionConfiguration
-     */
-    private ExtensionConfiguration $extensionConfiguration;
-
-    /**
      * @var AbstractToken
      */
     private AbstractToken $token;
@@ -51,10 +41,8 @@ class SecureLinkFactory implements SingletonInterface
     /**
      * @throws ContentRenderingException
      */
-    public function __construct(EventDispatcher $eventDispatcher, ExtensionConfiguration $extensionConfiguration)
+    public function __construct(private EventDispatcher $eventDispatcher, private ExtensionConfiguration $extensionConfiguration)
     {
-        $this->eventDispatcher = $eventDispatcher;
-        $this->extensionConfiguration = $extensionConfiguration;
         $this->token = TokenRegistry::getToken();
         $this->initializeToken();
     }
@@ -102,7 +90,7 @@ class SecureLinkFactory implements SingletonInterface
     {
         $cacheTimeout = (isset($GLOBALS['TSFE']) && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController && !empty($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->get_cache_timeout() : self::DEFAULT_CACHE_LIFETIME;
 
-        return $cacheTimeout + $GLOBALS['EXEC_TIME'] + $this->extensionConfiguration->getCacheTimeAdd();
+        return $cacheTimeout + GeneralUtility::makeInstance(\TYPO3\CMS\Core\Context\Context::class)->getPropertyFromAspect('date', 'timestamp') + $this->extensionConfiguration->getCacheTimeAdd();
     }
 
     /**

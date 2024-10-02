@@ -56,7 +56,7 @@ abstract class AbstractCache implements SingletonInterface
      * @param string $key The cache key.
      * @param mixed  $value The cache data.
      */
-    public static function addCache(string $key, $value): void
+    public static function addCache(string $key, mixed $value): void
     {
         self::$_cache[$key] = $value;
     }

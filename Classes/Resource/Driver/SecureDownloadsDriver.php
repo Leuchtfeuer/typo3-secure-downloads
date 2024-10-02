@@ -32,7 +32,7 @@ class SecureDownloadsDriver extends LocalDriver
     {
         if ($this->baseUri === null) {
             if (!empty($this->configuration['baseUri'])) {
-                $this->baseUri = rtrim($this->configuration['baseUri'], '/') . '/';
+                $this->baseUri = rtrim((string) $this->configuration['baseUri'], '/') . '/';
             } elseif (str_starts_with($this->absoluteBasePath, Environment::getPublicPath())) {
                 // use site-relative URLs
                 $temporaryBaseUri = rtrim(PathUtility::stripPathSitePrefix($this->absoluteBasePath), '/');

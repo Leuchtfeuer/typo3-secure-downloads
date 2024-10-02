@@ -131,7 +131,7 @@ class LogRepository extends Repository
                 if (count($constraints) > 0) {
                     $queryBuilder->where(...$constraints);
                 }
-            } catch (InvalidQueryException $exception) {
+            } catch (InvalidQueryException) {
                 // Do nothing for now.
             }
         }

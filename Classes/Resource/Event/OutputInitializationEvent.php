@@ -21,17 +21,11 @@ use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 final class OutputInitializationEvent
 {
     /**
-     * @var AbstractToken
-     */
-    private $token;
-
-    /**
      * @param AbstractToken $token This property contains the decoded token object. You can manipulate the properties. The edited
      *                             token is then used in the further process.
      */
-    public function __construct(AbstractToken $token)
+    public function __construct(private AbstractToken $token)
     {
-        $this->token = $token;
     }
 
     public function getToken(): AbstractToken

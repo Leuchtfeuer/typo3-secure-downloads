@@ -92,7 +92,7 @@ class TokenRefreshMiddleware implements MiddlewareInterface
                                 $newToken = JWT::encode((array)$data, $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'], 'HS256');
                                 $replaces[$foundJwtToken] = $newToken;
                             }
-                        } catch (\Exception $exception) {
+                        } catch (\Exception) {
                             // Do nothing
                         }
                     }

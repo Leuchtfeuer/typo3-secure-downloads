@@ -63,7 +63,7 @@ class SecureDownloadService implements SingletonInterface
 
         $result = (bool)preg_match($pattern, rtrim($publicUrl, '/'));
 
-        if (!$result && substr($publicUrl, 0, 1) === '/') {
+        if (!$result && str_starts_with($publicUrl, '/')) {
             return $this->folderShouldBeSecured(substr($publicUrl, 1));
         }
 

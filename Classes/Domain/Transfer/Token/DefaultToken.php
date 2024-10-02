@@ -47,7 +47,7 @@ class DefaultToken extends AbstractToken
         $data = (array)JWT::decode($jsonWebToken, new Key($this->getKey(), $this->getAlgorithm()));
 
         foreach ($data as $property => $value) {
-            if (property_exists(__CLASS__, $property)) {
+            if (property_exists(self::class, $property)) {
                 $this->$property = $value;
             }
         }

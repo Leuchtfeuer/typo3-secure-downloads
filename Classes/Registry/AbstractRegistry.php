@@ -32,12 +32,6 @@ abstract class AbstractRegistry implements SingletonInterface
      */
     protected static function sortByPriority(array &$elements): void
     {
-        usort($elements, function ($a, $b) {
-            if ($a['priority'] === $b['priority']) {
-                return 0;
-            }
-
-            return $a['priority'] > $b['priority'] ? -1 : 1;
-        });
+        usort($elements, fn($a, $b): int => $b['priority'] <=> $a['priority']);
     }
 }
