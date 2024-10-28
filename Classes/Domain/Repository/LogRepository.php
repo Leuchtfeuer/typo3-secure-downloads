@@ -39,7 +39,7 @@ class LogRepository extends Repository
         parent::__construct();
     }
 
-    public function createQueryBuilder(): QueryBuilder
+    protected function createQueryBuilder(): QueryBuilder
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLENAME);
         $queryBuilder->getRestrictions()->removeAll();
