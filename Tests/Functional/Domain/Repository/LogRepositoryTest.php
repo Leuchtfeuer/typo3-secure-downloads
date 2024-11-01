@@ -4,29 +4,89 @@ namespace Leuchtfeuer\SecureDownloads\Tests\Functional\Domain\Repository;
 
 use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
 use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 class LogRepositoryTest extends FunctionalTestCase
 {
-
     protected array $testExtensionsToLoad = ['leuchtfeuer/secure-downloads'];
+    private LogRepository  $logRepository;
 
     public function setUp(): void
     {
         parent::setUp();
+
+        /** @var LogRepository $logRepository */
+        $this->logRepository = $this->get(LogRepository::class);
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/log.csv');
     }
 
     public function testFindByFilterIfFilterIsEmpty(): void {
-
-        $this->importCSVDataSet(__DIR__ . '/Fixtures/log.csv');
-
-        /** @var LogRepository $logRepository */
-        $logRepository = $this->get(LogRepository::class);
-
-
-        $result = $logRepository->findByFilter(null,1,1);
+        $result = $this->logRepository->findByFilter(null,1,PHP_INT_MAX);
         $this->assertInstanceOf(Log::class,$result[0] ?? null);
-        $this->assertEquals("csm_landscape_226c4e299f" , $result[0]->getFileName());
+        $this->assertEquals("fixture_7" , $result[0]->getFileName());
+        $this->assertCount(7, $result);
+    }
+
+    public function testFindByFilterIfFilterIsEmptyWithPageOffset(): void {
+        $result = $this->logRepository->findByFilter(null,2,2);
+        $this->assertEquals('fixture_5',$result[0]->getFileName());
+        $this->assertEquals('fixture_4',$result[1]->getFileName());
+        $result = $this->logRepository->findByFilter(null,4,2);
+        $this->assertEquals('fixture_1',$result[0]->getFileName());
+        $this->assertCount(1, $result);
+    }
+
+    public function testFindByFilterIfFilterIsEmptyWithWrongCurrentPageOrOffset(): void {
+        $result = $this->logRepository->findByFilter(null,5,3);
+        $this->assertCount(0, $result);
+        $result = $this->logRepository->findByFilter(null,-1,3);
+        $this->assertCount(0, $result);
+        $result = $this->logRepository->findByFilter(null,1,-1);
+        $this->assertCount(0, $result);
+    }
+
+    public function testFindByFilterIfFilterMediaTypeIsJPG(): void {
+        $filter = new Filter();
+        $filter->setFileType('image/jpeg');
+        $result = $this->logRepository->findByFilter($filter,1,7);
+        $this->assertCount(3,$result);
+    }
+
+    public function testFindByFilterIfFilterForLoggedInUser(): void {
+        $filter = new Filter();
+        $filter->setUserType(Filter::USER_TYPE_LOGGED_ON);
+        $result = $this->logRepository->findByFilter($filter,1,7);
+        $this->assertCount(4, $result);
+    }
+
+    public function testFindByFilterIfFilterForNotLoggedInUser(): void {
+        $filter = new Filter();
+        $filter->setUserType(Filter::USER_TYPE_LOGGED_OFF);
+        $result = $this->logRepository->findByFilter($filter,1,7);
+        $this->assertCount(3, $result);
+    }
+
+    public function testFindByFilterIfFilterForPeriodFrom(): void {
+        $filter = new Filter();
+        $filter->setFrom('Wed Oct 02 2024 09:06:17 GMT+0000');
+        $result = $this->logRepository->findByFilter($filter,1,7);
+        $this->assertCount(4, $result);
+    }
+
+    public function testFindByFilterIfFilterForPeriodTill(): void {
+        $filter = new Filter();
+        $filter->setTill('Wed Oct 02 2024 09:06:17 GMT+0000');
+        $result = $this->logRepository->findByFilter($filter,1,7);
+        $this->assertCount(4, $result);
+    }
+
+    public function testFindByFilterIfFilterForPeriodFromTill(): void {
+        $filter = new Filter();
+        $filter->setFrom('Wed Oct 02 2024 09:06:17 GMT+0000');
+        $filter->setTill('Wed Oct 02 2024 09:06:17 GMT+0000');
+        $result = $this->logRepository->findByFilter($filter,1,7);
+        $this->assertCount(1, $result);
     }
 
 }

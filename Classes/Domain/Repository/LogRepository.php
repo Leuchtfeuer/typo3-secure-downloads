@@ -56,6 +56,10 @@ class LogRepository extends Repository
      */
     public function findByFilter(?Filter $filter, int $currentPage = 1, int $itemsPerPage = 20): array
     {
+        if ($currentPage < 1 || $itemsPerPage < 1) {
+            return [];
+        }
+
         $queryBuilder = $this->createQueryBuilder();
 
         $constraints = $this->getFilterConstraints($queryBuilder, $filter);
@@ -67,7 +71,7 @@ class LogRepository extends Repository
             ->setMaxResults($itemsPerPage)
             ->setFirstResult($itemsPerPage * ($currentPage - 1))
             ->executeQuery()
-            ->fetchAllAssociative() ?? [];
+            ->fetchAllAssociative();
         return $this->dataMapper->map(Log::class, $result);
     }
 
@@ -116,12 +120,17 @@ class LogRepository extends Repository
             ->fetchOne() ?? 0.0);
     }
 
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param Filter|null $filter
+     * @return string[]
+     */
     protected function getFilterConstraints(QueryBuilder $queryBuilder, ?Filter $filter): array
     {
         if ($filter instanceof Filter) {
             try {
                 // FileType
-                $constraints = $this->applyFileTypePropertyToFilter($filter->getFileType(), $queryBuilder);
+                $constraints = $this->applyMediaTypePropertyToFilter($filter->getFileType(), $queryBuilder);
 
                 // User Type
                 $constraints = array_merge($constraints, $this->applyUserTypePropertyToFilter($filter, $queryBuilder));
@@ -142,14 +151,14 @@ class LogRepository extends Repository
     }
 
     /**
-     * @param string $fileType
+     * @param string $mediaType
      * @param QueryBuilder $queryBuilder
-     * @return array
+     * @return string[]
      */
-    protected function applyFileTypePropertyToFilter(string $fileType, QueryBuilder $queryBuilder): array
+    protected function applyMediaTypePropertyToFilter(string $mediaType, QueryBuilder $queryBuilder): array
     {
-        if ($fileType !== '' && $fileType !== '0') {
-            return [$queryBuilder->expr()->eq('media_type', $queryBuilder->createNamedParameter($fileType))];
+        if ($mediaType !== '' && $mediaType !== '0') {
+            return [$queryBuilder->expr()->eq('media_type', $queryBuilder->createNamedParameter($mediaType))];
         }
         return [];
     }
@@ -174,7 +183,7 @@ class LogRepository extends Repository
     /**
      * @param Filter $filter
      * @param QueryBuilder $queryBuilder
-     * @return array
+     * @return string[]
      */
     protected function applyPeriodPropertyToFilter(Filter $filter, QueryBuilder $queryBuilder): array
     {
@@ -194,7 +203,7 @@ class LogRepository extends Repository
      * @param int $property
      * @param string $propertyName
      * @param QueryBuilder $queryBuilder
-     * @return array
+     * @return string[]
      */
     protected function applyEqualPropertyToFilter(int $property, string $propertyName, QueryBuilder $queryBuilder): array
     {

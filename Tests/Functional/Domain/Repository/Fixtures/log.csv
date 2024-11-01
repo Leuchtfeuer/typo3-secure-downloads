@@ -1,9 +1,9 @@
 "tx_securedownloads_domain_model_log",
 ,"uid","pid","tstamp","crdate","file_id","file_name","file_path","file_size","file_type","media_type","user","page"
-,1,0,1727859973,1727859973,"52","csm_sunflower_b98a5975b3","fileadmin/_processed_/e/1/csm_sunflower_b98a5975b3",67008,"jpg","image/jpeg",2,5
-,2,0,1727859974,1727859974,"82","csm_landscape_eb858b5476","fileadmin/_processed_/4/6/csm_landscape_eb858b5476",46235,"jpg","image/jpeg",2,6
-,3,0,1727859976,1727859976,"82","csm_landscape_eb858b5476","fileadmin/_processed_/4/6/csm_landscape_eb858b5476",46235,"jpg","image/jpeg",2,6
-,4,0,1727859977,1727859977,"52","csm_sunflower_b98a5975b3","fileadmin/_processed_/e/1/csm_sunflower_b98a5975b3",67008,"jpg","image/jpeg",2,5
-,5,0,1727859980,1727859980,"52","csm_sunflower_b98a5975b3","fileadmin/_processed_/e/1/csm_sunflower_b98a5975b3",67008,"jpg","image/jpeg",2,5
-,6,0,1727860176,1727860176,"51","csm_sunflower_29bee2a7c2","fileadmin/_processed_/e/1/csm_sunflower_29bee2a7c2",2152,"jpg","image/jpeg",2,1
-,7,0,1727860178,1727860178,"83","csm_landscape_226c4e299f","fileadmin/_processed_/4/6/csm_landscape_226c4e299f",1147,"jpg","image/jpeg",2,1
+,1,0,1727859973,1727859973,"52","fixture_1","fileadmin/_processed_/e/1/csm_sunflower_b98a5975b3",67008,"jpg","image/jpeg",1,5
+,2,0,1727859974,1727859974,"82","fixture_2","fileadmin/_processed_/4/6/csm_landscape_eb858b5476",46235,"png","image/png",2,6
+,3,0,1727859976,1727859976,"82","fixture_3","fileadmin/_processed_/4/6/csm_landscape_eb858b5476",46235,"tiff","image/tiff",0,6
+,4,0,1727859977,1727859977,"52","fixture_4","fileadmin/_processed_/e/1/csm_sunflower_b98a5975b3",67008,"jpg","image/jpeg",0,5
+,5,0,1727859980,1727859980,"52","fixture_5","fileadmin/_processed_/e/1/csm_sunflower_b98a5975b3",67008,"bmp","image/bmp",0,5
+,6,0,1727860176,1727860176,"51","fixture_6","fileadmin/_processed_/e/1/csm_sunflower_29bee2a7c2",2152,"jpg","image/jpeg",5,1
+,7,0,1727860178,1727860178,"83","fixture_7","fileadmin/_processed_/4/6/csm_landscape_226c4e299f",1147,"webp","image/webp",6,1
