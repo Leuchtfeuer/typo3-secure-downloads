@@ -7,6 +7,7 @@ use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
+/** @covers \Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository */
 class LogRepositoryTest extends FunctionalTestCase
 {
     protected array $testExtensionsToLoad = ['leuchtfeuer/secure-downloads'];
