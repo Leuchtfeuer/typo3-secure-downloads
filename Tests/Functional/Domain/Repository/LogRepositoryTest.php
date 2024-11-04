@@ -99,4 +99,36 @@ class LogRepositoryTest extends FunctionalTestCase
         $this->assertCount(1, $result);
     }
 
+    public function testFindByFilterIfFilterForFeUserId(): void {
+        $filter = new Filter();
+        $filter->setFeUserId(5);
+        $result = $this->logRepository->findByFilter($filter,1,7);
+        $this->assertCount(1, $result);
+        $this->assertEquals('fixture_6',$result[0]->getFileName());
+    }
+
+    public function testFindByFilterIfFilterForPageId(): void
+    {
+        $filter = new Filter();
+        $filter->setPageId(6);
+        $result = $this->logRepository->findByFilter($filter,1,7);
+        $this->assertCount(2, $result);
+        $this->assertEquals(2, $this->logRepository->countByFilter($filter));
+        $this->assertEquals('fixture_3',$result[0]->getFileName());
+    }
+
+    public function testCountByFilter(): void
+    {
+        $filter = new Filter();
+        $filter->setPageId(6);
+        $this->assertEquals(2, $this->logRepository->countByFilter($filter));
+    }
+
+    public function testCountByFilterWithEmptyFilter ():void
+    {
+        $result = $this->logRepository->countByFilter(null);
+        $this->assertEquals(7, $result);
+    }
+
+
 }
