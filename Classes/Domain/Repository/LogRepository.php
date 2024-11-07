@@ -34,7 +34,8 @@ class LogRepository extends Repository
 
     public function __construct(
         private readonly ConnectionPool $connectionPool,
-        private readonly DataMapper $dataMapper
+        private readonly DataMapper $dataMapper,
+        private readonly ResourceFactory $resourceFactory,
     ) {
         parent::__construct();
     }
@@ -236,7 +237,7 @@ class LogRepository extends Repository
         $log->setUser($user);
         $log->setPage($token->getPage());
 
-        $fileObject = GeneralUtility::makeInstance(ResourceFactory::class)->retrieveFileOrFolderObject($token->getFile());
+        $fileObject = $this->resourceFactory->retrieveFileOrFolderObject($token->getFile());
 
         if ($fileObject) {
             $log->setFileId((string)$fileObject->getUid());

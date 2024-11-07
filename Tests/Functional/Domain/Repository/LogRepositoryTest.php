@@ -5,6 +5,7 @@ namespace Leuchtfeuer\SecureDownloads\Tests\Functional\Domain\Repository;
 use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
 use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\DefaultToken;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /** @covers \Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository */
@@ -20,6 +21,11 @@ class LogRepositoryTest extends FunctionalTestCase
                    ['initCommands' => 'SET SESSION sql_mode = \'STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE\';']
                ]
            ]
+    ];
+
+    protected array $pathsToLinkInTestInstance = [
+        'typo3conf/ext/secure_downloads/Tests/Functional/Domain/Repository/Fixtures/Folders/assets' => 'fileadmin/assets',
+
     ];
 
     public function setUp(): void
@@ -131,4 +137,12 @@ class LogRepositoryTest extends FunctionalTestCase
     }
 
 
+    public function testLogDownload(): void
+    {
+        $token = new DefaultToken();
+        $token->setFile('fileadmin/assets/red.png');
+        $this->logRepository->logDownload($token, 2, 'image/png', 1);
+        $result = $this->logRepository->countAll();
+        $this->assertEquals(8, $result);
+    }
 }
