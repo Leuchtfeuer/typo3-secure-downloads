@@ -136,6 +136,40 @@ class LogRepositoryTest extends FunctionalTestCase
         $this->assertEquals(7, $result);
     }
 
+    public function testGetFirstTimestampByFilterWithEmptyFilter(): void
+    {
+        $result = $this->logRepository->getFirstTimestampByFilter(null);
+        $this->assertEquals(1727859973, $result);
+    }
+
+    public function testGetFirstTimestampByFilterWithEmptyFilterAndReverse(): void
+    {
+        $result = $this->logRepository->getFirstTimestampByFilter(null, true);
+        $this->assertEquals(1727860178, $result);
+    }
+
+    public function testGetFirstTimestampByFilter(): void
+    {
+        $filter = new Filter();
+        $filter->setFrom('Wed Oct 02 2024 09:06:17 GMT+0000');
+        $result = $this->logRepository->getFirstTimestampByFilter($filter);
+        $this->assertEquals(1727859977, $result);
+    }
+
+    public function testGetTrafficSumByFilterWithEmptyFilter(): void
+    {
+        $result = $this->logRepository->getTrafficSumByFilter(null);
+        $this->assertEquals(296793.0, $result);
+    }
+
+    public function testGetTrafficSumByFilter(): void
+    {
+        $filter = new Filter();
+        $filter->setFrom('Wed Oct 02 2024 09:06:17 GMT+0000');
+        $filter->setTill('Wed Oct 02 2024 09:06:17 GMT+0000');
+        $result = $this->logRepository->getTrafficSumByFilter($filter);
+        $this->assertEquals(67008.0, $result);
+    }
 
     public function testLogDownload(): void
     {
