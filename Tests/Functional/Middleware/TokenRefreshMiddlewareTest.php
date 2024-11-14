@@ -36,20 +36,7 @@ class TokenRefreshMiddlewareTest extends FunctionalTestCase
         $tokenSecret = '727fdcee031b34f1bdf45ae5fda62b032f4cfb61f8f0a4313443d55948ba9654fc193b827381576abc7a87dc7ac2c247';
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = $tokenSecret;
 
-        $this->requestHandler = new class() implements RequestHandlerInterface {
-            public function handle(ServerRequestInterface $request): ResponseInterface
-            {
-                $token = JWT::encode(
-                    ['user' => 456],
-                    $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'],
-                    'HS256'
-                );
-
-                return new HtmlResponse(
-                    '<a href="/securedl/sdl-' . $token . '">Download</a>'
-                );
-            }
-        };
+        $this->requestHandler = $this->createRequestHandler(456);
 
         $this->assetPrefix = sprintf(
             '%s%s/%s',
@@ -92,7 +79,6 @@ class TokenRefreshMiddlewareTest extends FunctionalTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-       //TODO  $context->expects()
         $user = new FrontendUserAuthentication();
         $user->user['uid'] = 0;
         $context->method('getAspect')->willReturn(new UserAspect($user));
@@ -105,6 +91,87 @@ class TokenRefreshMiddlewareTest extends FunctionalTestCase
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertEquals($expected->getBody()->getContents(), $response->getBody()->getContents());
+    }
+
+    public function testProcessShouldNotRefreshTokenWhenGroupCheckIsDisabledAndUserIsSame()
+    {
+        /** @var ExtensionConfiguration&\PHPUnit\Framework\MockObject\MockObject $extensionConfiguration */
+        $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $extensionConfiguration->method('isEnableGroupCheck')->willReturn(false);
+        $context = $this->getMockBuilder(Context::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $user = new FrontendUserAuthentication();
+        $user->user['uid'] = 456;
+        $context->method('getAspect')->willReturn(new UserAspect($user));
+
+        $tokenRefreshMiddleware = new TokenRefreshMiddleware($extensionConfiguration, $context);
+        $request = new ServerRequest('https://example.org', 'GET');
+        $expected = $this->requestHandler->handle($request);
+
+        $response = $tokenRefreshMiddleware->process($request, $this->requestHandler);
+
+        $body = $response->getBody();
+        $body->rewind();
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertEquals($expected->getBody()->getContents(), $body->getContents());
+    }
+
+    public function testProcessShouldRefreshTokenWhenGroupCheckIsDisabledAndUserIsDifferent()
+    {
+        /** @var ExtensionConfiguration&\PHPUnit\Framework\MockObject\MockObject $extensionConfiguration */
+        $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $extensionConfiguration->method('isEnableGroupCheck')->willReturn(false);
+        $extensionConfiguration->method('getDocumentRootPath')->willReturn('/');
+        $extensionConfiguration->method('getLinkPrefix')->willReturn('securedl');
+        $extensionConfiguration->method('getTokenPrefix')->willReturn('sdl-');
+        $context = $this->getMockBuilder(Context::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $user = new FrontendUserAuthentication();
+        $user->user['uid'] = 356;
+        $context->method('getAspect')->willReturn(new UserAspect($user));
+
+        $tokenRefreshMiddleware = new TokenRefreshMiddleware($extensionConfiguration, $context);
+        $request = new ServerRequest('https://example.org', 'GET');
+        $expected = $this->createRequestHandler(356)->handle($request);
+
+        $response = $tokenRefreshMiddleware->process($request, $this->createRequestHandler(456));
+
+        $body = $response->getBody();
+        $body->rewind();
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertEquals($expected->getBody()->getContents(), $body->getContents());
+    }
+
+    protected function createRequestHandler(int $userId): RequestHandlerInterface
+    {
+        $GLOBALS['userId'] = $userId;
+
+        return new class() implements RequestHandlerInterface {
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
+                $token = JWT::encode(
+                    ['user' => $GLOBALS['userId']],
+                    $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'],
+                    'HS256'
+                );
+
+                return new HtmlResponse(
+                    '<a href="/securedl/sdl-' . $token . '">Download</a>'
+                );
+            }
+        };
     }
 
     public function testProcessShouldRefreshTokenWhenGroupCheckIsDisabled(): void
@@ -126,48 +193,5 @@ class TokenRefreshMiddlewareTest extends FunctionalTestCase
         $this->assertEquals($expected->getBody()->getContents(), $response->getBody()->getContents());
     }
 
-    public function ProcessShouldRefreshTokensWhenUserIsLoggedIn(): void
-    {
-        $tokenSecret = '727fdcee031b34f1bdf45ae5fda62b032f4cfb61f8f0a4313443d55948ba9654fc193b827381576abc7a87dc7ac2c247';
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = $tokenSecret;
-        
-        $this->requestHandler = new class() implements RequestHandlerInterface {
-            public function handle(ServerRequestInterface $request): ResponseInterface
-            {
-                $token = JWT::encode(
-                    ['user' => 456],
-                    $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'],
-                    'HS256'
-                );
-                
-                return new HtmlResponse(
-                    '<a href="/securedl/sdl-' . $token . '">Download</a>'
-                );
-            }
-        };
 
-        /** @var ExtensionConfiguration&\PHPUnit\Framework\MockObject\MockObject $extensionConfiguration */
-        $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        
-        $context = $this->get(Context::class);
-        $user = new FrontendUserAuthentication();
-        $user->user['uid'] = 456; 
-        $context->setAspect('frontend.user', new UserAspect($user));
-        
-        $tokenRefreshMiddleware = new TokenRefreshMiddleware($extensionConfiguration, $context);
-        $request = new ServerRequest('https://example.org', 'GET');
-
-        $response = $tokenRefreshMiddleware->process($request, $this->requestHandler);
-        
-        // Assert basic response properties
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame(
-            'text/html; charset=utf-8',
-            $response->getHeader('Content-Type')[0]
-        );
-        
-        $responseBody = json_decode($response->getBody()->getContents(), true);
-    }
 } 
