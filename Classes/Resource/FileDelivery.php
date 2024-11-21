@@ -88,7 +88,7 @@ class FileDelivery implements SingletonInterface
         $this->dispatchAfterFileRetrievedEvent($file, $fileName);
 
         if (file_exists($file)) {
-            $fileObject = $this->resourceFactory->retrieveFileOrFolderObject($this->token->getFile());
+            $fileObject = $this->resourceFactory->retrieveFileOrFolderObject($file);
 
             if ($this->extensionConfiguration->isLog()) {
                 $this->token->log([
