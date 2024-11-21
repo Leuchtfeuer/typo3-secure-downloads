@@ -165,7 +165,7 @@ class LogRepository extends Repository
     /**
      * @param Filter $filter
      * @param QueryBuilder $queryBuilder
-     * @return array
+     * @return string[]
      */
     protected function applyUserTypePropertyToFilter(Filter $filter, QueryBuilder $queryBuilder): array
     {
