@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * (c) Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ */
+
 namespace Leuchtfeuer\SecureDownloads\Tests\Functional\Domain\Repository;
 
 use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
@@ -12,15 +21,15 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 class LogRepositoryTest extends FunctionalTestCase
 {
     protected array $testExtensionsToLoad = ['leuchtfeuer/secure-downloads'];
-    private LogRepository  $logRepository;
+    private LogRepository $logRepository;
 
     protected array $configurationToUseInTestInstance = [
-       'DB' =>
-           ['Connections' =>
-               ['Default' =>
-                   ['initCommands' => 'SET SESSION sql_mode = \'STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE\';']
-               ]
-           ]
+        'DB' =>
+            ['Connections' =>
+                ['Default' =>
+                    ['initCommands' => 'SET SESSION sql_mode = \'STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE\';'],
+                ],
+            ],
     ];
 
     protected array $pathsToLinkInTestInstance = [
@@ -37,115 +46,125 @@ class LogRepositoryTest extends FunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/Fixtures/log.csv');
     }
 
-    public function testFindByFilterIfFilterIsEmpty(): void {
-        $result = $this->logRepository->findByFilter(null,1,PHP_INT_MAX);
-        $this->assertInstanceOf(Log::class,$result[0] ?? null);
-        $this->assertEquals("fixture_7" , $result[0]->getFileName());
-        $this->assertCount(7, $result);
+    public function testFindByFilterIfFilterIsEmpty(): void
+    {
+        $result = $this->logRepository->findByFilter(null, 1, PHP_INT_MAX);
+        self::assertInstanceOf(Log::class, $result[0] ?? null);
+        self::assertEquals('fixture_7', $result[0]->getFileName());
+        self::assertCount(7, $result);
     }
 
-    public function testFindByFilterIfFilterIsEmptyWithPageOffset(): void {
-        $result = $this->logRepository->findByFilter(null,2,2);
-        $this->assertEquals('fixture_5',$result[0]->getFileName());
-        $this->assertEquals('fixture_4',$result[1]->getFileName());
-        $result = $this->logRepository->findByFilter(null,4,2);
-        $this->assertEquals('fixture_1',$result[0]->getFileName());
-        $this->assertCount(1, $result);
+    public function testFindByFilterIfFilterIsEmptyWithPageOffset(): void
+    {
+        $result = $this->logRepository->findByFilter(null, 2, 2);
+        self::assertEquals('fixture_5', $result[0]->getFileName());
+        self::assertEquals('fixture_4', $result[1]->getFileName());
+        $result = $this->logRepository->findByFilter(null, 4, 2);
+        self::assertEquals('fixture_1', $result[0]->getFileName());
+        self::assertCount(1, $result);
     }
 
-    public function testFindByFilterIfFilterIsEmptyWithWrongCurrentPageOrOffset(): void {
-        $result = $this->logRepository->findByFilter(null,5,3);
-        $this->assertCount(0, $result);
-        $result = $this->logRepository->findByFilter(null,-1,3);
-        $this->assertCount(0, $result);
-        $result = $this->logRepository->findByFilter(null,1,-1);
-        $this->assertCount(0, $result);
+    public function testFindByFilterIfFilterIsEmptyWithWrongCurrentPageOrOffset(): void
+    {
+        $result = $this->logRepository->findByFilter(null, 5, 3);
+        self::assertCount(0, $result);
+        $result = $this->logRepository->findByFilter(null, -1, 3);
+        self::assertCount(0, $result);
+        $result = $this->logRepository->findByFilter(null, 1, -1);
+        self::assertCount(0, $result);
     }
 
-    public function testFindByFilterIfFilterMediaTypeIsJPG(): void {
+    public function testFindByFilterIfFilterMediaTypeIsJPG(): void
+    {
         $filter = new Filter();
         $filter->setFileType('image/jpeg');
-        $result = $this->logRepository->findByFilter($filter,1,7);
-        $this->assertCount(3,$result);
+        $result = $this->logRepository->findByFilter($filter, 1, 7);
+        self::assertCount(3, $result);
     }
 
-    public function testFindByFilterIfFilterForLoggedInUser(): void {
+    public function testFindByFilterIfFilterForLoggedInUser(): void
+    {
         $filter = new Filter();
         $filter->setUserType(Filter::USER_TYPE_LOGGED_ON);
-        $result = $this->logRepository->findByFilter($filter,1,7);
-        $this->assertCount(4, $result);
+        $result = $this->logRepository->findByFilter($filter, 1, 7);
+        self::assertCount(4, $result);
     }
 
-    public function testFindByFilterIfFilterForNotLoggedInUser(): void {
+    public function testFindByFilterIfFilterForNotLoggedInUser(): void
+    {
         $filter = new Filter();
         $filter->setUserType(Filter::USER_TYPE_LOGGED_OFF);
-        $result = $this->logRepository->findByFilter($filter,1,7);
-        $this->assertCount(3, $result);
+        $result = $this->logRepository->findByFilter($filter, 1, 7);
+        self::assertCount(3, $result);
     }
 
-    public function testFindByFilterIfFilterForPeriodFrom(): void {
+    public function testFindByFilterIfFilterForPeriodFrom(): void
+    {
         $filter = new Filter();
         $filter->setFrom('Wed Oct 02 2024 09:06:17 GMT+0000');
-        $result = $this->logRepository->findByFilter($filter,1,7);
-        $this->assertCount(4, $result);
+        $result = $this->logRepository->findByFilter($filter, 1, 7);
+        self::assertCount(4, $result);
     }
 
-    public function testFindByFilterIfFilterForPeriodTill(): void {
+    public function testFindByFilterIfFilterForPeriodTill(): void
+    {
         $filter = new Filter();
         $filter->setTill('Wed Oct 02 2024 09:06:17 GMT+0000');
-        $result = $this->logRepository->findByFilter($filter,1,7);
-        $this->assertCount(4, $result);
+        $result = $this->logRepository->findByFilter($filter, 1, 7);
+        self::assertCount(4, $result);
     }
 
-    public function testFindByFilterIfFilterForPeriodFromTill(): void {
+    public function testFindByFilterIfFilterForPeriodFromTill(): void
+    {
         $filter = new Filter();
         $filter->setFrom('Wed Oct 02 2024 09:06:17 GMT+0000');
         $filter->setTill('Wed Oct 02 2024 09:06:17 GMT+0000');
-        $result = $this->logRepository->findByFilter($filter,1,7);
-        $this->assertCount(1, $result);
+        $result = $this->logRepository->findByFilter($filter, 1, 7);
+        self::assertCount(1, $result);
     }
 
-    public function testFindByFilterIfFilterForFeUserId(): void {
+    public function testFindByFilterIfFilterForFeUserId(): void
+    {
         $filter = new Filter();
         $filter->setFeUserId(5);
-        $result = $this->logRepository->findByFilter($filter,1,7);
-        $this->assertCount(1, $result);
-        $this->assertEquals('fixture_6',$result[0]->getFileName());
+        $result = $this->logRepository->findByFilter($filter, 1, 7);
+        self::assertCount(1, $result);
+        self::assertEquals('fixture_6', $result[0]->getFileName());
     }
 
     public function testFindByFilterIfFilterForPageId(): void
     {
         $filter = new Filter();
         $filter->setPageId(6);
-        $result = $this->logRepository->findByFilter($filter,1,7);
-        $this->assertCount(2, $result);
-        $this->assertEquals(2, $this->logRepository->countByFilter($filter));
-        $this->assertEquals('fixture_3',$result[0]->getFileName());
+        $result = $this->logRepository->findByFilter($filter, 1, 7);
+        self::assertCount(2, $result);
+        self::assertEquals(2, $this->logRepository->countByFilter($filter));
+        self::assertEquals('fixture_3', $result[0]->getFileName());
     }
 
     public function testCountByFilter(): void
     {
         $filter = new Filter();
         $filter->setPageId(6);
-        $this->assertEquals(2, $this->logRepository->countByFilter($filter));
+        self::assertEquals(2, $this->logRepository->countByFilter($filter));
     }
 
-    public function testCountByFilterWithEmptyFilter ():void
+    public function testCountByFilterWithEmptyFilter(): void
     {
         $result = $this->logRepository->countByFilter(null);
-        $this->assertEquals(7, $result);
+        self::assertEquals(7, $result);
     }
 
     public function testGetFirstTimestampByFilterWithEmptyFilter(): void
     {
         $result = $this->logRepository->getFirstTimestampByFilter(null);
-        $this->assertEquals(1727859973, $result);
+        self::assertEquals(1727859973, $result);
     }
 
     public function testGetFirstTimestampByFilterWithEmptyFilterAndReverse(): void
     {
         $result = $this->logRepository->getFirstTimestampByFilter(null, true);
-        $this->assertEquals(1727860178, $result);
+        self::assertEquals(1727860178, $result);
     }
 
     public function testGetFirstTimestampByFilter(): void
@@ -153,13 +172,13 @@ class LogRepositoryTest extends FunctionalTestCase
         $filter = new Filter();
         $filter->setFrom('Wed Oct 02 2024 09:06:17 GMT+0000');
         $result = $this->logRepository->getFirstTimestampByFilter($filter);
-        $this->assertEquals(1727859977, $result);
+        self::assertEquals(1727859977, $result);
     }
 
     public function testGetTrafficSumByFilterWithEmptyFilter(): void
     {
         $result = $this->logRepository->getTrafficSumByFilter(null);
-        $this->assertEquals(296793.0, $result);
+        self::assertEquals(296793.0, $result);
     }
 
     public function testGetTrafficSumByFilter(): void
@@ -168,7 +187,7 @@ class LogRepositoryTest extends FunctionalTestCase
         $filter->setFrom('Wed Oct 02 2024 09:06:17 GMT+0000');
         $filter->setTill('Wed Oct 02 2024 09:06:17 GMT+0000');
         $result = $this->logRepository->getTrafficSumByFilter($filter);
-        $this->assertEquals(67008.0, $result);
+        self::assertEquals(67008.0, $result);
     }
 
     public function testLogDownload(): void
@@ -177,6 +196,6 @@ class LogRepositoryTest extends FunctionalTestCase
         $token->setFile('fileadmin/assets/red.png');
         $this->logRepository->logDownload($token, 2, 'image/png', 1);
         $result = $this->logRepository->countAll();
-        $this->assertEquals(8, $result);
+        self::assertEquals(8, $result);
     }
 }

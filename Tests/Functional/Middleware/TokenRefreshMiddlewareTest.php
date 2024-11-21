@@ -2,27 +2,34 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the "Secure Downloads" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * (c) Dev <dev@Leuchtfeuer.com>, Leuchtfeuer Digital Marketing
+ */
+
 namespace Leuchtfeuer\SecureDownloads\Tests\Functional\Middleware;
 
-use PHPUnit\Framework\TestCase;
-use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use TYPO3\CMS\Core\Http\JsonResponse;
-use TYPO3\CMS\Core\Http\ServerRequest;
+use Firebase\JWT\JWT;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Middleware\TokenRefreshMiddleware;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
-use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
-use Firebase\JWT\JWT;
 use TYPO3\CMS\Core\Http\HtmlResponse;
+use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
+use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 class TokenRefreshMiddlewareTest extends FunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'typo3conf/ext/secure_downloads'
+        'typo3conf/ext/secure_downloads',
     ];
 
     protected string $assetPrefix;
@@ -53,18 +60,17 @@ class TokenRefreshMiddlewareTest extends FunctionalTestCase
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
             ->getMock();
-        
+
         $extensionConfiguration->method('isEnableGroupCheck')->willReturn(true);
-  
-        
+
         $tokenRefreshMiddleware = new TokenRefreshMiddleware($extensionConfiguration);
         $request = new ServerRequest('https://example.org', 'GET');
         $expected = $this->requestHandler->handle($request);
 
         $response = $tokenRefreshMiddleware->process($request, $this->requestHandler);
 
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertEquals($expected->getBody()->getContents(), $response->getBody()->getContents());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertEquals($expected->getBody()->getContents(), $response->getBody()->getContents());
     }
 
     public function testProcessShouldRefreshTokenWhenGroupCheckIsDisabledAndUserIsNotLoggedIn(): void
@@ -89,8 +95,8 @@ class TokenRefreshMiddlewareTest extends FunctionalTestCase
 
         $response = $tokenRefreshMiddleware->process($request, $this->requestHandler);
 
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertEquals($expected->getBody()->getContents(), $response->getBody()->getContents());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertEquals($expected->getBody()->getContents(), $response->getBody()->getContents());
     }
 
     public function testProcessShouldNotRefreshTokenWhenGroupCheckIsDisabledAndUserIsSame()
@@ -118,8 +124,8 @@ class TokenRefreshMiddlewareTest extends FunctionalTestCase
         $body = $response->getBody();
         $body->rewind();
 
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertEquals($expected->getBody()->getContents(), $body->getContents());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertEquals($expected->getBody()->getContents(), $body->getContents());
     }
 
     public function testProcessShouldRefreshTokenWhenGroupCheckIsDisabledAndUserIsDifferent()
@@ -150,15 +156,15 @@ class TokenRefreshMiddlewareTest extends FunctionalTestCase
         $body = $response->getBody();
         $body->rewind();
 
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertEquals($expected->getBody()->getContents(), $body->getContents());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertEquals($expected->getBody()->getContents(), $body->getContents());
     }
 
     protected function createRequestHandler(int $userId): RequestHandlerInterface
     {
         $GLOBALS['userId'] = $userId;
 
-        return new class() implements RequestHandlerInterface {
+        return new class () implements RequestHandlerInterface {
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 $token = JWT::encode(
@@ -189,9 +195,8 @@ class TokenRefreshMiddlewareTest extends FunctionalTestCase
 
         $response = $tokenRefreshMiddleware->process($request, $this->requestHandler);
 
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertEquals($expected->getBody()->getContents(), $response->getBody()->getContents());
+        self::assertSame(200, $response->getStatusCode());
+        self::assertEquals($expected->getBody()->getContents(), $response->getBody()->getContents());
     }
 
-
-} 
+}
