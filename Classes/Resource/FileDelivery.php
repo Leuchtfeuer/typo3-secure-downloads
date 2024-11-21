@@ -89,6 +89,16 @@ class FileDelivery implements SingletonInterface
 
         if (file_exists($file)) {
             $fileObject = $this->resourceFactory->retrieveFileOrFolderObject($this->token->getFile());
+
+            if ($this->extensionConfiguration->isLog()) {
+                $this->token->log([
+                    'fileSize' => $fileSize = (int)filesize($file),
+                    'mimeType' => (new FileInfo($file))->getMimeType()
+                        ?: $this->guessMimeTypeByFileExtension($file)
+                            ?: MimeTypes::DEFAULT_MIME_TYPE,
+                ]);
+            }
+
             if ($fileObject instanceof File) {
                 $response = $fileObject
                     ->getStorage()
@@ -221,13 +231,6 @@ class FileDelivery implements SingletonInterface
 
         $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
         $this->header = $header;
-
-        if ($this->extensionConfiguration->isLog()) {
-            $this->token->log([
-                'fileSize' => $fileSize,
-                'mimeType' => $mimeType,
-            ]);
-        }
 
         return $this->outputFile($outputFunction, $file) ?? 'php://temp';
     }
