@@ -19,13 +19,13 @@ use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
 use Leuchtfeuer\SecureDownloads\Exception\InvalidClassException;
 use Leuchtfeuer\SecureDownloads\Factory\Event\EnrichPayloadEvent;
 use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Http\ApplicationType;
-use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\Exception\ContentRenderingException;
@@ -56,12 +56,14 @@ class SecureLinkFactory implements SingletonInterface
         $this->token->setExp($this->calculateLinkLifetime());
         if (!Environment::isCli()) {
             $request = $this->getRequest();
-            if (ApplicationType::fromRequest($request)->isFrontend()) {
-                $pageArguments = $request->getAttribute('routing');
-                $pageId = $pageArguments?->getPageId();
-            } elseif (ApplicationType::fromRequest($request)->isBackend()) {
-                $site = $request->getAttribute('site');
-                $pageId = $site->getRootPageId();
+            if ($request instanceof ServerRequestInterface) {
+                if (ApplicationType::fromRequest($request)->isFrontend()) {
+                    $pageArguments = $request->getAttribute('routing');
+                    $pageId = $pageArguments?->getPageId();
+                } elseif (ApplicationType::fromRequest($request)->isBackend()) {
+                    $site = $request->getAttribute('site');
+                    $pageId = $site->getRootPageId();
+                }
             }
         }
         $this->token->setPage($pageId ?? 0);
@@ -76,7 +78,7 @@ class SecureLinkFactory implements SingletonInterface
         }
     }
 
-    private function getRequest(): ServerRequest
+    private function getRequest(): ?ServerRequestInterface
     {
         return $GLOBALS['TYPO3_REQUEST'];
     }
