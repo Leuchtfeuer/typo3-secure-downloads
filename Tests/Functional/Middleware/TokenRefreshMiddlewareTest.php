@@ -29,7 +29,7 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 class TokenRefreshMiddlewareTest extends FunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'typo3conf/ext/secure_downloads',
+        'leuchtfeuer/secure-downloads',
     ];
 
     protected string $assetPrefix;
