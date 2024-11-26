@@ -110,7 +110,8 @@ class LogController extends ActionController
             ->from('tx_securedownloads_domain_model_log', 'log')
             ->join('log', 'fe_users', 'users', $queryBuilder->expr()->eq('users.uid', 'log.user'))
             ->where($queryBuilder->expr()->neq('user', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)))
-            ->groupBy('users.uid')
+            ->resetQueryPart('orderBy')
+            ->groupBy('uid', 'username')
             ->executeQuery()
             ->fetchAllAssociative();
     }
@@ -126,6 +127,7 @@ class LogController extends ActionController
         return $queryBuilder
             ->select('media_type')
             ->from('tx_securedownloads_domain_model_log')
+            ->resetQueryPart('orderBy')
             ->groupBy('media_type')->orderBy('media_type', 'ASC')
             ->executeQuery()
             ->fetchAllAssociative();
