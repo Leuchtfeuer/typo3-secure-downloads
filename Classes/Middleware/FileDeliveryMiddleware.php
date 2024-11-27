@@ -50,7 +50,7 @@ class FileDeliveryMiddleware implements MiddlewareInterface
             $frontendUserAuthentication->fetchGroupData($request);
 
             $cleanPath = mb_substr(urldecode($request->getUri()->getPath()), mb_strlen($this->assetPrefix));
-            [$jwt, $basePath] = explode('/', $cleanPath);
+            [$jwt] = explode('/', $cleanPath);
 
             return GeneralUtility::makeInstance(FileDelivery::class)->deliver($jwt, $request);
         }

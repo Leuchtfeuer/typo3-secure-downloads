@@ -22,8 +22,6 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
 use TYPO3\CMS\Extbase\Persistence\Repository;
@@ -34,12 +32,13 @@ class LogRepository extends Repository
 
     public function __construct(
         private readonly ConnectionPool $connectionPool,
-        private readonly DataMapper $dataMapper
+        private readonly DataMapper $dataMapper,
+        private readonly ResourceFactory $resourceFactory,
     ) {
         parent::__construct();
     }
 
-    public function createQueryBuilder(): QueryBuilder
+    protected function createQueryBuilder(): QueryBuilder
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLENAME);
         $queryBuilder->getRestrictions()->removeAll();
@@ -51,21 +50,27 @@ class LogRepository extends Repository
     }
 
     /**
-     * @return DomainObjectInterface[]
+     * @return Log[]
      * @throws Exception
      */
     public function findByFilter(?Filter $filter, int $currentPage = 1, int $itemsPerPage = 20): array
     {
+        if ($currentPage < 1 || $itemsPerPage < 1) {
+            return [];
+        }
+
         $queryBuilder = $this->createQueryBuilder();
 
-        $this->applyFilter($queryBuilder, $filter);
-
+        $constraints = $this->getFilterConstraints($queryBuilder, $filter);
+        if ($constraints !== []) {
+            $queryBuilder->where(...$constraints);
+        }
         $result = $queryBuilder
             ->select('*')
             ->setMaxResults($itemsPerPage)
             ->setFirstResult($itemsPerPage * ($currentPage - 1))
             ->executeQuery()
-            ->fetchAllAssociative() ?? [];
+            ->fetchAllAssociative();
         return $this->dataMapper->map(Log::class, $result);
     }
 
@@ -73,10 +78,14 @@ class LogRepository extends Repository
     {
         $queryBuilder = $this->createQueryBuilder();
 
-        $this->applyFilter($queryBuilder, $filter);
+        $constraints = $this->getFilterConstraints($queryBuilder, $filter);
+        if ($constraints !== []) {
+            $queryBuilder->where(...$constraints);
+        }
 
         return (int)($queryBuilder
             ->count('uid')
+            ->resetQueryPart('orderBy')
             ->executeQuery()
             ->fetchOne() ?? 0);
     }
@@ -85,7 +94,10 @@ class LogRepository extends Repository
     {
         $queryBuilder = $this->createQueryBuilder();
 
-        $this->applyFilter($queryBuilder, $filter);
+        $constraints = $this->getFilterConstraints($queryBuilder, $filter);
+        if ($constraints !== []) {
+            $queryBuilder->where(...$constraints);
+        }
 
         return (int)($queryBuilder
             ->select('tstamp')
@@ -98,70 +110,86 @@ class LogRepository extends Repository
     {
         $queryBuilder = $this->createQueryBuilder();
 
-        $this->applyFilter($queryBuilder, $filter);
+        $constraints = $this->getFilterConstraints($queryBuilder, $filter);
+        if ($constraints !== []) {
+            $queryBuilder->where(...$constraints);
+        }
 
         return (float)($queryBuilder
             ->selectLiteral('SUM(file_size) AS sum')
+            ->resetQueryPart('orderBy')
             ->executeQuery()
             ->fetchOne() ?? 0.0);
     }
 
-    protected function applyFilter(QueryBuilder &$queryBuilder, Filter $filter): void
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param Filter|null $filter
+     * @return string[]
+     */
+    protected function getFilterConstraints(QueryBuilder $queryBuilder, ?Filter $filter): array
     {
-        $constraints = [];
-
         if ($filter instanceof Filter) {
             try {
                 // FileType
-                $this->applyFileTypePropertyToFilter($filter->getFileType(), $queryBuilder, $constraints);
+                $constraints = $this->applyMediaTypePropertyToFilter($filter->getFileType(), $queryBuilder);
 
                 // User Type
-                $this->applyUserTypePropertyToFilter($filter, $queryBuilder, $constraints);
+                $constraints = array_merge($constraints, $this->applyUserTypePropertyToFilter($filter, $queryBuilder));
 
                 // Period
-                $this->applyPeriodPropertyToFilter($filter, $queryBuilder, $constraints);
+                $constraints = array_merge($constraints, $this->applyPeriodPropertyToFilter($filter, $queryBuilder));
 
                 // User and Page
-                $this->applyEqualPropertyToFilter((int)$filter->getFeUserId(), 'user', $queryBuilder, $constraints);
-                $this->applyEqualPropertyToFilter((int)$filter->getPageId(), 'page', $queryBuilder, $constraints);
+                $constraints = array_merge($constraints, $this->applyEqualPropertyToFilter($filter->getFeUserId(), 'user', $queryBuilder));
+                $constraints = array_merge($constraints, $this->applyEqualPropertyToFilter($filter->getPageId(), 'page', $queryBuilder));
 
-                if (count($constraints) > 0) {
-                    $queryBuilder->where(...$constraints);
-                }
+                return $constraints;
             } catch (InvalidQueryException) {
                 // Do nothing for now.
             }
         }
+        return [];
     }
 
     /**
-     * @param string[] $constraints
+     * @param string $mediaType
+     * @param QueryBuilder $queryBuilder
+     * @return string[]
      */
-    protected function applyFileTypePropertyToFilter(string $fileType, QueryBuilder $queryBuilder, array &$constraints): void
+    protected function applyMediaTypePropertyToFilter(string $mediaType, QueryBuilder $queryBuilder): array
     {
-        if ($fileType !== '' && $fileType !== '0') {
-            $constraints[] = $queryBuilder->expr()->eq('media_type', $queryBuilder->createNamedParameter($fileType));
+        if ($mediaType !== '' && $mediaType !== '0') {
+            return [$queryBuilder->expr()->eq('media_type', $queryBuilder->createNamedParameter($mediaType))];
         }
+        return [];
     }
 
     /**
-     * @param string[] $constraints
+     * @param Filter $filter
+     * @param QueryBuilder $queryBuilder
+     * @return string[]
      */
-    protected function applyUserTypePropertyToFilter(Filter $filter, QueryBuilder $queryBuilder, array &$constraints): void
+    protected function applyUserTypePropertyToFilter(Filter $filter, QueryBuilder $queryBuilder): array
     {
+        $constraints = [];
         if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_ON) {
             $constraints[] = $queryBuilder->expr()->gt('user', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT));
         }
         if ($filter->getUserType() === Filter::USER_TYPE_LOGGED_OFF) {
             $constraints[] = $queryBuilder->expr()->eq('user', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT));
         }
+        return $constraints;
     }
 
     /**
-     * @param string[] $constraints
+     * @param Filter $filter
+     * @param QueryBuilder $queryBuilder
+     * @return string[]
      */
-    protected function applyPeriodPropertyToFilter(Filter $filter, QueryBuilder $queryBuilder, array &$constraints): void
+    protected function applyPeriodPropertyToFilter(Filter $filter, QueryBuilder $queryBuilder): array
     {
+        $constraints = [];
         if ((int)$filter->getFrom() !== 0) {
             $constraints[] = $queryBuilder->expr()->gte('tstamp', $queryBuilder->createNamedParameter($filter->getFrom(), Connection::PARAM_INT));
         }
@@ -169,16 +197,23 @@ class LogRepository extends Repository
         if ((int)$filter->getTill() !== 0) {
             $constraints[] = $queryBuilder->expr()->lte('tstamp', $queryBuilder->createNamedParameter($filter->getTill(), Connection::PARAM_INT));
         }
+        return $constraints;
+
     }
 
     /**
-     * @param string[] $constraints
+     * @param int $property
+     * @param string $propertyName
+     * @param QueryBuilder $queryBuilder
+     * @return string[]
      */
-    protected function applyEqualPropertyToFilter(int $property, string $propertyName, QueryBuilder $queryBuilder, array &$constraints): void
+    protected function applyEqualPropertyToFilter(int $property, string $propertyName, QueryBuilder $queryBuilder): array
     {
+        $constraints = [];
         if ($property !== 0) {
             $constraints[] = $queryBuilder->expr()->eq($propertyName, $queryBuilder->createNamedParameter($property, Connection::PARAM_INT));
         }
+        return $constraints;
     }
 
     /**
@@ -203,7 +238,7 @@ class LogRepository extends Repository
         $log->setUser($user);
         $log->setPage($token->getPage());
 
-        $fileObject = GeneralUtility::makeInstance(ResourceFactory::class)->retrieveFileOrFolderObject($token->getFile());
+        $fileObject = $this->resourceFactory->retrieveFileOrFolderObject($token->getFile());
 
         if ($fileObject) {
             $log->setFileId((string)$fileObject->getUid());
