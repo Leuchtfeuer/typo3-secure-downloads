@@ -1,0 +1,69 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 6.1.0 - 2024/11/27
+==========================
+
+This release is a bugfix and maintenance release.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v6.1.0>`__.
+
+Added
+=====
+
+* Add support for PHP 8.2 and 8.3
+* Add functional tests
+
+Changed
+=======
+
+* Support null value for page arguments during link creation
+* Minor code improvements
+* Fix SQL group-by error
+* Fix undefined array key in FileDeliveryMiddleware
+* Log resource files as well
+* Cleaning processed files works without error
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+2024-11-27 Feature/improvments (#221) (Commit 8012a41 by Marcus Balasch)
+2024-10-02 Merge pull request #214 from Leuchtfeuer/feature/TER-202 (Commit facdf87 by Marcus Balasch)
+2024-10-02 [BUGFIX] set initial value [TER-202] (Commit 82d5a18 by Marcus Balasch)
+2024-10-02 [CODE] code style fix [TER-202] (Commit c8608c3 by Marcus Balasch)
+2024-10-02 [TASK] Code improvements based on rector [TER-202] (Commit 461348b by Marcus Balasch)
+2024-10-02 [TASK] use TCA types [TER-202] (Commit fd704b2 by Marcus Balasch)
+2024-10-02 [CODE] code style fix [TER-202] (Commit 36a2d9d by Marcus Balasch)
+2024-10-02 [CODE] code style fix [TER-202] (Commit e08c812 by Marcus Balasch)
+2024-10-02 [TASK] Code improvements based on rector [TER-202] (Commit 8736dba by Marcus Balasch)
+2024-10-02 [TASK] Code improvements based on rector [TER-202] (Commit ad45f6c by Marcus Balasch)
+2024-10-02 [TASK] Code improvements based on proposals [TER-202] (Commit 66e03e6 by Marcus Balasch)
+2024-10-01 [TASK] code style fix [TER-202] (Commit 5ef9f1d by Marcus Balasch)
+2024-10-01 [TASK] Some code improvements motivated by PHPStan [TER-202] (Commit 8061153 by Marcus Balasch)
+2024-10-01 [TASK] Deprecation: #97035 - "required" option in "eval" keyword [TER-202] (Commit a1cb8ab by Marcus Balasch)
+2024-10-01 [TASK] Allow further PHP versions  (#202) (Commit 749558d by Marcus Balasch)
+2024-09-27 Merge pull request #211 from devtroll/bugfix-missing-request-routing (Commit ed8b5b1 by Marcus Balasch)
+2024-09-23 support null value for page arguments (Commit 720d54b by Heiko Bihlmaier)
+2024-09-17 [RELEASE] Prepare v6.0.4 (#209) (Commit e04cdfc by bmheins)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Marcus Balasch
+*   Oliver Heins
+*   Heiko Bihlmaier
+*   Peter Zar
+
+Thank you very much for your support. The next drink is on us! 🍻
