@@ -50,7 +50,7 @@ class SecureDownloadsEventListener implements SingletonInterface
                     $driver->determineSecureDownloadsDriverBaseUrl();
                 }
                 if ($resource instanceof ProcessedFile) {
-                    $originalPublicUrl = $driver->getPublicUrl($resource->getOriginalFile()->getIdentifier());
+                    $originalPublicUrl = $driver->getPublicUrl($resource->getOriginalFile()->getIdentifier()) ?? '';
                     $originalPathShouldBeSecured = $this->secureDownloadService->pathShouldBeSecured($originalPublicUrl);
                 }
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier()) ?? '';
