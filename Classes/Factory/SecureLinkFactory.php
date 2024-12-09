@@ -212,21 +212,22 @@ class SecureLinkFactory implements SingletonInterface
 
     protected function get_cache_timeout(?ServerRequestInterface $request): int
     {
-        if ($request === null) {
-            return self::DEFAULT_CACHE_LIFETIME;
+        if ($request instanceof ServerRequestInterface) {
+            if (ApplicationType::fromRequest($request)->isFrontend()) {
+                $pageInformation = $request->getAttribute('frontend.page.information');
+                $typoScriptConfigArray = $request->getAttribute('frontend.typoscript')?->getConfigArray();
+                if ($pageInformation && $typoScriptConfigArray) {
+                    return GeneralUtility::makeInstance(CacheLifetimeCalculator::class)
+                        ->calculateLifetimeForPage(
+                            $pageInformation->getId(),
+                            $pageInformation->getPageRecord(),
+                            $typoScriptConfigArray,
+                            self::DEFAULT_CACHE_LIFETIME,
+                            GeneralUtility::makeInstance(Context::class)
+                        );
+                }
+            }
         }
-        $pageInformation = $request->getAttribute('frontend.page.information');
-        $typoScriptConfigArray = $request->getAttribute('frontend.typoscript')?->getConfigArray();
-        if ($pageInformation === null || $typoScriptConfigArray === null) {
-            return self::DEFAULT_CACHE_LIFETIME;
-        }
-        return GeneralUtility::makeInstance(CacheLifetimeCalculator::class)
-            ->calculateLifetimeForPage(
-                $pageInformation->getId(),
-                $pageInformation->getPageRecord(),
-                $typoScriptConfigArray,
-                self::DEFAULT_CACHE_LIFETIME,
-                GeneralUtility::makeInstance(Context::class)
-            );
+        return self::DEFAULT_CACHE_LIFETIME;
     }
 }
