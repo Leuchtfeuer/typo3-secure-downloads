@@ -250,4 +250,19 @@ class LogRepository extends Repository
             ->values($log->toArray())
             ->executeStatement();
     }
+
+    public function clearLog(): void
+    {
+        $this->connectionPool->getConnectionForTable(self::TABLENAME)->truncate(self::TABLENAME);
+    }
+
+    public function clearLogForPage(int $page): void
+    {
+        if ($page > 0) {
+            $this->connectionPool->getConnectionForTable(self::TABLENAME)->delete(
+                self::TABLENAME,
+                ['page' => $page]
+            );
+        }
+    }
 }

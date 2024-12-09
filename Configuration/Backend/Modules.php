@@ -14,6 +14,7 @@ return [
         'controllerActions' => [
             LogController::class => [
                 'list',
+                'clear'
             ],
         ],
     ],

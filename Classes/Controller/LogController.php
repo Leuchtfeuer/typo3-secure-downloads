@@ -96,6 +96,15 @@ class LogController extends ActionController
         return $moduleTemplate->renderResponse('Log/List');
     }
 
+    public function clearAction(int $page = 0): ResponseInterface {
+        if ($page > 0) {
+            $this->logRepository->clearLogForPage($page);
+        } else {
+            $this->logRepository->clearLog();
+        }
+        return $this->redirect('list');
+    }
+
     /**
      * @return list<array<string,mixed>> Array containing all users that have downloaded files
      * @throws Exception
