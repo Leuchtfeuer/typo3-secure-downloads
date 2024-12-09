@@ -11,8 +11,8 @@
             <f:be.pageRenderer includeJavaScriptModules="{
                 0: '@typo3/backend/global-event-handler.js',
                 1: '@leuchtfeuer/secure-downloads/sdl-log.js'
-            }"
-            />
+                2: '@typo3/backend/modal.js'
+            }"/>
 
             <f:if condition="{loggingEnabled}">
                 <f:then>
@@ -39,6 +39,14 @@
 
                         <f:if condition="{logs}">
                             <f:render partial="Backend/View" arguments="{_all}"/>
+                        </f:if>
+                        <f:if condition="{page.uid} > 0">
+                            <f:then>
+                                <f:link.action action="clear" arguments="{page: page.uid}" class="t3js-modal-trigger btn btn-danger" data="{title: '{f:translate(key:\'module.clearLogForPage.title\', arguments: \'{0: page.title}\')}', bs-content: '{f:translate(key:\'module.clearLogForPage.message\', arguments: \'{0: page.title}\')}', severity: 'error'}">{f:translate(key:'module.clearLogForPage.label', arguments: '{0: page.title}')}</f:link.action>
+                            </f:then>
+                            <f:else>
+                                <f:link.action action="clear" class="t3js-modal-trigger btn btn-danger" data="{title: '{f:translate(key:\'module.clearLog.title\')}', bs-content: '{f:translate(key:\'module.clearLog.message\')}', severity: 'error'}">{f:translate(key:'module.clearLog.label')}</f:link.action>
+                            </f:else>
                         </f:if>
                     </div>
                 </f:then>

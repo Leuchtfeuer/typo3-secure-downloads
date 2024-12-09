@@ -88,6 +88,24 @@
             <trans-unit id="module.heading.show">
                 <source>Download Traffic for Page "%s"</source>
             </trans-unit>
+            <trans-unit id="module.clearLog.label">
+                <source>Clear all log entries</source>
+            </trans-unit>
+            <trans-unit id="module.clearLog.title">
+                <source>Clear the entire secure downloads log?</source>
+            </trans-unit>
+            <trans-unit id="module.clearLog.message">
+                <source>This action will delete all secure download log entries for all pages permanently!</source>
+            </trans-unit>
+            <trans-unit id="module.clearLogForPage.label">
+                <source>Clear log entries for page "%s"</source>
+            </trans-unit>
+            <trans-unit id="module.clearLogForPage.title">
+                <source>Clear the secure downloads log for page "%s"?</source>
+            </trans-unit>
+            <trans-unit id="module.clearLogForPage.message">
+                <source>This action will delete all secure download log entries for page "%s" permanently!</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

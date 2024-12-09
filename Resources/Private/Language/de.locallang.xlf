@@ -88,6 +88,24 @@
             <trans-unit id="module.heading.show">
                 <target>Traffic für die Seite "%s"</target>
             </trans-unit>
+            <trans-unit id="module.clearLog.label">
+                <target>Alle Logeinträge löschen</target>
+            </trans-unit>
+            <trans-unit id="module.clearLog.title">
+                <target>Das vollständige Secure Downloads Log löschen?</target>
+            </trans-unit>
+            <trans-unit id="module.clearLog.message">
+                <target>Diese Aktion löscht permanent für alle Seiten alle Secure Downloads Logeinträge!</target>
+            </trans-unit>
+            <trans-unit id="module.clearLogForPage.label">
+                <source>Alle Logeinträge auf Seite "%s" löschen</source>
+            </trans-unit>
+            <trans-unit id="module.clearLogForPage.title">
+                <source>Das Secure Downloads Log auf Seite "%s" löschen?</source>
+            </trans-unit>
+            <trans-unit id="module.clearLogForPage.message">
+                <source>Diese Aktion löscht permanent alle Secure Downloads Logeinträge auf Seite "%s"!</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

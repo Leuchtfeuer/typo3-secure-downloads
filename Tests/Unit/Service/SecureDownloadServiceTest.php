@@ -35,10 +35,7 @@ class SecureDownloadServiceTest extends TestCase
         return $method->invokeArgs($object, $parameters);
     }
 
-    /**
-     * @test
-     */
-    public function someDirectoriesPatternTests()
+    public function testSomeDirectoriesPatternTests()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
@@ -70,10 +67,7 @@ class SecureDownloadServiceTest extends TestCase
         self::assertFalse($secureDownloadService->folderShouldBeSecured('fileadmin-secure'));
     }
 
-    /**
-     * @test
-     */
-    public function emptyDirectoriesPatternTests()
+    public function testEmptyDirectoriesPatternTests()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
@@ -102,10 +96,7 @@ class SecureDownloadServiceTest extends TestCase
         self::assertFalse($secureDownloadService->folderShouldBeSecured('fileadmin-secure'));
     }
 
-    /**
-     * @test
-     */
-    public function someFileTypesTests()
+    public function testSomeFileTypesTests()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()

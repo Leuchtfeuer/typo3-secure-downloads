@@ -68,7 +68,7 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
             ->update($this->table)
             ->set('is_public', 0)
             ->set('driver', SecureDownloadsDriver::DRIVER_SHORT_NAME)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($storageId, \PDO::PARAM_INT)))
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($storageId, \Doctrine\DBAL\ParameterType::INTEGER)))
             ->executeStatement();
 
         return $storageId;

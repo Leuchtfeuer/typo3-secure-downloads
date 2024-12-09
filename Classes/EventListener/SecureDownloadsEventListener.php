@@ -50,9 +50,11 @@ class SecureDownloadsEventListener implements SingletonInterface
                     $driver->determineSecureDownloadsDriverBaseUrl();
                 }
                 if ($resource instanceof ProcessedFile) {
+                    // @extensionScannerIgnoreLine
                     $originalPublicUrl = $driver->getPublicUrl($resource->getOriginalFile()->getIdentifier()) ?? '';
                     $originalPathShouldBeSecured = $this->secureDownloadService->pathShouldBeSecured($originalPublicUrl);
                 }
+                // @extensionScannerIgnoreLine
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier()) ?? '';
                 if ($originalPathShouldBeSecured || $driver instanceof SecureDownloadsDriver || $this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
                     $securedUrl = $this->secureDownloadService->getResourceUrl($publicUrl);
@@ -81,6 +83,7 @@ class SecureDownloadsEventListener implements SingletonInterface
             $overlayIdentifier = 'overlay-restricted';
         } else {
             if ($resource instanceof Folder) {
+                // @extensionScannerIgnoreLine
                 $publicUrl = $resource->getStorage()->getPublicUrl($resource) ?? $resource->getIdentifier();
                 if ($this->secureDownloadService->folderShouldBeSecured($publicUrl)) {
                     $overlayIdentifier = 'overlay-restricted';
@@ -88,6 +91,7 @@ class SecureDownloadsEventListener implements SingletonInterface
             } elseif ($resource instanceof File) {
                 try {
                     $folder = $resource->getParentFolder();
+                    // @extensionScannerIgnoreLine
                     $publicUrl = ($folder->getStorage()->getPublicUrl($folder) ?? $folder->getIdentifier()) . $resource->getName();
                     if ($this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
                         $overlayIdentifier = 'overlay-restricted';

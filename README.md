@@ -29,24 +29,24 @@ As a complementary measure, you will of course need to configure your web server
 ## Requirements
 We are currently supporting following TYPO3 versions:
 
-| Extension Version | TYPO3 v12 | TYPO3 v11 | TYPO3 v10 |
-|-------------------|-----------|-----------|-----------|
-| 6.x               | x         | -         | -         |
-| 5.x <sup>1)</sup> | -         | x         | x         |
-
-* <sup>1)</sup> Upcoming release as `leuchtfeuer/secure-downloads` (vendor name changed).
+| Extension Version | TYPO3 v13 | TYPO3 v12 |
+|-------------------|-----------|-----------|
+| 7.x               | x         | -         |
+| 6.x               | -         | x         |
 
 ### Outdated Versions
 For the following versions no more free bug fixes and new features will be provided by the authors:
 
-| Extension Version | TYPO3 v10 | TYPO3 v9 | TYPO3 v8 | TYPO3 v7 | TYPO3 v6.2 | TYPO3 v4.5 |
-|-------------------|-----------|----------|----------|----------|------------|------------|
-| 4.x               | x         | x        | -        | -        | -          | -          |
-| 3.x               | -         | x        | x        | -        | -          | -          |
-| 2.0.4 - 2.x       | -         | -        | x        | x        | -          | -          |
-| 2.0.0 - 2.0.3     | -         | -        | -        | x        | x          | -          |
-| 1.x<sup>2)</sup>  | -         | -        | -        | -        | x          | x          |
+| Extension Version | TYPO3 v11 | TYPO3 v10 | TYPO3 v9 | TYPO3 v8 | TYPO3 v7 | TYPO3 v6.2 | TYPO3 v4.5 |
+|-------------------|-----------|-----------|----------|----------|----------|------------|------------|
+| 5.x<sup>1)</sup>  | x         | x         | -        | -        | -        | -          | -          |
+| 4.x               | -         | x         | x        | -        | -        | -          | -          |
+| 3.x               | -         | -         | x        | x        | -        | -          | -          |
+| 2.0.4 - 2.x       | -         | -         | -        | x        | x        | -          | -          |
+| 2.0.0 - 2.0.3     | -         | -         | -        | -        | x        | x          | -          |
+| 1.x<sup>2)</sup>  | -         | -         | -        | -        | -        | x          | x          |
 
+* <sup>1)</sup> Upcoming release as `leuchtfeuer/secure-downloads` (vendor name changed).
 * <sup>2)</sup> As [`EXT:naw_securedl`](https://extensions.typo3.org/extension/naw_securedl) or `typo3-ter/naw-securedl`.
 
 ## Installation
@@ -56,7 +56,7 @@ There are several ways to require and install this extension. We recommend getti
 ### Via Composer
 If your TYPO3 instance is running in composer mode, you can simply require the extension by running:
 
-    composer req leuchtfeuer/secure-downloads:^6.0
+    composer req leuchtfeuer/secure-downloads:^7.0
 
 ### Via Extension Manager
 Open the extension manager module of your TYPO3 instance and select "Get Extensions" in the select menu above the upload button. 

@@ -15,9 +15,10 @@ use Leuchtfeuer\SecureDownloads\Domain\Model\Log;
 use Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Filter;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\DefaultToken;
+use PHPUnit\Framework\Attributes\CoversClass;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
-/** @covers \Leuchtfeuer\SecureDownloads\Domain\Repository\LogRepository */
+#[CoversClass(LogRepository::class)]
 class LogRepositoryTest extends FunctionalTestCase
 {
     protected array $testExtensionsToLoad = ['leuchtfeuer/secure-downloads'];
@@ -185,7 +186,7 @@ class LogRepositoryTest extends FunctionalTestCase
         $token = new DefaultToken();
         $token->setFile('fileadmin/assets/red.png');
         $this->logRepository->logDownload($token, 2, 'image/png', 1);
-        $result = $this->logRepository->countAll();
+        $result = $this->logRepository->countByFilter(null);
         self::assertEquals(8, $result);
     }
 }

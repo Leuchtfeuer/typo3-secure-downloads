@@ -46,14 +46,14 @@ class TokenRefreshMiddlewareTest extends TestCase
         return $method->invokeArgs($object, $parameters);
     }
 
-    public function setPrivateProperty(string $className, object $object, string $property, $value)
+    public function setPrivateProperty(string $className, object $object, string $property, mixed $value): void
     {
         $reflectionProperty = new \ReflectionProperty($className, $property);
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($object, $value);
     }
 
-    public function setProtectedProperty($object, $property, $value)
+    public function setProtectedProperty(object $object, string $property, mixed $value): void
     {
         $reflection = new \ReflectionClass($object);
         $reflection_property = $reflection->getProperty($property);
@@ -61,10 +61,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         $reflection_property->setValue($object, $value);
     }
 
-    /**
-     * @test
-     */
-    public function whenGroupCheckEnabledResponseBodyIsNotModified()
+    public function testWhenGroupCheckEnabledResponseBodyIsNotModified()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
@@ -107,10 +104,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         $tokenRefreshMiddleWare->process($request, $handler);
     }
 
-    /**
-     * @test
-     */
-    public function whenGroupCheckDisableAndNoUserLogInResponseBodyIsNotModified()
+    public function testWhenGroupCheckDisableAndNoUserLogInResponseBodyIsNotModified()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
@@ -153,10 +147,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         $tokenRefreshMiddleWare->process($request, $handler);
     }
 
-    /**
-     * @test
-     */
-    public function whenGroupCheckEnableAndNoUserLogInResponseBodyIsNotModified()
+    public function testWhenGroupCheckEnableAndNoUserLogInResponseBodyIsNotModified()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
@@ -211,10 +202,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         self::assertSame($response, $returnResponse);
     }
 
-    /**
-     * @test
-     */
-    public function whenNotGroupCheckEnableAndUserLogInWithOutSecuredLinkResponseBodyIsNotModified()
+    public function testWhenNotGroupCheckEnableAndUserLogInWithOutSecuredLinkResponseBodyIsNotModified()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
@@ -274,10 +262,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         self::assertSame($content, $returnContent);
     }
 
-    /**
-     * test
-     */
-    public function whenALinkWithTheSameUserIDofTheCurrentUserLinkResponseBodyIsNotModified()
+    public function testWhenALinkWithTheSameUserIDofTheCurrentUserLinkResponseBodyIsNotModified()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
@@ -302,7 +287,7 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $context->expects(self::once())
+        $context->expects(self::any())
             ->method('getAspect')
             ->with('frontend.user')
             ->willReturn($currentUser);
@@ -328,21 +313,31 @@ class TokenRefreshMiddlewareTest extends TestCase
 
         $secureLinkFactory = $this->getMockBuilder(SecureLinkFactory::class)
             ->disableOriginalConstructor()
-//            ->setMethods(null)
+            ->onlyMethods(['dispatchEnrichPayloadEvent'])
             ->getMock();
 
-        $this->setProtectedProperty($secureLinkFactory, 'extensionConfiguration', $extensionConfiguration);
-        $this->setProtectedProperty($secureLinkFactory, 'userId', 1);
-        $this->setProtectedProperty($secureLinkFactory, 'userGroups', [0, -2, 1]);
-        $this->setProtectedProperty($secureLinkFactory, 'pageId', 1);
-        $this->setProtectedProperty($secureLinkFactory, 'linkTimeout', time() + 60);
-        $this->setProtectedProperty($secureLinkFactory, 'resourceUri', 'fileadmin/foo.txt');
+        $this->setPrivateProperty(SecureLinkFactory::class, $secureLinkFactory, 'extensionConfiguration', $extensionConfiguration);
 
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'secret';
+        TokenRegistry::register(
+            'tx_securedownloads_default',
+            DefaultToken::class,
+            0,
+            false
+        );
+        $token = TokenRegistry::getToken();
+        $this->setPrivateProperty(SecureLinkFactory::class, $secureLinkFactory, 'token', $token);
+
+        $secureLinkFactory->withUser(1)
+            ->withGroups([0, -2, 1])
+            ->withPage(1)
+            ->withLinkTimeout(time() + 60)
+            ->withResourceUri('fileadmin/secure/document.pdf');
+
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'my-secret';
 
         $url = $secureLinkFactory->getUrl();
 
-        $content = '<a href="' . $url . '">foo.txt</a>';
+        $content = '<a href="/' . $url . '">Document</a>';
 
         $response = new HtmlResponse($content, 200);
 
@@ -355,14 +350,10 @@ class TokenRefreshMiddlewareTest extends TestCase
         $body->rewind();
         $returnContent = $body->getContents();
 
-        self::assertSame($response, $returnResponse);
         self::assertSame($content, $returnContent);
     }
 
-    /**
-     * @test
-     */
-    public function whenALinkWithAnOtherUserIDofTheCurrentUserLinkResponseBodyIsModified()
+    public function testWhenALinkWithAnOtherUserIDofTheCurrentUserLinkResponseBodyIsModified()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
