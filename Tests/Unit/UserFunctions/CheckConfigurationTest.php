@@ -36,10 +36,7 @@ class CheckConfigurationTest extends TestCase
         return $method->invokeArgs($object, $parameters);
     }
 
-    /**
-     * @test
-     */
-    public function someDirectoriesPatternTests()
+    public function testSomeDirectoriesPatternTests()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
@@ -70,10 +67,7 @@ class CheckConfigurationTest extends TestCase
         self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['fileadmin-secure']));
     }
 
-    /**
-     * @test
-     */
-    public function emptyDirectoriesPatternTests()
+    public function testEmptyDirectoriesPatternTests()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()

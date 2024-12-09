@@ -61,10 +61,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         $reflection_property->setValue($object, $value);
     }
 
-    /**
-     * @test
-     */
-    public function whenGroupCheckEnabledResponseBodyIsNotModified()
+    public function testWhenGroupCheckEnabledResponseBodyIsNotModified()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
@@ -107,10 +104,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         $tokenRefreshMiddleWare->process($request, $handler);
     }
 
-    /**
-     * @test
-     */
-    public function whenGroupCheckDisableAndNoUserLogInResponseBodyIsNotModified()
+    public function testWhenGroupCheckDisableAndNoUserLogInResponseBodyIsNotModified()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
@@ -153,10 +147,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         $tokenRefreshMiddleWare->process($request, $handler);
     }
 
-    /**
-     * @test
-     */
-    public function whenGroupCheckEnableAndNoUserLogInResponseBodyIsNotModified()
+    public function testWhenGroupCheckEnableAndNoUserLogInResponseBodyIsNotModified()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
@@ -211,10 +202,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         self::assertSame($response, $returnResponse);
     }
 
-    /**
-     * @test
-     */
-    public function whenNotGroupCheckEnableAndUserLogInWithOutSecuredLinkResponseBodyIsNotModified()
+    public function testWhenNotGroupCheckEnableAndUserLogInWithOutSecuredLinkResponseBodyIsNotModified()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
@@ -276,6 +264,7 @@ class TokenRefreshMiddlewareTest extends TestCase
 
     /**
      * test
+     * @TODO: Check Test
      */
     public function whenALinkWithTheSameUserIDofTheCurrentUserLinkResponseBodyIsNotModified()
     {
@@ -359,10 +348,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         self::assertSame($content, $returnContent);
     }
 
-    /**
-     * @test
-     */
-    public function whenALinkWithAnOtherUserIDofTheCurrentUserLinkResponseBodyIsModified()
+    public function testWhenALinkWithAnOtherUserIDofTheCurrentUserLinkResponseBodyIsModified()
     {
         $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
             ->disableOriginalConstructor()
