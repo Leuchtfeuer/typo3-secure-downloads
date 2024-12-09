@@ -85,7 +85,7 @@ class LogRepository extends Repository
 
         return (int)($queryBuilder
             ->count('uid')
-            ->resetQueryPart('orderBy')
+            ->resetOrderBy()
             ->executeQuery()
             ->fetchOne() ?? 0);
     }
@@ -117,7 +117,7 @@ class LogRepository extends Repository
 
         return (float)($queryBuilder
             ->selectLiteral('SUM(file_size) AS sum')
-            ->resetQueryPart('orderBy')
+            ->resetOrderBy()
             ->executeQuery()
             ->fetchOne() ?? 0.0);
     }

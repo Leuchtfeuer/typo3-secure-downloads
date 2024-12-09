@@ -192,6 +192,7 @@ class CheckConfiguration implements SingletonInterface
 
             $finder = (new Finder())->files()->ignoreDotFiles(false)->name('.htaccess')->depth(0);
 
+            // @extensionScannerIgnoreLine
             foreach ($finder->in($directory)->getIterator() as $file) {
                 $lastSecuredDirectory = $directory;
                 $this->protectedDirectories[] = $directory;

@@ -87,7 +87,7 @@ class Log extends AbstractEntity
             return $queryBuilder
                 ->select('*')
                 ->from('fe_users')
-                ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->user, \PDO::PARAM_INT)))
+                ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->user, \Doctrine\DBAL\ParameterType::INTEGER)))
                 ->executeQuery()
                 ->fetchAssociative();
         }
