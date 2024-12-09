@@ -210,8 +210,11 @@ class SecureLinkFactory implements SingletonInterface
         $payload = $event->getPayload();
     }
 
-    protected function get_cache_timeout(ServerRequestInterface $request): int
+    protected function get_cache_timeout(?ServerRequestInterface $request): int
     {
+        if ($request === null) {
+            return self::DEFAULT_CACHE_LIFETIME;
+        }
         $pageInformation = $request->getAttribute('frontend.page.information');
         $typoScriptConfigArray = $request->getAttribute('frontend.typoscript')?->getConfigArray();
         if ($pageInformation === null || $typoScriptConfigArray === null) {
