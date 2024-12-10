@@ -1,0 +1,58 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 7.0.0 - 2024/12/10
+==========================
+
+This release is a major release.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v7.0.0>`__.
+
+Added
+=====
+
+* Add Support for TYPO3 v13 and PHP 8.4
+* Add clear log button for the backend module
+
+Changed
+=======
+
+Deprecated
+==========
+
+Removed
+=======
+
+* Drop support for TYPO3 v12 and PHP 8.1
+* Remove class migrations
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+2024-12-10 [TASK] Adjust PHP constraints [TER-249] [TER-250] (Commit 0f2c86f by Niklas Grieger)
+2024-12-10 [TASK] Fix code styles [TER-249] [TER-250] (Commit 7000c43 by Niklas Grieger)
+2024-12-09 [TASK] refactors and corrects tests [TER-249] (Commit c8d78cd by Marcus Balasch)
+2024-12-09 [TASK] Improve get cache timeout [TER-249] [TER-250] (Commit c9f7333 by Niklas Grieger)
+2024-12-09 [BUGFIX] Deny frontend access for links generated in backend context [TER-249] [TER-250] (Commit 117c612 by Niklas Grieger)
+2024-12-09 [BUGFIX] Make SecureLinkFactory work in backend context [TER-249] [TER-250] (Commit ec6fdff by Niklas Grieger)
+2024-12-09 [TASK] Update README.md [TER-249] [TER-250] (Commit 0f75025 by Niklas Grieger)
+2024-12-09 [BUGFIX] Make SecureLinkFactory work in backend context [TER-249] [TER-250] (Commit cece92c by Niklas Grieger)
+2024-12-09 [TASK] Fix FlexForm deprecations [TER-249] [TER-250] (Commit 8ef57b3 by Niklas Grieger)
+2024-12-09 [TASK] Adjust tests and resolve PHPUnit deprecations [TER-249] [TER-250] (Commit 09d27da by Niklas Grieger)
+2024-12-09 [TASK] Add clear secure downloads log feature [TER-249] [TER-250] (Commit 998dbe2 by Niklas Grieger)
+2024-12-09 [TASK] Remove old migrations [TER-249] [TER-250] (Commit e56786b by Niklas Grieger)
+2024-12-09 [TASK] Ensure compatibility with TYPO3 v13 [TER-249] [TER-250] (Commit a42dcd2 by Niklas Grieger)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Marcus Balasch
+*   Niklas Grieger
+
+Thank you very much for your support. The next drink is on us! 🍻
