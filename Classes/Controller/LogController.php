@@ -96,7 +96,8 @@ class LogController extends ActionController
         return $moduleTemplate->renderResponse('Log/List');
     }
 
-    public function clearAction(int $page = 0): ResponseInterface {
+    public function clearAction(int $page = 0): ResponseInterface
+    {
         if ($page > 0) {
             $this->logRepository->clearLogForPage($page);
         } else {

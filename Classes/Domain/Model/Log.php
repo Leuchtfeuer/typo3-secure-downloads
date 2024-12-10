@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Leuchtfeuer\SecureDownloads\Domain\Model;
 
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\ParameterType;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
@@ -87,7 +88,7 @@ class Log extends AbstractEntity
             return $queryBuilder
                 ->select('*')
                 ->from('fe_users')
-                ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->user, \Doctrine\DBAL\ParameterType::INTEGER)))
+                ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->user, ParameterType::INTEGER)))
                 ->executeQuery()
                 ->fetchAssociative();
         }

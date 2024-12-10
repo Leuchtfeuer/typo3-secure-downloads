@@ -51,7 +51,7 @@ class SecureDownloadServiceTest extends TestCase
 
         $secureDownloadService = new SecureDownloadService($extensionConfiguration);
 
-        //matching
+        // matching
 
         self::assertTrue($secureDownloadService->folderShouldBeSecured('typo3temp'));
         self::assertTrue($secureDownloadService->folderShouldBeSecured('/typo3temp'));
@@ -59,7 +59,7 @@ class SecureDownloadServiceTest extends TestCase
         self::assertTrue($secureDownloadService->folderShouldBeSecured('fileadmin/secure/something_else'));
         self::assertTrue($secureDownloadService->folderShouldBeSecured('/fileadmin/secure'));
 
-        //not matchting
+        // not matching
 
         self::assertFalse($secureDownloadService->folderShouldBeSecured('nomatch'));
         self::assertFalse($secureDownloadService->folderShouldBeSecured('fileadmin'));
@@ -83,7 +83,7 @@ class SecureDownloadServiceTest extends TestCase
 
         $secureDownloadService = new SecureDownloadService($extensionConfiguration);
 
-        //matching
+        // matching
 
         self::assertFalse($secureDownloadService->folderShouldBeSecured('typo3temp'));
         self::assertFalse($secureDownloadService->folderShouldBeSecured('/typo3temp'));
@@ -112,14 +112,14 @@ class SecureDownloadServiceTest extends TestCase
 
         $secureDownloadService = new SecureDownloadService($extensionConfiguration);
 
-        //matching
+        // matching
 
         self::assertTrue($secureDownloadService->pathShouldBeSecured('fileadmin/secure/image.jpg'));
         self::assertTrue($secureDownloadService->pathShouldBeSecured('/fileadmin/secure/image.png'));
         self::assertTrue($secureDownloadService->pathShouldBeSecured('/fileadmin/secure/documents/table.xls'));
         self::assertTrue($secureDownloadService->pathShouldBeSecured('/typo3temp/foo/bar/doc.pdf'));
 
-        //not matchting
+        // not matching
 
         self::assertFalse($secureDownloadService->pathShouldBeSecured('fileadmin/unsecure/image.jpg'));
         self::assertFalse($secureDownloadService->pathShouldBeSecured('fileadmin/content/secure/image.jpg'));
