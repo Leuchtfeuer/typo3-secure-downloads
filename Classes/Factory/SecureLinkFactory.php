@@ -28,8 +28,8 @@ use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Cache\CacheLifetimeCalculator;
 use TYPO3\CMS\Frontend\ContentObject\Exception\ContentRenderingException;
-use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class SecureLinkFactory implements SingletonInterface
 {
@@ -92,9 +92,7 @@ class SecureLinkFactory implements SingletonInterface
      */
     protected function calculateLinkLifetime(): int
     {
-        $cacheTimeout = (isset($GLOBALS['TSFE']) && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController && !empty($GLOBALS['TSFE']->page)) ? $GLOBALS['TSFE']->get_cache_timeout() : self::DEFAULT_CACHE_LIFETIME;
-
-        return $cacheTimeout + GeneralUtility::makeInstance(\TYPO3\CMS\Core\Context\Context::class)->getPropertyFromAspect('date', 'timestamp') + $this->extensionConfiguration->getCacheTimeAdd();
+        return $this->get_cache_timeout($this->getRequest()) + GeneralUtility::makeInstance(\TYPO3\CMS\Core\Context\Context::class)->getPropertyFromAspect('date', 'timestamp') + $this->extensionConfiguration->getCacheTimeAdd();
     }
 
     /**
@@ -209,5 +207,26 @@ class SecureLinkFactory implements SingletonInterface
         $event = new EnrichPayloadEvent($payload, $this->token);
         $event = $this->eventDispatcher->dispatch($event);
         $payload = $event->getPayload();
+    }
+
+    protected function get_cache_timeout(?ServerRequestInterface $request): int
+    {
+        if ($request instanceof ServerRequestInterface) {
+            if (ApplicationType::fromRequest($request)->isFrontend()) {
+                $pageInformation = $request->getAttribute('frontend.page.information');
+                $typoScriptConfigArray = $request->getAttribute('frontend.typoscript')?->getConfigArray();
+                if ($pageInformation && $typoScriptConfigArray) {
+                    return GeneralUtility::makeInstance(CacheLifetimeCalculator::class)
+                        ->calculateLifetimeForPage(
+                            $pageInformation->getId(),
+                            $pageInformation->getPageRecord(),
+                            $typoScriptConfigArray,
+                            self::DEFAULT_CACHE_LIFETIME,
+                            GeneralUtility::makeInstance(Context::class)
+                        );
+                }
+            }
+        }
+        return self::DEFAULT_CACHE_LIFETIME;
     }
 }

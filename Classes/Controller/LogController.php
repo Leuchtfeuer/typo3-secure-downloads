@@ -34,13 +34,12 @@ class LogController extends ActionController
     public function __construct(
         protected ModuleTemplateFactory $moduleTemplateFactory,
         protected LogRepository $logRepository,
+        protected PageRenderer $pageRenderer,
     ) {}
 
-    public function initializeAction(): ResponseInterface
+    public function initializeAction(): void
     {
-        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        $pageRenderer->addCssFile('EXT:secure_downloads/Resources/Public/Styles/Styles.css');
-        return $this->htmlResponse('');
+        $this->pageRenderer->addCssFile('EXT:secure_downloads/Resources/Public/Styles/Styles.css');
     }
 
     /**
@@ -94,7 +93,17 @@ class LogController extends ActionController
             'totalResultCount' => $totalResultsCount,
             'isRoot' => $pageId == 0,
         ]);
-        return $moduleTemplate->renderResponse('List');
+        return $moduleTemplate->renderResponse('Log/List');
+    }
+
+    public function clearAction(int $page = 0): ResponseInterface
+    {
+        if ($page > 0) {
+            $this->logRepository->clearLogForPage($page);
+        } else {
+            $this->logRepository->clearLog();
+        }
+        return $this->redirect('list');
     }
 
     /**
@@ -109,8 +118,8 @@ class LogController extends ActionController
             ->select('users.uid as uid', 'users.username as username')
             ->from('tx_securedownloads_domain_model_log', 'log')
             ->join('log', 'fe_users', 'users', $queryBuilder->expr()->eq('users.uid', 'log.user'))
-            ->where($queryBuilder->expr()->neq('user', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)))
-            ->resetQueryPart('orderBy')
+            ->where($queryBuilder->expr()->neq('user', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)))
+            ->resetOrderBy()
             ->groupBy('uid', 'username')
             ->executeQuery()
             ->fetchAllAssociative();
@@ -127,7 +136,7 @@ class LogController extends ActionController
         return $queryBuilder
             ->select('media_type')
             ->from('tx_securedownloads_domain_model_log')
-            ->resetQueryPart('orderBy')
+            ->resetOrderBy()
             ->groupBy('media_type')->orderBy('media_type', 'ASC')
             ->executeQuery()
             ->fetchAllAssociative();

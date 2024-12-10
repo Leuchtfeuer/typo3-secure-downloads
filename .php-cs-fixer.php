@@ -25,7 +25,6 @@ $config
     ->exclude('Configuration')
     ->exclude('Libraries')
     ->exclude('Resources')
-    ->exclude('Migrations')
     ->notName('ext_emconf.php')
     ->notName('ext_tables.php')
     ->notName('ext_localconf.php')

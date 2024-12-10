@@ -85,7 +85,7 @@ class LogRepository extends Repository
 
         return (int)($queryBuilder
             ->count('uid')
-            ->resetQueryPart('orderBy')
+            ->resetOrderBy()
             ->executeQuery()
             ->fetchOne() ?? 0);
     }
@@ -117,7 +117,7 @@ class LogRepository extends Repository
 
         return (float)($queryBuilder
             ->selectLiteral('SUM(file_size) AS sum')
-            ->resetQueryPart('orderBy')
+            ->resetOrderBy()
             ->executeQuery()
             ->fetchOne() ?? 0.0);
     }
@@ -249,5 +249,20 @@ class LogRepository extends Repository
             ->insert(self::TABLENAME)
             ->values($log->toArray())
             ->executeStatement();
+    }
+
+    public function clearLog(): void
+    {
+        $this->connectionPool->getConnectionForTable(self::TABLENAME)->truncate(self::TABLENAME);
+    }
+
+    public function clearLogForPage(int $page): void
+    {
+        if ($page > 0) {
+            $this->connectionPool->getConnectionForTable(self::TABLENAME)->delete(
+                self::TABLENAME,
+                ['page' => $page]
+            );
+        }
     }
 }

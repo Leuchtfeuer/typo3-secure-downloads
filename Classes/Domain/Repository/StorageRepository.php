@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Leuchtfeuer\SecureDownloads\Domain\Repository;
 
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\ParameterType;
 use Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -68,7 +69,7 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
             ->update($this->table)
             ->set('is_public', 0)
             ->set('driver', SecureDownloadsDriver::DRIVER_SHORT_NAME)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($storageId, \PDO::PARAM_INT)))
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($storageId, ParameterType::INTEGER)))
             ->executeStatement();
 
         return $storageId;
