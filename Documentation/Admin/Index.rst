@@ -77,14 +77,17 @@ You find some example `.htaccess` files below and in the
 `Resources/Private/Examples <https://github.com/Leuchtfeuer/typo3-secure-downloads/tree/master/Resources/Private/Examples>`__
 directory of this extension.
 
+Furthermore, you find a working nginx.conf file for ddev boxes in the same directory.
+
 .. _admin-accessConfiguration-exampleConfiguration:
 
 Example Configuration
 ---------------------
 Please make sure to adapt the file match pattern as configured in :ref:`admin-extensionConfiguration-securedFiletypes`.
 
-**.htaccess deny**
-::
+..  code-block:: apache
+    :caption: .htaccess deny
+
    # Apache 2.4
    <IfModule mod_authz_core.c>
      <FilesMatch "\.([pP][dD][fF]|[jJ][pP][eE]?[gG]|[gG][iI][fF]|[pP][nN][gG]|[oO][dD][tT]|[pP][pP][tT][xX]?|[dD][oO][cC][xX]?|[xX][lL][sS][xX]?|[zZ][iI][pP]|[rR][aA][rR]|[tT][gG][zZ]|[tT][aA][rR]|[gG][zZ])$">
@@ -100,8 +103,9 @@ Please make sure to adapt the file match pattern as configured in :ref:`admin-ex
      </FilesMatch>
    </IfModule>
 
-**.htaccess allow**
-::
+..  code-block:: apache
+    :caption: .htaccess allow
+
    # Apache 2.4
    <IfModule mod_authz_core.c>
      <FilesMatch "\.([pP][dD][fF]|[jJ][pP][eE]?[gG]|[gG][iI][fF]|[pP][nN][gG]|[oO][dD][tT]|[pP][pP][tT][xX]?|[dD][oO][cC][xX]?|[xX][lL][sS][xX]?|[zZ][iI][pP]|[rR][aA][rR]|[tT][gG][zZ]|[tT][aA][rR]|[gG][zZ])$">
@@ -116,6 +120,28 @@ Please make sure to adapt the file match pattern as configured in :ref:`admin-ex
        Allow from all
      </FilesMatch>
    </IfModule>
+
+..  code-block:: nginx
+    :caption: nginx configuration
+
+   # Deny specific files in secured folder
+   location ~ fileadmin/secure/.*\.(?:[pP][dD][fF]|[jJ][pP][eE]?[gG]|[gG][iI][fF]|[pP][nN][gG]|[oO][dD][tT]|[pP][pP][tT][xX]?|[dD][oO][cC][xX]?|[xX][lL][sS][xX]?|[zZ][iI][pP]|[rR][aA][rR]|[tT][gG][zZ]|[tT][aA][rR]|[gG][zZ])$ {
+     deny all;
+   }
+
+   # Alternative: deny all files in secured folder
+   location ~ fileadmin/secure/
+     deny all;
+   }
+
+   # Some nginx configurations try to process media files directly. The secured uri path must be excluded from this rule
+   # Media: images, icons, video, audio, HTC
+   location ~ ^(?:fileadmin/|uploads/|_assets/|sdl/).+\.(?:jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm|webp|htc)$ {
+     expires 1M;
+     access_log off;
+     add_header Cache-Control "public";
+   }
+
 
 .. toctree::
     :maxdepth: 3
