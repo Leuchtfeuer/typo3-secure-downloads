@@ -1,0 +1,42 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 7.0.1 - 2024/12/19
+==========================
+
+This release is a maintenance release.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v7.0.1>`__.
+
+Added
+=====
+
+* Add documentation for nginx configuration
+
+Changed
+=======
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+2024-12-19 [Task] Add documentation for nginx configuration [TER-273] (#227) (Commit 4cf2c72 by bmheins)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Oliver Heins
+*   Niklas Grieger
+
+Thank you very much for your support. The next drink is on us! 🍻
