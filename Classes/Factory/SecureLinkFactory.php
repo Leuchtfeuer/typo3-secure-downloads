@@ -80,7 +80,7 @@ class SecureLinkFactory implements SingletonInterface
 
     private function getRequest(): ?ServerRequestInterface
     {
-        return $GLOBALS['TYPO3_REQUEST'];
+        return $GLOBALS['TYPO3_REQUEST'] ?? null;
     }
 
     /**
