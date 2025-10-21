@@ -17,13 +17,12 @@ call_user_func(
         ##################
         #   FAL DRIVER   #
         ##################
-        $driverRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\Driver\DriverRegistry::class);
-        $driverRegistry->registerDriverClass(
-            \Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver::class,
-            \Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver::DRIVER_SHORT_NAME,
-            \Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver::DRIVER_NAME,
-            'FILE:EXT:secure_downloads/Configuration/Resource/Driver/SecureDownloadsDriverFlexForm.xml'
-        );
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers']['secure_downloads'] =[
+            'class' => \Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver::class,
+            'shortName' => \Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver::DRIVER_SHORT_NAME,
+            'flexFormDS' => 'FILE:EXT:secure_downloads/Configuration/Resource/Driver/SecureDownloadsDriverFlexForm.xml',
+            'label' => \Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver::DRIVER_NAME,
+        ];
 
         // Register default token
         \Leuchtfeuer\SecureDownloads\Registry\TokenRegistry::register(
