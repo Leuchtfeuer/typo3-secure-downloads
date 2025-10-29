@@ -1,0 +1,50 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 6.1.2 - 2025/10/29
+==========================
+
+This release is a bugfix and maintenance release.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v6.1.2>`__.
+
+Added
+=====
+
+Changed
+=======
+
+* Allow PHP 8.4 compatibility
+* Fix typo in documentation
+* Register FAL driver correctly
+* Handle missing request object in SecureLinkFactory
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+2025-10-29 [FEATURE] Allow PHP 8.4 compatibility [#242] (Commit f6f1ec1 by Oliver Heins)
+2025-10-21 [DOCS] Fix incorrect URL encoding function in example [TER-330] (#247) (Commit 601fb3d by Oliver Heins)
+2025-10-21 [BUGFIX] Register FAL driver via TYPO3_CONF_VARS instead of DriverRegistry [TER-328] [#233] (#244) (Commit 4fe51e7 by Oliver Heins)
+2025-09-08 Merge pull request #236 from alexander-nitsche-governikus/v6-patch (Commit e101ee7 by Marcus Balasch)
+2025-08-03 [BUGFIX] Handle missing request object in SecureLinkFactory (Commit 88a041a by Nitsche, Alexander)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Alexander Nitsche
+*   Marcus Balasch
+*   Oliver Heins
+
+Thank you very much for your support. The next drink is on us! 🍻
