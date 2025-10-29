@@ -1,0 +1,41 @@
+.. include:: ../../Includes.txt
+
+==========================
+Version 5.0.7 - 2025/10/29
+==========================
+
+Maintenance release
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v5.0.7>`__.
+
+Added
+=====
+
+Changed
+=======
+
+* Fix typo in documentation
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release:
+
+    2025-10-21 [DOCS] Fix incorrect URL encoding function in example [TER-330] (#248) (Commit 148943a by Oliver Heins)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Oliver Heins
+
+Thank you very much for your support. The next drink is on us! 🍻
