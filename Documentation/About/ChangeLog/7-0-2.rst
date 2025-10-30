@@ -15,7 +15,10 @@ Download this version from the `TYPO3 extension repository <https://extensions.t
 Added
 =====
 
-* Add documentation for nginx configuration
+* Fix typo in documentation
+* Register FAL driver correctly
+* Prevent undefined array acces
+* Remove accidental citations
 
 Changed
 =======
