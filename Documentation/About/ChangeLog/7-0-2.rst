@@ -1,0 +1,49 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 7.0.2 - 2025/10/29
+==========================
+
+This release is a bugfix and maintenance release.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v7.0.2>`__.
+
+Added
+=====
+
+* Fix typo in documentation
+* Register FAL driver correctly
+* Prevent undefined array acces
+* Remove accidental citations
+
+Changed
+=======
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+2025-10-21 [DOCS] Fix incorrect URL encoding function in example [TER-330] (#246) (Commit 76f26b5 by Oliver Heins)
+2025-10-21 [BUGFIX] Register FAL driver via TYPO3_CONF_VARS instead of DriverRegistry [TER-328] [#233] (#245) (Commit 30c2001 by Oliver Heins)
+2025-10-21 [BUGFIX] prevent undefined array access (#231) (Commit a722933 by Achim Fritz)
+2025-09-22 [DOCS] Remove accidental citations on the start page (#243) (Commit 8a0e631 by Lina Wolf)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Lina Wolf
+*   Achim Fritz
+*   Oliver Heins
+
+Thank you very much for your support. The next drink is on us! 🍻
