@@ -164,8 +164,8 @@ class FileDelivery implements SingletonInterface
     {
         return GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
             $request,
-            'Access denied!',
-            [$reason]
+            $reason,
+            ['code' => PageAccessFailureReasons::ACCESS_DENIED_PAGE_NOT_RESOLVED]
         );
     }
 
