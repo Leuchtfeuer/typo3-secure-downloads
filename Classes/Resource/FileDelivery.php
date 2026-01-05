@@ -82,7 +82,9 @@ class FileDelivery implements SingletonInterface
             return $this->getAccessDeniedResponse($request, 'Backend link detected.');
         }
 
-        $file = GeneralUtility::getFileAbsFileName(ltrim($this->token->getFile(), '/'));
+        if ($this->isFalIdentifier($this->token->getFile())) {
+            $file = GeneralUtility::getFileAbsFileName(ltrim($this->token->getFile(), '/'));
+        }
         $fileName = basename($file);
 
         if (Environment::isWindows()) {
@@ -91,13 +93,12 @@ class FileDelivery implements SingletonInterface
 
         $this->dispatchAfterFileRetrievedEvent($file, $fileName);
 
-        if (file_exists($file)) {
-            $fileObject = $this->resourceFactory->retrieveFileOrFolderObject($file);
-
+        $fileObject = $this->resourceFactory->retrieveFileOrFolderObject($file);
+        if (file_exists($file) || $fileObject instanceof File) {
             if ($this->extensionConfiguration->isLog()) {
                 $this->token->log([
-                    'fileSize' => $fileSize = (int)filesize($file),
-                    'mimeType' => (new FileInfo($file))->getMimeType()
+                    'fileSize' => $fileObject?->getSize() ?: (int)filesize($file),
+                    'mimeType' => $fileObject?->getMimeType() ?: (new FileInfo($file))->getMimeType()
                         ?: $this->guessMimeTypeByFileExtension($file)
                             ?: MimeTypes::DEFAULT_MIME_TYPE,
                 ]);
@@ -376,5 +377,15 @@ class FileDelivery implements SingletonInterface
         $event = $this->eventDispatcher->dispatch($event);
         $outputFunction = $event->getOutputFunction();
         $header = $event->getHeader();
+    }
+
+    /**
+     * Checks if the token value is a FAL identifier
+     * Either combined identifier format: "1:path/file.jpg" (storageUID:path)
+     * or UID Identifier format: "file:123"
+     */
+    protected function isFalIdentifier(string $value): bool
+    {
+        return str_contains($value, ':') && ( preg_match('/^\d+:/', $value) || str_starts_with($value, 'file:'));
     }
 }
