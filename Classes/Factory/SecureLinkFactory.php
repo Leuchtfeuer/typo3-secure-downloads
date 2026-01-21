@@ -221,7 +221,6 @@ class SecureLinkFactory implements SingletonInterface
                             $pageInformation->getId(),
                             $pageInformation->getPageRecord(),
                             $typoScriptConfigArray,
-                            self::DEFAULT_CACHE_LIFETIME,
                             GeneralUtility::makeInstance(Context::class)
                         );
                 }

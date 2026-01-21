@@ -64,9 +64,9 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
     {
         $storageId = parent::createLocalStorage($name, $basePath, $pathType, $description, $default);
 
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_storage');
         $queryBuilder
-            ->update($this->table)
+            ->update('sys_file_storage')
             ->set('is_public', 0)
             ->set('driver', SecureDownloadsDriver::DRIVER_SHORT_NAME)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($storageId, ParameterType::INTEGER)))
@@ -82,11 +82,11 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
      */
     private function isStorageDriverExisting(): bool
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_storage');
 
         $result = $queryBuilder
             ->count('*')
-            ->from($this->table)
+            ->from('sys_file_storage')
             ->where($queryBuilder->expr()->eq('driver', $queryBuilder->createNamedParameter(SecureDownloadsDriver::DRIVER_SHORT_NAME)))
             ->executeQuery();
 
