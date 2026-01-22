@@ -10,7 +10,6 @@ return [
         'versioningWS' => false,
         'enablecolumns' => [],
         'hideTable' => true,
-        'searchFields' => '',
         'iconfile' => 'EXT:secure_downloads/Resources/Public/Icons/tx_securedownloads_domain_model_log.png',
     ],
     'types' => [

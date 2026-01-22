@@ -8,12 +8,6 @@ call_user_func(
             require \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extensionKey) . 'Libraries/vendor/autoload.php';
         }
 
-        // Load extension configuration and add link prefix to additionalAbsRefPrefixDirectories
-        $GLOBALS['TYPO3_CONF_VARS']['FE']['additionalAbsRefPrefixDirectories'] .= sprintf(
-            ',%s',
-            (new \Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration())->getLinkPrefix()
-        );
-
         ##################
         #   FAL DRIVER   #
         ##################
