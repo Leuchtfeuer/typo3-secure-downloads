@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use TYPO3\CMS\Scheduler\Task\TableGarbageCollectionTask;
 
-defined('TYPO3') or die();
+defined('TYPO3') || die();
 
 if (isset($GLOBALS['TCA']['tx_scheduler_task'])) {
     // @extensionScannerIgnoreLine

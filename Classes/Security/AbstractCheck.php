@@ -63,7 +63,7 @@ abstract class AbstractCheck
 
         $groupCheckDirectories = $this->extensionConfiguration->getGroupCheckDirs();
 
-        if (empty($groupCheckDirectories) || $groupCheckDirectories === ExtensionConfiguration::FILE_TYPES_WILDCARD) {
+        if (in_array($groupCheckDirectories, ['', '0', ExtensionConfiguration::FILE_TYPES_WILDCARD], true)) {
             // Return true because group check is enabled and all protected directories are covered by the check
             return true;
         }

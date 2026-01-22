@@ -27,7 +27,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Core\Http\Response;
@@ -53,7 +52,8 @@ class FileDelivery implements SingletonInterface
     public function __construct(
         protected ExtensionConfiguration $extensionConfiguration,
         protected EventDispatcherInterface $eventDispatcher,
-        protected ResourceFactory $resourceFactory
+        protected ResourceFactory $resourceFactory,
+        private readonly \TYPO3\CMS\Core\Context\Context $context
     ) {}
 
     /**
@@ -86,7 +86,7 @@ class FileDelivery implements SingletonInterface
         $fileName = basename($file);
 
         if (Environment::isWindows()) {
-            $file = utf8_decode($file);
+            $file = mb_convert_encoding($file, 'ISO-8859-1');
         }
 
         $this->dispatchAfterFileRetrievedEvent($file, $fileName);
@@ -209,7 +209,7 @@ class FileDelivery implements SingletonInterface
 
     protected function isBackendUser(): bool
     {
-        $context = GeneralUtility::makeInstance(Context::class);
+        $context = $this->context;
         $backendUser = $context->getAspect('backend.user');
 
         return $backendUser->get('id') !== 0;
@@ -242,7 +242,7 @@ class FileDelivery implements SingletonInterface
     protected function guessMimeTypeByFileExtension(string $file): false|string
     {
         $lowercaseFileExtension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if (!empty(MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension])) {
+        if (isset(MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension]) && (MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension] !== '' && MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension] !== '0')) {
             return MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension];
         }
         return false;
@@ -259,7 +259,7 @@ class FileDelivery implements SingletonInterface
     {
         $forceDownloadTypes = $this->extensionConfiguration->getForceDownloadTypes();
 
-        if ($this->extensionConfiguration->isForceDownload() && !empty($forceDownloadTypes)) {
+        if ($this->extensionConfiguration->isForceDownload() && ($forceDownloadTypes !== '' && $forceDownloadTypes !== '0')) {
             if ($forceDownloadTypes === ExtensionConfiguration::FILE_TYPES_WILDCARD) {
                 return true;
             }
@@ -312,16 +312,13 @@ class FileDelivery implements SingletonInterface
      */
     protected function outputFile(string $outputFunction, string $file): ?StreamInterface
     {
-        if ($outputFunction === ExtensionConfiguration::OUTPUT_NGINX) {
-            if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'nginx')) {
-                $this->header['X-Accel-Redirect'] = sprintf(
-                    '%s/%s',
-                    rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
-                    $file
-                );
-
-                return null;
-            }
+        if ($outputFunction === ExtensionConfiguration::OUTPUT_NGINX && (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'nginx'))) {
+            $this->header['X-Accel-Redirect'] = sprintf(
+                '%s/%s',
+                rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
+                $file
+            );
+            return null;
         }
 
         return new Stream($file);

@@ -15,9 +15,9 @@ namespace Leuchtfeuer\SecureDownloads;
 
 final class MimeTypes
 {
-    public const DEFAULT_MIME_TYPE = 'application/octet-stream';
+    public const string DEFAULT_MIME_TYPE = 'application/octet-stream';
 
-    public const ADDITIONAL_MIME_TYPES = [
+    public const array ADDITIONAL_MIME_TYPES = [
         // MS-Office filetypes
         'pps' => 'application/vnd.ms-powerpoint',
         'doc' => 'application/msword',
