@@ -13,8 +13,10 @@ namespace Leuchtfeuer\SecureDownloads\Tests\Unit\UserFunctions;
 
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\UserFunctions\CheckConfiguration;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
 
+#[AllowMockObjectsWithoutExpectations]
 class CheckConfigurationTest extends TestCase
 {
     /**
