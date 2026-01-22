@@ -24,7 +24,7 @@
     }
   ],
   "require": {
-    "php": ">= 8.3 < 8.6",
+    "php": ">= 8.2 <= 8.5.99",
     "typo3/cms-backend": "^14.1 || dev-main",
     "typo3/cms-core": "^14.1 || dev-main",
     "typo3/cms-extbase": "^14.1 || dev-main",
