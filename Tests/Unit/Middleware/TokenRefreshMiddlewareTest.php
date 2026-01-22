@@ -173,6 +173,7 @@ class TokenRefreshMiddlewareTest extends TestCase
 
         $currentUser = new UserAspect();
 
+        // @extensionScannerIgnoreLine
         $context->expects(self::once())
             ->method('getAspect')
             ->with('frontend.user')
@@ -223,6 +224,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         $mockUser->user = ['uid' => 1];
         $currentUser = new UserAspect($mockUser);
 
+        // @extensionScannerIgnoreLine
         $context->expects(self::any())
             ->method('getAspect')
             ->with('frontend.user')
@@ -278,6 +280,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         $mockUser->user = ['uid' => 1];
         $currentUser = new UserAspect($mockUser, [0, -2, 1]);
 
+        // @extensionScannerIgnoreLine
         $context->expects(self::any())
             ->method('getAspect')
             ->with('frontend.user')
@@ -360,6 +363,7 @@ class TokenRefreshMiddlewareTest extends TestCase
         $mockUser->user = ['uid' => 2];
         $currentUser = new UserAspect($mockUser, [0, -2, 1]);
 
+        // @extensionScannerIgnoreLine
         $context->expects(self::any())
             ->method('getAspect')
             ->with('frontend.user')
