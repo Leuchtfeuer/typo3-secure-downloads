@@ -28,10 +28,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use TYPO3\CMS\Core\Context\Context;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
+use TYPO3\CMS\Core\Resource\AbstractFile;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -82,49 +82,49 @@ class FileDelivery implements SingletonInterface
             return $this->getAccessDeniedResponse($request, 'Backend link detected.');
         }
 
-        $file = GeneralUtility::getFileAbsFileName(ltrim($this->token->getFile(), '/'));
-        $fileName = basename($file);
+        $fileObject = $this->resourceFactory->getFileObjectFromCombinedIdentifier($this->token->getFile());
 
-        if (Environment::isWindows()) {
-            $file = utf8_decode($file);
+        if (!$fileObject instanceof AbstractFile) {
+            return $this->getFileNotFoundResponse($request, 'File does not exist!');
         }
 
-        $this->dispatchAfterFileRetrievedEvent($file, $fileName);
-
-        if (file_exists($file)) {
-            $fileObject = $this->resourceFactory->retrieveFileOrFolderObject($file);
-
-            if ($this->extensionConfiguration->isLog()) {
-                $this->token->log([
-                    'fileSize' => $fileSize = (int)filesize($file),
-                    'mimeType' => (new FileInfo($file))->getMimeType()
-                        ?: $this->guessMimeTypeByFileExtension($file)
-                            ?: MimeTypes::DEFAULT_MIME_TYPE,
-                ]);
-            }
-
-            if ($fileObject instanceof File) {
-                $response = $fileObject
-                    ->getStorage()
-                    ->streamFile(
-                        $fileObject,
-                        $this->shouldForceDownload($fileObject->getExtension()),
-                        $fileName
-                    );
-                ob_end_clean();
-
-                return $response;
-            }
-
-            return new Response(
-                $this->getResponseBody($file, $fileName),
-                200,
-                $this->header,
-                ''
-            );
+        if (!$fileObject->getStorage()->checkFileActionPermission('read', $fileObject)) {
+            return $this->getFileNotFoundResponse($request, 'File does not exist!');
         }
 
-        return $this->getFileNotFoundResponse($request, 'File does not exist!');
+        $fileName = $fileObject->getName();
+        $filePath = $fileObject->getStorage()->getFileForLocalProcessing($fileObject);
+
+        $this->dispatchAfterFileRetrievedEvent($filePath, $fileName);
+
+        if ($this->extensionConfiguration->isLog()) {
+            $this->token->log([
+                'fileSize' => $fileObject->getSize() ?: (int)filesize($filePath),
+                'mimeType' => $fileObject->getMimeType() ?: (new FileInfo($filePath))->getMimeType()
+                    ?: $this->guessMimeTypeByFileExtension($filePath)
+                        ?: MimeTypes::DEFAULT_MIME_TYPE,
+            ]);
+        }
+
+        if ($fileObject instanceof File) {
+            $response = $fileObject
+                ->getStorage()
+                ->streamFile(
+                    $fileObject,
+                    $this->shouldForceDownload($fileObject->getExtension()),
+                    $fileName
+                );
+            ob_end_clean();
+
+            return $response;
+        }
+
+        return new Response(
+            $this->getResponseBody($filePath, $fileName),
+            200,
+            $this->header,
+            ''
+        );
     }
 
     /**

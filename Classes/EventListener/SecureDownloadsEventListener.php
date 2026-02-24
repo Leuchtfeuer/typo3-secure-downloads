@@ -48,6 +48,9 @@ class SecureDownloadsEventListener implements SingletonInterface
                 $originalPathShouldBeSecured = false;
                 if ($driver instanceof SecureDownloadsDriver) {
                     $driver->determineSecureDownloadsDriverBaseUrl();
+
+                    $identifier = $resource->getCombinedIdentifier();
+
                 }
                 if ($resource instanceof ProcessedFile) {
                     // @extensionScannerIgnoreLine
@@ -61,7 +64,8 @@ class SecureDownloadsEventListener implements SingletonInterface
                     $event->setPublicUrl($securedUrl);
                 }
                 if ($driver instanceof SecureDownloadsDriver) {
-                    $event->setPublicUrl('/' . $event->getPublicUrl());
+                    $securedUrl = $this->secureDownloadService->getResourceUrl($resource->getCombinedIdentifier());
+                    $event->setPublicUrl('/' . $securedUrl);
                 }
             } catch (Exception) {
                 // Do nothing.
