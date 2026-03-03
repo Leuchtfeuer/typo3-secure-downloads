@@ -56,12 +56,13 @@ class SecureDownloadsEventListener implements SingletonInterface
                 }
                 // @extensionScannerIgnoreLine
                 $publicUrl = $driver->getPublicUrl($resource->getIdentifier()) ?? '';
-                if ($originalPathShouldBeSecured || $driver instanceof SecureDownloadsDriver || $this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
+                if ($originalPathShouldBeSecured || $this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
                     $securedUrl = $this->secureDownloadService->getResourceUrl($publicUrl);
                     $event->setPublicUrl($securedUrl);
                 }
                 if ($driver instanceof SecureDownloadsDriver) {
-                    $event->setPublicUrl('/' . $event->getPublicUrl());
+                    $securedUrl = $this->secureDownloadService->getResourceUrl($resource->getCombinedIdentifier());
+                    $event->setPublicUrl($securedUrl);
                 }
             } catch (Exception) {
                 // Do nothing.
