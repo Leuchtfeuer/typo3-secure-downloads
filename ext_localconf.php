@@ -1,57 +1,55 @@
 <?php
+
+use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\DefaultToken;
+use Leuchtfeuer\SecureDownloads\Registry\CheckRegistry;
+use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
+use Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver;
+use Leuchtfeuer\SecureDownloads\Security\UserCheck;
+use Leuchtfeuer\SecureDownloads\Security\UserGroupCheck;
+use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 defined('TYPO3') || die('Access denied.');
 
 call_user_func(
     function ($extensionKey) {
         // Load libraries when TYPO3 is not in composer mode
-        if (\TYPO3\CMS\Core\Core\Environment::isComposerMode() === false) {
-            require \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extensionKey) . 'Libraries/vendor/autoload.php';
+        if (Environment::isComposerMode() === false) {
+            require ExtensionManagementUtility::extPath($extensionKey) . 'Libraries/vendor/autoload.php';
         }
-
-        // Load extension configuration and add link prefix to additionalAbsRefPrefixDirectories
-        $GLOBALS['TYPO3_CONF_VARS']['FE']['additionalAbsRefPrefixDirectories'] .= sprintf(
-            ',%s',
-            (new \Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration())->getLinkPrefix()
-        );
 
         ##################
         #   FAL DRIVER   #
         ##################
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers']['sdl'] =[
-            'class' => \Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver::class,
-            'shortName' => \Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver::DRIVER_SHORT_NAME,
+            'class' => SecureDownloadsDriver::class,
+            'shortName' => SecureDownloadsDriver::DRIVER_SHORT_NAME,
             'flexFormDS' => 'FILE:EXT:secure_downloads/Configuration/Resource/Driver/SecureDownloadsDriverFlexForm.xml',
-            'label' => \Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver::DRIVER_NAME,
+            'label' => SecureDownloadsDriver::DRIVER_NAME,
         ];
 
         // Register default token
-        \Leuchtfeuer\SecureDownloads\Registry\TokenRegistry::register(
+        TokenRegistry::register(
             'tx_securedownloads_default',
-            \Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\DefaultToken::class,
+            DefaultToken::class,
             0,
             false
         );
 
         // Register default checks
-        \Leuchtfeuer\SecureDownloads\Registry\CheckRegistry::register(
+        CheckRegistry::register(
             'tx_securedownloads_group',
-            \Leuchtfeuer\SecureDownloads\Security\UserGroupCheck::class,
+            UserGroupCheck::class,
             10,
             true
         );
 
-        \Leuchtfeuer\SecureDownloads\Registry\CheckRegistry::register(
+        CheckRegistry::register(
             'tx_securedownloads_user',
-            \Leuchtfeuer\SecureDownloads\Security\UserCheck::class,
+            UserCheck::class,
             20,
             true
         );
-
-        // Scheduler task
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\TYPO3\CMS\Scheduler\Task\TableGarbageCollectionTask::class]['options']['tables']['tx_securedownloads_domain_model_log'] = [
-            'dateField' => 'tstamp',
-            'expirePeriod' => '180'
-        ];
 
     }, 'secure_downloads'
 );

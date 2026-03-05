@@ -32,10 +32,10 @@
         }
     },
     "require-dev": {
-        "guzzlehttp/guzzle": "^6.5||^7.4",
-        "phpspec/prophecy-phpunit": "^1.1",
-        "phpunit/phpunit": "^7.5||^9.5",
-        "psr/cache": "^1.0||^2.0",
+        "guzzlehttp/guzzle": "^7.4",
+        "phpspec/prophecy-phpunit": "^2.0",
+        "phpunit/phpunit": "^9.5",
+        "psr/cache": "^2.0||^3.0",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0"
     }

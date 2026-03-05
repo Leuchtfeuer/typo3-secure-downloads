@@ -123,8 +123,6 @@ class LogRepository extends Repository
     }
 
     /**
-     * @param QueryBuilder $queryBuilder
-     * @param Filter|null $filter
      * @return string[]
      */
     protected function getFilterConstraints(QueryBuilder $queryBuilder, ?Filter $filter): array
@@ -142,9 +140,8 @@ class LogRepository extends Repository
 
                 // User and Page
                 $constraints = array_merge($constraints, $this->applyEqualPropertyToFilter($filter->getFeUserId(), 'user', $queryBuilder));
-                $constraints = array_merge($constraints, $this->applyEqualPropertyToFilter($filter->getPageId(), 'page', $queryBuilder));
 
-                return $constraints;
+                return array_merge($constraints, $this->applyEqualPropertyToFilter($filter->getPageId(), 'page', $queryBuilder));
             } catch (InvalidQueryException) {
                 // Do nothing for now.
             }
@@ -153,8 +150,6 @@ class LogRepository extends Repository
     }
 
     /**
-     * @param string $mediaType
-     * @param QueryBuilder $queryBuilder
      * @return string[]
      */
     protected function applyMediaTypePropertyToFilter(string $mediaType, QueryBuilder $queryBuilder): array
@@ -166,8 +161,6 @@ class LogRepository extends Repository
     }
 
     /**
-     * @param Filter $filter
-     * @param QueryBuilder $queryBuilder
      * @return string[]
      */
     protected function applyUserTypePropertyToFilter(Filter $filter, QueryBuilder $queryBuilder): array
@@ -183,8 +176,6 @@ class LogRepository extends Repository
     }
 
     /**
-     * @param Filter $filter
-     * @param QueryBuilder $queryBuilder
      * @return string[]
      */
     protected function applyPeriodPropertyToFilter(Filter $filter, QueryBuilder $queryBuilder): array
@@ -202,9 +193,6 @@ class LogRepository extends Repository
     }
 
     /**
-     * @param int $property
-     * @param string $propertyName
-     * @param QueryBuilder $queryBuilder
      * @return string[]
      */
     protected function applyEqualPropertyToFilter(int $property, string $propertyName, QueryBuilder $queryBuilder): array

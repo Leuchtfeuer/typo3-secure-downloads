@@ -25,6 +25,7 @@ class EncodeCache extends AbstractCache
      *
      * @return string The cache data or an empty string if cache entry does not exist.
      */
+    #[\Override]
     public static function getCache(string $key): string
     {
         return self::$_cache[$key] ?? '';

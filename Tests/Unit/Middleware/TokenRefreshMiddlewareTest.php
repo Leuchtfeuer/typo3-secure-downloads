@@ -16,6 +16,7 @@ use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\DefaultToken;
 use Leuchtfeuer\SecureDownloads\Factory\SecureLinkFactory;
 use Leuchtfeuer\SecureDownloads\Middleware\TokenRefreshMiddleware;
 use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,7 +24,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Http\HtmlResponse;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
+#[AllowMockObjectsWithoutExpectations]
 class TokenRefreshMiddlewareTest extends TestCase
 {
     /**
@@ -168,19 +171,13 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $currentUser = $this->getMockBuilder(UserAspect::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $currentUser = new UserAspect();
 
+        // @extensionScannerIgnoreLine
         $context->expects(self::once())
             ->method('getAspect')
             ->with('frontend.user')
             ->willReturn($currentUser);
-
-        $currentUser->expects(self::once())
-            ->method('get')
-            ->with('id')
-            ->willReturn(0);
 
         $tokenRefreshMiddleWare = new TokenRefreshMiddleware($extensionConfiguration, $context);
 
@@ -223,19 +220,15 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $currentUser = $this->getMockBuilder(UserAspect::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockUser = $this->createMock(FrontendUserAuthentication::class);
+        $mockUser->user = ['uid' => 1];
+        $currentUser = new UserAspect($mockUser);
 
+        // @extensionScannerIgnoreLine
         $context->expects(self::any())
             ->method('getAspect')
             ->with('frontend.user')
             ->willReturn($currentUser);
-
-        $currentUser->expects(self::once())
-            ->method('get')
-            ->with('id')
-            ->willReturn(1);
 
         $tokenRefreshMiddleWare = new TokenRefreshMiddleware($extensionConfiguration, $context);
 
@@ -283,23 +276,15 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $currentUser = $this->getMockBuilder(UserAspect::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockUser = $this->createMock(FrontendUserAuthentication::class);
+        $mockUser->user = ['uid' => 1];
+        $currentUser = new UserAspect($mockUser, [0, -2, 1]);
 
+        // @extensionScannerIgnoreLine
         $context->expects(self::any())
             ->method('getAspect')
             ->with('frontend.user')
             ->willReturn($currentUser);
-
-        $currentUser->expects(self::any())
-            ->method('get')
-            ->with('id')
-            ->willReturn(1);
-
-        $currentUser->expects(self::any())
-            ->method('getGroupIds')
-            ->willReturn([0, -2 , 1]);
 
         $tokenRefreshMiddleWare = new TokenRefreshMiddleware($extensionConfiguration, $context);
 
@@ -374,23 +359,15 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $currentUser = $this->getMockBuilder(UserAspect::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockUser = $this->createMock(FrontendUserAuthentication::class);
+        $mockUser->user = ['uid' => 2];
+        $currentUser = new UserAspect($mockUser, [0, -2, 1]);
 
+        // @extensionScannerIgnoreLine
         $context->expects(self::any())
             ->method('getAspect')
             ->with('frontend.user')
             ->willReturn($currentUser);
-
-        $currentUser->expects(self::any())
-            ->method('get')
-            ->with('id')
-            ->willReturn(2);
-
-        $currentUser->expects(self::any())
-            ->method('getGroupIds')
-            ->willReturn([0, -2 , 1]);
 
         $tokenRefreshMiddleWare = new TokenRefreshMiddleware($extensionConfiguration, $context);
 

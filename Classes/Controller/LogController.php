@@ -24,7 +24,6 @@ use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -35,6 +34,7 @@ class LogController extends ActionController
         protected ModuleTemplateFactory $moduleTemplateFactory,
         protected LogRepository $logRepository,
         protected PageRenderer $pageRenderer,
+        private readonly \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool,
     ) {}
 
     public function initializeAction(): void
@@ -44,7 +44,6 @@ class LogController extends ActionController
 
     /**
      * @param Filter|null $filter The filter object
-     * @return ResponseInterface
      * @throws Exception
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws ExtensionConfigurationPathDoesNotExistException
@@ -91,7 +90,7 @@ class LogController extends ActionController
                 'nextPage' => $totalPages > $currentPage ? $currentPage + 1 : 0,
             ],
             'totalResultCount' => $totalResultsCount,
-            'isRoot' => $pageId == 0,
+            'isRoot' => $pageId === 0,
         ]);
         return $moduleTemplate->renderResponse('Log/List');
     }
@@ -112,7 +111,7 @@ class LogController extends ActionController
      */
     private function getUsers(): array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
 
         return $queryBuilder
             ->select('users.uid as uid', 'users.username as username')
@@ -131,7 +130,7 @@ class LogController extends ActionController
      */
     private function getFileTypes(): array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_securedownloads_domain_model_log');
 
         return $queryBuilder
             ->select('media_type')
@@ -149,7 +148,7 @@ class LogController extends ActionController
     {
         $serializedConstraint = $this->request->getAttribute('moduleData')->get('filter');
         $filter = null;
-        if (is_string($serializedConstraint) && !empty($serializedConstraint)) {
+        if (is_string($serializedConstraint) && ($serializedConstraint !== '' && $serializedConstraint !== '0')) {
             $filter = @unserialize($serializedConstraint, ['allowed_classes' => [Filter::class, \DateTime::class]]);
         }
         return $filter ?: GeneralUtility::makeInstance(Filter::class);

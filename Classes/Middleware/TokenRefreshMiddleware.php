@@ -42,7 +42,7 @@ class TokenRefreshMiddleware implements MiddlewareInterface
     /**
      * @var Context
      */
-    private $context;
+    private readonly object $context;
 
     public function __construct(?ExtensionConfiguration $extensionConfiguration = null, ?Context $context = null)
     {

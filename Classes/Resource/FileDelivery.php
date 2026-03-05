@@ -53,7 +53,8 @@ class FileDelivery implements SingletonInterface
     public function __construct(
         protected ExtensionConfiguration $extensionConfiguration,
         protected EventDispatcherInterface $eventDispatcher,
-        protected ResourceFactory $resourceFactory
+        protected ResourceFactory $resourceFactory,
+        protected Context $context
     ) {}
 
     /**
@@ -209,7 +210,7 @@ class FileDelivery implements SingletonInterface
 
     protected function isBackendUser(): bool
     {
-        $context = GeneralUtility::makeInstance(Context::class);
+        $context = $this->context;
         $backendUser = $context->getAspect('backend.user');
 
         return $backendUser->get('id') !== 0;
@@ -242,7 +243,7 @@ class FileDelivery implements SingletonInterface
     protected function guessMimeTypeByFileExtension(string $file): false|string
     {
         $lowercaseFileExtension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if (!empty(MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension])) {
+        if (isset(MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension]) && (MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension] !== '' && MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension] !== '0')) {
             return MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension];
         }
         return false;
@@ -259,7 +260,7 @@ class FileDelivery implements SingletonInterface
     {
         $forceDownloadTypes = $this->extensionConfiguration->getForceDownloadTypes();
 
-        if ($this->extensionConfiguration->isForceDownload() && !empty($forceDownloadTypes)) {
+        if ($this->extensionConfiguration->isForceDownload() && ($forceDownloadTypes !== '' && $forceDownloadTypes !== '0')) {
             if ($forceDownloadTypes === ExtensionConfiguration::FILE_TYPES_WILDCARD) {
                 return true;
             }
@@ -312,16 +313,13 @@ class FileDelivery implements SingletonInterface
      */
     protected function outputFile(string $outputFunction, string $file): ?StreamInterface
     {
-        if ($outputFunction === ExtensionConfiguration::OUTPUT_NGINX) {
-            if (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'nginx')) {
-                $this->header['X-Accel-Redirect'] = sprintf(
-                    '%s/%s',
-                    rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
-                    $file
-                );
-
-                return null;
-            }
+        if ($outputFunction === ExtensionConfiguration::OUTPUT_NGINX && (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'nginx'))) {
+            $this->header['X-Accel-Redirect'] = sprintf(
+                '%s/%s',
+                rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
+                $file
+            );
+            return null;
         }
 
         return new Stream($file);

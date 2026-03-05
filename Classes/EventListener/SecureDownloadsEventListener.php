@@ -82,24 +82,22 @@ class SecureDownloadsEventListener implements SingletonInterface
 
         if ($driverType === SecureDownloadsDriver::DRIVER_SHORT_NAME) {
             $overlayIdentifier = 'overlay-restricted';
-        } else {
-            if ($resource instanceof Folder) {
+        } elseif ($resource instanceof Folder) {
+            // @extensionScannerIgnoreLine
+            $publicUrl = $resource->getStorage()->getPublicUrl($resource) ?? $resource->getIdentifier();
+            if ($this->secureDownloadService->folderShouldBeSecured($publicUrl)) {
+                $overlayIdentifier = 'overlay-restricted';
+            }
+        } elseif ($resource instanceof File) {
+            try {
+                $folder = $resource->getParentFolder();
                 // @extensionScannerIgnoreLine
-                $publicUrl = $resource->getStorage()->getPublicUrl($resource) ?? $resource->getIdentifier();
-                if ($this->secureDownloadService->folderShouldBeSecured($publicUrl)) {
+                $publicUrl = ($folder->getStorage()->getPublicUrl($folder) ?? $folder->getIdentifier()) . $resource->getName();
+                if ($this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
                     $overlayIdentifier = 'overlay-restricted';
                 }
-            } elseif ($resource instanceof File) {
-                try {
-                    $folder = $resource->getParentFolder();
-                    // @extensionScannerIgnoreLine
-                    $publicUrl = ($folder->getStorage()->getPublicUrl($folder) ?? $folder->getIdentifier()) . $resource->getName();
-                    if ($this->secureDownloadService->pathShouldBeSecured($publicUrl)) {
-                        $overlayIdentifier = 'overlay-restricted';
-                    }
-                } catch (InsufficientFolderAccessPermissionsException) {
-                    return;
-                }
+            } catch (InsufficientFolderAccessPermissionsException) {
+                return;
             }
         }
 

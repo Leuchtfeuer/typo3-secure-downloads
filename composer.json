@@ -24,11 +24,11 @@
     }
   ],
   "require": {
-    "php": ">= 8.2 < 8.5",
-    "typo3/cms-backend": "^13.4",
-    "typo3/cms-core": "^13.4",
-    "typo3/cms-extbase": "^13.4",
-    "typo3/cms-frontend": "^13.4",
+    "php": ">= 8.2 <= 8.5.99",
+    "typo3/cms-backend": "^14.1 || dev-main",
+    "typo3/cms-core": "^14.1 || dev-main",
+    "typo3/cms-extbase": "^14.1 || dev-main",
+    "typo3/cms-frontend": "^14.1 || dev-main",
     "firebase/php-jwt": "^7.0",
     "ext-pdo": "*"
   },

@@ -29,7 +29,7 @@ class FileDeliveryMiddleware implements MiddlewareInterface
     /**
      * @var string The URL schema before JWT
      */
-    protected $assetPrefix;
+    protected string $assetPrefix;
 
     public function __construct()
     {
