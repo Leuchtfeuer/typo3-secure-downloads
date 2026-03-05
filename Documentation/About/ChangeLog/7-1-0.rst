@@ -1,0 +1,48 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 7.1.0 - 2026/03/05
+==========================
+
+This release is a feature and maintenance release.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v7.1.0>`__.
+
+Added
+=====
+
+* Support for storages outside the public root
+
+Changed
+=======
+
+* Improved URL handling in SecureDownloadsEventListener
+
+Deprecated
+==========
+
+Removed
+=======
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+2026-03-05 [BUGFIX] Fix backend thumbnail preview for files in SecureDownloadsDriver [TER-384] [TER-385] (Commit 185709d by Niklas Grieger)
+2026-03-02 [TASK] Further improvement of URL handling in SecureDownloadsEventListener (Commit dd310b1 by Marcus Balasch)
+2026-03-02 [TASK] Improve URL handling in SecureDownloadsEventListener (Commit c4b8060 by Marcus Balasch)
+2026-02-25 Merge pull request #269 from Leuchtfeuer/release-7.x (Commit 736a374 by Marcus Balasch)
+2026-02-24 [TASK] Allows using files outside of Public Root [TER-393] [TER-377] (Commit 49189d5 by Marcus Balasch)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Marcus Balasch
+*   Niklas Grieger
+
+Thank you very much for your support. The next drink is on us! 🍻
