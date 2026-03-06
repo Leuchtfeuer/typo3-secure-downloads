@@ -210,8 +210,7 @@ class FileDelivery implements SingletonInterface
 
     protected function isBackendUser(): bool
     {
-        $context = $this->context;
-        $backendUser = $context->getAspect('backend.user');
+        $backendUser = $this->context->getAspect('backend.user');
 
         return $backendUser->get('id') !== 0;
     }

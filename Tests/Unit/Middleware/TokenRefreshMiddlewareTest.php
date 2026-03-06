@@ -318,7 +318,7 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->withLinkTimeout(time() + 60)
             ->withResourceUri('fileadmin/secure/document.pdf');
 
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'my-secret';
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'my-secret-key-that-is-long-enough-for-hs256';
 
         $url = $secureLinkFactory->getUrl();
 
@@ -401,7 +401,7 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->withLinkTimeout(time() + 60)
             ->withResourceUri('fileadmin/secure/document.pdf');
 
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'my-secret';
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'my-secret-key-that-is-long-enough-for-hs256';
 
         $url = $secureLinkFactory->getUrl();
 

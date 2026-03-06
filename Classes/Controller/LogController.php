@@ -24,6 +24,7 @@ use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -34,7 +35,7 @@ class LogController extends ActionController
         protected ModuleTemplateFactory $moduleTemplateFactory,
         protected LogRepository $logRepository,
         protected PageRenderer $pageRenderer,
-        private readonly \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool,
+        protected ConnectionPool $connectionPool,
     ) {}
 
     public function initializeAction(): void

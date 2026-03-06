@@ -20,6 +20,7 @@ use Leuchtfeuer\SecureDownloads\Exception\InvalidClassException;
 use Leuchtfeuer\SecureDownloads\Factory\Event\EnrichPayloadEvent;
 use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Core\Environment;
@@ -40,7 +41,7 @@ class SecureLinkFactory implements SingletonInterface
      * @throws ContentRenderingException
      * @throws InvalidClassException
      */
-    public function __construct(private EventDispatcher $eventDispatcher, private ExtensionConfiguration $extensionConfiguration, private readonly \TYPO3\CMS\Core\Context\Context $context)
+    public function __construct(private EventDispatcher $eventDispatcher, private ExtensionConfiguration $extensionConfiguration, private Context $context)
     {
         $this->token = TokenRegistry::getToken();
         $this->initializeToken();
