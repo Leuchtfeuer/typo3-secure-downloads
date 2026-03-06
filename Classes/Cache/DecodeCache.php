@@ -20,6 +20,7 @@ use Leuchtfeuer\SecureDownloads\Domain\Transfer\Token\AbstractToken;
  */
 class DecodeCache extends AbstractCache
 {
+    #[\Override]
     public static function getCache(string $key): AbstractToken
     {
         return parent::getCache($key);

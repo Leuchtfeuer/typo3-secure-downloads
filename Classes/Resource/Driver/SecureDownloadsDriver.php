@@ -38,7 +38,7 @@ class SecureDownloadsDriver extends LocalDriver
                 $temporaryBaseUri = rtrim(PathUtility::stripPathSitePrefix($this->absoluteBasePath), '/');
                 if ($temporaryBaseUri !== '') {
                     $uriParts = explode('/', $temporaryBaseUri);
-                    $uriParts = array_map('rawurlencode', $uriParts);
+                    $uriParts = array_map(rawurlencode(...), $uriParts);
                     $temporaryBaseUri = implode('/', $uriParts) . '/';
                 }
                 $this->baseUri = $temporaryBaseUri;

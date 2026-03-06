@@ -41,7 +41,7 @@ class SecureLinkFactory implements SingletonInterface
      * @throws ContentRenderingException
      * @throws InvalidClassException
      */
-    public function __construct(private EventDispatcher $eventDispatcher, private ExtensionConfiguration $extensionConfiguration)
+    public function __construct(private EventDispatcher $eventDispatcher, private ExtensionConfiguration $extensionConfiguration, private Context $context)
     {
         $this->token = TokenRegistry::getToken();
         $this->initializeToken();
@@ -70,7 +70,7 @@ class SecureLinkFactory implements SingletonInterface
 
         try {
             /** @var UserAspect $userAspect */
-            $userAspect = GeneralUtility::makeInstance(Context::class)->getAspect('frontend.user');
+            $userAspect = $this->context->getAspect('frontend.user');
             $this->token->setUser($userAspect->get('id'));
             $this->token->setGroups($userAspect->getGroupIds());
         } catch (\Exception) {
@@ -92,7 +92,7 @@ class SecureLinkFactory implements SingletonInterface
      */
     protected function calculateLinkLifetime(): int
     {
-        return $this->get_cache_timeout($this->getRequest()) + GeneralUtility::makeInstance(\TYPO3\CMS\Core\Context\Context::class)->getPropertyFromAspect('date', 'timestamp') + $this->extensionConfiguration->getCacheTimeAdd();
+        return $this->get_cache_timeout($this->getRequest()) + $this->context->getPropertyFromAspect('date', 'timestamp') + $this->extensionConfiguration->getCacheTimeAdd();
     }
 
     /**
@@ -211,20 +211,17 @@ class SecureLinkFactory implements SingletonInterface
 
     protected function get_cache_timeout(?ServerRequestInterface $request): int
     {
-        if ($request instanceof ServerRequestInterface) {
-            if (ApplicationType::fromRequest($request)->isFrontend()) {
-                $pageInformation = $request->getAttribute('frontend.page.information');
-                $typoScriptConfigArray = $request->getAttribute('frontend.typoscript')?->getConfigArray();
-                if ($pageInformation && $typoScriptConfigArray) {
-                    return GeneralUtility::makeInstance(CacheLifetimeCalculator::class)
-                        ->calculateLifetimeForPage(
-                            $pageInformation->getId(),
-                            $pageInformation->getPageRecord(),
-                            $typoScriptConfigArray,
-                            self::DEFAULT_CACHE_LIFETIME,
-                            GeneralUtility::makeInstance(Context::class)
-                        );
-                }
+        if ($request instanceof ServerRequestInterface && ApplicationType::fromRequest($request)->isFrontend()) {
+            $pageInformation = $request->getAttribute('frontend.page.information');
+            $typoScriptConfigArray = $request->getAttribute('frontend.typoscript')?->getConfigArray();
+            if ($pageInformation && $typoScriptConfigArray) {
+                return GeneralUtility::makeInstance(CacheLifetimeCalculator::class)
+                    ->calculateLifetimeForPage(
+                        $pageInformation->getId(),
+                        $pageInformation->getPageRecord(),
+                        $typoScriptConfigArray,
+                        $this->context
+                    );
             }
         }
         return self::DEFAULT_CACHE_LIFETIME;

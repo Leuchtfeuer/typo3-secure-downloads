@@ -1,6 +1,7 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
       xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+      xmlns:sdl="http://typo3.org/ns/Leuchtfeuer/SecureDownloads/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
 <table class="table table-striped table-hover">
@@ -28,7 +29,7 @@
             <td>
                 <f:if condition="{log.user}">
                     <f:then>
-                        {log.userObject.username}
+                        <sdl:getUsernameByUid uid="{log.user}"/>
                     </f:then>
                     <f:else>
                         {f:translate(key:'module.table.body.no_user')}

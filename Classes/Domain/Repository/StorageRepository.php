@@ -17,7 +17,6 @@ use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
@@ -60,13 +59,14 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
      *
      * @return int id of the inserted record
      */
+    #[\Override]
     public function createLocalStorage($name, $basePath, $pathType, $description = '', $default = false): int
     {
         $storageId = parent::createLocalStorage($name, $basePath, $pathType, $description, $default);
 
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_file_storage');
         $queryBuilder
-            ->update($this->table)
+            ->update('sys_file_storage')
             ->set('is_public', 0)
             ->set('driver', SecureDownloadsDriver::DRIVER_SHORT_NAME)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($storageId, ParameterType::INTEGER)))
@@ -82,11 +82,11 @@ class StorageRepository extends \TYPO3\CMS\Core\Resource\StorageRepository
      */
     private function isStorageDriverExisting(): bool
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_file_storage');
 
         $result = $queryBuilder
             ->count('*')
-            ->from($this->table)
+            ->from('sys_file_storage')
             ->where($queryBuilder->expr()->eq('driver', $queryBuilder->createNamedParameter(SecureDownloadsDriver::DRIVER_SHORT_NAME)))
             ->executeQuery();
 

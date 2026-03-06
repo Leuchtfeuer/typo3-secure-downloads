@@ -29,20 +29,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class TokenRefreshMiddleware implements MiddlewareInterface
 {
-    /**
-     * @var string The URL schema before JWT
-     */
-    protected $assetPrefix;
+    protected string $assetPrefix;
 
-    /**
-     * @var bool is group check enabled
-     */
-    protected $isEnableGroupCheck;
+    protected bool $isEnableGroupCheck;
 
-    /**
-     * @var Context
-     */
-    private $context;
+    private Context $context;
 
     public function __construct(?ExtensionConfiguration $extensionConfiguration = null, ?Context $context = null)
     {

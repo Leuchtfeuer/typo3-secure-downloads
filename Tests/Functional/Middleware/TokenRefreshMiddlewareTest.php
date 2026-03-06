@@ -16,6 +16,7 @@ namespace Leuchtfeuer\SecureDownloads\Tests\Functional\Middleware;
 use Firebase\JWT\JWT;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\Middleware\TokenRefreshMiddleware;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -26,6 +27,7 @@ use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
+#[AllowMockObjectsWithoutExpectations]
 class TokenRefreshMiddlewareTest extends FunctionalTestCase
 {
     protected array $testExtensionsToLoad = [

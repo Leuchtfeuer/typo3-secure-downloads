@@ -13,10 +13,6 @@ declare(strict_types=1);
 
 namespace Leuchtfeuer\SecureDownloads\Domain\Model;
 
-use Doctrine\DBAL\Exception;
-use Doctrine\DBAL\ParameterType;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 class Log extends AbstractEntity
@@ -74,26 +70,6 @@ class Log extends AbstractEntity
     public function setTstamp(int $tstamp): void
     {
         $this->tstamp = $tstamp;
-    }
-
-    /**
-     * @return array<string, mixed>|null
-     * @throws Exception
-     */
-    public function getUserObject(): ?array
-    {
-        if ($this->user !== null && $this->user !== 0) {
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('fe_users');
-
-            return $queryBuilder
-                ->select('*')
-                ->from('fe_users')
-                ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->user, ParameterType::INTEGER)))
-                ->executeQuery()
-                ->fetchAssociative();
-        }
-
-        return null;
     }
 
     /**

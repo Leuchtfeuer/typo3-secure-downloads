@@ -1,0 +1,59 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 14.0.0 - 2026/03/06
+==========================
+
+This release is a major release.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v14.0.0>`__.
+
+Added
+=====
+* Add support for TYPO3 v14
+
+Changed
+=======
+
+Deprecated
+==========
+
+Removed
+=======
+* Drop support for TYPO3 v13
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+2026-03-06 [BUGFIX] Fix PHP version in Libraries/composer.json to match TYPO3 14 minimum requirement [TER-384] [TER-385] (Commit 9ae6dec by Niklas Grieger)
+2026-03-06 [TASK] Code style [TER-384] [TER-385] (Commit 064b226 by Niklas Grieger)
+2026-03-06 [TASK] Prepare release 14.0.0 [TER-384] [TER-385] (Commit 086b2e7 by Niklas Grieger)
+2026-03-06 [TASK] Adjust composer dependencies [TER-384] [TER-385] (Commit 7d0823e by Niklas Grieger)
+2026-03-06 [TASK] Update libraries [TER-384] [TER-385] (Commit f5c43e1 by Niklas Grieger)
+2026-03-05 Merge branch 'master' into feature/TER-373 (Commit 9b4307f by Niklas Grieger)
+2026-03-05 Merge remote-tracking branch 'origin/feature/TER-373' into feature/TER-373 (Commit fcb6555 by Niklas Grieger)
+2026-03-05 [BUGFIX] Fix backend thumbnail preview for files in SecureDownloadsDriver [TER-384] [TER-385] (Commit 185709d by Niklas Grieger)
+2026-01-22 [BUGFIX] Fix compatibility with PHP 8.2 [TER-373] [TER-375] (Commit ad5248f by Niklas Grieger)
+2026-01-22 [TASK] Run rector and extract query builder from the domain model [TER-373] [TER-375] (Commit fbef8d8 by Niklas Grieger)
+2026-01-22 [TASK] Update documentation [TER-373] [TER-375] (Commit 3ece9b3 by Niklas Grieger)
+2026-01-22 [TASK] Adjust version constraints for requirements [TER-373] [TER-375] (Commit 6905a6b by Niklas Grieger)
+2026-01-22 [TASK] Cleanup code [TER-373] [TER-375] (Commit 36fae9a by Niklas Grieger)
+2026-01-22 [TASK] Update libraries [TER-373] [TER-375] (Commit 1968ac6 by Niklas Grieger)
+2026-01-22 [TASK] Introduce a new module icon to match backend theming [TER-373] [TER-375] (Commit 9abd03e by Niklas Grieger)
+2026-01-22 [TASK] Cleanup extension scanner deprecations [TER-373] [TER-375] (Commit 679efb1 by Niklas Grieger)
+2026-01-22 [TASK] Fix phpunit tests notices and deprecations [TER-373] [TER-375] (Commit 420303e by Niklas Grieger)
+2026-01-22 [TASK] Make unit tests work with TYPO3 14 [TER-373] [TER-375] (Commit 135de84 by Niklas Grieger)
+2026-01-21 [TASK] Ensure basic compatibility with TYPO3 14.1 without system breaking errors [TER-373] [TER-374] (Commit 0a1ee98 by Niklas Grieger)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   Niklas Grieger
+
+Thank you very much for your support. The next drink is on us! 🍻
