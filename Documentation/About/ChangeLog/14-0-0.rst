@@ -30,6 +30,14 @@ All Changes
 ===========
 This is a list of all changes in this release::
 
+2026-03-06 [BUGFIX] Fix PHP version in Libraries/composer.json to match TYPO3 14 minimum requirement [TER-384] [TER-385] (Commit 9ae6dec by Niklas Grieger)
+2026-03-06 [TASK] Code style [TER-384] [TER-385] (Commit 064b226 by Niklas Grieger)
+2026-03-06 [TASK] Prepare release 14.0.0 [TER-384] [TER-385] (Commit 086b2e7 by Niklas Grieger)
+2026-03-06 [TASK] Adjust composer dependencies [TER-384] [TER-385] (Commit 7d0823e by Niklas Grieger)
+2026-03-06 [TASK] Update libraries [TER-384] [TER-385] (Commit f5c43e1 by Niklas Grieger)
+2026-03-05 Merge branch 'master' into feature/TER-373 (Commit 9b4307f by Niklas Grieger)
+2026-03-05 Merge remote-tracking branch 'origin/feature/TER-373' into feature/TER-373 (Commit fcb6555 by Niklas Grieger)
+2026-03-05 [BUGFIX] Fix backend thumbnail preview for files in SecureDownloadsDriver [TER-384] [TER-385] (Commit 185709d by Niklas Grieger)
 2026-01-22 [BUGFIX] Fix compatibility with PHP 8.2 [TER-373] [TER-375] (Commit ad5248f by Niklas Grieger)
 2026-01-22 [TASK] Run rector and extract query builder from the domain model [TER-373] [TER-375] (Commit fbef8d8 by Niklas Grieger)
 2026-01-22 [TASK] Update documentation [TER-373] [TER-375] (Commit 3ece9b3 by Niklas Grieger)
