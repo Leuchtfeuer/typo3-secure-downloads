@@ -1,7 +1,7 @@
 ﻿.. include:: ../../Includes.txt
 
 ==========================
-Version 14.0.0 - 2026/01/30
+Version 14.0.0 - 2026/03/06
 ==========================
 
 This release is a major release.
@@ -30,6 +30,9 @@ All Changes
 ===========
 This is a list of all changes in this release::
 
+2026-01-22 [BUGFIX] Fix compatibility with PHP 8.2 [TER-373] [TER-375] (Commit ad5248f by Niklas Grieger)
+2026-01-22 [TASK] Run rector and extract query builder from the domain model [TER-373] [TER-375] (Commit fbef8d8 by Niklas Grieger)
+2026-01-22 [TASK] Update documentation [TER-373] [TER-375] (Commit 3ece9b3 by Niklas Grieger)
 2026-01-22 [TASK] Adjust version constraints for requirements [TER-373] [TER-375] (Commit 6905a6b by Niklas Grieger)
 2026-01-22 [TASK] Cleanup code [TER-373] [TER-375] (Commit 36fae9a by Niklas Grieger)
 2026-01-22 [TASK] Update libraries [TER-373] [TER-375] (Commit 1968ac6 by Niklas Grieger)
