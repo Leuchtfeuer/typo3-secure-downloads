@@ -93,7 +93,7 @@ class FileDelivery implements SingletonInterface
         }
 
         $fileName = $fileObject->getName();
-        $filePath = $fileObject->getStorage()->getFileForLocalProcessing($fileObject);
+        $filePath = $fileObject->getStorage()->getFileForLocalProcessing($fileObject, false);
 
         $this->dispatchAfterFileRetrievedEvent($filePath, $fileName);
 
