@@ -26,12 +26,12 @@ abstract class AbstractRegistry implements SingletonInterface
     abstract public static function register(string $identifier, string $className, int $priority = 0, bool $overwriteExisting = false): void;
 
     /**
-     * Sorts given elements by its priority.
+     * Sorts given elements by its priority, preserving string keys.
      *
      * @param array<string, mixed> $elements The elements to be sorted
      */
     protected static function sortByPriority(array &$elements): void
     {
-        usort($elements, fn($a, $b): int => $b['priority'] <=> $a['priority']);
+        uasort($elements, fn($a, $b): int => $b['priority'] <=> $a['priority']);
     }
 }
