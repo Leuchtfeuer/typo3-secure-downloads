@@ -20,8 +20,8 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use TYPO3\CMS\Core\Context\AspectInterface;
 use TYPO3\CMS\Core\Context\Context;
-use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Http\HtmlResponse;
 
 class TokenRefreshMiddlewareTest extends TestCase
@@ -168,7 +168,7 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $currentUser = $this->getMockBuilder(UserAspect::class)
+        $currentUser = $this->getMockBuilder(AspectInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -223,7 +223,7 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $currentUser = $this->getMockBuilder(UserAspect::class)
+        $currentUser = $this->getMockBuilder(AspectInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -283,23 +283,25 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $currentUser = $this->getMockBuilder(UserAspect::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $currentUser = new class () implements AspectInterface {
+            public function get(string $name): mixed
+            {
+                return match ($name) {
+                    'id' => 1,
+                    default => null,
+                };
+            }
+
+            public function getGroupIds(): array
+            {
+                return [0, -2, 1];
+            }
+        };
 
         $context->expects(self::any())
             ->method('getAspect')
             ->with('frontend.user')
             ->willReturn($currentUser);
-
-        $currentUser->expects(self::any())
-            ->method('get')
-            ->with('id')
-            ->willReturn(1);
-
-        $currentUser->expects(self::any())
-            ->method('getGroupIds')
-            ->willReturn([0, -2 , 1]);
 
         $tokenRefreshMiddleWare = new TokenRefreshMiddleware($extensionConfiguration, $context);
 
@@ -333,7 +335,7 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->withLinkTimeout(time() + 60)
             ->withResourceUri('fileadmin/secure/document.pdf');
 
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'my-secret';
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'my-secret-key-that-is-long-enough-for-hs256';
 
         $url = $secureLinkFactory->getUrl();
 
@@ -374,23 +376,25 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $currentUser = $this->getMockBuilder(UserAspect::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $currentUser = new class () implements AspectInterface {
+            public function get(string $name): mixed
+            {
+                return match ($name) {
+                    'id' => 2,
+                    default => null,
+                };
+            }
+
+            public function getGroupIds(): array
+            {
+                return [0, -2, 1];
+            }
+        };
 
         $context->expects(self::any())
             ->method('getAspect')
             ->with('frontend.user')
             ->willReturn($currentUser);
-
-        $currentUser->expects(self::any())
-            ->method('get')
-            ->with('id')
-            ->willReturn(2);
-
-        $currentUser->expects(self::any())
-            ->method('getGroupIds')
-            ->willReturn([0, -2 , 1]);
 
         $tokenRefreshMiddleWare = new TokenRefreshMiddleware($extensionConfiguration, $context);
 
@@ -424,7 +428,7 @@ class TokenRefreshMiddlewareTest extends TestCase
             ->withLinkTimeout(time() + 60)
             ->withResourceUri('fileadmin/secure/document.pdf');
 
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'my-secret';
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'my-secret-key-that-is-long-enough-for-hs256';
 
         $url = $secureLinkFactory->getUrl();
 

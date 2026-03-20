@@ -123,10 +123,8 @@ class SecureLinkFactory implements SingletonInterface
 
     /**
      * @param int $expires The timestamp at which the link becomes invalid
-     *
-     * @return $this
      */
-    public function withLinkTimeout(int $expires): self
+    public function withLinkTimeout(int $expires): static
     {
         $clonedObject = clone $this;
         $clonedObject->token->setExp($expires);
@@ -136,10 +134,8 @@ class SecureLinkFactory implements SingletonInterface
 
     /**
      * @param int $page The page ID for which the link should be generated for
-     *
-     * @return $this
      */
-    public function withPage(int $page): self
+    public function withPage(int $page): static
     {
         $clonedObject = clone $this;
         $clonedObject->token->setPage($page);
@@ -149,23 +145,19 @@ class SecureLinkFactory implements SingletonInterface
 
     /**
      * @param int $user The user for which the link should be valid for
-     *
-     * @return $this
      */
-    public function withUser(int $user): self
+    public function withUser(int $user): static
     {
         $clonedObject = clone $this;
-        $this->token->setUser($user);
+        $clonedObject->token->setUser($user);
 
         return $clonedObject;
     }
 
     /**
      * @param array<int> $groups An array of user groups for whom the link should be valid for
-     *
-     * @return $this
      */
-    public function withGroups(array $groups): self
+    public function withGroups(array $groups): static
     {
         $clonedObject = clone $this;
         $clonedObject->token->setGroups($groups);
@@ -175,10 +167,8 @@ class SecureLinkFactory implements SingletonInterface
 
     /**
      * @param string $resourceUri The actual path to the file that should be secured
-     *
-     * @return $this
      */
-    public function withResourceUri(string $resourceUri): self
+    public function withResourceUri(string $resourceUri): static
     {
         $clonedObject = clone $this;
         $clonedObject->token->setFile($resourceUri);
