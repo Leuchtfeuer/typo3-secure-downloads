@@ -29,10 +29,11 @@ As a complementary measure, you will of course need to configure your web server
 ## Requirements
 We are currently supporting following TYPO3 versions:
 
-| Extension Version | TYPO3 v13 | TYPO3 v12 |
-|-------------------|-----------|-----------|
-| 7.x               | x         | -         |
-| 6.x               | -         | x         |
+| Extension Version | TYPO3 v14 | TYPO3 v13 | TYPO3 v12 |
+|-------------------|-----------|-----------|-----------|
+| 14.x              | x         | -         | -         |
+| 7.x               | -         | x         | -         |
+| 6.x               | -         | -         | x         |
 
 ### Outdated Versions
 For the following versions no more free bug fixes and new features will be provided by the authors:
