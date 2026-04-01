@@ -68,3 +68,4 @@ change request.
     Editor/Index
     Developer/Index
     About/Index
+    Sitemap

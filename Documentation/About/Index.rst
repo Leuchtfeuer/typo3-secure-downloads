@@ -84,4 +84,5 @@ Known Limitations
     :maxdepth: 3
     :hidden:
 
+    Contributing/Index
     ChangeLog/Index
