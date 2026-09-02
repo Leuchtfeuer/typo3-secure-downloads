@@ -123,8 +123,6 @@ class SecureLinkFactory implements SingletonInterface
 
     /**
      * @param int $expires The timestamp at which the link becomes invalid
-     *
-     * @return $this
      */
     public function withLinkTimeout(int $expires): self
     {
@@ -136,8 +134,6 @@ class SecureLinkFactory implements SingletonInterface
 
     /**
      * @param int $page The page ID for which the link should be generated for
-     *
-     * @return $this
      */
     public function withPage(int $page): self
     {
@@ -149,8 +145,6 @@ class SecureLinkFactory implements SingletonInterface
 
     /**
      * @param int $user The user for which the link should be valid for
-     *
-     * @return $this
      */
     public function withUser(int $user): self
     {
@@ -162,8 +156,6 @@ class SecureLinkFactory implements SingletonInterface
 
     /**
      * @param array<int> $groups An array of user groups for whom the link should be valid for
-     *
-     * @return $this
      */
     public function withGroups(array $groups): self
     {
@@ -175,8 +167,6 @@ class SecureLinkFactory implements SingletonInterface
 
     /**
      * @param string $resourceUri The actual path to the file that should be secured
-     *
-     * @return $this
      */
     public function withResourceUri(string $resourceUri): self
     {
