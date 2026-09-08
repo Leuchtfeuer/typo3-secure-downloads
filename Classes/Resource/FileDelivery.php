@@ -114,8 +114,10 @@ class FileDelivery implements SingletonInterface
      * nginx; otherwise streams the file through PHP, preserving HTTP Range requests (e.g. for HTML5 video
      * seeking) so only the requested byte range is read from disk and sent to the browser.
      *
-     * The header for the chosen delivery mode is fully assembled before the single BeforeFileDeliver dispatch,
-     * so listeners always see (and can amend) the complete, final header set for the response actually sent.
+     * The BeforeReadDeliverEvent is dispatched once, right after the base header is set up but before the
+     * response-type-specific headers are added. Those are only applied as defaults for keys the event didn't
+     * already set, so a listener may override e.g. Content-Type or Content-Disposition — except Content-Length
+     * and Content-Range on a 206 response, which always describe the actual byte range read from disk below.
      */
     protected function deliverFile(ProcessedFile|File $fileObject, string $filePath, string $fileName, int $fileSize, ServerRequestInterface $request): ResponseInterface
     {
@@ -128,42 +130,39 @@ class FileDelivery implements SingletonInterface
             'Accept-Ranges' => 'bytes',
         ];
 
-        // nginx serves the file itself (and handles Range requests on its own), so PHP must not stream it.
-        $useXAccelRedirect = $this->shouldUseXAccelRedirect($outputFunction);
-        $rangeRequest = $useXAccelRedirect ? null : RangeRequest::fromHeader($request->getHeaderLine('Range'), $fileSize);
-
-        if ($useXAccelRedirect) {
-            $header['Content-Type'] = $mimeType;
-            $header['Content-Disposition'] = sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName);
-        } elseif (!$rangeRequest->isSatisfiable()) {
-            // Unsatisfiable range -> 416 Range Not Satisfiable
-            $header['Content-Range'] = $rangeRequest->getUnsatisfiableContentRange();
-        } elseif ($rangeRequest->isRequested()) {
-            // Range requested → partial content (206 Partial Content)
-            $header = array_merge($header, [
-                'Content-Disposition' => sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName),
-                'Content-Type' => $mimeType,
-                'Content-Length' => (string)$rangeRequest->getLength(),
-                'Content-Range' => $rangeRequest->getContentRange(),
-                'Last-Modified' => gmdate('D, d M Y H:i:s', $fileObject->getModificationTime()) . ' GMT',
-                'Cache-Control' => '',
-            ]);
-        }
-        // No range requested → full file: streamFile() sets its own header, nothing to add upfront.
-
         $this->dispatchBeforeReadDeliverEvent($header, $fileName, $mimeType, $forceDownload);
 
-        if ($useXAccelRedirect) {
+        // nginx serves the file itself (and handles Range requests on its own), so PHP must not stream it.
+        if ($this->shouldUseXAccelRedirect($outputFunction)) {
+            $header['Content-Type'] = $mimeType;
+            $header['Content-Disposition'] = sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName);
+
             return $this->getXAccelRedirectResponse($filePath, $header);
         }
 
+        $rangeRequest = RangeRequest::fromHeader($request->getHeaderLine('Range'), $fileSize);
+
+        // Unsatisfiable range -> 416 Range Not Satisfiable
         if (!$rangeRequest->isSatisfiable()) {
+            $header['Content-Range'] = $rangeRequest->getUnsatisfiableContentRange();
+
             return new Response('php://temp', 416, $header);
         }
 
+        // No range requested → full file: streamFile() sets its own header on top.
         if (!$rangeRequest->isRequested()) {
             return $this->getFullFileResponse($fileObject, $request, $header, $fileName, $forceDownload);
         }
+
+        // Range requested → partial content (206 Partial Content)
+        $header = array_merge($header, [
+            'Content-Disposition' => sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName),
+            'Content-Type' => $mimeType,
+            'Content-Length' => (string)$rangeRequest->getLength(),
+            'Content-Range' => $rangeRequest->getContentRange(),
+            'Last-Modified' => gmdate('D, d M Y H:i:s', $fileObject->getModificationTime()) . ' GMT',
+            'Cache-Control' => '',
+        ]);
 
         return $this->getRangeResponse($rangeRequest, $request, $filePath, $header);
     }
