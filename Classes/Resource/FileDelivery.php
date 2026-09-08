@@ -144,6 +144,20 @@ class FileDelivery implements SingletonInterface
         return $this->getRangeResponse($rangeRequest, $fileObject, $request, $filePath, $header, $outputFunction, $fileName, $mimeType, $forceDownload);
     }
 
+    /**
+     * Builds the response for nginx's X-Accel-Redirect: the actual file body is discarded (nginx serves the file
+     * and its Range requests itself), so only the header fields nginx forwards to the client are relevant here
+     * (Content-Type, Content-Disposition, Accept-Ranges, Cache-Control, Expires).
+     *
+     * @param string $filePath       The absolute path to the file on disk, appended to the configured protected path
+     * @param string[] $header       An array of header which will be sent to the browser. You can add your own headers or remove
+     *                               default ones.
+     * @param string $outputFunction Contains the output function as string. This property is deprecated and will be removed in
+     *                               further releases since the output function can only be one of "x-accel-redirect" or "stream".
+     * @param string $fileName       The name of the file
+     * @param string $mimeType       The mime type of the file
+     * @param bool   $forceDownload  Whether the file should be forced to download
+     */
     private function getXAccelRedirectResponse(string $filePath, array $header, string $outputFunction, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
     {
         $header['Content-Type'] = $mimeType;
@@ -160,6 +174,16 @@ class FileDelivery implements SingletonInterface
         return new Response('php://temp', 200, $header);
     }
 
+    /**
+     * Builds the 416 Range Not Satisfiable response for a Range header that cannot be fulfilled.
+     *
+     * @param RangeRequest $rangeRequest   The parsed and unsatisfiable Range request
+     * @param string[]     $header         An array of header which will be sent to the browser
+     * @param string       $outputFunction The configured output function, may be changed by the BeforeFileDeliver event
+     * @param string       $fileName       The name of the file
+     * @param string       $mimeType       The mime type of the file
+     * @param bool         $forceDownload  Whether the file should be forced to download
+     */
     private function getRangeNotSatisfiableResponse(RangeRequest $rangeRequest, array $header, string $outputFunction, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
     {
         $header['Content-Range'] = $rangeRequest->getUnsatisfiableContentRange();
@@ -168,6 +192,17 @@ class FileDelivery implements SingletonInterface
         return new Response('php://temp', 416, $header);
     }
 
+    /**
+     * Streams the full file body through PHP via the storage's streamFile() (no Range requested).
+     *
+     * @param ProcessedFile|File     $fileObject     The file to deliver
+     * @param ServerRequestInterface $request        The server request
+     * @param string[]               $header         An array of header which will be sent to the browser
+     * @param string                 $outputFunction The configured output function, may be changed by the BeforeFileDeliver event
+     * @param string                 $fileName       The name of the file
+     * @param string                 $mimeType       The mime type of the file
+     * @param bool                   $forceDownload  Whether the file should be forced to download
+     */
     private function getFullFileResponse(ProcessedFile|File $fileObject, ServerRequestInterface $request, array $header, string $outputFunction, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
     {
         $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
@@ -192,6 +227,19 @@ class FileDelivery implements SingletonInterface
         return $response;
     }
 
+    /**
+     * Builds the 206 Partial Content response, streaming only the requested byte range from disk.
+     *
+     * @param RangeRequest           $rangeRequest   The parsed and satisfiable Range request
+     * @param ProcessedFile|File     $fileObject     The file to deliver
+     * @param ServerRequestInterface $request        The server request
+     * @param string                 $filePath       The absolute path to the file on disk
+     * @param string[]               $header         An array of header which will be sent to the browser
+     * @param string                 $outputFunction The configured output function, may be changed by the BeforeFileDeliver event
+     * @param string                 $fileName       The name of the file
+     * @param string                 $mimeType       The mime type of the file
+     * @param bool                   $forceDownload  Whether the file should be forced to download
+     */
     private function getRangeResponse(RangeRequest $rangeRequest, ProcessedFile|File $fileObject, ServerRequestInterface $request, string $filePath, array $header, string $outputFunction, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
     {
         $header = array_merge($header, [
@@ -292,6 +340,11 @@ class FileDelivery implements SingletonInterface
         return true;
     }
 
+    /**
+     * Checks whether the current request is authenticated as a TYPO3 backend user.
+     *
+     * @return bool True, when a backend user is logged in, false if not
+     */
     protected function isBackendUser(): bool
     {
         $backendUser = $this->context->getAspect('backend.user');
@@ -299,6 +352,13 @@ class FileDelivery implements SingletonInterface
         return $backendUser->get('id') !== 0;
     }
 
+    /**
+     * Guesses the mime type from the file extension when it could not be determined otherwise.
+     *
+     * @param string $file The absolute path to the file
+     *
+     * @return false|string The guessed mime type, or false when the extension is not known
+     */
     protected function guessMimeTypeByFileExtension(string $file): false|string
     {
         $lowercaseFileExtension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
