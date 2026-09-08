@@ -20,6 +20,7 @@ use Leuchtfeuer\SecureDownloads\MimeTypes;
 use Leuchtfeuer\SecureDownloads\Registry\CheckRegistry;
 use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
 use Leuchtfeuer\SecureDownloads\Resource\Event\AfterFileRetrievedEvent;
+use Leuchtfeuer\SecureDownloads\Resource\Event\BeforeReadDeliverEvent;
 use Leuchtfeuer\SecureDownloads\Resource\Event\OutputInitializationEvent;
 use Leuchtfeuer\SecureDownloads\Security\AbstractCheck;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -113,44 +114,73 @@ class FileDelivery implements SingletonInterface
     protected function deliverFile(ProcessedFile|File $fileObject, string $filePath, string $fileName, int $fileSize, ServerRequestInterface $request): ResponseInterface
     {
         $rangeRequest = RangeRequest::fromHeader($request->getHeaderLine('Range'), $fileSize);
-
-        if (!$rangeRequest->isSatisfiable()) {
-            return new Response('php://temp', 416, [
-                'Accept-Ranges' => 'bytes',
-                'Content-Range' => $rangeRequest->getUnsatisfiableContentRange(),
-            ]);
-        }
-
-        if (!$rangeRequest->isRequested()) {
-            $response = $fileObject
-                ->getStorage()
-                ->streamFile(
-                    $fileObject,
-                    $this->shouldForceDownload($fileObject->getExtension()),
-                    $fileName
-                )
-                ->withHeader('Accept-Ranges', 'bytes');
-            ob_end_clean();
-
-            if ($request->getMethod() === 'HEAD') {
-                return $response->withBody(new Stream('php://temp'));
-            }
-
-            return $response;
-        }
-
         $forceDownload = $this->shouldForceDownload($fileObject->getExtension());
-        $contentDisposition = $forceDownload ? 'attachment' : 'inline';
-
+        $outputFunction = $this->extensionConfiguration->getOutputFunction();
+        $mimeType = $fileObject->getMimeType() ?: MimeTypes::DEFAULT_MIME_TYPE;
+        // it's a capability header telling the client "this resource supports byte-range requests,
+        // even though I'm sending you the whole thing right now."
         $header = [
-            'Content-Disposition' => sprintf('%s; filename="%s"', $contentDisposition, $fileName),
-            'Content-Type' => $fileObject->getMimeType() ?: MimeTypes::DEFAULT_MIME_TYPE,
+            'Accept-Ranges' => 'bytes',
+        ];
+
+        // Unsatisfiable range -> 416 Range Not Satisfiable
+        if (!$rangeRequest->isSatisfiable()) {
+            return $this->getRangeNotSatisfiableResponse($rangeRequest, $header, $outputFunction, $fileName, $mimeType, $forceDownload);
+        }
+
+        // No range requested → full file
+        if (!$rangeRequest->isRequested()) {
+            return $this->getFullFileResponse($fileObject, $request, $header, $outputFunction, $fileName, $mimeType, $forceDownload);
+        }
+
+        // Range requested → partial content (206 Partial Content)
+        return $this->getRangeResponse($rangeRequest, $fileObject, $request, $filePath, $header, $outputFunction, $fileName, $mimeType, $forceDownload);
+    }
+
+    private function getRangeNotSatisfiableResponse(RangeRequest $rangeRequest, array $header, string $outputFunction, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
+    {
+        $header['Content-Range'] = $rangeRequest->getUnsatisfiableContentRange();
+        $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
+
+        return new Response('php://temp', 416, $header);
+    }
+
+    private function getFullFileResponse(ProcessedFile|File $fileObject, ServerRequestInterface $request, array $header, string $outputFunction, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
+    {
+        $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
+
+        $response = $fileObject
+            ->getStorage()
+            ->streamFile(
+                $fileObject,
+                $this->shouldForceDownload($fileObject->getExtension()),
+                $fileName
+            );
+        foreach ($header as $headerName => $headerValue) {
+            $response->withHeader($headerName, $headerValue);
+        }
+
+        ob_end_clean();
+
+        if ($request->getMethod() === 'HEAD') {
+            return $response->withBody(new Stream('php://temp'));
+        }
+
+        return $response;
+    }
+
+    private function getRangeResponse(RangeRequest $rangeRequest, ProcessedFile|File $fileObject, ServerRequestInterface $request, string $filePath, array $header, string $outputFunction, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
+    {
+        $header = array_merge($header, [
+            'Content-Disposition' => sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName),
+            'Content-Type' => $mimeType,
             'Content-Length' => (string)$rangeRequest->getLength(),
             'Content-Range' => $rangeRequest->getContentRange(),
-            'Accept-Ranges' => 'bytes',
             'Last-Modified' => gmdate('D, d M Y H:i:s', $fileObject->getModificationTime()) . ' GMT',
             'Cache-Control' => '',
-        ];
+        ]);
+
+        $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
 
         if ($request->getMethod() === 'HEAD') {
             return new Response('php://temp', 206, $header);
@@ -302,5 +332,29 @@ class FileDelivery implements SingletonInterface
         $event = $this->eventDispatcher->dispatch($event);
         $file = $event->getFile();
         $fileName = $event->getFileName();
+    }
+
+    /**
+     * Dispatches the BeforeFileDeliver event.
+     *
+     * @param string $outputFunction Contains the output function as string. This property is deprecated and will be removed in
+     *                               further releases since the output function can only be one of "x-accel-redirect" or "stream".
+     * @param string[]  $header         An array of header which will be sent to the browser. You can add your own headers or remove
+     *                               default ones.
+     * @param string $fileName       The name of the file. This property is read-only.
+     * @param string $mimeType       The mime type of the file. This property is read-only.
+     * @param bool   $forceDownload  Information whether the file should be forced to download or not. This property is read-only.
+     */
+    protected function dispatchBeforeFileDeliverEvent(
+        string &$outputFunction,
+        array &$header,
+        string $fileName,
+        string $mimeType,
+        bool $forceDownload
+    ): void {
+        $event = new BeforeReadDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
+        $event = $this->eventDispatcher->dispatch($event);
+        $outputFunction = $event->getOutputFunction();
+        $header = $event->getHeader();
     }
 }
