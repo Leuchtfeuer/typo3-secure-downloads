@@ -14,8 +14,10 @@ declare(strict_types=1);
 namespace Leuchtfeuer\SecureDownloads\Resource\Event;
 
 /**
- * This event is executed just before the file is sent to the browser. It is the last chance to influence both the output
- * function and the headers sent.
+ * This event is dispatched once, right after the base header is set up but before the file is delivered. It is the
+ * chance to add or amend generic headers sent to the browser; structural headers describing the concrete bytes on
+ * the wire (e.g. Content-Type, Content-Disposition, Content-Length, Content-Range) are added afterward and are not
+ * influenced by this event.
  */
 final class BeforeReadDeliverEvent
 {

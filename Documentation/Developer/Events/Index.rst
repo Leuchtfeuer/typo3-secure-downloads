@@ -96,18 +96,10 @@ token. Afterwards, the check is made whether the file is available on the file s
 
 Before Read Deliver
 -------------------
-This event is executed just before the file is sent to the browser. It is the last chance to influence both the output function
-and the headers sent.  The name of the event is `Leuchtfeuer\SecureDownloads\Resource\Event\BeforeReadDeliverEvent`.
-
-.. container:: table-row
-
-   Property
-        outputFunction (deprecated)
-   Data Type
-        string
-   Description
-        Contains the output function as string. This property is deprecated and will be removed in further releases since the
-        output function can only be one of `x-accel-redirect` or `stream`.
+This event is dispatched once, right after the base header is set up but before the file is delivered. It is the
+chance to add or amend generic headers sent to the browser; structural headers describing the concrete bytes on the
+wire (e.g. Content-Type, Content-Disposition, Content-Length, Content-Range) are added afterward and are not
+influenced by this event. The name of the event is `Leuchtfeuer\SecureDownloads\Resource\Event\BeforeReadDeliverEvent`.
 
 .. container:: table-row
 
