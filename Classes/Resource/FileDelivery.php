@@ -157,7 +157,7 @@ class FileDelivery implements SingletonInterface
                 $fileName
             );
         foreach ($header as $headerName => $headerValue) {
-            $response->withHeader($headerName, $headerValue);
+            $response = $response->withHeader($headerName, $headerValue);
         }
 
         ob_end_clean();
