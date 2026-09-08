@@ -108,12 +108,12 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Delivers a FAL File object, preserving HTTP Range requests (e.g. for HTML5 video seeking) so only
-     * the requested byte range is read from disk and sent to the browser.
+     * Delivers a FAL File object. Hands off to nginx via X-Accel-Redirect when configured and running behind
+     * nginx; otherwise streams the file through PHP, preserving HTTP Range requests (e.g. for HTML5 video
+     * seeking) so only the requested byte range is read from disk and sent to the browser.
      */
     protected function deliverFile(ProcessedFile|File $fileObject, string $filePath, string $fileName, int $fileSize, ServerRequestInterface $request): ResponseInterface
     {
-        $rangeRequest = RangeRequest::fromHeader($request->getHeaderLine('Range'), $fileSize);
         $forceDownload = $this->shouldForceDownload($fileObject->getExtension());
         $outputFunction = $this->extensionConfiguration->getOutputFunction();
         $mimeType = $fileObject->getMimeType() ?: MimeTypes::DEFAULT_MIME_TYPE;
@@ -122,6 +122,13 @@ class FileDelivery implements SingletonInterface
         $header = [
             'Accept-Ranges' => 'bytes',
         ];
+
+        // nginx serves the file itself (and handles Range requests on its own), so PHP must not stream it.
+        if ($outputFunction === ExtensionConfiguration::OUTPUT_NGINX && isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'nginx')) {
+            return $this->getXAccelRedirectResponse($filePath, $header, $outputFunction, $fileName, $mimeType, $forceDownload);
+        }
+
+        $rangeRequest = RangeRequest::fromHeader($request->getHeaderLine('Range'), $fileSize);
 
         // Unsatisfiable range -> 416 Range Not Satisfiable
         if (!$rangeRequest->isSatisfiable()) {
@@ -135,6 +142,22 @@ class FileDelivery implements SingletonInterface
 
         // Range requested → partial content (206 Partial Content)
         return $this->getRangeResponse($rangeRequest, $fileObject, $request, $filePath, $header, $outputFunction, $fileName, $mimeType, $forceDownload);
+    }
+
+    private function getXAccelRedirectResponse(string $filePath, array $header, string $outputFunction, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
+    {
+        $header['Content-Type'] = $mimeType;
+        $header['Content-Disposition'] = sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName);
+
+        $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
+
+        $header['X-Accel-Redirect'] = sprintf(
+            '%s/%s',
+            rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
+            $filePath
+        );
+
+        return new Response('php://temp', 200, $header);
     }
 
     private function getRangeNotSatisfiableResponse(RangeRequest $rangeRequest, array $header, string $outputFunction, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
