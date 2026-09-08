@@ -113,6 +113,9 @@ class FileDelivery implements SingletonInterface
      * Delivers a FAL File object. Hands off to nginx via X-Accel-Redirect when configured and running behind
      * nginx; otherwise streams the file through PHP, preserving HTTP Range requests (e.g. for HTML5 video
      * seeking) so only the requested byte range is read from disk and sent to the browser.
+     *
+     * The header for the chosen delivery mode is fully assembled before the single BeforeFileDeliver dispatch,
+     * so listeners always see (and can amend) the complete, final header set for the response actually sent.
      */
     protected function deliverFile(ProcessedFile|File $fileObject, string $filePath, string $fileName, int $fileSize, ServerRequestInterface $request): ResponseInterface
     {
@@ -126,24 +129,53 @@ class FileDelivery implements SingletonInterface
         ];
 
         // nginx serves the file itself (and handles Range requests on its own), so PHP must not stream it.
-        if ($outputFunction === ExtensionConfiguration::OUTPUT_NGINX && isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'nginx')) {
-            return $this->getXAccelRedirectResponse($filePath, $header, $outputFunction, $fileName, $mimeType, $forceDownload);
+        $useXAccelRedirect = $this->shouldUseXAccelRedirect($outputFunction);
+        $rangeRequest = $useXAccelRedirect ? null : RangeRequest::fromHeader($request->getHeaderLine('Range'), $fileSize);
+
+        if ($useXAccelRedirect) {
+            $header['Content-Type'] = $mimeType;
+            $header['Content-Disposition'] = sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName);
+        } elseif (!$rangeRequest->isSatisfiable()) {
+            // Unsatisfiable range -> 416 Range Not Satisfiable
+            $header['Content-Range'] = $rangeRequest->getUnsatisfiableContentRange();
+        } elseif ($rangeRequest->isRequested()) {
+            // Range requested → partial content (206 Partial Content)
+            $header = array_merge($header, [
+                'Content-Disposition' => sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName),
+                'Content-Type' => $mimeType,
+                'Content-Length' => (string)$rangeRequest->getLength(),
+                'Content-Range' => $rangeRequest->getContentRange(),
+                'Last-Modified' => gmdate('D, d M Y H:i:s', $fileObject->getModificationTime()) . ' GMT',
+                'Cache-Control' => '',
+            ]);
+        }
+        // No range requested → full file: streamFile() sets its own header, nothing to add upfront.
+
+        $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
+
+        if ($useXAccelRedirect) {
+            return $this->getXAccelRedirectResponse($filePath, $header);
         }
 
-        $rangeRequest = RangeRequest::fromHeader($request->getHeaderLine('Range'), $fileSize);
-
-        // Unsatisfiable range -> 416 Range Not Satisfiable
         if (!$rangeRequest->isSatisfiable()) {
-            return $this->getRangeNotSatisfiableResponse($rangeRequest, $header, $outputFunction, $fileName, $mimeType, $forceDownload);
+            return new Response('php://temp', 416, $header);
         }
 
-        // No range requested → full file
         if (!$rangeRequest->isRequested()) {
-            return $this->getFullFileResponse($fileObject, $request, $header, $outputFunction, $fileName, $mimeType, $forceDownload);
+            return $this->getFullFileResponse($fileObject, $request, $header, $fileName, $forceDownload);
         }
 
-        // Range requested → partial content (206 Partial Content)
-        return $this->getRangeResponse($rangeRequest, $fileObject, $request, $filePath, $header, $outputFunction, $fileName, $mimeType, $forceDownload);
+        return $this->getRangeResponse($rangeRequest, $request, $filePath, $header);
+    }
+
+    /**
+     * Checks whether the file should be handed off to nginx via X-Accel-Redirect instead of being streamed by PHP.
+     */
+    private function shouldUseXAccelRedirect(string $outputFunction): bool
+    {
+        return $outputFunction === ExtensionConfiguration::OUTPUT_NGINX
+            && isset($_SERVER['SERVER_SOFTWARE'])
+            && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'nginx');
     }
 
     /**
@@ -151,22 +183,11 @@ class FileDelivery implements SingletonInterface
      * and its Range requests itself), so only the header fields nginx forwards to the client are relevant here
      * (Content-Type, Content-Disposition, Accept-Ranges, Cache-Control, Expires).
      *
-     * @param string $filePath       The absolute path to the file on disk, appended to the configured protected path
-     * @param string[] $header       An array of header which will be sent to the browser. You can add your own headers or remove
-     *                               default ones.
-     * @param string $outputFunction Contains the output function as string. This property is deprecated and will be removed in
-     *                               further releases since the output function can only be one of "x-accel-redirect" or "stream".
-     * @param string $fileName       The name of the file
-     * @param string $mimeType       The mime type of the file
-     * @param bool   $forceDownload  Whether the file should be forced to download
+     * @param string   $filePath The absolute path to the file on disk, appended to the configured protected path
+     * @param string[] $header   The already dispatched, final header
      */
-    private function getXAccelRedirectResponse(string $filePath, array $header, string $outputFunction, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
+    private function getXAccelRedirectResponse(string $filePath, array $header): ResponseInterface
     {
-        $header['Content-Type'] = $mimeType;
-        $header['Content-Disposition'] = sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName);
-
-        $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
-
         $header['X-Accel-Redirect'] = sprintf(
             '%s/%s',
             rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
@@ -177,43 +198,21 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Builds the 416 Range Not Satisfiable response for a Range header that cannot be fulfilled.
-     *
-     * @param RangeRequest $rangeRequest   The parsed and unsatisfiable Range request
-     * @param string[]     $header         An array of header which will be sent to the browser
-     * @param string       $outputFunction The configured output function, may be changed by the BeforeFileDeliver event
-     * @param string       $fileName       The name of the file
-     * @param string       $mimeType       The mime type of the file
-     * @param bool         $forceDownload  Whether the file should be forced to download
-     */
-    private function getRangeNotSatisfiableResponse(RangeRequest $rangeRequest, array $header, string $outputFunction, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
-    {
-        $header['Content-Range'] = $rangeRequest->getUnsatisfiableContentRange();
-        $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
-
-        return new Response('php://temp', 416, $header);
-    }
-
-    /**
      * Streams the full file body through PHP via the storage's streamFile() (no Range requested).
      *
-     * @param ProcessedFile|File     $fileObject     The file to deliver
-     * @param ServerRequestInterface $request        The server request
-     * @param string[]               $header         An array of header which will be sent to the browser
-     * @param string                 $outputFunction The configured output function, may be changed by the BeforeFileDeliver event
-     * @param string                 $fileName       The name of the file
-     * @param string                 $mimeType       The mime type of the file
-     * @param bool                   $forceDownload  Whether the file should be forced to download
+     * @param ProcessedFile|File     $fileObject    The file to deliver
+     * @param ServerRequestInterface $request       The server request
+     * @param string[]               $header        The already dispatched, final header
+     * @param string                 $fileName      The name of the file
+     * @param bool                   $forceDownload Whether the file should be forced to download
      */
-    private function getFullFileResponse(ProcessedFile|File $fileObject, ServerRequestInterface $request, array $header, string $outputFunction, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
+    private function getFullFileResponse(ProcessedFile|File $fileObject, ServerRequestInterface $request, array $header, string $fileName, bool $forceDownload): ResponseInterface
     {
-        $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
-
         $response = $fileObject
             ->getStorage()
             ->streamFile(
                 $fileObject,
-                $this->shouldForceDownload($fileObject->getExtension()),
+                $forceDownload,
                 $fileName
             );
         foreach ($header as $headerName => $headerValue) {
@@ -232,29 +231,13 @@ class FileDelivery implements SingletonInterface
     /**
      * Builds the 206 Partial Content response, streaming only the requested byte range from disk.
      *
-     * @param RangeRequest           $rangeRequest   The parsed and satisfiable Range request
-     * @param ProcessedFile|File     $fileObject     The file to deliver
-     * @param ServerRequestInterface $request        The server request
-     * @param string                 $filePath       The absolute path to the file on disk
-     * @param string[]               $header         An array of header which will be sent to the browser
-     * @param string                 $outputFunction The configured output function, may be changed by the BeforeFileDeliver event
-     * @param string                 $fileName       The name of the file
-     * @param string                 $mimeType       The mime type of the file
-     * @param bool                   $forceDownload  Whether the file should be forced to download
+     * @param RangeRequest           $rangeRequest The parsed and satisfiable Range request
+     * @param ServerRequestInterface $request      The server request
+     * @param string                 $filePath     The absolute path to the file on disk
+     * @param string[]               $header       The already dispatched, final header
      */
-    private function getRangeResponse(RangeRequest $rangeRequest, ProcessedFile|File $fileObject, ServerRequestInterface $request, string $filePath, array $header, string $outputFunction, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
+    private function getRangeResponse(RangeRequest $rangeRequest, ServerRequestInterface $request, string $filePath, array $header): ResponseInterface
     {
-        $header = array_merge($header, [
-            'Content-Disposition' => sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName),
-            'Content-Type' => $mimeType,
-            'Content-Length' => (string)$rangeRequest->getLength(),
-            'Content-Range' => $rangeRequest->getContentRange(),
-            'Last-Modified' => gmdate('D, d M Y H:i:s', $fileObject->getModificationTime()) . ' GMT',
-            'Cache-Control' => '',
-        ]);
-
-        $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
-
         if ($request->getMethod() === 'HEAD') {
             return new Response('php://temp', 206, $header);
         }
