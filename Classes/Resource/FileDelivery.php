@@ -209,7 +209,8 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Streams the full file body through PHP via the storage's streamFile() (no Range requested).
+     * Streams the full file body through PHP via the storage's streamFile() (no Range requested). Content-Length is
+     * not applied from $header, since streamFile() already set it to the actual file size read from disk below.
      *
      * @param ProcessedFile|File     $fileObject    The file to deliver
      * @param ServerRequestInterface $request       The server request
@@ -226,6 +227,8 @@ class FileDelivery implements SingletonInterface
                 $forceDownload,
                 $fileName
             );
+
+        unset($header['Content-Length']);
         foreach ($header as $headerName => $headerValue) {
             $response = $response->withHeader($headerName, $headerValue);
         }
