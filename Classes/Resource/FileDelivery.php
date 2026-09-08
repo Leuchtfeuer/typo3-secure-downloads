@@ -209,8 +209,7 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Streams the full file body through PHP via the storage's streamFile() (no Range requested). Content-Length is
-     * not applied from $header, since streamFile() already set it to the actual file size read from disk below.
+     * Streams the full file body through PHP via the storage's streamFile() (no Range requested).
      *
      * @param ProcessedFile|File     $fileObject    The file to deliver
      * @param ServerRequestInterface $request       The server request
@@ -228,6 +227,7 @@ class FileDelivery implements SingletonInterface
                 $fileName
             );
 
+        // Content-Length is not applied from $header, since streamFile() already set it to the actual file size read from disk below.
         unset($header['Content-Length']);
         foreach ($header as $headerName => $headerValue) {
             $response = $response->withHeader($headerName, $headerValue);
@@ -417,7 +417,7 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Dispatches the OutputInitializationEvent event.
+     * Dispatches the OutputInitializationEvent.
      */
     protected function dispatchOutputInitializationEvent(): void
     {
@@ -427,7 +427,7 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Dispatches the AfterFileRetrieved event.
+     * Dispatches the AfterFileRetrievedEvent.
      *
      * @param string $file     Contains the absolute path to the file on the file system. You can change this property.
      * @param string $fileName Contains the name of the file. You can change this so that another file name is used when
