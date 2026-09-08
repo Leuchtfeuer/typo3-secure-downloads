@@ -27,6 +27,8 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
+use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
@@ -60,7 +62,7 @@ class FileDelivery implements SingletonInterface
      *
      * @return ResponseInterface Either the valid file as a stream or an error response
      *
-     * @throws PageNotFoundException|ResourceDoesNotExistException
+     * @throws PageNotFoundException|ResourceDoesNotExistException|AspectNotFoundException|AspectPropertyNotFoundException
      */
     public function deliver(string $jsonWebToken, ServerRequestInterface $request): ResponseInterface
     {
@@ -324,6 +326,8 @@ class FileDelivery implements SingletonInterface
      * Checks all registered checks for user access.
      *
      * @return bool True, when the user has access to the file and all checks passed successfully, false if not
+     *
+     * @throws AspectNotFoundException
      */
     protected function hasAccess(): bool
     {
@@ -344,6 +348,9 @@ class FileDelivery implements SingletonInterface
      * Checks whether the current request is authenticated as a TYPO3 backend user.
      *
      * @return bool True, when a backend user is logged in, false if not
+     *
+     * @throws AspectNotFoundException
+     * @throws AspectPropertyNotFoundException
      */
     protected function isBackendUser(): bool
     {
