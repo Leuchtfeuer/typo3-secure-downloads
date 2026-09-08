@@ -151,7 +151,7 @@ class FileDelivery implements SingletonInterface
         }
         // No range requested → full file: streamFile() sets its own header, nothing to add upfront.
 
-        $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
+        $this->dispatchBeforeReadDeliverEvent($header, $fileName, $mimeType, $forceDownload);
 
         if ($useXAccelRedirect) {
             return $this->getXAccelRedirectResponse($filePath, $header);
@@ -408,26 +408,22 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Dispatches the BeforeFileDeliver event.
+     * Dispatches the BeforeReadDeliverEvent.
      *
-     * @param string $outputFunction Contains the output function as string. This property is deprecated and will be removed in
-     *                               further releases since the output function can only be one of "x-accel-redirect" or "stream".
      * @param string[]  $header         An array of header which will be sent to the browser. You can add your own headers or remove
      *                               default ones.
      * @param string $fileName       The name of the file. This property is read-only.
      * @param string $mimeType       The mime type of the file. This property is read-only.
      * @param bool   $forceDownload  Information whether the file should be forced to download or not. This property is read-only.
      */
-    protected function dispatchBeforeFileDeliverEvent(
-        string &$outputFunction,
+    protected function dispatchBeforeReadDeliverEvent(
         array &$header,
         string $fileName,
         string $mimeType,
         bool $forceDownload
     ): void {
-        $event = new BeforeReadDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
+        $event = new BeforeReadDeliverEvent($header, $fileName, $mimeType, $forceDownload);
         $event = $this->eventDispatcher->dispatch($event);
-        $outputFunction = $event->getOutputFunction();
         $header = $event->getHeader();
     }
 }
