@@ -115,9 +115,9 @@ class FileDelivery implements SingletonInterface
      * seeking) so only the requested byte range is read from disk and sent to the browser.
      *
      * The BeforeReadDeliverEvent is dispatched once, right after the base header is set up but before the
-     * response-type-specific headers are added. Those are then applied afterward, so they always win over
-     * whatever the event set, since they must match the response body actually sent (e.g. the byte range
-     * streamed) — a listener only gets a chance to add or amend generic headers.
+     * response-type-specific headers are added. Those are only applied as defaults for keys the event didn't
+     * already set, so a listener may override e.g. Content-Type or Content-Disposition — except Content-Length
+     * and Content-Range on a 206 response, which always describe the actual byte range read from disk below.
      */
     protected function deliverFile(ProcessedFile|File $fileObject, string $filePath, string $fileName, int $fileSize, ServerRequestInterface $request): ResponseInterface
     {
@@ -166,7 +166,8 @@ class FileDelivery implements SingletonInterface
     /**
      * Builds the response for nginx's X-Accel-Redirect: the actual file body is discarded (nginx serves the file
      * and its Range requests itself), so only the header fields nginx forwards to the client are relevant here
-     * (Content-Type, Content-Disposition, Accept-Ranges, Cache-Control, Expires).
+     * (Content-Type, Content-Disposition, Accept-Ranges, Cache-Control, Expires). Content-Type/Content-Disposition
+     * are only defaulted here — a listener that already set them via the BeforeReadDeliverEvent wins.
      *
      * @param string   $filePath      The absolute path to the file on disk, appended to the configured protected path
      * @param string[] $header        The header dispatched through the BeforeReadDeliverEvent
@@ -176,8 +177,12 @@ class FileDelivery implements SingletonInterface
      */
     private function getXAccelRedirectResponse(string $filePath, array $header, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
     {
-        $header['Content-Type'] = $mimeType;
-        $header['Content-Disposition'] = sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName);
+        $header = array_merge([
+            'Content-Type' => $mimeType,
+            'Content-Disposition' => sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName),
+        ], $header);
+
+        // X-Accel-Redirect itself stays forced (it's the internal nginx routing target, not meant to be listener-controlled).
         $header['X-Accel-Redirect'] = sprintf(
             '%s/%s',
             rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
@@ -188,14 +193,17 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Builds the 416 Range Not Satisfiable response for a Range header that cannot be fulfilled.
+     * Builds the 416 Range Not Satisfiable response for a Range header that cannot be fulfilled. Content-Range is
+     * only defaulted here — a listener that already set it via the BeforeReadDeliverEvent wins.
      *
      * @param RangeRequest $rangeRequest The parsed and unsatisfiable Range request
      * @param string[]     $header       The header dispatched through the BeforeReadDeliverEvent
      */
     private function getRangeNotSatisfiableResponse(RangeRequest $rangeRequest, array $header): ResponseInterface
     {
-        $header['Content-Range'] = $rangeRequest->getUnsatisfiableContentRange();
+        $header = array_merge([
+            'Content-Range' => $rangeRequest->getUnsatisfiableContentRange(),
+        ], $header);
 
         return new Response('php://temp', 416, $header);
     }
@@ -232,7 +240,10 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Builds the 206 Partial Content response, streaming only the requested byte range from disk.
+     * Builds the 206 Partial Content response, streaming only the requested byte range from disk. Content-Type,
+     * Content-Disposition, Last-Modified and Cache-Control are only defaulted here — a listener that already set
+     * them via the BeforeReadDeliverEvent wins. Content-Length/Content-Range are not, since they must match the
+     * actual byte range read from disk below.
      *
      * @param RangeRequest           $rangeRequest  The parsed and satisfiable Range request
      * @param ProcessedFile|File     $fileObject    The file to deliver
@@ -245,13 +256,17 @@ class FileDelivery implements SingletonInterface
      */
     private function getRangeResponse(RangeRequest $rangeRequest, ProcessedFile|File $fileObject, ServerRequestInterface $request, string $filePath, array $header, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
     {
-        $header = array_merge($header, [
+        $header = array_merge([
             'Content-Disposition' => sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName),
             'Content-Type' => $mimeType,
-            'Content-Length' => (string)$rangeRequest->getLength(),
-            'Content-Range' => $rangeRequest->getContentRange(),
             'Last-Modified' => gmdate('D, d M Y H:i:s', $fileObject->getModificationTime()) . ' GMT',
             'Cache-Control' => '',
+        ], $header);
+
+        // Content-Length/Content-Range forced, since those must match the actual bytes RangeStream sends
+        $header = array_merge($header, [
+            'Content-Length' => (string)$rangeRequest->getLength(),
+            'Content-Range' => $rangeRequest->getContentRange(),
         ]);
 
         if ($request->getMethod() === 'HEAD') {

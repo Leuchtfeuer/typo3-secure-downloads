@@ -15,9 +15,10 @@ namespace Leuchtfeuer\SecureDownloads\Resource\Event;
 
 /**
  * This event is dispatched once, right after the base header is set up but before the file is delivered. It is the
- * chance to add or amend generic headers sent to the browser; structural headers describing the concrete bytes on
- * the wire (e.g. Content-Type, Content-Disposition, Content-Length, Content-Range) are added afterward and are not
- * influenced by this event.
+ * chance to add, amend or override headers sent to the browser (e.g. Content-Type, Content-Disposition) before the
+ * response-type-specific defaults for any header not already set here are added. The only exception is
+ * Content-Length/Content-Range on a partial (206) response, which always describe the actual byte range read from
+ * disk and are not influenced by this event.
  */
 final class BeforeReadDeliverEvent
 {
