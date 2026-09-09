@@ -186,8 +186,10 @@ class FileDelivery implements SingletonInterface
         $header['X-Accel-Redirect'] = sprintf(
             '%s/%s',
             rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
-            $filePath
+            ltrim($filePath, '/')
         );
+        // Accept-Ranges is not applied from $header, since Nginx already set it by default
+        unset($header['Accept-Ranges']);
 
         return new Response('php://temp', 200, $header);
     }
