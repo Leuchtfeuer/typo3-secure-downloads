@@ -26,14 +26,16 @@ use Leuchtfeuer\SecureDownloads\Security\AbstractCheck;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamInterface;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
+use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Resource\AbstractFile;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Type\File\FileInfo;
@@ -44,11 +46,6 @@ use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
 class FileDelivery implements SingletonInterface
 {
     protected AbstractToken $token;
-
-    /**
-     * @var string[]
-     */
-    protected array $header = [];
 
     public function __construct(
         protected ExtensionConfiguration $extensionConfiguration,
@@ -65,7 +62,7 @@ class FileDelivery implements SingletonInterface
      *
      * @return ResponseInterface Either the valid file as a stream or an error response
      *
-     * @throws PageNotFoundException|ResourceDoesNotExistException
+     * @throws PageNotFoundException|ResourceDoesNotExistException|AspectNotFoundException|AspectPropertyNotFoundException
      */
     public function deliver(string $jsonWebToken, ServerRequestInterface $request): ResponseInterface
     {
@@ -98,34 +95,190 @@ class FileDelivery implements SingletonInterface
 
         $this->dispatchAfterFileRetrievedEvent($filePath, $fileName);
 
+        $fileSize = $fileObject->getSize() ?: (int)filesize($filePath);
+
         if ($this->extensionConfiguration->isLog()) {
             $this->token->log([
-                'fileSize' => $fileObject->getSize() ?: (int)filesize($filePath),
+                'fileSize' => $fileSize,
                 'mimeType' => $fileObject->getMimeType() ?: (new FileInfo($filePath))->getMimeType()
                     ?: $this->guessMimeTypeByFileExtension($filePath)
                         ?: MimeTypes::DEFAULT_MIME_TYPE,
             ]);
         }
 
-        if ($fileObject instanceof File) {
-            $response = $fileObject
-                ->getStorage()
-                ->streamFile(
-                    $fileObject,
-                    $this->shouldForceDownload($fileObject->getExtension()),
-                    $fileName
-                );
-            ob_end_clean();
+        return $this->deliverFile($fileObject, $filePath, $fileName, $fileSize, $request);
+    }
 
-            return $response;
+    /**
+     * Delivers a FAL File object. Hands off to nginx via X-Accel-Redirect when configured and running behind
+     * nginx; otherwise streams the file through PHP, preserving HTTP Range requests (e.g. for HTML5 video
+     * seeking) so only the requested byte range is read from disk and sent to the browser.
+     *
+     * The BeforeReadDeliverEvent is dispatched once, right after the base header is set up but before the
+     * response-type-specific headers are added. Those are only applied as defaults for keys the event didn't
+     * already set, so a listener may override e.g. Content-Type or Content-Disposition — except Content-Length
+     * and Content-Range on a 206 response, which always describe the actual byte range read from disk below.
+     */
+    protected function deliverFile(ProcessedFile|File $fileObject, string $filePath, string $fileName, int $fileSize, ServerRequestInterface $request): ResponseInterface
+    {
+        $forceDownload = $this->shouldForceDownload($fileObject->getExtension());
+        $outputFunction = $this->extensionConfiguration->getOutputFunction();
+        $mimeType = $fileObject->getMimeType() ?: MimeTypes::DEFAULT_MIME_TYPE;
+        // it's a capability header telling the client "this resource supports byte-range requests,
+        // even though I'm sending you the whole thing right now."
+        $header = [
+            'Accept-Ranges' => 'bytes',
+        ];
+
+        $this->dispatchBeforeReadDeliverEvent($header, $fileName, $mimeType, $forceDownload);
+
+        // nginx serves the file itself (and handles Range requests on its own), so PHP must not stream it.
+        if ($this->shouldUseXAccelRedirect($outputFunction)) {
+            return $this->getXAccelRedirectResponse($filePath, $header, $fileName, $mimeType, $forceDownload);
         }
 
-        return new Response(
-            $this->getResponseBody($filePath, $fileName),
-            200,
-            $this->header,
-            ''
+        $rangeRequest = RangeRequest::fromHeader($request->getHeaderLine('Range'), $fileSize);
+
+        // Unsatisfiable range -> 416 Range Not Satisfiable
+        if (!$rangeRequest->isSatisfiable()) {
+            return $this->getRangeNotSatisfiableResponse($rangeRequest, $header);
+        }
+
+        // No range requested → full file
+        if (!$rangeRequest->isRequested()) {
+            return $this->getFullFileResponse($fileObject, $request, $header, $fileName, $forceDownload);
+        }
+
+        // Range requested → partial content (206 Partial Content)
+        return $this->getRangeResponse($rangeRequest, $fileObject, $request, $filePath, $header, $fileName, $mimeType, $forceDownload);
+    }
+
+    /**
+     * Checks whether the file should be handed off to nginx via X-Accel-Redirect instead of being streamed by PHP.
+     */
+    private function shouldUseXAccelRedirect(string $outputFunction): bool
+    {
+        return $outputFunction === ExtensionConfiguration::OUTPUT_NGINX
+            && isset($_SERVER['SERVER_SOFTWARE'])
+            && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'nginx');
+    }
+
+    /**
+     * Builds the response for nginx's X-Accel-Redirect: the actual file body is discarded (nginx serves the file
+     * and its Range requests itself), so only the header fields nginx forwards to the client are relevant here
+     * (Content-Type, Content-Disposition, Accept-Ranges, Cache-Control, Expires). Content-Type/Content-Disposition
+     * are only defaulted here — a listener that already set them via the BeforeReadDeliverEvent wins.
+     *
+     * @param string   $filePath      The absolute path to the file on disk, appended to the configured protected path
+     * @param string[] $header        The header dispatched through the BeforeReadDeliverEvent
+     * @param string   $fileName      The name of the file
+     * @param string   $mimeType      The mime type of the file
+     * @param bool     $forceDownload Whether the file should be forced to download
+     */
+    private function getXAccelRedirectResponse(string $filePath, array $header, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
+    {
+        $header = array_merge([
+            'Content-Type' => $mimeType,
+            'Content-Disposition' => sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName),
+        ], $header);
+
+        // X-Accel-Redirect itself stays forced (it's the internal nginx routing target, not meant to be listener-controlled).
+        $header['X-Accel-Redirect'] = sprintf(
+            '%s/%s',
+            rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
+            ltrim($filePath, '/')
         );
+        // Accept-Ranges is not applied from $header, since Nginx already set it by default
+        unset($header['Accept-Ranges']);
+
+        return new Response('php://temp', 200, $header);
+    }
+
+    /**
+     * Builds the 416 Range Not Satisfiable response for a Range header that cannot be fulfilled. Content-Range is
+     * only defaulted here — a listener that already set it via the BeforeReadDeliverEvent wins.
+     *
+     * @param RangeRequest $rangeRequest The parsed and unsatisfiable Range request
+     * @param string[]     $header       The header dispatched through the BeforeReadDeliverEvent
+     */
+    private function getRangeNotSatisfiableResponse(RangeRequest $rangeRequest, array $header): ResponseInterface
+    {
+        $header = array_merge([
+            'Content-Range' => $rangeRequest->getUnsatisfiableContentRange(),
+        ], $header);
+
+        return new Response('php://temp', 416, $header);
+    }
+
+    /**
+     * Streams the full file body through PHP via the storage's streamFile() (no Range requested).
+     *
+     * @param ProcessedFile|File     $fileObject    The file to deliver
+     * @param ServerRequestInterface $request       The server request
+     * @param string[]               $header        The header dispatched through the BeforeReadDeliverEvent
+     * @param string                 $fileName      The name of the file
+     * @param bool                   $forceDownload Whether the file should be forced to download
+     */
+    private function getFullFileResponse(ProcessedFile|File $fileObject, ServerRequestInterface $request, array $header, string $fileName, bool $forceDownload): ResponseInterface
+    {
+        $response = $fileObject
+            ->getStorage()
+            ->streamFile(
+                $fileObject,
+                $forceDownload,
+                $fileName
+            );
+
+        // Content-Length is not applied from $header, since streamFile() already set it to the actual file size read from disk below.
+        unset($header['Content-Length']);
+        foreach ($header as $headerName => $headerValue) {
+            $response = $response->withHeader($headerName, $headerValue);
+        }
+
+        ob_end_clean();
+
+        if ($request->getMethod() === 'HEAD') {
+            return $response->withBody(new Stream('php://temp'));
+        }
+
+        return $response;
+    }
+
+    /**
+     * Builds the 206 Partial Content response, streaming only the requested byte range from disk. Content-Type,
+     * Content-Disposition, Last-Modified and Cache-Control are only defaulted here — a listener that already set
+     * them via the BeforeReadDeliverEvent wins. Content-Length/Content-Range are not, since they must match the
+     * actual byte range read from disk below.
+     *
+     * @param RangeRequest           $rangeRequest  The parsed and satisfiable Range request
+     * @param ProcessedFile|File     $fileObject    The file to deliver
+     * @param ServerRequestInterface $request       The server request
+     * @param string                 $filePath      The absolute path to the file on disk
+     * @param string[]               $header        The header dispatched through the BeforeReadDeliverEvent
+     * @param string                 $fileName      The name of the file
+     * @param string                 $mimeType      The mime type of the file
+     * @param bool                   $forceDownload Whether the file should be forced to download
+     */
+    private function getRangeResponse(RangeRequest $rangeRequest, ProcessedFile|File $fileObject, ServerRequestInterface $request, string $filePath, array $header, string $fileName, string $mimeType, bool $forceDownload): ResponseInterface
+    {
+        $header = array_merge([
+            'Content-Disposition' => sprintf('%s; filename="%s"', $forceDownload ? 'attachment' : 'inline', $fileName),
+            'Content-Type' => $mimeType,
+            'Last-Modified' => gmdate('D, d M Y H:i:s', $fileObject->getModificationTime()) . ' GMT',
+            'Cache-Control' => '',
+        ], $header);
+
+        // Content-Length/Content-Range forced, since those must match the actual bytes RangeStream sends
+        $header = array_merge($header, [
+            'Content-Length' => (string)$rangeRequest->getLength(),
+            'Content-Range' => $rangeRequest->getContentRange(),
+        ]);
+
+        if ($request->getMethod() === 'HEAD') {
+            return new Response('php://temp', 206, $header);
+        }
+
+        return new Response(new RangeStream($filePath, $rangeRequest->getStart(), $rangeRequest->getLength()), 206, $header);
     }
 
     /**
@@ -192,6 +345,8 @@ class FileDelivery implements SingletonInterface
      * Checks all registered checks for user access.
      *
      * @return bool True, when the user has access to the file and all checks passed successfully, false if not
+     *
+     * @throws AspectNotFoundException
      */
     protected function hasAccess(): bool
     {
@@ -208,6 +363,14 @@ class FileDelivery implements SingletonInterface
         return true;
     }
 
+    /**
+     * Checks whether the current request is authenticated as a TYPO3 backend user.
+     *
+     * @return bool True, when a backend user is logged in, false if not
+     *
+     * @throws AspectNotFoundException
+     * @throws AspectPropertyNotFoundException
+     */
     protected function isBackendUser(): bool
     {
         $backendUser = $this->context->getAspect('backend.user');
@@ -216,33 +379,16 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Returns the response body. This method also dispatches the BeforeFileDeliverEvent.
+     * Guesses the mime type from the file extension when it could not be determined otherwise.
      *
-     * @param string $file     The actual absolute path to the file
-     * @param string $fileName The name of the file
+     * @param string $file The absolute path to the file
      *
-     * @return StreamInterface|string Whether a stream or a string, when x-accel-redirect is used
+     * @return false|string The guessed mime type, or false when the extension is not known
      */
-    protected function getResponseBody(string $file, string $fileName): StreamInterface|string
-    {
-        $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
-        $forceDownload = $this->shouldForceDownload($fileExtension);
-        $fileSize = (int)filesize($file);
-        // Try to get MimeType via TYPO3 buildin logic first. If that fails, use our extended file extension list.
-        $mimeType = (new FileInfo($file))->getMimeType() ?: $this->guessMimeTypeByFileExtension($file) ?: MimeTypes::DEFAULT_MIME_TYPE;
-        $outputFunction = $this->extensionConfiguration->getOutputFunction();
-        $header = $this->getFileHeader($mimeType, $fileName, $forceDownload, $fileSize);
-
-        $this->dispatchBeforeFileDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
-        $this->header = $header;
-
-        return $this->outputFile($outputFunction, $file) ?? 'php://temp';
-    }
-
     protected function guessMimeTypeByFileExtension(string $file): false|string
     {
         $lowercaseFileExtension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if (isset(MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension]) && (MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension] !== '' && MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension] !== '0')) {
+        if (isset(MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension])) {
             return MimeTypes::ADDITIONAL_MIME_TYPES[$lowercaseFileExtension];
         }
         return false;
@@ -273,61 +419,7 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Sets default HTTP headers which can be modified in the BeforeFileDeliver event.
-     *
-     * @param string $mimeType       The mime type of the file
-     * @param string $fileName       The name of the file
-     * @param bool   $forceDownload  Whether the file should be forced to download
-     * @param int    $fileSize       The actual file size
-     *
-     * @return string[] An array of HTTP header
-     */
-    protected function getFileHeader(string $mimeType, string $fileName, bool $forceDownload, int $fileSize): array
-    {
-        $header = [
-            'Pragma' => 'private',
-            'Expires' => '0',
-            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-            'Content-Type' => $mimeType,
-        ];
-
-        if (!@ini_get('zlib.output_compression')) {
-            $header['Content-Length'] = (string)$fileSize;
-        }
-
-        if ($forceDownload) {
-            $header['Content-Disposition'] = sprintf('attachment; filename="%s"', $fileName);
-        }
-
-        return $header;
-    }
-
-    /**
-     * Checks whether the file should be delivered via x-accel-redirect header or as stream.
-     *
-     * @param string $outputFunction The method how the file should be delivered to the user
-     * @param string $file           The absolute file path
-     *
-     * @return StreamInterface|null  The content stream or null if x-accel-redirect is used
-     */
-    protected function outputFile(string $outputFunction, string $file): ?StreamInterface
-    {
-        if ($outputFunction === ExtensionConfiguration::OUTPUT_NGINX && (isset($_SERVER['SERVER_SOFTWARE']) && str_starts_with((string)$_SERVER['SERVER_SOFTWARE'], 'nginx'))) {
-            $this->header['X-Accel-Redirect'] = sprintf(
-                '%s/%s',
-                rtrim($this->extensionConfiguration->getProtectedPath(), '/'),
-                $file
-            );
-            return null;
-        }
-
-        return new Stream($file);
-    }
-
-    // Event handling
-
-    /**
-     * Dispatches the OutputInitializationEvent event.
+     * Dispatches the OutputInitializationEvent.
      */
     protected function dispatchOutputInitializationEvent(): void
     {
@@ -337,7 +429,7 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Dispatches the AfterFileRetrieved event.
+     * Dispatches the AfterFileRetrievedEvent.
      *
      * @param string $file     Contains the absolute path to the file on the file system. You can change this property.
      * @param string $fileName Contains the name of the file. You can change this so that another file name is used when
@@ -352,26 +444,22 @@ class FileDelivery implements SingletonInterface
     }
 
     /**
-     * Dispatches the BeforeFileDeliver event.
+     * Dispatches the BeforeReadDeliverEvent.
      *
-     * @param string $outputFunction Contains the output function as string. This property is deprecated and will be removed in
-     *                               further releases since the output function can only be one of "x-accel-redirect" or "stream".
      * @param string[]  $header         An array of header which will be sent to the browser. You can add your own headers or remove
      *                               default ones.
      * @param string $fileName       The name of the file. This property is read-only.
      * @param string $mimeType       The mime type of the file. This property is read-only.
      * @param bool   $forceDownload  Information whether the file should be forced to download or not. This property is read-only.
      */
-    protected function dispatchBeforeFileDeliverEvent(
-        string &$outputFunction,
+    protected function dispatchBeforeReadDeliverEvent(
         array &$header,
         string $fileName,
         string $mimeType,
         bool $forceDownload
     ): void {
-        $event = new BeforeReadDeliverEvent($outputFunction, $header, $fileName, $mimeType, $forceDownload);
+        $event = new BeforeReadDeliverEvent($header, $fileName, $mimeType, $forceDownload);
         $event = $this->eventDispatcher->dispatch($event);
-        $outputFunction = $event->getOutputFunction();
         $header = $event->getHeader();
     }
 }

@@ -65,6 +65,6 @@ class FileDeliveryMiddleware implements MiddlewareInterface
      */
     public function isResponsible(ServerRequestInterface $request)
     {
-        return mb_strpos(urldecode($request->getUri()->getPath()), $this->assetPrefix) === 0 && $request->getMethod() === 'GET';
+        return mb_strpos(urldecode($request->getUri()->getPath()), $this->assetPrefix) === 0 && in_array($request->getMethod(), ['GET', 'HEAD'], true);
     }
 }

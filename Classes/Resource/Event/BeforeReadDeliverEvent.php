@@ -14,31 +14,22 @@ declare(strict_types=1);
 namespace Leuchtfeuer\SecureDownloads\Resource\Event;
 
 /**
- * This event is executed just before the file is sent to the browser. It is the last chance to influence both the output
- * function and the headers sent.
+ * This event is dispatched once, right after the base header is set up but before the file is delivered. It is the
+ * chance to add, amend or override headers sent to the browser (e.g. Content-Type, Content-Disposition) before the
+ * response-type-specific defaults for any header not already set here are added. The only exception is
+ * Content-Length/Content-Range on a partial (206) response, which always describe the actual byte range read from
+ * disk and are not influenced by this event.
  */
 final class BeforeReadDeliverEvent
 {
     /**
-     * @param string $outputFunction Contains the output function as string. This property is deprecated and will be removed in
-     *                               further releases since the output function can only be one of "x-accel-redirect" or "stream".
      * @param string[]  $header         An array of header which will be sent to the browser. You can add your own headers or remove
      *                               default ones.
      * @param string $fileName       The name of the file. This property is read-only.
      * @param string $mimeType       The mime type of the file. This property is read-only.
      * @param bool   $forceDownload  Information whether the file should be forced to download or not. This property is read-only.
      */
-    public function __construct(private string $outputFunction, private array $header, private readonly string $fileName, private readonly string $mimeType, private readonly bool $forceDownload) {}
-
-    public function getOutputFunction(): string
-    {
-        return $this->outputFunction;
-    }
-
-    public function setOutputFunction(string $outputFunction): void
-    {
-        $this->outputFunction = $outputFunction;
-    }
+    public function __construct(private array $header, private readonly string $fileName, private readonly string $mimeType, private readonly bool $forceDownload) {}
 
     /**
      * @return string[]
