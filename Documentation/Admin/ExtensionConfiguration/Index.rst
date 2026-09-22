@@ -247,6 +247,10 @@ outputFunction
          Files are delivered as a file stream to the browser. For nginx web servers, there is the possibility to deliver the file
          directly from the server by setting this property to "x-accel-redirect".
 
+         When set to "x-accel-redirect", the extension only hands the file off to nginx if the request is actually
+         running behind nginx (detected via the ``SERVER_SOFTWARE`` environment variable). Otherwise, it automatically
+         falls back to delivering the file as a stream through PHP.
+
 
 .. _admin-extensionConfiguration-protectedPath:
 
