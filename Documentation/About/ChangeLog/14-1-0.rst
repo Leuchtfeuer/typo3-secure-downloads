@@ -1,0 +1,67 @@
+﻿.. include:: ../../Includes.txt
+
+==========================
+Version 14.1.0 - 2026/09/22
+==========================
+
+This release is a feature release.
+
+Download
+========
+
+Download this version from the `TYPO3 extension repository <https://extensions.typo3.org/extension/secure_downloads/>`__ or from
+`GitHub <https://github.com/Leuchtfeuer/typo3-secure-downloads/releases/tag/v14.1.0>`__.
+
+Added
+=====
+
+* Add HTTP Range request support for file delivery, enabling partial content responses (e.g. for HTML5 video/audio seeking)
+
+Changed
+=======
+
+* `BeforeReadDeliverEvent` is now dispatched once, right after the base header is set up, and listeners can override response headers (e.g. Content-Type, Content-Disposition) before response-type-specific defaults are applied
+* Delivery via nginx `x-accel-redirect` is now only used when the request is actually running behind nginx; otherwise, the file is streamed through PHP automatically
+
+Deprecated
+==========
+
+Removed
+=======
+
+* BREAKING: Remove the deprecated `outputFunction` property from `BeforeReadDeliverEvent`
+
+All Changes
+===========
+This is a list of all changes in this release::
+
+    2026-09-21 Merge pull request #283 from Leuchtfeuer/feature/range-request-support (Commit ad168d2 by David Vespermann)
+    2026-09-09 [TASK] Fix paths and headers for X-Accel-Redirect response [TER-495] (Commit b2a2e93 by dvespermann)
+    2026-09-08 [TASK] Fix inconsistent event dispatch docblock wording (Commit db333c8 by dvespermann)
+    2026-09-08 [TASK] Protect Content-Length in the full file response from listener override (Commit f54918a by dvespermann)
+    2026-09-08 [TASK] Let BeforeReadDeliverEvent listeners override response headers (Commit 87a326c by dvespermann)
+    2026-09-08 [TASK] Move response header assembly back into the respective builder methods (Commit 08bdcbe by dvespermann)
+    2026-09-08 [TASK] Update BeforeReadDeliverEvent documentation for the outputFunction removal and new dispatch timing (Commit 633ed49 by dvespermann)
+    2026-09-08 [TASK] Dispatch BeforeReadDeliverEvent before response-type-specific headers are computed (Commit 92afb9d by dvespermann)
+    2026-09-08 [TASK] Remove deprecated outputFunction from BeforeReadDeliverEvent (Commit 717712e by dvespermann)
+    2026-09-08 [TASK] Dispatch BeforeFileDeliverEvent only once per request (Commit 961de1c by dvespermann)
+    2026-09-08 [TASK] Document AspectNotFoundException/AspectPropertyNotFoundException throws (Commit e802218 by dvespermann)
+    2026-09-08 [TASK] Add missing PHPDoc for response builder methods and access-check helpers (Commit 50d8098 by dvespermann)
+    2026-09-08 [TASK] Restore nginx x-accel-redirect delivery mode (Commit 98bcd92 by dvespermann)
+    2026-09-08 [TASK] Fix discarded withHeader() return value so headers actually reach the full file response (Commit 18e05e4 by dvespermann)
+    2026-09-08 [TASK] Split file delivery response building into dedicated methods per response type (Commit 2e5be15 by dvespermann)
+    2026-09-02 [TASK] Remove unused methods, redundant type hints, and unnecessary docblocks. Simplify method logic for deliverFile. [TER-495] (Commit ff0b609 by dvespermann)
+    2026-04-01 [TASK] Add HTTP Range support for file delivery #282 [TER-495] (Commit e4138d0 by Ines Willenbrock)
+    2026-04-01 Merge pull request #280 from Leuchtfeuer/feature/TER-417 (Commit 9b3f1e7 by Ines Willenbrock)
+    2026-03-31 [TASK] Delete Settings.cfg of Sphinx Based rendering [TER-417][TER-418] (Commit 2256de3 by Ines Willenbrock)
+    2026-03-31 [TASK] Add Contribution/Index to the toctree [TER-417][TER-418] (Commit 75a916c by Ines Willenbrock)
+    2026-03-31 [TASK] Migrate rendering Documentation to PHP Based Rendering [TER-417][TER-418] (Commit 9e179e0 by Ines Willenbrock)
+
+Contributors
+============
+Following people have contributed to this release:
+
+*   David Vespermann
+*   Ines Willenbrock
+
+Thank you very much for your support. The next drink is on us! 🍻
