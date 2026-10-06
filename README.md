@@ -85,7 +85,7 @@ using Secure Downloads:
   option to false
 * Create a directory on your filesystem which matches the previously configured "Base Path"
 * Put an `.htaccess` file into that folder that denies the access to all files within and underneath this path
-* Configure the extension in the admin section of your TYPO3 Backend to match all files (use an astrix for the 
+* Configure the extension in the admin section of your TYPO3 Backend to match all files (use `.*` for the 
   [securedFiletypes](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/main/en-us/Admin/ExtensionConfiguration/Index.html#securedfiletypes)
   option) in your newly created file storage (use the path for the 
   [securedDirs](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/main/en-us/Admin/ExtensionConfiguration/Index.html#secureddirs)
