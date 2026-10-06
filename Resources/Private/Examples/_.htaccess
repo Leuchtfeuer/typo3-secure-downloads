@@ -1,5 +1,7 @@
 # Please use that example which fits your Apache version and make sure to adapt the file match pattern
 # as configured in "parsing.securedFiletypes"
+# To protect all files (including files without extension), drop the FilesMatch wrapper and keep only
+# "Require all denied" (Apache 2.4) or "Order Allow,Deny" and "Deny from all" (Apache 2.2)
 
 # Apache 2.4
 <IfModule mod_authz_core.c>
