@@ -14,7 +14,7 @@
                 <target>Geschützte Verzeichnisse: Welche Verzeichnisse sollen geschützt werden? Mehrere Verzeichnisse können durch eine Pipe ("|") getrennt werden.</target>
             </trans-unit>
             <trans-unit id="securedFileTypes">
-                <target>Geschützte Dateitypen: Welche Dateitypen sollen geschützt werden? Mehrere Typen können durch eine Pipe ("|") getrennt werden. Du kannst ein Sternchen ("*") verwenden, wenn du alle Dateien innerhalb konfigurierter Verzeichnisse schützen möchtest.</target>
+                <target>Geschützte Dateitypen: Welche Dateitypen sollen geschützt werden? Der Wert ist ein regulärer Ausdruck, der ohne Beachtung der Groß- und Kleinschreibung auf die Dateiendung angewendet wird. Mehrere Typen können durch eine Pipe ("|") getrennt werden. Verwende ".*", wenn du alle Dateien innerhalb konfigurierter Verzeichnisse schützen möchtest.</target>
             </trans-unit>
             <trans-unit id="enableGroupCheck">
                 <target>Benutzergruppen Überprüfung: Ermöglicht die Weiterleitung eines sicheren Download-Links an andere, wenn sie mindestens eine gemeinsame Front-End-Benutzergruppe haben. Wenn Du diese Option aktivierst, ist die Prüfungen WENIGER restriktiv!</target>
@@ -44,7 +44,7 @@
                 <target>Dateidownload erzwingen: Der Download von definierten Dateitypen wird erzwungen.</target>
             </trans-unit>
             <trans-unit id="forceDownloadType">
-                <target>Dateitypen für den forcierten Download: Eine Liste von Dateiendungen, die deren download erzwungen werden soll (getrennt mit einer Pipe ("|")). Diese Option greift nur, wenn "Dateidownload erzwingen" aktiviert ist. Du kannst ein Sternchen ("*") benutzen, um den Download für alle geschützten Dateien zu erzwingen.</target>
+                <target>Dateitypen für den forcierten Download: Eine Liste von Dateiendungen, die deren download erzwungen werden soll (getrennt mit einer Pipe ("|")). Diese Option greift nur, wenn "Dateidownload erzwingen" aktiviert ist. Der Wert ist ein regulärer Ausdruck, der ohne Beachtung der Groß- und Kleinschreibung auf die Dateiendung angewendet wird. Verwende ".*", um den Download für alle geschützten Dateien zu erzwingen.</target>
             </trans-unit>
             <trans-unit id="outputFunction">
                 <target>Auslieferung: Methode, über die die geschützten Dateien an den Webbrowser ausgeliefert werden.</target>
