@@ -13,6 +13,7 @@ namespace Leuchtfeuer\SecureDownloads\Tests\Unit\UserFunctions;
 
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Leuchtfeuer\SecureDownloads\UserFunctions\CheckConfiguration;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class CheckConfigurationTest extends TestCase
@@ -91,5 +92,84 @@ class CheckConfigurationTest extends TestCase
         self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['fileadmin']));
         self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['/fileadmin-secure']));
         self::assertFalse($this->invokeMethod($checkConfiguration, 'isDirectoryMatching', ['fileadmin-secure']));
+    }
+
+    /**
+     * @return array<string, array{string, array<string>}>
+     */
+    public static function securedFileTypesProvider(): array
+    {
+        return [
+            'wildcard' => [ExtensionConfiguration::FILE_TYPES_WILDCARD, ['README', 'doc.pdf', 'notes.txt']],
+            'regular expression for all files' => ['.*', ['README', 'doc.pdf', 'notes.txt']],
+            'single file type' => ['pdf', ['doc.pdf']],
+            'file types ignoring case' => ['PDF|txt', ['doc.pdf', 'notes.txt']],
+        ];
+    }
+
+    /**
+     * @param array<string> $expectedFileNames
+     */
+    #[DataProvider('securedFileTypesProvider')]
+    public function testFindSecuredFilesMatchesFileExtensions(string $securedFileTypes, array $expectedFileNames)
+    {
+        $directory = sys_get_temp_dir() . '/' . uniqid('secure_downloads_', true);
+        mkdir($directory);
+        foreach (['README', 'doc.pdf', 'notes.txt'] as $fileName) {
+            touch($directory . '/' . $fileName);
+        }
+
+        try {
+            $checkConfiguration = new CheckConfiguration($this->getExtensionConfiguration(['securedFiletypes' => $securedFileTypes]));
+
+            $foundFileNames = [];
+            foreach ($this->invokeMethod($checkConfiguration, 'findSecuredFiles', [$directory]) as $file) {
+                $foundFileNames[] = $file->getFilename();
+            }
+            sort($foundFileNames);
+
+            self::assertSame($expectedFileNames, $foundFileNames);
+        } finally {
+            array_map('unlink', glob($directory . '/*'));
+            rmdir($directory);
+        }
+    }
+
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public static function htaccessFileTypesProvider(): array
+    {
+        return [
+            'wildcard' => [ExtensionConfiguration::FILE_TYPES_WILDCARD, '^[^.]*$|\\.(.*)$'],
+            'regular expression for all files' => ['.*', '^[^.]*$|\\.(.*)$'],
+            'default file types' => ['pdf|jpe?g', '\\.(pdf|jpe?g)$'],
+        ];
+    }
+
+    #[DataProvider('htaccessFileTypesProvider')]
+    public function testHtaccessExamplesMatchConfiguredFileTypes(string $securedFileTypes, string $expectedFilesMatchPattern)
+    {
+        $checkConfiguration = new CheckConfiguration($this->getExtensionConfiguration(['securedFiletypes' => $securedFileTypes]));
+
+        self::assertStringContainsString(
+            htmlspecialchars(sprintf('<FilesMatch "%s">', $expectedFilesMatchPattern)),
+            $this->invokeMethod($checkConfiguration, 'getHtaccessExamples')
+        );
+    }
+
+    /**
+     * @param array<string, string> $configuration
+     */
+    private function getExtensionConfiguration(array $configuration): ExtensionConfiguration
+    {
+        $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([])
+            ->getMock();
+
+        $this->invokeMethod($extensionConfiguration, 'setPropertiesFromConfiguration', [$configuration]);
+
+        return $extensionConfiguration;
     }
 }

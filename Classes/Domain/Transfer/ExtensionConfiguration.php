@@ -255,7 +255,9 @@ class ExtensionConfiguration implements SingletonInterface
 
     public function getSecuredFileTypes(): string
     {
-        return trim($this->securedFiletypes);
+        $securedFileTypes = trim($this->securedFiletypes);
+
+        return $securedFileTypes === self::FILE_TYPES_WILDCARD ? '.*' : $securedFileTypes;
     }
 
     public function getSecuredFileTypesPattern(string $pattern = '#^(%s)$#i'): string
