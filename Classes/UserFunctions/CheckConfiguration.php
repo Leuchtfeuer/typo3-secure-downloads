@@ -16,6 +16,7 @@ namespace Leuchtfeuer\SecureDownloads\UserFunctions;
 use GuzzleHttp\Client;
 use Leuchtfeuer\SecureDownloads\Domain\Transfer\ExtensionConfiguration;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -24,7 +25,6 @@ class CheckConfiguration implements SingletonInterface
 {
     protected ExtensionConfiguration $extensionConfiguration;
     protected string $directoryPattern = '';
-    protected string $fileTypePattern = '';
     protected string $domain = '';
     protected int $fileCount = 0;
 
@@ -55,7 +55,6 @@ class CheckConfiguration implements SingletonInterface
         }
         $this->extensionConfiguration = $extensionConfiguration;
         $this->directoryPattern = $this->extensionConfiguration->getSecuredDirectoriesPattern();
-        $this->fileTypePattern = sprintf('#\.(%s)$#i', $this->extensionConfiguration->getSecuredFileTypes());
         $this->domain = GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST');
     }
 
@@ -145,8 +144,7 @@ class CheckConfiguration implements SingletonInterface
 
     protected function checkFilesAccessibility(string $realDirectoryPath, string $directoryPath): void
     {
-        $fileFinder = (new Finder())->name($this->fileTypePattern)->in($realDirectoryPath)->depth(0);
-        foreach ($fileFinder->files() as $file) {
+        foreach ($this->findSecuredFiles($realDirectoryPath) as $file) {
             $publicUrl = sprintf('%s/%s/%s', $this->domain, $directoryPath, $file->getRelativePathname());
             $verify = $GLOBALS['TYPO3_CONF_VARS']['HTTP']['verify'];
             $statusCode = (new Client())->request(
@@ -167,6 +165,17 @@ class CheckConfiguration implements SingletonInterface
                 }
             }
         }
+    }
+
+    protected function findSecuredFiles(string $realDirectoryPath): Finder
+    {
+        $fileTypesPattern = $this->extensionConfiguration->getSecuredFileTypesPattern();
+
+        return (new Finder())
+            ->files()
+            ->in($realDirectoryPath)
+            ->depth(0)
+            ->filter(fn(SplFileInfo $file): bool => (bool)preg_match($fileTypesPattern, $file->getExtension()));
     }
 
     /**
@@ -331,18 +340,23 @@ HTML;
     protected function getHtaccessExamples(): string
     {
         $fileTypes = $this->extensionConfiguration->getSecuredFileTypes();
+        $filesMatchPattern = sprintf('\\.(%s)$', $fileTypes);
+        // Apache matches the file name, so files without extension need their own alternative
+        if (preg_match($this->extensionConfiguration->getSecuredFileTypesPattern(), '') === 1) {
+            $filesMatchPattern = '^[^.]*$|' . $filesMatchPattern;
+        }
 
         $code = <<<HTACCESS
 # Apache 2.4
 <IfModule mod_authz_core.c>
-    <FilesMatch "\.($fileTypes)$">
+    <FilesMatch "$filesMatchPattern">
         Require all denied
     </FilesMatch>
 </IfModule>
 
 # Apache 2.2
 <IfModule !mod_authz_core.c>
-    <FilesMatch "\.($fileTypes)$">
+    <FilesMatch "$filesMatchPattern">
         Order Allow,Deny
         Deny from all
     </FilesMatch>

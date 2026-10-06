@@ -33,10 +33,6 @@ class SecureDownloadService implements SingletonInterface
     public function pathShouldBeSecured(string $publicUrl): bool
     {
         if ($this->folderShouldBeSecured($publicUrl)) {
-            if ($this->extensionConfiguration->getSecuredFileTypes() === ExtensionConfiguration::FILE_TYPES_WILDCARD) {
-                return true;
-            }
-
             $fileExtension = pathinfo($publicUrl, PATHINFO_EXTENSION);
 
             return (bool)preg_match($this->extensionConfiguration->getSecuredFileTypesPattern(), $fileExtension);
