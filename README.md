@@ -85,7 +85,7 @@ using Secure Downloads:
   option to false
 * Create a directory on your filesystem which matches the previously configured "Base Path"
 * Put an `.htaccess` file into that folder that denies the access to all files within and underneath this path
-* Configure the extension in the admin section of your TYPO3 Backend to match all files (use an astrix for the 
+* Configure the extension in the admin section of your TYPO3 Backend to match all files (use `.*` for the 
   [securedFiletypes](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/main/en-us/Admin/ExtensionConfiguration/Index.html#securedfiletypes)
   option) in your newly created file storage (use the path for the 
   [securedDirs](https://docs.typo3.org/p/leuchtfeuer/secure-downloads/main/en-us/Admin/ExtensionConfiguration/Index.html#secureddirs)
@@ -93,13 +93,12 @@ using Secure Downloads:
 
 ### Access Configuration
 You also need to secure all the directories and file types by your server configuration. This can be done with `.htaccess` files.
-Some example .htaccess files can be found in the 
-[Resources/Private/Examples](https://github.com/Leuchtfeuer/typo3-secure-downloads/tree/main/Resources/Private/Examples) 
-folder.
+An example file can be found at `Resources/Private/Examples/_.htaccess`. Rename it to `.htaccess` and adapt its file match
+pattern to your securedFiletypes configuration.
 
 **Note**: This extension cannot secure links to files that you include in your CSS file. For example, you can secure `/fileadmin` 
-with the default `.htaccess_deny` file by putting the file in `/fileadmin`. You can allow `/fileadmin/templates/` with the
-default `.htaccess_allow` file by putting this file to `/fileadmin/template/`.
+with an `.htaccess` file that denies access by putting the file in `/fileadmin`. You can allow `/fileadmin/templates/` again
+with an `.htaccess` file that grants access (`Require all granted`) by putting this file in `/fileadmin/templates/`.
 
 ## Documentation
 A detailed documentation can be found in the 
