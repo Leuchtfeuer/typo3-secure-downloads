@@ -130,4 +130,32 @@ class SecureDownloadServiceTest extends TestCase
         self::assertFalse($secureDownloadService->pathShouldBeSecured('fileadmin/secure/text.txt'));
         self::assertFalse($secureDownloadService->pathShouldBeSecured('fileadmin/text.txt'));
     }
+
+    public function testWildcardFileTypesTests()
+    {
+        $extensionConfiguration = $this->getMockBuilder(ExtensionConfiguration::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([])
+            ->getMock();
+
+        $configuration = [
+            'securedDirs' => 'fileadmin/secure',
+            'securedFiletypes' => ExtensionConfiguration::FILE_TYPES_WILDCARD,
+        ];
+
+        $this->invokeMethod($extensionConfiguration, 'setPropertiesFromConfiguration', [$configuration]);
+
+        $secureDownloadService = new SecureDownloadService($extensionConfiguration);
+
+        // matching
+
+        self::assertTrue($secureDownloadService->pathShouldBeSecured('fileadmin/secure/image.jpg'));
+        self::assertTrue($secureDownloadService->pathShouldBeSecured('/fileadmin/secure/text.txt'));
+        self::assertTrue($secureDownloadService->pathShouldBeSecured('/fileadmin/secure/documents/README'));
+
+        // not matching
+
+        self::assertFalse($secureDownloadService->pathShouldBeSecured('fileadmin/unsecure/image.jpg'));
+        self::assertFalse($secureDownloadService->pathShouldBeSecured('fileadmin/text.txt'));
+    }
 }

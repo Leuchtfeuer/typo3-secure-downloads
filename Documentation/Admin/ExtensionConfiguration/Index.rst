@@ -93,8 +93,8 @@ securedFiletypes
          :code:`pdf|jpe?g|gif|png|odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz`
    Description
          List of file types (file extensions) that should be protected. Multiple file extension patterns can be separated by a
-         pipe (|). You can use an asterisk (*) if you want to protect all files within configured directories.
-         You can use :ref:`regular expressions <admin-regularExpressions>` for this option.
+         pipe (|). Use :code:`.*` if you want to protect all files within configured directories.
+         The value is a :ref:`regular expression <admin-regularExpressions>` that is matched against the file extension.
 
 
 .. _admin-extensionConfiguration-linkPrefix:
@@ -308,8 +308,8 @@ forcedownloadtype
          :code:`odt|pptx?|docx?|xlsx?|zip|rar|tgz|tar|gz`
    Description
          A list of file types that should not be opened inline in a browser, separated by a pipe. Only used if "forcedownload"
-         (see: forcedownload_) is enabled. You can use an asterisk (*) if you want to force download for all file types.
-         You can use :ref:`regular expressions <admin-regularExpressions>` for this option.
+         (see: forcedownload_) is enabled. Use :code:`.*` if you want to force download for all file types.
+         The value is a :ref:`regular expression <admin-regularExpressions>` that is matched against the file extension.
 
 
 .. _admin-extensionConfiguration-allowPublicAccess:
