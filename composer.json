@@ -47,6 +47,7 @@
   "extra": {
     "typo3/cms": {
       "extension-key": "secure_downloads",
+      "version": "14.1.1",
       "app-dir": ".Build",
       "web-dir": ".Build/public"
     }
