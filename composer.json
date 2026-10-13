@@ -1,6 +1,6 @@
 {
   "name": "leuchtfeuer/secure-downloads",
-  "description": "\"Secure Download\": Apply TYPO3 access rights to ALL file assets (PDFs, TGZs or JPGs etc. - configurable) - protect them from direct access.",
+  "description": "Secure Download - Apply TYPO3 access rights to ALL file assets (PDFs, TGZs or JPGs etc. - configurable) - protect them from direct access.",
   "keywords": [
     "TYPO3",
     "Downloads",
