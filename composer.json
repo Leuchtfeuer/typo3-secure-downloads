@@ -48,6 +48,11 @@
     "typo3/cms": {
       "extension-key": "secure_downloads",
       "version": "14.1.1",
+      "Package": {
+        "providesPackages": {
+          "firebase/php-jwt": "Libraries/vendor"
+        }
+      },
       "app-dir": ".Build",
       "web-dir": ".Build/public"
     }
