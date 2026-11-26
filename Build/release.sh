@@ -20,11 +20,6 @@ if [[ "$EXISTS" == "$NEW_RELEASE" ]]; then
 fi
 
 if [ -d "$DIR" ]; then
-  echo "Installing composer dependencies..."
-  cd "$DIR/Libraries" || exit
-  composer install --no-dev --no-progress --quiet
-  echo "Done."
-
   echo "Create git tag"
   cd "$DIR" || exit
   git tag "$NEW_RELEASE"

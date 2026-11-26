@@ -6,18 +6,11 @@ use Leuchtfeuer\SecureDownloads\Registry\TokenRegistry;
 use Leuchtfeuer\SecureDownloads\Resource\Driver\SecureDownloadsDriver;
 use Leuchtfeuer\SecureDownloads\Security\UserCheck;
 use Leuchtfeuer\SecureDownloads\Security\UserGroupCheck;
-use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 defined('TYPO3') || die('Access denied.');
 
 call_user_func(
-    function ($extensionKey) {
-        // Load libraries when TYPO3 is not in composer mode
-        if (Environment::isComposerMode() === false) {
-            require ExtensionManagementUtility::extPath($extensionKey) . 'Libraries/vendor/autoload.php';
-        }
-
+    function () {
         ##################
         #   FAL DRIVER   #
         ##################
@@ -51,7 +44,7 @@ call_user_func(
             true
         );
 
-    }, 'secure_downloads'
+    }
 );
 
 

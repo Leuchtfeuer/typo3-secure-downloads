@@ -23,7 +23,6 @@ $config
     ->getFinder()
     ->name('*.php')
     ->exclude('Configuration')
-    ->exclude('Libraries')
     ->exclude('Resources')
     ->notName('ext_emconf.php')
     ->notName('ext_tables.php')

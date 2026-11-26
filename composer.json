@@ -25,11 +25,11 @@
   ],
   "require": {
     "php": ">= 8.2 <= 8.5.99",
-    "typo3/cms-backend": "^14.1",
-    "typo3/cms-core": "^14.1",
-    "typo3/cms-extbase": "^14.1",
-    "typo3/cms-frontend": "^14.1",
-    "firebase/php-jwt": "^7.0",
+    "typo3/cms-backend": "^14.3",
+    "typo3/cms-core": "^14.3",
+    "typo3/cms-extbase": "^14.3",
+    "typo3/cms-frontend": "^14.3",
+    "firebase/php-jwt": "^7.0.5",
     "ext-pdo": "*"
   },
   "suggest": {
@@ -49,9 +49,7 @@
       "extension-key": "secure_downloads",
       "version": "14.1.1",
       "Package": {
-        "providesPackages": {
-          "firebase/php-jwt": "Libraries/vendor"
-        }
+        "providesPackages": {}
       },
       "app-dir": ".Build",
       "web-dir": ".Build/public"
